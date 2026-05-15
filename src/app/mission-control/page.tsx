@@ -1,68 +1,72 @@
-import type { Metadata } from "next";
-import SectionHeader from "@/components/SectionHeader";
+import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/metadata';
+import Section from '@/components/ui/Section';
+import ProcessStages from '@/components/shared/ProcessStages';
+import CTA from '@/components/ui/CTA';
+import Badge from '@/components/ui/Badge';
+import { Activity, BarChart3, Clock, ShieldCheck } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: "Mission Control — AIKAGAN",
-  description: "Operational pipeline — every project tracked from intake to delivery.",
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'Mission Control',
+  description:
+    'The Kaganate operating process — from intake through architecture, build, Golden Delivery, and ongoing operations.',
+  path: '/mission-control/',
+});
 
-const metrics = [
-  { label: "Systems Active", value: "Online" },
-  { label: "Pipeline", value: "Operational" },
-  { label: "Uptime", value: "99.9%" },
-  { label: "Delivery Rate", value: "100%" },
+const STATS = [
+  { label: 'Active Pipelines', value: '12+', icon: Activity },
+  { label: 'Avg. Delivery Cycle', value: '7 Days', icon: Clock },
+  { label: 'SLA Uptime', value: '99.9%', icon: ShieldCheck },
+  { label: 'Conversion Lift', value: '3.2× avg', icon: BarChart3 },
 ];
-
-const stages = [
-  { id: "01", name: "INTAKE", status: "Active", description: "Project requirements captured and logged" },
-  { id: "02", name: "ANALYSIS", status: "Active", description: "Systems mapping and opportunity identification" },
-  { id: "03", name: "BUILD", status: "Active", description: "Automation pipelines and integrations assembled" },
-  { id: "04", name: "DEPLOY", status: "Pending", description: "Live deployment to target infrastructure" },
-  { id: "05", name: "MONITOR", status: "Pending", description: "Continuous system health and performance tracking" },
-  { id: "06", name: "DELIVER", status: "Pending", description: "Final handoff, documentation, and support activation" },
-];
-
-const statusColor: Record<string, string> = {
-  Active: "bg-green-500/20 text-green-400 border-green-500/30",
-  Complete: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  Pending: "bg-gray-500/20 text-gray-400 border-gray-500/30",
-};
 
 export default function MissionControlPage() {
   return (
-    <div className="min-h-screen py-20 px-4">
-      <div className="max-w-5xl mx-auto">
-        <SectionHeader
-          title="Mission Control"
-          subtitle="Operational pipeline — every project tracked from intake to delivery."
+    <>
+      <Section variant="hero">
+        <div className="text-center mb-14">
+          <Badge variant="green" className="mb-4">Operational</Badge>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
+            Mission <span className="text-gradient">Control</span>
+          </h1>
+          <p className="text-lg text-kagan-light max-w-2xl mx-auto">
+            Every engagement follows a proven six-stage process. This is how The Kaganate ships.
+          </p>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+          {STATS.map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-xl border border-kagan-border bg-kagan-card/60 p-5 text-center"
+            >
+              <stat.icon className="h-5 w-5 text-kagan-gold mx-auto mb-2" />
+              <div className="text-2xl font-bold text-kagan-white mb-1 font-mono">{stat.value}</div>
+              <div className="text-xs text-kagan-muted">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Process stages */}
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-kagan-white mb-8 text-center">
+            Delivery Process
+          </h2>
+          <ProcessStages />
+        </div>
+      </Section>
+
+      <Section variant="alt">
+        <CTA
+          title="Initiate a Mission"
+          subtitle="Submit your project request and enter The Kaganate delivery pipeline. First response within 48 hours."
+          primaryLabel="Start Project"
+          primaryHref="/contact/"
+          secondaryLabel="Explore Services"
+          secondaryHref="/services/"
         />
-
-        {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          {metrics.map((m) => (
-            <div key={m.label} className="bg-[#12121a] border border-[#1e1e2e] rounded-lg p-4 text-center">
-              <div className="text-[#f59e0b] font-bold text-lg">{m.value}</div>
-              <div className="text-gray-500 text-xs mt-1">{m.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Pipeline */}
-        <div className="space-y-3">
-          {stages.map((s) => (
-            <div key={s.id} className="bg-[#12121a] border border-[#1e1e2e] rounded-lg p-5 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <span className="text-[#f59e0b] font-mono text-sm font-bold">{s.id}</span>
-                <div>
-                  <div className="text-white font-semibold text-sm">{s.name}</div>
-                  <div className="text-gray-500 text-xs mt-0.5">{s.description}</div>
-                </div>
-              </div>
-              <span className={`text-xs font-semibold px-3 py-1 rounded border ${statusColor[s.status]}`}>{s.status}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+      </Section>
+    </>
   );
 }

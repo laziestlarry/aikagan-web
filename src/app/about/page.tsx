@@ -1,73 +1,109 @@
-import type { Metadata } from "next";
-import SectionHeader from "@/components/SectionHeader";
-import CTAButton from "@/components/CTAButton";
+import type { Metadata } from 'next';
+import { buildMetadata } from '@/lib/metadata';
+import Section from '@/components/ui/Section';
+import Card from '@/components/ui/Card';
+import Badge from '@/components/ui/Badge';
+import CTA from '@/components/ui/CTA';
+import { Zap, Cpu, ShoppingCart } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: "About — AIKAGAN",
-  description: "AIKAGAN — an operating web settlement built on intelligent systems.",
-};
+export const metadata: Metadata = buildMetadata({
+  title: 'About',
+  description:
+    'The story behind AIKAGAN: Kagan, Lazy Larry, AutonomaX, ProPulse, and the mission to build the operating system for AI commerce.',
+  path: '/about/',
+});
 
-const sections = [
+const SYSTEMS = [
   {
-    label: "What is AIKAGAN?",
-    content: "AI + Kagan fused. AIKAGAN is the operating intelligence layer for modern web commerce. It is not an agency. It is not a tool. It is an operating system for building, running, and scaling web-based commerce infrastructure.",
+    icon: Cpu,
+    name: 'AutonomaX',
+    description:
+      'The AI automation engine. Autonomous agent pipelines that handle data ingestion, decision routing, content generation, and operational workflows — all orchestrated with observability and safety guardrails.',
   },
   {
-    label: "The Kaganate",
-    content: "A distributed settlement. Infrastructure, products, and services unified under one operating system for the web. The Kaganate is the domain — the territory within which all AIKAGAN operations run.",
+    icon: ShoppingCart,
+    name: 'ProPulse',
+    description:
+      'The e-commerce conversion system. AI-driven product page optimization, dynamic offer routing, cart recovery intelligence, and LTV modeling — built to move revenue needles, not vanity metrics.',
   },
   {
-    label: "Lazy Larry",
-    content: "The automation philosophy. If a human has to do it twice, a machine should do it always. Lazy Larry is the operating principle — not laziness, but efficiency taken to its logical conclusion.",
-  },
-  {
-    label: "AutonomaX",
-    content: "The autonomous execution engine. Self-orchestrating systems for maximum throughput with minimum overhead. AutonomaX handles the execution layer — trigger, process, deliver, repeat.",
-  },
-  {
-    label: "ProPulse",
-    content: "The growth and conversion acceleration system. Built for scale, optimized for revenue. ProPulse takes qualified traffic and converts it into customers through engineered conversion systems.",
-  },
-  {
-    label: "Golden Delivery",
-    content: "The last-mile productized delivery network. SLA-backed, documented, repeatable. Golden Delivery ensures that every project ends with a complete, transferable system that clients can operate independently.",
+    icon: Zap,
+    name: 'Golden Delivery',
+    description:
+      'The done-for-you execution layer. Full-stack design, build, deploy, and operate. Weekly delivery cadence, SLA-backed uptime, and a dedicated ops team running your AI commerce infrastructure.',
   },
 ];
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen py-20 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Hero */}
-        <div className="text-center mb-16">
-          <p className="text-[#f59e0b] text-sm uppercase tracking-widest mb-3">The Kaganate</p>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">The Kaganate</h1>
-          <p className="text-gray-400 text-xl">An operating web settlement built on intelligent systems</p>
+    <>
+      <Section variant="hero">
+        <div className="text-center mb-14">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
+            About <span className="text-gradient">The Kaganate</span>
+          </h1>
+          <p className="text-lg text-kagan-light max-w-2xl mx-auto">
+            A brief history of the systems, the operator, and the mission.
+          </p>
         </div>
 
-        <SectionHeader title="The Operating System" subtitle="Every layer of AIKAGAN is intentional." />
-
-        <div className="space-y-8 mt-8">
-          {sections.map((s) => (
-            <div key={s.label} className="bg-[#12121a] border border-[#1e1e2e] rounded-lg p-6">
-              <h3 className="text-[#f59e0b] font-bold text-sm uppercase tracking-wider mb-2">{s.label}</h3>
-              <p className="text-gray-300">{s.content}</p>
+        {/* Kagan / Lazy Larry */}
+        <div className="max-w-3xl mx-auto mb-16">
+          <Card className="border-kagan-gold/20">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="flex-shrink-0 h-16 w-16 rounded-xl bg-kagan-gold/10 border border-kagan-gold/30 flex items-center justify-center">
+                <span className="text-2xl font-bold text-kagan-gold">K</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-2xl font-bold text-kagan-white">Kagan</h2>
+                  <Badge variant="gold">Lazy Larry</Badge>
+                </div>
+                <p className="text-kagan-light leading-relaxed mb-4">
+                  Also known as <strong className="text-kagan-white">Lazy Larry</strong> — a systems architect
+                  and AI infrastructure operator who builds autonomous commerce engines. The name is ironic: the
+                  systems do the heavy lifting, but someone has to design them right.
+                </p>
+                <p className="text-kagan-light leading-relaxed">
+                  AIKAGAN is the public operating settlement for the Kaganate — a collection of integrated AI
+                  systems (AutonomaX, ProPulse) and the Golden Delivery execution methodology. Every system
+                  is battle-tested against real commercial requirements: conversion, uptime, observability,
+                  and continuous delivery.
+                </p>
+              </div>
             </div>
-          ))}
+          </Card>
         </div>
 
-        {/* Mission statement */}
-        <div className="mt-16 text-center bg-[#12121a] border border-[#f59e0b]/20 rounded-xl p-10">
-          <p className="text-[#6b7280] text-sm uppercase tracking-widest mb-3">Mission</p>
-          <blockquote className="text-2xl md:text-3xl font-bold text-white leading-snug">
-            &ldquo;AIKAGAN exists to build the infrastructure layer between ideas and outcomes.&rdquo;
-          </blockquote>
+        {/* Systems */}
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-kagan-white mb-8 text-center">
+            The Systems
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {SYSTEMS.map((sys) => (
+              <Card key={sys.name} hover>
+                <div className="p-3 rounded-lg bg-kagan-gold/10 border border-kagan-gold/20 inline-block mb-4">
+                  <sys.icon className="h-6 w-6 text-kagan-gold" />
+                </div>
+                <h3 className="text-lg font-bold text-kagan-white mb-3">{sys.name}</h3>
+                <p className="text-sm text-kagan-light leading-relaxed">{sys.description}</p>
+              </Card>
+            ))}
+          </div>
         </div>
+      </Section>
 
-        <div className="text-center mt-12">
-          <CTAButton href="/contact" variant="primary">Work With Us</CTAButton>
-        </div>
-      </div>
-    </div>
+      <Section variant="alt">
+        <CTA
+          title="Work With The Kaganate"
+          subtitle="Direct access to Kagan for architecture reviews, strategy sessions, and AI infrastructure deployment."
+          primaryLabel="Start Project"
+          primaryHref="/contact/"
+          secondaryLabel="View Services"
+          secondaryHref="/services/"
+        />
+      </Section>
+    </>
   );
 }
