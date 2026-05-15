@@ -1,13 +1,5 @@
-import type { Metadata } from 'next';
-import { buildMetadata } from '@/lib/metadata';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
-
-export const metadata: Metadata = buildMetadata({
-  title: '404',
-  description: 'Page not found.',
-  path: '/404/',
-});
 
 export default function NotFound() {
   return (
