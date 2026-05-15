@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://aikagan.com/sitemap.xml
