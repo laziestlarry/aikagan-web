@@ -143,6 +143,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-6 pb-20">
+        <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Visual Direction</p>
+        <h2 className="mt-4 text-4xl font-bold">Premium Golden Delivery Storefront Reference</h2>
+        <div className="mt-10 overflow-hidden rounded-3xl border border-amber-300/20 bg-black">
+          <img
+            src="/visuals/aikagan-home-premium-design.png"
+            alt="AIKAGAN Golden Delivery premium homepage visual"
+            className="w-full rounded-3xl border border-amber-300/20"
+          />
+        </div>
+      </section>
+
       <section className="mx-auto grid max-w-7xl gap-4 px-6 pb-20 md:grid-cols-4">
         {trustBadges.map((badge) => (
           <div key={badge.title} className="rounded-2xl border border-white/10 bg-[#0d1119] p-6">
