@@ -37,7 +37,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </Link>
 
           <p className="mt-10 text-sm uppercase tracking-[0.3em] text-amber-300">
-            {product.tag}
+            {product.tier}
           </p>
 
           <h1 className="mt-4 text-5xl font-bold tracking-tight md:text-7xl">
@@ -78,7 +78,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </p>
 
           <p className="mt-6 text-6xl font-bold text-amber-300">
-            {product.price}
+            ${product.price}
           </p>
 
           <p className="mt-4 text-neutral-300">

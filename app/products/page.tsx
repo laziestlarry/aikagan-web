@@ -30,7 +30,7 @@ export default function ProductsPage() {
             <ProductCard
               key={product.id}
               {...product}
-              featured={product.id === 'golden-bundle'}
+              featured={product.id === 'golden-delivery-pro'}
             />
           ))}
         </div>
