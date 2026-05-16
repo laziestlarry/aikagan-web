@@ -2,6 +2,7 @@ export type Product = {
   slug: string;
   name: string;
   tier: string;
+  tag: string;
   price: string;
   description: string;
   bullets: string[];
@@ -12,51 +13,54 @@ export type Product = {
 export const products: Product[] = [
   {
     slug: "golden-delivery-starter",
-    name: "AIKAGAN Golden Delivery Starter Pack",
+    name: "Golden Delivery Starter",
     tier: "Starter",
-    price: "$29",
-    description:
-      "A practical first-sale execution pack for installing a simple AI-powered product, checkout, and customer delivery workflow.",
+    tag: "Start Here",
+    price: "$97",
+    description: "Perfect for getting started with AI automation.",
     bullets: [
-      "First-sale plan",
-      "Starter access guide",
-      "Quick execution checklist",
-      "Customer system access instructions",
-      "Revenue workflow starting point"
+      "10+ Essential AI Automations",
+      "Standard Operating Procedures",
+      "Plug & Play Templates",
+      "Video Setup Guides",
+      "Community Access",
+      "Instant Download"
     ],
     checkoutUrl: "https://YOUR-CHECKOUT-LINK-STARTER",
     downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Starter_Pack.zip"
   },
   {
     slug: "golden-delivery-pro",
-    name: "AIKAGAN Golden Delivery Pro Pack",
+    name: "Golden Delivery Pro",
     tier: "Pro",
-    price: "$79",
-    description:
-      "A conversion workflow pack with offer templates, traffic playbook, funnel structure, and automation workflow templates.",
+    tag: "Most Popular",
+    price: "$297",
+    description: "Advanced systems for growing businesses.",
     bullets: [
-      "Traffic playbook",
-      "Offer templates",
-      "Workflow templates",
-      "Funnel structure",
-      "Customer continuation path"
+      "50+ Advanced AI Automations",
+      "Complete Business Playbooks",
+      "Advanced Integrations",
+      "Custom Workflows",
+      "Priority Support",
+      "Instant Download"
     ],
     checkoutUrl: "https://YOUR-CHECKOUT-LINK-PRO",
     downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Pro_Pack.zip"
   },
   {
     slug: "golden-delivery-commander",
-    name: "AIKAGAN Golden Delivery Commander Pack",
+    name: "Golden Delivery Commander",
     tier: "Commander",
-    price: "$149",
-    description:
-      "A commander-level implementation pack for mapping, operating, and scaling the Golden Delivery revenue system after first proof.",
+    tag: "Best Value",
+    price: "$997",
+    description: "Complete business empire automation system.",
     bullets: [
-      "Master system map",
-      "Scaling strategy",
-      "Revenue path structure",
-      "Advanced workflows",
-      "Automation logic"
+      "100+ Complete AI Systems",
+      "Full Business Automation Suite",
+      "Advanced AI Agents",
+      "White-Label Rights",
+      "VIP Support & Onboarding",
+      "Instant Download"
     ],
     checkoutUrl: "https://YOUR-CHECKOUT-LINK-COMMANDER",
     downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Commander_Pack.zip"
