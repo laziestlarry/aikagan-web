@@ -83,12 +83,12 @@ export default function HomePage() {
                   Start at $29 →
                 </Link>
                 <Link href="#packs"
-                  className="rounded-full border border-white/15 px-7 py-3.5 text-sm font-semibold text-zinc-300 hover:border-amber-300/40 hover:text-amber-300 transition-colors">
+                  className="rounded-full border border-white/30 bg-white/[0.03] px-7 py-3.5 text-sm font-semibold text-zinc-300 hover:border-amber-300/50 hover:bg-amber-300/5 hover:text-amber-300 transition-colors">
                   See all three packs
                 </Link>
               </div>
 
-              <p className="mt-5 text-xs text-zinc-600">
+              <p className="mt-5 text-xs text-zinc-500">
                 ✓ Instant download &nbsp;·&nbsp; ✓ 30-day guarantee &nbsp;·&nbsp; ✓ One-time payment
               </p>
             </div>
@@ -132,8 +132,8 @@ export default function HomePage() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <div className="border-y border-white/5 bg-[#0a0a0c]">
-        <div className="mx-auto max-w-6xl px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div className="border-y border-white/5 bg-[#0d1119]">
+        <div className="mx-auto max-w-6xl px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
             { n: "3", label: "Execution packs" },
             { n: "28", label: "Total files across all packs" },
@@ -149,14 +149,14 @@ export default function HomePage() {
       </div>
 
       {/* ── VALUE LADDER ── */}
-      <section className="px-6 py-20 mx-auto max-w-6xl">
+      <section className="px-6 py-24 mx-auto max-w-6xl">
         <div className="text-center mb-12">
           <p className="text-xs font-bold tracking-[0.3em] text-amber-300 uppercase mb-3">The Value Ladder</p>
           <h2 className="text-3xl md:text-4xl font-black">Three packs. One complete system.</h2>
           <p className="mt-3 text-zinc-400 text-sm max-w-md mx-auto">Start at $29. Add only what you need, when you need it.</p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[
             {
               price: "$29", name: "Starter Pack", tag: "Launch Ignition", goal: "First sale in 7 days",
@@ -195,10 +195,10 @@ export default function HomePage() {
                   <div className="text-xs text-zinc-600">{tier.files}</div>
                 </div>
                 <Link href={tier.href}
-                  className={`rounded-full px-5 py-2 text-xs font-black transition-colors whitespace-nowrap
+                  className={`rounded-full px-5 py-2.5 text-xs font-black transition-colors whitespace-nowrap
                     ${tier.highlight
                       ? "bg-amber-300 text-black hover:bg-amber-200"
-                      : "border border-white/15 text-white hover:border-amber-300/40 hover:text-amber-300"}`}>
+                      : "border border-white/20 text-zinc-200 hover:border-amber-300/50 hover:bg-amber-300/5 hover:text-amber-300"}`}>
                   View →
                 </Link>
               </div>
@@ -256,10 +256,13 @@ export default function HomePage() {
                   </ul>
 
                   <Link href={`/products/${product.slug}`}
-                    className="mt-auto block text-center rounded-full bg-amber-300 px-5 py-3 text-sm font-black text-black hover:bg-amber-200 transition-colors">
+                    className={`mt-auto block text-center rounded-full px-5 py-3 text-sm font-black transition-colors
+                      ${style.ribbon
+                        ? "bg-amber-300 text-black hover:bg-amber-200"
+                        : "border border-white/20 text-zinc-200 hover:border-amber-300/50 hover:bg-amber-300/5 hover:text-amber-300"}`}>
                     {style.cta}
                   </Link>
-                  <p className="text-xs text-zinc-600 text-center mt-2">{product.guarantee}</p>
+                  <p className="text-xs text-zinc-500 text-center mt-2">{product.guarantee}</p>
                 </article>
               );
             })}
@@ -274,17 +277,17 @@ export default function HomePage() {
             <p className="text-xs font-bold tracking-[0.3em] text-amber-300 uppercase mb-3">How It Works</p>
             <h2 className="text-3xl font-black">Download. Execute. Get paid.</h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { n: "01", title: "Download", desc: "One-time payment. Files in your hands in 60 seconds." },
-              { n: "02", title: "Read Start Here", desc: "Every pack has an orientation doc with the exact order to work through files." },
+              { n: "02", title: "Start Here", desc: "Every pack has an orientation doc with the exact order to work through files." },
               { n: "03", title: "Execute", desc: "Follow the day-by-day blueprint. Use the scripts. Check the checklist." },
-              { n: "04", title: "Get paid", desc: "Starter: first sale in 7 days. Pro: $1K in 30. Commander: $10K in 60." },
+              { n: "04", title: "Get Paid", desc: "Starter: first sale in 7 days. Pro: $1K in 30. Commander: $10K in 60." },
             ].map(s => (
               <div key={s.n} className="relative pl-10">
                 <div className="absolute left-0 top-0 text-3xl font-black text-white/5">{s.n}</div>
                 <div className="w-8 h-px bg-amber-300/40 mb-4" />
-                <h3 className="font-black text-white mb-2 text-sm">{s.title}</h3>
+                <h3 className="font-black text-white mb-2 text-sm break-normal">{s.title}</h3>
                 <p className="text-xs text-zinc-500 leading-relaxed">{s.desc}</p>
               </div>
             ))}
@@ -293,10 +296,10 @@ export default function HomePage() {
       </section>
 
       {/* ── TRUST ── */}
-      <div className="border-y border-white/5 bg-[#0a0a0c]">
+      <div className="border-y border-white/5 bg-[#0d1119]">
         <div className="mx-auto max-w-6xl px-6 py-5 flex flex-wrap justify-center gap-8">
           {["✓ 30-Day Money-Back Guarantee", "✓ Instant Download", "✓ One-Time Payment, Yours Forever", "✓ Zero Fluff — All Execution"].map(t => (
-            <span key={t} className="text-xs font-semibold text-zinc-500">{t}</span>
+            <span key={t} className="text-xs font-semibold text-zinc-400">{t}</span>
           ))}
         </div>
       </div>
@@ -343,7 +346,7 @@ export default function HomePage() {
                 Commander — $149
               </Link>
             </div>
-            <p className="mt-6 text-xs text-zinc-600">All packs · 30-day guarantee · Instant download · One-time payment</p>
+            <p className="mt-6 text-xs text-zinc-500">All packs · 30-day guarantee · Instant download · One-time payment</p>
           </div>
         </div>
       </section>
