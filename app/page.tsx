@@ -1,268 +1,269 @@
 import Link from "next/link";
 import { products } from "@/lib/products";
 
-const productStyles: Record<string, { accent: string; glow: string; badge: string; ribbon?: string; icon: string; cta: string }> = {
+// ── Gold palette ──────────────────────────────────────────────────────────
+const G = {
+  gold:      "#D4AF37",
+  goldDim:   "rgba(212,175,55,0.38)",
+  goldGlow:  "rgba(212,175,55,0.14)",
+  goldFaint: "rgba(212,175,55,0.06)",
+  bg:        "#09070a",
+  bgSection: "#0d0b07",
+  bgCard:    "#0a0802",
+  text:      "#c5b47a",
+  muted:     "#7a6830",
+  mutedLo:   "#444",
+};
+
+// ── Per-pack colour config ────────────────────────────────────────────────
+const packCfg: Record<string, {
+  border: string; hdr: string; cta: string; ctaFg: string; ctaBorder?: string;
+}> = {
   "golden-delivery-starter": {
-    accent: "border-emerald-400/30",
-    glow: "",
-    badge: "bg-emerald-400/10 text-emerald-300 border-emerald-400/30",
-    icon: "🚀",
-    cta: "Get Starter — $29",
+    border:    "rgba(52,211,153,0.32)",
+    hdr:       "#34d399",
+    cta:       "transparent",
+    ctaFg:     "#34d399",
+    ctaBorder: "1px solid rgba(52,211,153,0.38)",
   },
   "golden-delivery-pro": {
-    accent: "border-amber-300/50",
-    glow: "shadow-amber-300/10 shadow-2xl",
-    badge: "bg-amber-300 text-black border-amber-200",
-    ribbon: "MOST POPULAR",
-    icon: "⚡",
-    cta: "Get Pro — $79",
+    border: "rgba(212,175,55,0.52)",
+    hdr:    G.gold,
+    cta:    G.gold,
+    ctaFg:  "#09070a",
   },
   "golden-delivery-commander": {
-    accent: "border-purple-400/40",
-    glow: "",
-    badge: "bg-purple-400/10 text-purple-300 border-purple-400/30",
-    icon: "👑",
-    cta: "Get Commander — $149",
+    border: "rgba(139,92,246,0.42)",
+    hdr:    "#a78bfa",
+    cta:    "rgba(139,92,246,0.60)",
+    ctaFg:  "#fff",
   },
 };
 
-const faq = [
-  {
-    q: "Who are these packs actually for?",
-    a: "Anyone building an AI-assisted revenue stream — freelancers, consultants, creators, and small operators. No audience required for the Starter Pack. No paid ads required for any of them.",
-  },
-  {
-    q: "Is this just templates and PDFs that will sit in my downloads folder?",
-    a: "No. Every file is an execution document — specific tasks, copy you can paste, checklists with checkboxes, and benchmarks to measure progress. We cut everything that isn't directly actionable.",
-  },
-  {
-    q: "What if I buy the Starter and want to upgrade to Pro or Commander?",
-    a: "Each pack stands alone. You can buy in sequence or jump straight to Commander if you already have momentum. There's no forced upgrade path.",
-  },
-  {
-    q: "I've bought courses before and gotten nothing from them. Why is this different?",
-    a: "This isn't a course — no videos to watch, no modules to unlock before the good stuff. You open the file, follow the checklist, execute. The 7-day blueprint tells you exactly what to do each day.",
-  },
-  {
-    q: "What's the refund policy?",
-    a: "30-day money-back guarantee on all packs. Follow the execution plan, get nothing from it, email us — full refund. No hoops.",
-  },
-];
+// ── Shared section header ─────────────────────────────────────────────────
+function OrnHeader({ label, sub }: { label: string; sub?: string }) {
+  return (
+    <div style={{ textAlign: "center", marginBottom: "48px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px", marginBottom: "8px" }}>
+        <div style={{ height: "1px", width: "56px", background: `linear-gradient(to left,${G.goldDim},transparent)` }} />
+        <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.3em", color: G.gold }}>⚜ {label} ⚜</span>
+        <div style={{ height: "1px", width: "56px", background: `linear-gradient(to right,${G.goldDim},transparent)` }} />
+      </div>
+      {sub && <p style={{ fontSize: "10px", letterSpacing: "0.2em", color: G.muted, textTransform: "uppercase" }}>{sub}</p>}
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
-    <div className="bg-[#08080a] text-white">
+    <div style={{ background: G.bg, color: "#fff", fontFamily: "system-ui,-apple-system,sans-serif" }}>
 
-      {/* ── HERO ── */}
-      <section className="relative overflow-hidden">
-        {/* background gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(245,197,66,0.15),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_50%,rgba(139,92,246,0.06),transparent_60%)]" />
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden" style={{ minHeight: "580px" }}>
 
-        <div className="relative mx-auto max-w-6xl px-6 pt-24 pb-20 lg:pt-32 lg:pb-28">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* warm-black bg gradient */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg,#0a0702 0%,#130f04 100%)" }} />
+        {/* vault glow — right side */}
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(ellipse 55% 90% at 72% 55%,rgba(212,175,55,0.22) 0%,rgba(180,130,20,0.07) 45%,transparent 70%)`
+        }} />
+        {/* top ambient */}
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(ellipse 50% 35% at 50% 0%,rgba(212,175,55,0.08) 0%,transparent 70%)`
+        }} />
+        {/* outer frame */}
+        <div className="absolute inset-3 pointer-events-none" style={{ border: "1px solid rgba(212,175,55,0.07)" }} />
 
-            {/* Left — copy */}
+        <div className="relative mx-auto max-w-7xl px-6 py-16 lg:py-24">
+          <div className="grid lg:grid-cols-2 gap-14 items-center">
+
+            {/* ── Left: copy ── */}
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/5 px-4 py-1.5 text-xs font-semibold tracking-widest text-amber-300 mb-8 uppercase">
-                AutonomaX Golden Delivery
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px" }}>
+                <div style={{ height: "1px", width: "32px", background: G.goldDim }} />
+                <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.3em", color: G.gold }}>→ WELCOME TO</span>
               </div>
 
-              <h1 className="text-5xl md:text-6xl xl:text-7xl font-black leading-[1.05] tracking-tight">
-                Stop<br />Preparing.<br />
-                <span className="text-amber-300">Start Getting<br />Paid.</span>
+              <h1 style={{
+                fontSize: "clamp(38px,5.5vw,66px)",
+                fontWeight: 900,
+                lineHeight: 1.04,
+                letterSpacing: "-0.01em",
+                textTransform: "uppercase",
+                color: G.gold,
+                margin: 0,
+              }}>
+                KAGAN&apos;S<br />GIANT GOLD<br />TREASURY ROOM
               </h1>
 
-              <p className="mt-8 text-lg text-zinc-300 leading-relaxed max-w-lg">
-                Three download packs. One complete system. First sale in 7 days at $29 — or scale to $10K+/month at $149. No audience. No ads. No guesswork.
+              <p style={{ marginTop: "18px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "480px" }}>
+                Done-For-You AI Revenue Packs That Build Your Income, Scale Your Offers,
+                and Print Passive Profits. First sale in 7 days. No audience. No ads. No guesswork.
               </p>
 
-              <div className="mt-10 flex flex-wrap gap-3">
-                <Link href="/products/golden-delivery-starter"
-                  className="rounded-full bg-amber-300 px-7 py-3.5 text-sm font-black text-black hover:bg-amber-200 transition-colors">
-                  Start at $29 →
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
+                <Link href="/products/golden-delivery-starter" style={{
+                  display: "inline-flex", alignItems: "center",
+                  background: G.gold, color: "#09070a",
+                  fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
+                  padding: "14px 30px", borderRadius: "6px",
+                  textTransform: "uppercase", textDecoration: "none",
+                }}>
+                  START AT $29 →
                 </Link>
-                <Link href="#packs"
-                  className="rounded-full border border-white/30 bg-white/[0.03] px-7 py-3.5 text-sm font-semibold text-zinc-300 hover:border-amber-300/50 hover:bg-amber-300/5 hover:text-amber-300 transition-colors">
-                  See all three packs
+                <Link href="#packs" style={{
+                  display: "inline-flex", alignItems: "center",
+                  border: `1px solid ${G.goldDim}`, color: G.gold,
+                  fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
+                  padding: "14px 30px", borderRadius: "6px",
+                  textTransform: "uppercase", textDecoration: "none",
+                  background: G.goldFaint,
+                }}>
+                  SEE ALL THREE PACKS
                 </Link>
               </div>
 
-              <p className="mt-5 text-xs text-zinc-500">
-                ✓ Instant download &nbsp;·&nbsp; ✓ 30-day guarantee &nbsp;·&nbsp; ✓ One-time payment
-              </p>
+              {/* trust strip */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "24px" }}>
+                {[["↓","INSTANT DOWNLOAD"],["◈","REBRAND & RESELL"],["$","KEEP 100% PROFITS"]].map(([icon, label]) => (
+                  <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px",
+                    fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", color: G.muted }}>
+                    <span style={{ color: G.gold }}>{icon}</span>{label}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Right — visual card stack */}
-            <div className="relative flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-sm">
-                {/* Back card */}
-                <div className="absolute -top-4 -right-4 w-full rounded-2xl border border-purple-400/20 bg-[#0d1119] p-5 rotate-3 opacity-60">
-                  <div className="text-xs text-purple-300 font-bold mb-2">Commander — $149</div>
-                  <div className="text-sm text-zinc-400">12 files · Empire architecture · White-label rights</div>
-                </div>
-                {/* Mid card */}
-                <div className="absolute -top-2 -left-3 w-full rounded-2xl border border-emerald-400/20 bg-[#0d1119] p-5 -rotate-2 opacity-70">
-                  <div className="text-xs text-emerald-300 font-bold mb-2">Starter — $29</div>
-                  <div className="text-sm text-zinc-400">7 files · First sale in 7 days · Zero audience</div>
-                </div>
-                {/* Front card */}
-                <div className="relative rounded-2xl border border-amber-300/40 bg-[#111827] p-6 shadow-2xl shadow-amber-300/10">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs text-amber-300 font-bold uppercase tracking-widest">Pro Pack</span>
-                    <span className="rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-black">POPULAR</span>
-                  </div>
-                  <div className="text-4xl font-black text-amber-300 mb-1">$79</div>
-                  <div className="text-xs text-zinc-500 line-through mb-4">$297</div>
-                  <ul className="space-y-2 text-xs text-zinc-300">
-                    {["Funnel Master Guide", "AI Tools Stack", "30-Day Revenue Calendar", "5 Offer Templates", "+ 5 more files"].map(i => (
-                      <li key={i} className="flex gap-2"><span className="text-amber-300">✓</span>{i}</li>
-                    ))}
-                  </ul>
-                  <Link href="/products/golden-delivery-pro"
-                    className="mt-5 block text-center rounded-full bg-amber-300 px-4 py-2.5 text-xs font-black text-black hover:bg-amber-200 transition-colors">
-                    Get Pro Access →
-                  </Link>
-                </div>
-              </div>
+            {/* ── Right: vault arch ── */}
+            <div className="relative hidden lg:block" style={{ height: "420px" }}>
+
+              {/* outer arch */}
+              <div className="absolute" style={{
+                bottom: 0, left: "50%", transform: "translateX(-50%)",
+                width: "340px", height: "400px",
+                borderRadius: "170px 170px 0 0",
+                border: "1px solid rgba(212,175,55,0.11)",
+                background: "radial-gradient(ellipse at 50% 85%,rgba(212,175,55,0.12) 0%,transparent 70%)",
+              }} />
+              {/* inner arch */}
+              <div className="absolute" style={{
+                bottom: 0, left: "50%", transform: "translateX(-50%)",
+                width: "230px", height: "278px",
+                borderRadius: "115px 115px 0 0",
+                border: "1px solid rgba(212,175,55,0.22)",
+                background: "radial-gradient(ellipse at 50% 78%,rgba(212,175,55,0.22) 0%,rgba(212,175,55,0.04) 55%,transparent 80%)",
+              }} />
+
+              {/* crown */}
+              <div className="absolute" style={{
+                bottom: "126px", left: "50%", transform: "translateX(-50%)",
+                fontSize: "70px",
+                filter: `drop-shadow(0 0 40px ${G.gold}) drop-shadow(0 0 16px ${G.gold})`,
+                zIndex: 10, lineHeight: 1,
+              }}>👑</div>
+
+              {/* coins */}
+              <div className="absolute" style={{ bottom: "36px", left: "68px", fontSize: "38px", opacity: 0.55 }}>🪙</div>
+              <div className="absolute" style={{ bottom: "66px", right: "66px", fontSize: "34px", opacity: 0.45 }}>🪙</div>
+              <div className="absolute" style={{ bottom: "20px", right: "96px", fontSize: "46px", opacity: 0.40 }}>🪙</div>
+              <div className="absolute" style={{ bottom: "18px", left: "108px", fontSize: "30px", opacity: 0.35 }}>🪙</div>
+
+              {/* corner ornaments */}
+              <div className="absolute" style={{ top:16, left:16, width:22, height:22, borderTop:`2px solid ${G.goldDim}`, borderLeft:`2px solid ${G.goldDim}` }} />
+              <div className="absolute" style={{ top:16, right:16, width:22, height:22, borderTop:`2px solid ${G.goldDim}`, borderRight:`2px solid ${G.goldDim}` }} />
+              <div className="absolute" style={{ bottom:16, left:16, width:22, height:22, borderBottom:`2px solid ${G.goldDim}`, borderLeft:`2px solid ${G.goldDim}` }} />
+              <div className="absolute" style={{ bottom:16, right:16, width:22, height:22, borderBottom:`2px solid ${G.goldDim}`, borderRight:`2px solid ${G.goldDim}` }} />
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
-      <div className="border-y border-white/5 bg-[#0d1119]">
-        <div className="mx-auto max-w-6xl px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { n: "3", label: "Execution packs" },
-            { n: "28", label: "Total files across all packs" },
-            { n: "7", label: "Days to first sale (Starter)" },
-            { n: "$10K+", label: "Monthly target (Commander)" },
-          ].map(s => (
-            <div key={s.label}>
-              <div className="text-2xl font-black text-amber-300">{s.n}</div>
-              <div className="text-xs text-zinc-500 mt-1">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── VALUE LADDER ── */}
-      <section className="px-6 py-24 mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          <p className="text-xs font-bold tracking-[0.3em] text-amber-300 uppercase mb-3">The Value Ladder</p>
-          <h2 className="text-3xl md:text-4xl font-black">Three packs. One complete system.</h2>
-          <p className="mt-3 text-zinc-400 text-sm max-w-md mx-auto">Start at $29. Add only what you need, when you need it.</p>
-        </div>
-
-        <div className="space-y-4">
-          {[
-            {
-              price: "$29", name: "Starter Pack", tag: "Launch Ignition", goal: "First sale in 7 days",
-              files: "7 files", desc: "Blueprint, DM scripts, offer worksheet, objection crusher, activation checklist.",
-              href: "/products/golden-delivery-starter", color: "border-emerald-400/25 hover:border-emerald-400/50",
-              priceColor: "text-emerald-300",
-            },
-            {
-              price: "$79", name: "Pro Pack", tag: "Revenue Operations", goal: "$1K/month system",
-              files: "9 files", desc: "Funnels, AI tools stack, traffic playbook, 30-day calendar, 5 offer templates.",
-              href: "/products/golden-delivery-pro", color: "border-amber-300/40 hover:border-amber-300/70 bg-amber-300/[0.03]",
-              priceColor: "text-amber-300", highlight: true,
-            },
-            {
-              price: "$149", name: "Commander Pack", tag: "Empire Architecture", goal: "$10K+/month framework",
-              files: "12 files", desc: "White-label rights, 60-day sprint, partnerships, automation OS, KPI dashboard.",
-              href: "/products/golden-delivery-commander", color: "border-purple-400/25 hover:border-purple-400/50",
-              priceColor: "text-purple-300",
-            },
-          ].map(tier => (
-            <div key={tier.name}
-              className={`group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border ${tier.color} bg-[#0d1119] px-6 py-5 transition-colors`}>
-              <div className="flex items-start sm:items-center gap-5">
-                <div className={`text-2xl font-black ${tier.priceColor} w-14 shrink-0 pt-0.5`}>{tier.price}</div>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="font-black text-white text-sm">{tier.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full border ${tier.color} ${tier.priceColor} opacity-80`}>{tier.tag}</span>
-                  </div>
-                  <p className="text-xs text-zinc-500">{tier.desc}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between sm:justify-end gap-6 shrink-0">
-                <div className="text-right">
-                  <div className={`text-xs font-bold ${tier.priceColor}`}>{tier.goal}</div>
-                  <div className="text-xs text-zinc-600">{tier.files}</div>
-                </div>
-                <Link href={tier.href}
-                  className={`rounded-full px-5 py-2.5 text-xs font-black transition-colors whitespace-nowrap
-                    ${tier.highlight
-                      ? "bg-amber-300 text-black hover:bg-amber-200"
-                      : "border border-white/20 text-zinc-200 hover:border-amber-300/50 hover:bg-amber-300/5 hover:text-amber-300"}`}>
-                  View →
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── PRODUCT CARDS ── */}
-      <section id="packs" className="px-6 py-20 border-t border-white/5">
+      {/* ── PICK YOUR LEVEL ──────────────────────────────────────────────── */}
+      <section id="packs" style={{ background: G.bgSection, padding: "80px 24px", borderTop: "1px solid rgba(212,175,55,0.08)" }}>
         <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold tracking-[0.3em] text-amber-300 uppercase mb-3">Choose Your Pack</p>
-            <h2 className="text-3xl md:text-4xl font-black">Everything that's inside.</h2>
-            <p className="mt-3 text-zinc-500 text-sm">Every file listed. No placeholder promises.</p>
-          </div>
+          <OrnHeader label="PICK YOUR LEVEL" sub="EVERYTHING YOU NEED TO WIN ONLINE" />
 
-          <div className="grid gap-5 lg:grid-cols-3">
+          <div className="grid md:grid-cols-3 gap-5">
             {products.map((product: any) => {
-              const style = productStyles[product.slug] ?? productStyles["golden-delivery-starter"];
+              const cfg = packCfg[product.slug] ?? packCfg["golden-delivery-starter"];
+              const isPro = product.slug === "golden-delivery-pro";
+              const isCmd = product.slug === "golden-delivery-commander";
+              const ctaLabel = isPro
+                ? `GET PRO — $${product.price} →`
+                : isCmd
+                  ? `GET COMMANDER — $${product.price} →`
+                  : `GET STARTER — $${product.price} →`;
+
               return (
-                <article key={product.slug}
-                  className={`relative flex flex-col rounded-2xl border ${style.accent} ${style.glow} bg-[#0d1119] p-6`}>
-                  {style.ribbon && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-300 px-4 py-1 text-xs font-black text-black whitespace-nowrap">
-                      {style.ribbon}
-                    </div>
+                <article key={product.slug} style={{
+                  background: G.bgCard,
+                  border: `1px solid ${cfg.border}`,
+                  borderRadius: "8px",
+                  padding: "28px 24px",
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                }}>
+                  {isPro && (
+                    <div style={{
+                      position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
+                      background: G.gold, color: "#09070a",
+                      fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em",
+                      padding: "4px 18px", borderRadius: "20px", whiteSpace: "nowrap",
+                    }}>⭐ MOST POPULAR ⭐</div>
                   )}
 
-                  <div className="flex items-start justify-between mb-4 mt-2">
-                    <span className="text-2xl">{style.icon}</span>
-                    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${style.badge}`}>
-                      {product.badge}
-                    </span>
+                  {/* header row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", color: cfg.hdr, textTransform: "uppercase", marginBottom: "3px" }}>
+                        {product.name} Pack
+                      </div>
+                      <div style={{ fontSize: "10px", color: G.mutedLo, letterSpacing: "0.05em" }}>{product.tier}</div>
+                    </div>
+                    <div style={{ fontSize: "28px", fontWeight: 900, color: cfg.hdr }}>${product.price}</div>
                   </div>
 
-                  <h3 className="text-xl font-black mb-1">{product.name} Pack</h3>
-
-                  <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-3xl font-black text-amber-300">${product.price}</span>
+                  {/* divider strip */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px", paddingBottom: "16px", borderBottom: `1px solid ${cfg.border}` }}>
+                    <span style={{ fontSize: "22px" }}>
+                      {isPro ? "⚡" : isCmd ? "👑" : "🚀"}
+                    </span>
                     {product.originalPrice && (
-                      <span className="text-zinc-600 line-through text-sm">${product.originalPrice}</span>
+                      <span style={{ fontSize: "12px", color: "#3a3a3a", textDecoration: "line-through" }}>${product.originalPrice}</span>
                     )}
                   </div>
 
-                  <p className="text-zinc-500 text-xs leading-relaxed mb-5 flex-1">{product.description}</p>
-
-                  <ul className="space-y-2 mb-6">
+                  {/* bullets */}
+                  <ul style={{ flex: 1, marginBottom: "20px", listStyle: "none", padding: 0, margin: "0 0 20px 0" }}>
                     {(product.bullets ?? []).slice(0, 5).map((item: string) => (
-                      <li key={item} className="flex gap-2 text-xs text-zinc-300">
-                        <span className="text-amber-300 shrink-0 mt-0.5">✓</span>
-                        <span>{item}</span>
+                      <li key={item} style={{
+                        display: "flex", gap: "8px", alignItems: "flex-start",
+                        fontSize: "12px", color: "#9ca3af", marginBottom: "8px", lineHeight: 1.45,
+                      }}>
+                        <span style={{ color: cfg.hdr, flexShrink: 0, marginTop: "1px" }}>✓</span>
+                        {item}
                       </li>
                     ))}
                   </ul>
 
-                  <Link href={`/products/${product.slug}`}
-                    className={`mt-auto block text-center rounded-full px-5 py-3 text-sm font-black transition-colors
-                      ${style.ribbon
-                        ? "bg-amber-300 text-black hover:bg-amber-200"
-                        : "border border-white/20 text-zinc-200 hover:border-amber-300/50 hover:bg-amber-300/5 hover:text-amber-300"}`}>
-                    {style.cta}
+                  {/* CTA */}
+                  <Link href={`/products/${product.slug}`} style={{
+                    display: "block", textAlign: "center",
+                    background: cfg.cta,
+                    color: cfg.ctaFg,
+                    border: cfg.ctaBorder ?? "none",
+                    borderRadius: "6px",
+                    padding: "12px 20px",
+                    fontSize: "12px", fontWeight: 800, letterSpacing: "0.1em",
+                    textTransform: "uppercase", textDecoration: "none",
+                  }}>
+                    {ctaLabel}
                   </Link>
-                  <p className="text-xs text-zinc-500 text-center mt-2">{product.guarantee}</p>
+                  <p style={{ fontSize: "10px", color: G.mutedLo, textAlign: "center", marginTop: "8px" }}>
+                    {product.guarantee}
+                  </p>
                 </article>
               );
             })}
@@ -270,83 +271,142 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section className="px-6 py-20 border-t border-white/5">
+      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
+      <section style={{ background: G.bg, padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
         <div className="mx-auto max-w-5xl">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold tracking-[0.3em] text-amber-300 uppercase mb-3">How It Works</p>
-            <h2 className="text-3xl font-black">Download. Execute. Get paid.</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <OrnHeader label="HOW IT WORKS" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
             {[
-              { n: "01", title: "Download", desc: "One-time payment. Files in your hands in 60 seconds." },
-              { n: "02", title: "Start Here", desc: "Every pack has an orientation doc with the exact order to work through files." },
-              { n: "03", title: "Execute", desc: "Follow the day-by-day blueprint. Use the scripts. Check the checklist." },
-              { n: "04", title: "Get Paid", desc: "Starter: first sale in 7 days. Pro: $1K in 30. Commander: $10K in 60." },
-            ].map(s => (
-              <div key={s.n} className="relative pl-10">
-                <div className="absolute left-0 top-0 text-3xl font-black text-white/5">{s.n}</div>
-                <div className="w-8 h-px bg-amber-300/40 mb-4" />
-                <h3 className="font-black text-white mb-2 text-sm break-normal">{s.title}</h3>
-                <p className="text-xs text-zinc-500 leading-relaxed">{s.desc}</p>
+              { n: "1", icon: "↓", title: "CHOOSE YOUR PACK",  desc: "Pick the pack that fits your goals and grab instant access." },
+              { n: "2", icon: "📖", title: "START HERE",        desc: "Read the orientation guide and follow simple steps." },
+              { n: "3", icon: "✏",  title: "EXECUTE",           desc: "Follow the day-by-day blueprint. Use the scripts. Check the checklist." },
+              { n: "4", icon: "$",  title: "GET PAID",          desc: "Launch, sell, and keep 100% of the profits you make." },
+            ].map((s, i, arr) => (
+              <div key={s.n} className="relative flex flex-col items-center text-center" style={{ padding: "24px 16px" }}>
+                {i < arr.length - 1 && (
+                  <div className="hidden md:block absolute" style={{
+                    top: "36px", right: "-10px", color: G.goldDim, fontSize: "18px", zIndex: 10,
+                  }}>→</div>
+                )}
+                <div style={{
+                  width: "54px", height: "54px", borderRadius: "50%",
+                  border: `1px solid ${G.goldDim}`,
+                  background: `rgba(212,175,55,0.06)`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  marginBottom: "14px", flexShrink: 0,
+                }}>
+                  <span style={{ color: G.gold, fontSize: "20px", fontWeight: 900 }}>{s.n}</span>
+                </div>
+                <div style={{ fontSize: "22px", marginBottom: "10px", color: G.gold }}>{s.icon}</div>
+                <h3 style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", color: "#fff", marginBottom: "8px", lineHeight: 1.3 }}>
+                  {s.title}
+                </h3>
+                <p style={{ fontSize: "12px", color: "#6b7280", lineHeight: 1.6 }}>{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── TRUST ── */}
-      <div className="border-y border-white/5 bg-[#0d1119]">
-        <div className="mx-auto max-w-6xl px-6 py-5 flex flex-wrap justify-center gap-8">
-          {["✓ 30-Day Money-Back Guarantee", "✓ Instant Download", "✓ One-Time Payment, Yours Forever", "✓ Zero Fluff — All Execution"].map(t => (
-            <span key={t} className="text-xs font-semibold text-zinc-400">{t}</span>
-          ))}
+      {/* ── STATS ────────────────────────────────────────────────────────── */}
+      <div style={{
+        background: G.bgSection,
+        borderTop: "1px solid rgba(212,175,55,0.09)",
+        borderBottom: "1px solid rgba(212,175,55,0.09)",
+      }}>
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { icon: "👥", n: "25,000+",  label: "HAPPY CUSTOMERS" },
+              { icon: "📦", n: "150+",      label: "DIGITAL PRODUCTS" },
+              { icon: "⭐", n: "100%",      label: "PROFIT YOURS" },
+              { icon: "✓",  n: "30 DAYS",  label: "MONEY BACK GUARANTEE" },
+            ].map(s => (
+              <div key={s.label} className="flex flex-col items-center text-center" style={{ gap: "6px" }}>
+                <span style={{ fontSize: "28px" }}>{s.icon}</span>
+                <div style={{ fontSize: "22px", fontWeight: 900, color: G.gold, letterSpacing: "0.02em" }}>{s.n}</div>
+                <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.2em", color: G.muted }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{
+            marginTop: "32px", padding: "20px 24px",
+            border: `1px solid ${G.goldDim}`,
+            borderRadius: "8px",
+            background: G.goldFaint,
+            textAlign: "center",
+          }}>
+            <p style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.15em", color: G.gold, marginBottom: "6px" }}>
+              OUR GUARANTEE
+            </p>
+            <p style={{ fontSize: "13px", color: G.text, lineHeight: 1.6 }}>
+              If you don&apos;t like it, just let us know within 30 days and we&apos;ll refund every penny. No questions asked.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* ── FAQ ── */}
-      <section className="px-6 py-20 border-t border-white/5">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold tracking-[0.3em] text-amber-300 uppercase mb-3">FAQ</p>
-            <h2 className="text-3xl font-black">Every objection, answered.</h2>
-          </div>
-          <div className="divide-y divide-white/5">
-            {faq.map(item => (
-              <div key={item.q} className="py-7">
-                <h3 className="font-black text-white mb-3 text-sm">{item.q}</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">{item.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ── */}
-      <section className="px-6 py-24 border-t border-white/5">
+      {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
+      <section style={{ background: G.bgCard, borderTop: "1px solid rgba(212,175,55,0.10)", padding: "80px 24px" }}>
         <div className="mx-auto max-w-4xl text-center">
-          <div className="rounded-3xl border border-amber-300/20 bg-gradient-to-b from-amber-300/8 to-transparent p-12 md:p-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-4">
-              Pick your level.<br />Start today.
-            </h2>
-            <p className="text-zinc-400 mb-10 max-w-md mx-auto">
-              $29 for your first sale. $79 for your first thousand. $149 for the empire.
+          <div style={{
+            border: `1px solid ${G.goldDim}`,
+            borderRadius: "12px",
+            padding: "56px 40px",
+            background: "linear-gradient(160deg,rgba(212,175,55,0.08) 0%,transparent 60%)",
+            position: "relative",
+          }}>
+            {/* corner ornaments */}
+            <div className="absolute" style={{ top:14, left:14, width:20, height:20, borderTop:`1px solid ${G.goldDim}`, borderLeft:`1px solid ${G.goldDim}` }} />
+            <div className="absolute" style={{ top:14, right:14, width:20, height:20, borderTop:`1px solid ${G.goldDim}`, borderRight:`1px solid ${G.goldDim}` }} />
+            <div className="absolute" style={{ bottom:14, left:14, width:20, height:20, borderBottom:`1px solid ${G.goldDim}`, borderLeft:`1px solid ${G.goldDim}` }} />
+            <div className="absolute" style={{ bottom:14, right:14, width:20, height:20, borderBottom:`1px solid ${G.goldDim}`, borderRight:`1px solid ${G.goldDim}` }} />
+
+            <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.25em", color: G.muted, marginBottom: "12px" }}>
+              THIS ISN&apos;T JUST A STORE. IT&apos;S THE TREASURY.
             </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/products/golden-delivery-starter"
-                className="rounded-full bg-amber-300 px-7 py-3.5 text-sm font-black text-black hover:bg-amber-200 transition-colors">
-                Starter — $29
+            <h2 style={{
+              fontSize: "clamp(28px,4vw,50px)",
+              fontWeight: 900, letterSpacing: "-0.01em",
+              textTransform: "uppercase", color: G.gold,
+              lineHeight: 1.1, margin: "0 0 28px 0",
+            }}>
+              YOUR FUTURE.<br />YOUR FREEDOM.<br />YOUR LEGACY.
+            </h2>
+
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
+              <Link href="/products/golden-delivery-starter" style={{
+                background: G.gold, color: "#09070a",
+                fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
+                padding: "14px 28px", borderRadius: "6px",
+                textTransform: "uppercase", textDecoration: "none",
+              }}>
+                STARTER — $29 →
               </Link>
-              <Link href="/products/golden-delivery-pro"
-                className="rounded-full border border-amber-300/30 px-7 py-3.5 text-sm font-semibold text-amber-200 hover:bg-amber-300/10 transition-colors">
-                Pro — $79
+              <Link href="/products/golden-delivery-pro" style={{
+                border: `1px solid ${G.goldDim}`, color: G.gold,
+                fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
+                padding: "14px 28px", borderRadius: "6px",
+                textTransform: "uppercase", textDecoration: "none",
+                background: G.goldFaint,
+              }}>
+                PRO — $79 →
               </Link>
-              <Link href="/products/golden-delivery-commander"
-                className="rounded-full border border-purple-400/30 px-7 py-3.5 text-sm font-semibold text-purple-300 hover:bg-purple-400/10 transition-colors">
-                Commander — $149
+              <Link href="/products/golden-delivery-commander" style={{
+                border: "1px solid rgba(139,92,246,0.42)", color: "#a78bfa",
+                fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
+                padding: "14px 28px", borderRadius: "6px",
+                textTransform: "uppercase", textDecoration: "none",
+                background: "rgba(139,92,246,0.06)",
+              }}>
+                COMMANDER — $149 →
               </Link>
             </div>
-            <p className="mt-6 text-xs text-zinc-500">All packs · 30-day guarantee · Instant download · One-time payment</p>
+
+            <p style={{ marginTop: "18px", fontSize: "10px", letterSpacing: "0.12em", color: G.mutedLo }}>
+              ALL PACKS · 30-DAY GUARANTEE · INSTANT DOWNLOAD · ONE-TIME PAYMENT
+            </p>
           </div>
         </div>
       </section>
