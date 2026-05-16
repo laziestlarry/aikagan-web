@@ -1,78 +1,44 @@
-export type Product = {
-  slug: string;
-  name: string;
-  tier: string;
-  tag: string;
-  price: string;
-  description: string;
-  bullets: string[];
-  checkoutUrl: string;
-  downloadUrl: string;
-};
-
-export const products: Product[] = [
+export const products = [
   {
     slug: "golden-delivery-starter",
-    name: "Golden Delivery Starter",
-    tier: "Starter",
-    tag: "Start Here",
-    price: "$97",
-    description: "Perfect for getting started with AI automation.",
+    name: "Starter",
+    tier: "Starter Pack",
+    price: 97,
+    description: "Essential AI automations, SOPs, templates, and instant deployment guidance.",
     bullets: [
       "10+ Essential AI Automations",
       "Standard Operating Procedures",
       "Plug & Play Templates",
       "Video Setup Guides",
       "Community Access",
-      "Instant Download"
     ],
-    checkoutUrl:
-      process.env.NEXT_PUBLIC_CHECKOUT_STARTER_URL ||
-      "/checkout-success?product=golden-delivery-starter",
-    downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Starter_Pack.zip"
   },
   {
     slug: "golden-delivery-pro",
-    name: "Golden Delivery Pro",
-    tier: "Pro",
-    tag: "Most Popular",
-    price: "$297",
-    description: "Advanced systems for growing businesses.",
+    name: "Pro",
+    tier: "Pro Pack",
+    price: 297,
+    description: "Advanced business automation assets for operators ready to deploy faster.",
     bullets: [
-      "50+ Advanced AI Automations",
-      "Complete Business Playbooks",
-      "Advanced Integrations",
-      "Custom Workflows",
-      "Priority Support",
-      "Instant Download"
+      "Everything in Starter",
+      "Advanced Automation Systems",
+      "Conversion Funnel Templates",
+      "Client Delivery Workflows",
+      "Premium Deployment Guidance",
     ],
-    checkoutUrl:
-      process.env.NEXT_PUBLIC_CHECKOUT_PRO_URL ||
-      "/checkout-success?product=golden-delivery-pro",
-    downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Pro_Pack.zip"
   },
   {
     slug: "golden-delivery-commander",
-    name: "Golden Delivery Commander",
-    tier: "Commander",
-    tag: "Best Value",
-    price: "$997",
-    description: "Complete business empire automation system.",
+    name: "Commander",
+    tier: "Commander Pack",
+    price: 997,
+    description: "Elite AI operating system package for full-stack business execution.",
     bullets: [
-      "100+ Complete AI Systems",
-      "Full Business Automation Suite",
-      "Advanced AI Agents",
-      "White-Label Rights",
-      "VIP Support & Onboarding",
-      "Instant Download"
+      "Everything in Pro",
+      "Commander Execution Maps",
+      "Premium AI Ops Playbooks",
+      "Revenue System Architecture",
+      "Priority Support Path",
     ],
-    checkoutUrl:
-      process.env.NEXT_PUBLIC_CHECKOUT_COMMANDER_URL ||
-      "/checkout-success?product=golden-delivery-commander",
-    downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Commander_Pack.zip"
-  }
+  },
 ];
-
-export function getProduct(slug: string) {
-  return products.find((product) => product.slug === slug);
-}
