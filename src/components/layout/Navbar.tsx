@@ -47,12 +47,18 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/contact/"
+              href="/products/golden-delivery-starter"
+              className="text-sm font-medium text-kagan-light hover:text-kagan-gold transition-colors"
+            >
+              Starter — $29
+            </Link>
+            <Link
+              href="/products/"
               className="inline-flex items-center gap-2 rounded-lg bg-kagan-gold px-4 py-2 text-sm font-semibold text-black hover:bg-kagan-gold-light transition-colors"
             >
-              Start Project
+              See All Packs
             </Link>
           </div>
 
@@ -92,11 +98,11 @@ export default function Navbar() {
               );
             })}
             <Link
-              href="/contact/"
+              href="/products/golden-delivery-starter"
               onClick={() => setOpen(false)}
               className="block mt-3 text-center rounded-lg bg-kagan-gold px-4 py-3 text-sm font-semibold text-black hover:bg-kagan-gold-light transition-colors"
             >
-              Start Project
+              Get Starter Pack — $29
             </Link>
           </div>
         </div>
