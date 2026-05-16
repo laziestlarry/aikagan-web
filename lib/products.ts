@@ -26,7 +26,9 @@ export const products: Product[] = [
       "Community Access",
       "Instant Download"
     ],
-    checkoutUrl: "https://YOUR-CHECKOUT-LINK-STARTER",
+    checkoutUrl:
+      process.env.NEXT_PUBLIC_CHECKOUT_STARTER_URL ||
+      "/checkout-success?product=golden-delivery-starter",
     downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Starter_Pack.zip"
   },
   {
@@ -44,7 +46,9 @@ export const products: Product[] = [
       "Priority Support",
       "Instant Download"
     ],
-    checkoutUrl: "https://YOUR-CHECKOUT-LINK-PRO",
+    checkoutUrl:
+      process.env.NEXT_PUBLIC_CHECKOUT_PRO_URL ||
+      "/checkout-success?product=golden-delivery-pro",
     downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Pro_Pack.zip"
   },
   {
@@ -62,7 +66,13 @@ export const products: Product[] = [
       "VIP Support & Onboarding",
       "Instant Download"
     ],
-    checkoutUrl: "https://YOUR-CHECKOUT-LINK-COMMANDER",
+    checkoutUrl:
+      process.env.NEXT_PUBLIC_CHECKOUT_COMMANDER_URL ||
+      "/checkout-success?product=golden-delivery-commander",
     downloadUrl: "/downloads/AutonomaX_Golden_Delivery_Commander_Pack.zip"
   }
 ];
+
+export function getProduct(slug: string) {
+  return products.find((product) => product.slug === slug);
+}
