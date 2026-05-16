@@ -1,56 +1,56 @@
 import Link from "next/link";
-import { products } from "../../../lib/products";
+import { products } from "@/lib/products";
 
 export const metadata = {
   title: "AIKAGAN Golden Delivery Starter Pack",
-  description: "First-sale AI productization, checkout, and customer delivery workflow pack."
+  description:
+    "Downloadable AI business execution pack for productization, checkout setup, delivery workflow, and launch preparation.",
 };
 
 export default function Page() {
   const product = products.find((p) => p.slug === "golden-delivery-starter");
-
-  if (!product) return <main>Product not found.</main>;
+  if (!product) return <main className="p-10">Product not found.</main>;
 
   return (
     <main className="min-h-screen bg-[#08080a] text-white px-6 py-20">
-      <section className="mx-auto max-w-5xl">
-        <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+      <section className="mx-auto max-w-4xl">
+        <p className="mb-4 text-sm uppercase tracking-[0.3em] text-amber-300">
           AIKAGAN Digital Product
         </p>
 
-        <h1 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight">
+        <h1 className="text-4xl md:text-6xl font-semibold tracking-tight">
           {product.name}
         </h1>
 
-        <p className="mt-6 max-w-3xl text-lg text-neutral-300">
+        <p className="mt-6 max-w-2xl text-lg text-neutral-300">
           {product.description}
         </p>
 
-        <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-8">
+        <div className="mt-10 rounded-3xl border border-white/10 bg-[#111827] p-8">
           <div className="text-sm text-neutral-400">{product.tier}</div>
           <div className="mt-2 text-4xl font-semibold">{product.price}</div>
 
           <ul className="mt-8 space-y-3 text-neutral-300">
-            {product.bullets.map((item) => (
-              <li key={item}>✓ {item}</li>
-            ))}
+            {product.bullets?.map((item) => <li key={item}>✓ {item}</li>)}
           </ul>
 
           <a
             href={product.checkoutUrl}
             className="mt-8 inline-flex rounded-full bg-amber-300 px-8 py-4 text-sm font-semibold text-black transition hover:bg-amber-200"
           >
-            Get the Starter Pack
+            Buy Now
           </a>
 
           <p className="mt-4 text-xs text-neutral-500">
-            Secure checkout link required. After purchase, customer is redirected to the download page.
+            After checkout, you will receive access to the download page.
           </p>
         </div>
 
-        <Link href="/" className="mt-10 inline-block text-sm text-neutral-400 hover:text-white">
-          ← Back to AIKAGAN
-        </Link>
+        <div className="mt-10">
+          <Link href="/" className="text-sm text-neutral-400 hover:text-white">
+            ← Back to AIKAGAN
+          </Link>
+        </div>
       </section>
     </main>
   );

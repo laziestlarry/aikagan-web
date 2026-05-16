@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { products } from "@/lib/products";
 
 export const metadata = {
   title: "AIKAGAN | The Kaganate",
@@ -9,6 +10,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#08080a] text-white">
+      {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 py-24">
         <p className="mb-4 text-sm uppercase tracking-[0.3em] text-amber-300">
           AIKAGAN · The Kaganate
@@ -41,6 +43,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Product section */}
       <section className="mx-auto max-w-6xl px-6 py-20">
         <p className="mb-4 text-sm uppercase tracking-[0.3em] text-amber-300">
           Downloadable Systems
@@ -57,51 +60,26 @@ export default function HomePage() {
         </p>
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <Link
-            href="/products/golden-delivery-starter"
-            className="rounded-3xl border border-white/10 bg-white/5 p-8 transition hover:bg-white/10"
-          >
-            <p className="text-sm text-amber-300">Starter · $29</p>
-            <h3 className="mt-3 text-2xl font-semibold text-white">
-              Golden Delivery Starter
-            </h3>
-            <p className="mt-3 text-neutral-300">
-              First-sale workflow, checklist, and starter delivery pack.
-            </p>
-            <p className="mt-6 text-amber-300">View product →</p>
-          </Link>
-
-          <Link
-            href="/products/golden-delivery-pro"
-            className="rounded-3xl border border-white/10 bg-white/5 p-8 transition hover:bg-white/10"
-          >
-            <p className="text-sm text-amber-300">Pro · $79</p>
-            <h3 className="mt-3 text-2xl font-semibold text-white">
-              Golden Delivery Pro
-            </h3>
-            <p className="mt-3 text-neutral-300">
-              Offer templates, workflow templates, funnel structure, and traffic
-              playbook.
-            </p>
-            <p className="mt-6 text-amber-300">View product →</p>
-          </Link>
-
-          <Link
-            href="/products/golden-delivery-commander"
-            className="rounded-3xl border border-white/10 bg-white/5 p-8 transition hover:bg-white/10"
-          >
-            <p className="text-sm text-amber-300">Commander · $149</p>
-            <h3 className="mt-3 text-2xl font-semibold text-white">
-              Golden Delivery Commander
-            </h3>
-            <p className="mt-3 text-neutral-300">
-              System map, revenue paths, automation logic, and scaling strategy.
-            </p>
-            <p className="mt-6 text-amber-300">View product →</p>
-          </Link>
+          {products.map((product) => (
+            <Link
+              key={product.slug}
+              href={`/products/${product.slug}`}
+              className="rounded-3xl border border-white/10 bg-[#111827] p-8 transition hover:bg-[#162036]"
+            >
+              <p className="text-sm text-amber-300">
+                {product.tier} · {product.price}
+              </p>
+              <h3 className="mt-3 text-2xl font-semibold text-white">
+                {product.name}
+              </h3>
+              <p className="mt-3 text-neutral-300">{product.description}</p>
+              <p className="mt-6 text-amber-300">View product →</p>
+            </Link>
+          ))}
         </div>
       </section>
 
+      {/* CTA section */}
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-8">
           <p className="text-sm uppercase tracking-[0.25em] text-amber-300">
@@ -114,8 +92,7 @@ export default function HomePage() {
 
           <p className="mt-4 max-w-3xl text-neutral-300">
             This first live version establishes the customer-facing route.
-            Checkout links can now be connected from Shopier, Lemon Squeezy,
-            Shopify, Payhip, Gumroad, or another provider.
+            Checkout links can now be connected from your payment provider.
           </p>
         </div>
       </section>
