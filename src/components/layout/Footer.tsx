@@ -96,9 +96,17 @@ export default function Footer() {
           <p className="text-xs text-kagan-muted">
             © {SITE.year} {SITE.name}. All rights reserved. Built for operators.
           </p>
-          <p className="text-xs text-kagan-muted">
-            AutonomaX · ProPulse · Golden Delivery
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/legal/privacy/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/legal/terms/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
+              Terms
+            </Link>
+            <Link href="/legal/refund/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
+              Refund Policy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

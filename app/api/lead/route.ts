@@ -1,23 +1,8 @@
-import { NextResponse } from "next/server";
-
-export async function POST(request: Request) {
-  const body = await request.json().catch(() => null);
-
-  if (!body?.email || typeof body.email !== "string") {
-    return NextResponse.json(
-      { ok: false, error: "Valid email is required." },
-      { status: 400 }
-    );
-  }
-
-  console.log("AIKAGAN_LEAD_CAPTURE", {
-    email: body.email,
-    source: body.source || "homepage",
-    createdAt: new Date().toISOString()
-  });
-
-  return NextResponse.json({
-    ok: true,
-    message: "Lead captured."
-  });
-}
+// NOTE: This project uses `output: 'export'` (static HTML for GitHub Pages).
+// Server-side API routes are not supported. Lead capture should be handled
+// via a third-party form service (e.g. Formspree, ConvertKit, Mailchimp embed)
+// or a Vercel serverless function on a separate deployment.
+//
+// This file is intentionally left as a comment-only stub so the build does
+// not fail. Do not add `export async function POST` here.
+export {};
