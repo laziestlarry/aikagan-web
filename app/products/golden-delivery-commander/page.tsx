@@ -29,6 +29,8 @@ export default function Page() {
         <div className="mt-8 flex flex-wrap gap-4 items-center">
           <a
             href={product.checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
           >
             Get Commander Access — $149
@@ -233,6 +235,8 @@ export default function Page() {
             </ul>
             <a
               href={product.checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
               className="w-full inline-flex justify-center rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
             >
               Get Commander Access — $149
@@ -287,6 +291,8 @@ export default function Page() {
           <h2 className="text-2xl font-semibold mb-4">Build the empire. Own the system. Scale on your terms.</h2>
           <a
             href={product.checkoutUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
           >
             Download the Commander Pack — $149

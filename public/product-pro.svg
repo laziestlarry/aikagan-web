@@ -1,0 +1,55 @@
+<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,sans-serif">
+  <defs>
+    <radialGradient id="pg-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#130f04"/>
+      <stop offset="100%" stop-color="#08080a"/>
+    </radialGradient>
+    <radialGradient id="pg-glow" cx="50%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="pg-blur"><feGaussianBlur stdDeviation="20"/></filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="480" height="300" fill="url(#pg-bg)" rx="12"/>
+  <rect width="480" height="300" fill="url(pg-glow)" rx="12"/>
+  <rect width="480" height="300" fill="url(#pg-glow)" rx="12"/>
+
+  <!-- Border — gold, more prominent for Most Popular -->
+  <rect width="478" height="298" x="1" y="1" rx="11" fill="none" stroke="#D4AF37" stroke-opacity="0.45" stroke-width="1.5"/>
+
+  <!-- Most Popular banner -->
+  <rect x="155" y="-1" width="170" height="22" rx="0 0 10 10" fill="#D4AF37"/>
+  <text x="240" y="15" text-anchor="middle" font-size="9" font-weight="800" letter-spacing="3" fill="#09070a">⭐ MOST POPULAR ⭐</text>
+
+  <!-- Corner ornaments -->
+  <path d="M16,22 L12,22 L12,26" fill="none" stroke="#D4AF37" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M464,22 L468,22 L468,26" fill="none" stroke="#D4AF37" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M16,288 L12,288 L12,284" fill="none" stroke="#D4AF37" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M464,288 L468,288 L468,284" fill="none" stroke="#D4AF37" stroke-opacity="0.5" stroke-width="1.5"/>
+
+  <!-- Glow orb -->
+  <ellipse cx="240" cy="90" rx="100" ry="55" fill="#D4AF37" opacity="0.09" filter="url(#pg-blur)"/>
+
+  <!-- Lightning icon -->
+  <text x="240" y="122" text-anchor="middle" font-size="52" fill="#D4AF37" opacity="0.9">⚡</text>
+
+  <!-- Tier label -->
+  <text x="240" y="158" text-anchor="middle" font-size="10" font-weight="800" letter-spacing="4" fill="#D4AF37">PRO PACK</text>
+
+  <!-- Price -->
+  <text x="240" y="192" text-anchor="middle" font-size="46" font-weight="900" fill="#D4AF37">$79</text>
+  <text x="306" y="178" text-anchor="start" font-size="14" fill="#D4AF37" opacity="0.4" text-decoration="line-through">$297</text>
+
+  <!-- Divider -->
+  <line x1="140" y1="208" x2="340" y2="208" stroke="#D4AF37" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Key feature -->
+  <text x="240" y="230" text-anchor="middle" font-size="12" fill="#fde68a" opacity="0.85">9-File Revenue Operations System</text>
+  <text x="240" y="250" text-anchor="middle" font-size="11" fill="#6b7280">Funnels · AI Stack · 30-Day Calendar</text>
+
+  <!-- Badge -->
+  <rect x="162" y="268" width="156" height="22" rx="11" fill="#D4AF37" opacity="0.15" stroke="#D4AF37" stroke-opacity="0.45" stroke-width="1"/>
+  <text x="240" y="283" text-anchor="middle" font-size="10" font-weight="700" letter-spacing="1.5" fill="#D4AF37">TARGET: $1K/MONTH</text>
+</svg>

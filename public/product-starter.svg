@@ -1,0 +1,50 @@
+<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,sans-serif">
+  <defs>
+    <radialGradient id="sg-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0d1a13"/>
+      <stop offset="100%" stop-color="#08080a"/>
+    </radialGradient>
+    <radialGradient id="sg-glow" cx="50%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="sg-blur"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="480" height="300" fill="url(#sg-bg)" rx="12"/>
+  <rect width="480" height="300" fill="url(#sg-glow)" rx="12"/>
+
+  <!-- Border -->
+  <rect width="478" height="298" x="1" y="1" rx="11" fill="none" stroke="#34d399" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Corner ornaments -->
+  <path d="M16,12 L12,12 L12,16" fill="none" stroke="#34d399" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M464,12 L468,12 L468,16" fill="none" stroke="#34d399" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M16,288 L12,288 L12,284" fill="none" stroke="#34d399" stroke-opacity="0.5" stroke-width="1.5"/>
+  <path d="M464,288 L468,288 L468,284" fill="none" stroke="#34d399" stroke-opacity="0.5" stroke-width="1.5"/>
+
+  <!-- Glow orb -->
+  <ellipse cx="240" cy="80" rx="90" ry="50" fill="#34d399" opacity="0.07" filter="url(#sg-blur)"/>
+
+  <!-- Rocket icon -->
+  <text x="240" y="115" text-anchor="middle" font-size="52" fill="#34d399" opacity="0.9">🚀</text>
+
+  <!-- Tier label -->
+  <text x="240" y="152" text-anchor="middle" font-size="10" font-weight="800" letter-spacing="4" fill="#34d399" text-transform="uppercase">STARTER PACK</text>
+
+  <!-- Price -->
+  <text x="240" y="186" text-anchor="middle" font-size="46" font-weight="900" fill="#34d399">$29</text>
+  <text x="304" y="172" text-anchor="start" font-size="14" fill="#34d399" opacity="0.45" text-decoration="line-through">$97</text>
+
+  <!-- Divider -->
+  <line x1="140" y1="202" x2="340" y2="202" stroke="#34d399" stroke-opacity="0.2" stroke-width="1"/>
+
+  <!-- Key feature -->
+  <text x="240" y="224" text-anchor="middle" font-size="12" fill="#6ee7b7" opacity="0.8">7-File Launch Ignition System</text>
+  <text x="240" y="244" text-anchor="middle" font-size="11" fill="#6b7280">First sale in 7 days · No audience required</text>
+
+  <!-- Badge -->
+  <rect x="174" y="262" width="132" height="22" rx="11" fill="#34d399" opacity="0.12" stroke="#34d399" stroke-opacity="0.35" stroke-width="1"/>
+  <text x="240" y="277" text-anchor="middle" font-size="10" font-weight="700" letter-spacing="1.5" fill="#34d399">BEST FOR BEGINNERS</text>
+</svg>

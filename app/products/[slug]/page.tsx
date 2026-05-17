@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProduct, products } from "@/lib/products";
@@ -36,7 +37,21 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             ← Back to AIKAGAN
           </Link>
 
-          <p className="mt-10 text-sm uppercase tracking-[0.3em] text-amber-300">
+          {/* Product visual */}
+          {product.image && (
+            <div className="mt-8 mb-6 rounded-2xl overflow-hidden border border-white/10 max-w-md">
+              <Image
+                src={product.image}
+                alt={`${product.name} Pack`}
+                width={480}
+                height={300}
+                className="w-full h-auto"
+                priority
+              />
+            </div>
+          )}
+
+          <p className="mt-2 text-sm uppercase tracking-[0.3em] text-amber-300">
             {product.tier}
           </p>
 
@@ -89,20 +104,20 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             href={product.checkoutUrl}
             className="mt-8 block rounded-2xl bg-amber-300 px-6 py-4 text-center font-semibold text-black transition hover:bg-amber-200"
           >
-            Buy Now
+            Buy Now — ${product.price}
           </a>
 
           <Link
             href="/legal/refund"
             className="mt-5 block text-center text-sm text-neutral-400 hover:text-white"
           >
-            30-day refund policy
+            {product.guarantee} · View refund policy
           </Link>
 
-          <div className="mt-8 border-t border-white/10 pt-6 text-sm text-neutral-400">
-            Secure checkout URL is controlled by environment variables:
-            Starter, Pro, and Commander can be connected to LemonSqueezy,
-            Stripe, Shopify, Shopier, or another provider.
+          <div className="mt-8 border-t border-white/10 pt-6 text-sm text-neutral-400 space-y-1">
+            <p>✓ Instant download after checkout</p>
+            <p>✓ One-time payment, no subscription</p>
+            <p>✓ Secure checkout via LemonSqueezy or Payoneer</p>
           </div>
         </aside>
       </section>

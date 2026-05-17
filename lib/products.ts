@@ -1,3 +1,19 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// CHECKOUT URL CONFIGURATION — LemonSqueezy (store: autonomax)
+// ─────────────────────────────────────────────────────────────────────────────
+// Env vars override the hardcoded values below (useful for staging/alt stores).
+// To override: set NEXT_PUBLIC_LS_STARTER_URL etc. in .env.local or Vercel.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CHECKOUT = {
+  starter:   process.env.NEXT_PUBLIC_LS_STARTER_URL
+               ?? "https://autonomax.lemonsqueezy.com/checkout/buy/2dd8d2ad-0fc5-495f-bd42-594484e981d3",
+  pro:       process.env.NEXT_PUBLIC_LS_PRO_URL
+               ?? "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160",
+  commander: process.env.NEXT_PUBLIC_LS_COMMANDER_URL
+               ?? "https://autonomax.lemonsqueezy.com/checkout/buy/eb358df9-f77c-4009-af74-a0ec005bb744",
+};
+
 export const products = [
   {
     slug: "golden-delivery-starter",
@@ -14,10 +30,12 @@ export const products = [
       "System Access Guide to AutonomaX AI Revenue Engine",
       "First Sale Plan + Start Here orientation docs",
     ],
-    checkoutUrl: "https://autonomax-revenue-ops-71658389068.us-central1.run.app",
+    checkoutUrl: CHECKOUT.starter,
     downloadUrl: "/AutonomaX_Masterclass_Starter_Pack_v2.zip",
     badge: "Best for beginners",
     guarantee: "30-day money-back guarantee",
+    image: "/product-starter.svg",
+    accentColor: "#34d399",
   },
   {
     slug: "golden-delivery-pro",
@@ -35,10 +53,12 @@ export const products = [
       "6 Automation Workflow Templates",
       "Pro Offer Creation Guide + System Access",
     ],
-    checkoutUrl: "https://autonomax-revenue-ops-71658389068.us-central1.run.app",
+    checkoutUrl: CHECKOUT.pro,
     downloadUrl: "/AutonomaX_Masterclass_Pro_Pack_v2.zip",
     badge: "Most popular",
     guarantee: "30-day money-back guarantee",
+    image: "/product-pro.svg",
+    accentColor: "#D4AF37",
   },
   {
     slug: "golden-delivery-commander",
@@ -56,10 +76,12 @@ export const products = [
       "KPI Dashboard (4 metric tiers, diagnostics, red flags)",
       "Advanced Workflows, Revenue Paths, VIP Onboarding (9 more docs)",
     ],
-    checkoutUrl: "https://autonomax-revenue-ops-71658389068.us-central1.run.app",
+    checkoutUrl: CHECKOUT.commander,
     downloadUrl: "/AutonomaX_Masterclass_Commander_Pack_v2.zip",
     badge: "Maximum value",
     guarantee: "30-day money-back guarantee",
+    image: "/product-commander.svg",
+    accentColor: "#a78bfa",
   },
 ];
 

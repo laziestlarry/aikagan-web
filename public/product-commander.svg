@@ -1,0 +1,59 @@
+<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,sans-serif">
+  <defs>
+    <radialGradient id="cg-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0d0a1a"/>
+      <stop offset="100%" stop-color="#08080a"/>
+    </radialGradient>
+    <radialGradient id="cg-glow" cx="50%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="cg-blur"><feGaussianBlur stdDeviation="22"/></filter>
+    <filter id="cg-crown-glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="480" height="300" fill="url(#cg-bg)" rx="12"/>
+  <rect width="480" height="300" fill="url(#cg-glow)" rx="12"/>
+
+  <!-- Border — purple -->
+  <rect width="478" height="298" x="1" y="1" rx="11" fill="none" stroke="#8b5cf6" stroke-opacity="0.38" stroke-width="1.5"/>
+
+  <!-- Inner glow border -->
+  <rect width="470" height="290" x="5" y="5" rx="9" fill="none" stroke="#8b5cf6" stroke-opacity="0.08" stroke-width="1"/>
+
+  <!-- Corner ornaments -->
+  <path d="M16,12 L12,12 L12,16" fill="none" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.5"/>
+  <path d="M464,12 L468,12 L468,16" fill="none" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.5"/>
+  <path d="M16,288 L12,288 L12,284" fill="none" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.5"/>
+  <path d="M464,288 L468,288 L468,284" fill="none" stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.5"/>
+
+  <!-- Glow orb -->
+  <ellipse cx="240" cy="85" rx="110" ry="60" fill="#8b5cf6" opacity="0.1" filter="url(#cg-blur)"/>
+
+  <!-- Crown icon with glow -->
+  <text x="240" y="118" text-anchor="middle" font-size="52" filter="url(#cg-crown-glow)" opacity="0.95">👑</text>
+
+  <!-- Tier label -->
+  <text x="240" y="154" text-anchor="middle" font-size="10" font-weight="800" letter-spacing="4" fill="#a78bfa">COMMANDER PACK</text>
+
+  <!-- Price -->
+  <text x="240" y="190" text-anchor="middle" font-size="46" font-weight="900" fill="#a78bfa">$149</text>
+  <text x="314" y="175" text-anchor="start" font-size="14" fill="#a78bfa" opacity="0.4" text-decoration="line-through">$997</text>
+
+  <!-- Divider with ornament -->
+  <line x1="120" y1="206" x2="220" y2="206" stroke="#8b5cf6" stroke-opacity="0.25" stroke-width="1"/>
+  <circle cx="240" cy="206" r="3" fill="#8b5cf6" opacity="0.4"/>
+  <line x1="260" y1="206" x2="360" y2="206" stroke="#8b5cf6" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Key feature -->
+  <text x="240" y="229" text-anchor="middle" font-size="12" fill="#c4b5fd" opacity="0.85">12-File Empire Architecture</text>
+  <text x="240" y="249" text-anchor="middle" font-size="11" fill="#6b7280">White-Label Rights · 60-Day Sprint</text>
+
+  <!-- Badge -->
+  <rect x="140" y="266" width="200" height="22" rx="11" fill="#8b5cf6" opacity="0.14" stroke="#8b5cf6" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="240" y="281" text-anchor="middle" font-size="10" font-weight="700" letter-spacing="1.5" fill="#a78bfa">TARGET: $10K+/MONTH</text>
+</svg>
