@@ -1,5 +1,6 @@
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import HeroMotion from '@/components/home/HeroMotion';
 import { ArrowRight, Shield, Zap, TrendingUp } from 'lucide-react';
 
 export default function Hero() {
@@ -17,6 +18,9 @@ export default function Hero() {
 
       {/* Glow orb */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-kagan-gold/5 blur-[120px] pointer-events-none" />
+
+      {/* Vector motion graphic */}
+      <HeroMotion />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge row */}
