@@ -97,8 +97,9 @@ export default function HomePage() {
               </h1>
 
               <p style={{ marginTop: "18px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "480px" }}>
-                Done-For-You AI Revenue Packs That Build Your Income, Scale Your Offers,
-                and Print Passive Profits. First sale in 7 days. No audience. No ads. No guesswork.
+                Done-For-You AI Revenue Execution Packs. Built to help you pursue your first
+                AI-assisted sale in 7 days — using guided outreach scripts, offer frameworks,
+                and step-by-step checklists. Results depend on implementation.
               </p>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
@@ -125,13 +126,16 @@ export default function HomePage() {
 
               {/* trust strip */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "24px" }}>
-                {[["↓","INSTANT DOWNLOAD"],["◈","REBRAND & RESELL"],["$","KEEP 100% PROFITS"]].map(([icon, label]) => (
+                {[["↓","INSTANT DOWNLOAD"],["◈","WHITE-LABEL (COMMANDER)"],["$","KEEP 100% PROFITS"]].map(([icon, label]) => (
                   <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px",
                     fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", color: G.muted }}>
                     <span style={{ color: G.gold }}>{icon}</span>{label}
                   </div>
                 ))}
               </div>
+              <p style={{ marginTop: "12px", fontSize: "10px", color: G.mutedLo, maxWidth: "380px", lineHeight: 1.6 }}>
+                Results depend on individual effort and implementation. This is an execution toolkit, not a guaranteed income program.
+              </p>
             </div>
 
             {/* ── Right: vault arch ── */}
@@ -318,9 +322,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: "👥", n: "25,000+",  label: "HAPPY CUSTOMERS" },
-              { icon: "📦", n: "150+",      label: "DIGITAL PRODUCTS" },
-              { icon: "⭐", n: "100%",      label: "PROFIT YOURS" },
+              { icon: "↓", n: "INSTANT",   label: "DOWNLOAD AFTER CHECKOUT" },
+              { icon: "📦", n: "28 FILES",  label: "ACROSS ALL THREE PACKS" },
+              { icon: "⭐", n: "100%",      label: "PROFITS YOURS TO KEEP" },
               { icon: "✓",  n: "30 DAYS",  label: "MONEY BACK GUARANTEE" },
             ].map(s => (
               <div key={s.label} className="flex flex-col items-center text-center" style={{ gap: "6px" }}>
@@ -341,7 +345,9 @@ export default function HomePage() {
               OUR GUARANTEE
             </p>
             <p style={{ fontSize: "13px", color: G.text, lineHeight: 1.6 }}>
-              If you don&apos;t like it, just let us know within 30 days and we&apos;ll refund every penny. No questions asked.
+              Not satisfied? Email us within 30 days of purchase and we&apos;ll review your request promptly.
+              Refunds are processed within 5 business days. See our{" "}
+              <a href="/legal/refund/" style={{ color: G.gold, textDecoration: "underline" }}>refund policy</a> for full details.
             </p>
           </div>
         </div>

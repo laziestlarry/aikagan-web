@@ -77,12 +77,56 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
 
           <div className="mt-8 rounded-3xl border border-white/10 bg-black/40 p-8">
-            <h2 className="text-2xl font-semibold">Delivery promise</h2>
-            <p className="mt-4 text-neutral-300">
-              After checkout, the customer is routed to the secure download
-              handoff page. The pack is designed for immediate use: templates,
-              SOPs, automation prompts, operating checklists, and business
-              deployment guidance.
+            <h2 className="text-2xl font-semibold">What happens after purchase</h2>
+            <ol className="mt-5 space-y-3 text-neutral-300">
+              {[
+                "Checkout completes — LemonSqueezy emails your confirmation and download link instantly.",
+                "Open the ZIP and read START_HERE.pdf first — it maps every file in the pack.",
+                "Follow the included execution checklist and use the scripts and templates directly.",
+                "Need help? Email support@aikagan.com within 30 days.",
+              ].map((step, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="text-amber-300 font-bold flex-shrink-0">{i + 1}.</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* License rights table */}
+          <div className="mt-8 rounded-3xl border border-amber-300/10 bg-black/40 p-8">
+            <h2 className="text-2xl font-semibold">License rights</h2>
+            <div className="mt-5 overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-2 pr-8 text-neutral-400 font-medium">Pack</th>
+                    <th className="text-left py-2 pr-8 text-neutral-400 font-medium">Personal / Client</th>
+                    <th className="text-left py-2 text-neutral-400 font-medium">Resell / White-label</th>
+                  </tr>
+                </thead>
+                <tbody className="text-neutral-300">
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 pr-8 text-green-400 font-medium">Starter</td>
+                    <td className="py-2 pr-8">✓</td>
+                    <td className="py-2 text-neutral-500">✗</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-2 pr-8 text-amber-300 font-medium">Pro</td>
+                    <td className="py-2 pr-8">✓</td>
+                    <td className="py-2 text-neutral-500">✗</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-8 text-purple-400 font-medium">Commander</td>
+                    <td className="py-2 pr-8">✓</td>
+                    <td className="py-2 text-green-400">✓ (white-label)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4 text-sm text-neutral-500">
+              Results depend on effort and implementation — this is an execution toolkit, not a guaranteed income program.
+              Full terms at <a href="/legal/terms/" className="text-amber-300 underline">aikagan.com/legal/terms</a>.
             </p>
           </div>
         </div>
@@ -117,7 +161,43 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <div className="mt-8 border-t border-white/10 pt-6 text-sm text-neutral-400 space-y-1">
             <p>✓ Instant download after checkout</p>
             <p>✓ One-time payment, no subscription</p>
-            <p>✓ Secure checkout via LemonSqueezy or Payoneer</p>
+            <p>✓ Secure checkout via LemonSqueezy</p>
+            <p>✓ Results depend on implementation</p>
+          </div>
+
+          <div className="mt-6 border-t border-white/10 pt-6">
+            <p className="text-xs text-neutral-500 mb-3 uppercase tracking-widest">Also available</p>
+            <div className="space-y-2">
+              {product.slug !== "golden-delivery-starter" && (
+                <Link href="/products/golden-delivery-starter"
+                  className="block text-sm text-green-400 hover:text-green-300 transition">
+                  → Starter Pack — $29
+                </Link>
+              )}
+              {product.slug !== "golden-delivery-pro" && (
+                <Link href="/products/golden-delivery-pro"
+                  className="block text-sm text-amber-300 hover:text-amber-200 transition">
+                  → Pro Pack — $79
+                </Link>
+              )}
+              {product.slug !== "golden-delivery-commander" && (
+                <Link href="/products/golden-delivery-commander"
+                  className="block text-sm text-purple-400 hover:text-purple-300 transition">
+                  → Commander Pack — $149 (white-label)
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-white/10 pt-5">
+            <p className="text-xs text-neutral-500">
+              Questions?{" "}
+              <a href="mailto:support@aikagan.com"
+                className="text-amber-300 underline hover:text-amber-200">
+                support@aikagan.com
+              </a>{" "}
+              — we respond within 2 business days.
+            </p>
           </div>
         </aside>
       </section>
