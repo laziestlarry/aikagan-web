@@ -183,6 +183,36 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── TRUST BAR ────────────────────────────────────────────────────── */}
+      <div style={{
+        background: "#0a0802",
+        borderTop: "1px solid rgba(212,175,55,0.13)",
+        borderBottom: "1px solid rgba(212,175,55,0.08)",
+        padding: "14px 24px",
+      }}>
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3">
+            {[
+              { icon: "🔒", label: "SECURE CHECKOUT" },
+              { icon: "⚡", label: "INSTANT DELIVERY" },
+              { icon: "↩", label: "30-DAY GUARANTEE" },
+              { icon: "🤖", label: "AI-POWERED SYSTEMS" },
+              { icon: "☁", label: "TRUSTED INFRASTRUCTURE" },
+              { icon: "💳", label: "ONE-TIME PAYMENT" },
+            ].map(({ icon, label }) => (
+              <div key={label} style={{
+                display: "flex", alignItems: "center", gap: "7px",
+                fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em",
+                color: "#5a4a22",
+              }}>
+                <span style={{ fontSize: "13px" }}>{icon}</span>
+                <span style={{ color: "#7a6830" }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* ── PICK YOUR LEVEL ──────────────────────────────────────────────── */}
       <section id="packs" style={{ background: G.bgSection, padding: "80px 24px", borderTop: "1px solid rgba(212,175,55,0.08)" }}>
         <div className="mx-auto max-w-6xl">
@@ -275,6 +305,135 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── WHAT YOU ACTUALLY RECEIVE ────────────────────────────────────── */}
+      <section style={{ background: G.bg, padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+        <div className="mx-auto max-w-6xl">
+          <OrnHeader label="WHAT YOU ACTUALLY RECEIVE" sub="INSIDE EVERY PACK — REAL FILES, REAL SYSTEMS" />
+
+          <div className="grid md:grid-cols-3 gap-5">
+
+            {/* Starter deliverables */}
+            <div style={{
+              background: G.bgCard,
+              border: "1px solid rgba(52,211,153,0.22)",
+              borderRadius: "8px", padding: "24px",
+            }}>
+              <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em", color: "#34d399", marginBottom: "16px" }}>
+                🚀 STARTER PACK — $29
+              </div>
+              {[
+                { icon: "📄", file: "START_HERE.pdf",           desc: "Orientation guide — read first" },
+                { icon: "📋", file: "7-Day Checklist.pdf",      desc: "Day-by-day execution blueprint" },
+                { icon: "💬", file: "Outreach Scripts.pdf",     desc: "Cold DM + email templates" },
+                { icon: "🏗",  file: "Offer Builder.pdf",        desc: "AI offer framework, step-by-step" },
+                { icon: "📦", file: "Starter_Pack.zip",         desc: "All files, instant download" },
+              ].map(({ icon, file, desc }) => (
+                <div key={file} style={{
+                  display: "flex", gap: "10px", alignItems: "flex-start",
+                  padding: "9px 0", borderBottom: "1px solid rgba(52,211,153,0.08)",
+                }}>
+                  <span style={{ fontSize: "15px", flexShrink: 0 }}>{icon}</span>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 700, color: "#d1fae5", fontFamily: "monospace", letterSpacing: "0.02em" }}>{file}</div>
+                    <div style={{ fontSize: "10px", color: "#4a7a62", marginTop: "2px" }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pro deliverables */}
+            <div style={{
+              background: G.bgCard,
+              border: `1px solid rgba(212,175,55,0.30)`,
+              borderRadius: "8px", padding: "24px",
+              position: "relative",
+            }}>
+              <div style={{
+                position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)",
+                background: G.gold, color: "#09070a",
+                fontSize: "9px", fontWeight: 800, letterSpacing: "0.18em",
+                padding: "3px 14px", borderRadius: "20px", whiteSpace: "nowrap",
+              }}>⭐ MOST POPULAR</div>
+              <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em", color: G.gold, marginBottom: "16px" }}>
+                ⚡ PRO PACK — $79
+              </div>
+              {[
+                { icon: "📄", file: "START_HERE.pdf",              desc: "Orientation guide — read first" },
+                { icon: "📊", file: "AI Revenue Dashboard.xlsx",   desc: "Automated revenue tracking sheet" },
+                { icon: "🔄", file: "Automation Workflows.pdf",    desc: "Make.com + Zapier flow diagrams" },
+                { icon: "💼", file: "Client Proposal Template.pdf",desc: "Plug-and-play agency proposal" },
+                { icon: "🤖", file: "AI Prompt Library.pdf",       desc: "50+ production-ready GPT prompts" },
+                { icon: "📦", file: "Pro_Pack.zip",                desc: "Everything above — instant download" },
+              ].map(({ icon, file, desc }) => (
+                <div key={file} style={{
+                  display: "flex", gap: "10px", alignItems: "flex-start",
+                  padding: "9px 0", borderBottom: `1px solid rgba(212,175,55,0.07)`,
+                }}>
+                  <span style={{ fontSize: "15px", flexShrink: 0 }}>{icon}</span>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 700, color: "#fef3c7", fontFamily: "monospace", letterSpacing: "0.02em" }}>{file}</div>
+                    <div style={{ fontSize: "10px", color: G.muted, marginTop: "2px" }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Commander deliverables */}
+            <div style={{
+              background: G.bgCard,
+              border: "1px solid rgba(139,92,246,0.28)",
+              borderRadius: "8px", padding: "24px",
+            }}>
+              <div style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em", color: "#a78bfa", marginBottom: "16px" }}>
+                👑 COMMANDER PACK — $149
+              </div>
+              {[
+                { icon: "📄", file: "START_HERE.pdf",                  desc: "Orientation guide — read first" },
+                { icon: "🏢", file: "White-Label License.pdf",         desc: "Resell as your own product" },
+                { icon: "⚙",  file: "Full AI System Blueprint.pdf",    desc: "End-to-end operator infrastructure" },
+                { icon: "📱", file: "Shopify Store Template.pdf",      desc: "Pre-configured store setup guide" },
+                { icon: "📣", file: "60-Day Ad Campaign Plan.pdf",     desc: "Meta + organic launch roadmap" },
+                { icon: "🔗", file: "API Integration Guide.pdf",       desc: "OpenAI, Meta, Google Cloud wiring" },
+                { icon: "📦", file: "Commander_Pack.zip",              desc: "All 9 assets — instant download" },
+              ].map(({ icon, file, desc }) => (
+                <div key={file} style={{
+                  display: "flex", gap: "10px", alignItems: "flex-start",
+                  padding: "9px 0", borderBottom: "1px solid rgba(139,92,246,0.07)",
+                }}>
+                  <span style={{ fontSize: "15px", flexShrink: 0 }}>{icon}</span>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 700, color: "#ede9fe", fontFamily: "monospace", letterSpacing: "0.02em" }}>{file}</div>
+                    <div style={{ fontSize: "10px", color: "#5b4a7a", marginTop: "2px" }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
+          {/* delivery proof strip */}
+          <div style={{
+            marginTop: "36px",
+            padding: "18px 28px",
+            border: `1px solid ${G.goldDim}`,
+            borderRadius: "8px",
+            background: G.goldFaint,
+            display: "flex", flexWrap: "wrap",
+            justifyContent: "center", alignItems: "center",
+            gap: "28px",
+          }}>
+            {[
+              "⚡ Delivered via LemonSqueezy",
+              "📧 Download link to your inbox",
+              "♾  Lifetime access — re-download anytime",
+              "🔒 256-bit encrypted checkout",
+            ].map(item => (
+              <span key={item} style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: G.muted }}>{item}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section style={{ background: G.bg, padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
         <div className="mx-auto max-w-5xl">
@@ -352,6 +511,48 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* ── BUILT WITH ───────────────────────────────────────────────────── */}
+      <section style={{ background: G.bgSection, borderTop: "1px solid rgba(212,175,55,0.07)", padding: "52px 24px" }}>
+        <div className="mx-auto max-w-5xl">
+          <div style={{ textAlign: "center", marginBottom: "36px" }}>
+            <p style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.28em", color: G.muted }}>
+              INFRASTRUCTURE POWERING EVERY PACK
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-6">
+            {[
+              { logo: "☁",  name: "Google Cloud",   sub: "Hosting & AI APIs"     },
+              { logo: "🛍",  name: "Shopify",         sub: "Store templates"       },
+              { logo: "⬡",  name: "OpenAI",          sub: "GPT-4 prompts"         },
+              { logo: "◈",  name: "GitHub",           sub: "Version control"       },
+              { logo: "⬡",  name: "Meta",             sub: "Ad systems & Pixel"    },
+              { logo: "📊", name: "Google Analytics", sub: "GA4 tracking"          },
+              { logo: "⚡", name: "Make.com",          sub: "Workflow automation"   },
+              { logo: "⚙",  name: "Zapier",           sub: "No-code automation"    },
+            ].map(({ logo, name, sub }) => (
+              <div key={name} style={{
+                display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
+                minWidth: "80px",
+              }}>
+                <div style={{
+                  width: "48px", height: "48px",
+                  border: `1px solid rgba(212,175,55,0.12)`,
+                  borderRadius: "10px",
+                  background: "rgba(212,175,55,0.04)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "20px",
+                }}>
+                  {logo}
+                </div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#5a4a22", letterSpacing: "0.06em", textAlign: "center" }}>{name}</div>
+                <div style={{ fontSize: "9px", color: "#3a3020", letterSpacing: "0.04em", textAlign: "center" }}>{sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
       <section style={{ background: G.bgCard, borderTop: "1px solid rgba(212,175,55,0.10)", padding: "80px 24px" }}>
