@@ -93,7 +93,17 @@ export default function HomePage() {
                 color: G.gold,
                 margin: 0,
               }}>
-                KAGAN&apos;S<br />GIANT GOLD<br />TREASURY ROOM
+                KAGAN&apos;S<br />
+                <span style={{
+                  fontFamily: "'Caveat', cursive",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  fontSize: "clamp(44px,6.6vw,76px)",
+                  letterSpacing: "0.01em",
+                  color: "rgba(212,175,55,0.72)",
+                  display: "inline",
+                  lineHeight: 1,
+                }}>giant</span>{" "}GOLD<br />TREASURY ROOM
               </h1>
 
               <p style={{ marginTop: "18px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "480px" }}>
@@ -138,45 +148,157 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* ── Right: vault arch ── */}
+            {/* ── Right: AI Income Network ── */}
             <div className="relative hidden lg:block" style={{ height: "420px" }}>
+              <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+                <defs>
+                  <style>{`
+                    @keyframes corePulse { 0%,100%{opacity:.65} 50%{opacity:1} }
+                    @keyframes nodeFade  { 0%,100%{opacity:.55} 50%{opacity:.95} }
+                  `}</style>
+                  <radialGradient id="heroGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.18"/>
+                    <stop offset="100%" stopColor="#D4AF37" stopOpacity="0"/>
+                  </radialGradient>
+                  <radialGradient id="nodeGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.12"/>
+                    <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.02"/>
+                  </radialGradient>
+                  <filter id="dotGlow" x="-80%" y="-80%" width="260%" height="260%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
 
-              {/* outer arch */}
-              <div className="absolute" style={{
-                bottom: 0, left: "50%", transform: "translateX(-50%)",
-                width: "340px", height: "400px",
-                borderRadius: "170px 170px 0 0",
-                border: "1px solid rgba(212,175,55,0.11)",
-                background: "radial-gradient(ellipse at 50% 85%,rgba(212,175,55,0.12) 0%,transparent 70%)",
-              }} />
-              {/* inner arch */}
-              <div className="absolute" style={{
-                bottom: 0, left: "50%", transform: "translateX(-50%)",
-                width: "230px", height: "278px",
-                borderRadius: "115px 115px 0 0",
-                border: "1px solid rgba(212,175,55,0.22)",
-                background: "radial-gradient(ellipse at 50% 78%,rgba(212,175,55,0.22) 0%,rgba(212,175,55,0.04) 55%,transparent 80%)",
-              }} />
+                {/* ambient bg */}
+                <ellipse cx="200" cy="210" rx="168" ry="168" fill="url(#heroGlow)"/>
 
-              {/* crown */}
-              <div className="absolute" style={{
-                bottom: "126px", left: "50%", transform: "translateX(-50%)",
-                fontSize: "70px",
-                filter: `drop-shadow(0 0 40px ${G.gold}) drop-shadow(0 0 16px ${G.gold})`,
-                zIndex: 10, lineHeight: 1,
-              }}>👑</div>
+                {/* connection lines */}
+                <line x1="200" y1="210" x2="200" y2="72"  stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="325" y2="138" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="325" y2="282" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="200" y2="348" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="75"  y2="282" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="75"  y2="138" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
 
-              {/* coins */}
-              <div className="absolute" style={{ bottom: "36px", left: "68px", fontSize: "38px", opacity: 0.55 }}>🪙</div>
-              <div className="absolute" style={{ bottom: "66px", right: "66px", fontSize: "34px", opacity: 0.45 }}>🪙</div>
-              <div className="absolute" style={{ bottom: "20px", right: "96px", fontSize: "46px", opacity: 0.40 }}>🪙</div>
-              <div className="absolute" style={{ bottom: "18px", left: "108px", fontSize: "30px", opacity: 0.35 }}>🪙</div>
+                {/* expanding pulse ring */}
+                <circle cx="200" cy="210" r="50" fill="none" stroke="rgba(212,175,55,0.32)" strokeWidth="1">
+                  <animate attributeName="r"       from="50" to="95"  dur="2.8s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.4" to="0"  dur="2.8s" repeatCount="indefinite"/>
+                </circle>
 
-              {/* corner ornaments */}
-              <div className="absolute" style={{ top:16, left:16, width:22, height:22, borderTop:`2px solid ${G.goldDim}`, borderLeft:`2px solid ${G.goldDim}` }} />
-              <div className="absolute" style={{ top:16, right:16, width:22, height:22, borderTop:`2px solid ${G.goldDim}`, borderRight:`2px solid ${G.goldDim}` }} />
-              <div className="absolute" style={{ bottom:16, left:16, width:22, height:22, borderBottom:`2px solid ${G.goldDim}`, borderLeft:`2px solid ${G.goldDim}` }} />
-              <div className="absolute" style={{ bottom:16, right:16, width:22, height:22, borderBottom:`2px solid ${G.goldDim}`, borderRight:`2px solid ${G.goldDim}` }} />
+                {/* core outer ring */}
+                <circle cx="200" cy="210" r="46" fill="rgba(212,175,55,0.07)" stroke="rgba(212,175,55,0.55)" strokeWidth="1.5"
+                  style={{ animation: "corePulse 3s ease-in-out infinite" }}/>
+                {/* core inner ring */}
+                <circle cx="200" cy="210" r="30" fill="rgba(212,175,55,0.11)" stroke="rgba(212,175,55,0.28)" strokeWidth="1"/>
+                {/* core label */}
+                <text x="200" y="207" textAnchor="middle" fill="#D4AF37"              fontSize="15" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="2">AI</text>
+                <text x="200" y="221" textAnchor="middle" fill="rgba(212,175,55,0.5)" fontSize="7"  fontWeight="700" fontFamily="system-ui,sans-serif" letterSpacing="2">INCOME</text>
+
+                {/* ── animated data-pulse dots (2 per path, staggered) ── */}
+                {/* top — AUTOMATION */}
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="0s"   path="M 200,210 L 200,72"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0s"/>
+                </circle>
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="1s"   path="M 200,210 L 200,72"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1s"/>
+                </circle>
+                {/* top-right — META ADS */}
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.33s" path="M 200,210 L 325,138"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.33s"/>
+                </circle>
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.33s" path="M 200,210 L 325,138"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.33s"/>
+                </circle>
+                {/* bottom-right — SHOPIFY */}
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.66s" path="M 200,210 L 325,282"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.66s"/>
+                </circle>
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.66s" path="M 200,210 L 325,282"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.66s"/>
+                </circle>
+                {/* bottom — REVENUE */}
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="0s"   path="M 200,210 L 200,348"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0s"/>
+                </circle>
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="1s"   path="M 200,210 L 200,348"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1s"/>
+                </circle>
+                {/* bottom-left — OUTREACH */}
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.5s" path="M 200,210 L 75,282"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                </circle>
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.5s" path="M 200,210 L 75,282"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+                </circle>
+                {/* top-left — OFFERS */}
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.83s" path="M 200,210 L 75,138"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.83s"/>
+                </circle>
+                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
+                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.83s" path="M 200,210 L 75,138"/>
+                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.83s"/>
+                </circle>
+
+                {/* ── 6 nodes ── */}
+                {/* top — AUTOMATION */}
+                <circle cx="200" cy="72" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade 4.2s ease-in-out 0.3s infinite" }}/>
+                <text x="200" y="69" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">AUTO</text>
+                <text x="200" y="79" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">MATION</text>
+
+                {/* top-right — META ADS */}
+                <circle cx="325" cy="138" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade 3.8s ease-in-out 0.7s infinite" }}/>
+                <text x="325" y="135" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">META</text>
+                <text x="325" y="145" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">ADS</text>
+
+                {/* bottom-right — SHOPIFY */}
+                <circle cx="325" cy="282" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade 4.5s ease-in-out 1.1s infinite" }}/>
+                <text x="325" y="279" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SHOP</text>
+                <text x="325" y="289" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">IFY</text>
+
+                {/* bottom — REVENUE */}
+                <circle cx="200" cy="348" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade 3.5s ease-in-out 1.5s infinite" }}/>
+                <text x="200" y="345" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REVE</text>
+                <text x="200" y="355" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">NUE</text>
+
+                {/* bottom-left — OUTREACH */}
+                <circle cx="75" cy="282" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade 4.8s ease-in-out 0.9s infinite" }}/>
+                <text x="75" y="279" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">OUT</text>
+                <text x="75" y="289" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REACH</text>
+
+                {/* top-left — OFFERS */}
+                <circle cx="75" cy="138" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade 4s ease-in-out 0.5s infinite" }}/>
+                <text x="75" y="135" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">OFFER</text>
+                <text x="75" y="145" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SYSTEM</text>
+
+                {/* corner ornaments */}
+                <rect x="16"  y="16"  width="22" height="1" fill="rgba(212,175,55,0.2)"/>
+                <rect x="16"  y="16"  width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
+                <rect x="362" y="16"  width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
+                <rect x="383" y="16"  width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
+                <rect x="16"  y="403" width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
+                <rect x="16"  y="382" width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
+                <rect x="362" y="403" width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
+                <rect x="383" y="382" width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
+              </svg>
             </div>
 
           </div>
