@@ -93,17 +93,17 @@ export default function HomePage() {
                 color: G.gold,
                 margin: 0,
               }}>
-                KAGAN&apos;S<br />
+                AIKAGAN&apos;S<br />
                 <span style={{
                   fontFamily: "'Caveat', cursive",
                   fontWeight: 600,
                   textTransform: "none",
                   fontSize: "clamp(44px,6.6vw,76px)",
                   letterSpacing: "0.01em",
-                  color: "rgba(212,175,55,0.72)",
+                  color: "rgba(212,175,55,0.68)",
                   display: "inline",
                   lineHeight: 1,
-                }}>giant</span>{" "}GOLD<br />TREASURY ROOM
+                }}>giant</span>{" "}GOLDEN<br />AI TREASURY
               </h1>
 
               <p style={{ marginTop: "18px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "480px" }}>
@@ -148,149 +148,188 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* ── Right: AI Income Network ── */}
+            {/* ── Right: AI Income Network (3-D broadcast) ── */}
             <div className="relative hidden lg:block" style={{ height: "420px" }}>
               <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
                 <defs>
                   <style>{`
-                    @keyframes corePulse { 0%,100%{opacity:.65} 50%{opacity:1} }
-                    @keyframes nodeFade  { 0%,100%{opacity:.55} 50%{opacity:.95} }
+                    @keyframes corePulse2 { 0%,100%{opacity:.7} 50%{opacity:1} }
+                    @keyframes nodeFade2  { 0%,100%{opacity:.5} 50%{opacity:.92} }
                   `}</style>
-                  <radialGradient id="heroGlow" cx="50%" cy="50%" r="50%">
+                  <radialGradient id="hg2" cx="50%" cy="53%" r="50%">
                     <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.18"/>
                     <stop offset="100%" stopColor="#D4AF37" stopOpacity="0"/>
                   </radialGradient>
-                  <radialGradient id="nodeGrad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.12"/>
+                  <radialGradient id="ng2" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.14"/>
                     <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.02"/>
                   </radialGradient>
-                  <filter id="dotGlow" x="-80%" y="-80%" width="260%" height="260%">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                  <filter id="gl2" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
                     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                   </filter>
                 </defs>
 
                 {/* ambient bg */}
-                <ellipse cx="200" cy="210" rx="168" ry="168" fill="url(#heroGlow)"/>
+                <ellipse cx="200" cy="220" rx="170" ry="140" fill="url(#hg2)"/>
+
+                {/* ── 5 staggered 3-D broadcast rings from core ── */}
+                {/* ring 1 */}
+                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="0s"   repeatCount="indefinite"/>
+                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="0s"   repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="0s"   repeatCount="indefinite"/>
+                </ellipse>
+                {/* ring 2 */}
+                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="0.7s" repeatCount="indefinite"/>
+                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="0.7s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="0.7s" repeatCount="indefinite"/>
+                </ellipse>
+                {/* ring 3 */}
+                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="1.4s" repeatCount="indefinite"/>
+                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="1.4s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="1.4s" repeatCount="indefinite"/>
+                </ellipse>
+                {/* ring 4 */}
+                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="2.1s" repeatCount="indefinite"/>
+                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="2.1s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="2.1s" repeatCount="indefinite"/>
+                </ellipse>
+                {/* ring 5 */}
+                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="2.8s" repeatCount="indefinite"/>
+                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="2.8s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="2.8s" repeatCount="indefinite"/>
+                </ellipse>
 
                 {/* connection lines */}
-                <line x1="200" y1="210" x2="200" y2="72"  stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="325" y2="138" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="325" y2="282" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="200" y2="348" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="75"  y2="282" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="75"  y2="138" stroke="rgba(212,175,55,0.18)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="200" y2="72"  stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="320" y2="140" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="320" y2="280" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="200" y2="348" stroke="rgba(212,175,55,0.15)" strokeWidth="1.2"/>
+                <line x1="200" y1="210" x2="80"  y2="280" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
+                <line x1="200" y1="210" x2="80"  y2="140" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
 
-                {/* expanding pulse ring */}
-                <circle cx="200" cy="210" r="50" fill="none" stroke="rgba(212,175,55,0.32)" strokeWidth="1">
-                  <animate attributeName="r"       from="50" to="95"  dur="2.8s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.4" to="0"  dur="2.8s" repeatCount="indefinite"/>
-                </circle>
-
-                {/* core outer ring */}
-                <circle cx="200" cy="210" r="46" fill="rgba(212,175,55,0.07)" stroke="rgba(212,175,55,0.55)" strokeWidth="1.5"
-                  style={{ animation: "corePulse 3s ease-in-out infinite" }}/>
-                {/* core inner ring */}
-                <circle cx="200" cy="210" r="30" fill="rgba(212,175,55,0.11)" stroke="rgba(212,175,55,0.28)" strokeWidth="1"/>
-                {/* core label */}
+                {/* ── Core ── */}
+                <circle cx="200" cy="210" r="46" fill="rgba(212,175,55,0.07)" stroke="rgba(212,175,55,0.6)" strokeWidth="1.5"
+                  style={{ animation:"corePulse2 3s ease-in-out infinite" }}/>
+                <circle cx="200" cy="210" r="30" fill="rgba(212,175,55,0.12)" stroke="rgba(212,175,55,0.3)" strokeWidth="1"/>
                 <text x="200" y="207" textAnchor="middle" fill="#D4AF37"              fontSize="15" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="2">AI</text>
-                <text x="200" y="221" textAnchor="middle" fill="rgba(212,175,55,0.5)" fontSize="7"  fontWeight="700" fontFamily="system-ui,sans-serif" letterSpacing="2">INCOME</text>
+                <text x="200" y="221" textAnchor="middle" fill="rgba(212,175,55,0.5)" fontSize="7"  fontWeight="700" fontFamily="system-ui,sans-serif" letterSpacing="2">CORE</text>
 
-                {/* ── animated data-pulse dots (2 per path, staggered) ── */}
-                {/* top — AUTOMATION */}
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="0s"   path="M 200,210 L 200,72"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0s"/>
+                {/* ── Node: AUTOMATE — top, far/small r=23 ── */}
+                <circle cx="200" cy="72" r="23" fill="url(#ng2)" stroke="rgba(212,175,55,0.32)" strokeWidth="1"
+                  style={{ animation:"nodeFade2 4.2s ease-in-out 0.3s infinite" }}/>
+                <circle cx="200" cy="72" r="23" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="23" to="57"  dur="2s" begin="0s"    repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
                 </circle>
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="1s"   path="M 200,210 L 200,72"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1s"/>
+                <circle cx="200" cy="72" r="23" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="23" to="57"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
                 </circle>
-                {/* top-right — META ADS */}
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.33s" path="M 200,210 L 325,138"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.33s"/>
+                <circle cx="200" cy="72" r="23" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="23" to="57"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
                 </circle>
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.33s" path="M 200,210 L 325,138"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.33s"/>
-                </circle>
-                {/* bottom-right — SHOPIFY */}
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.66s" path="M 200,210 L 325,282"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.66s"/>
-                </circle>
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.66s" path="M 200,210 L 325,282"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.66s"/>
-                </circle>
-                {/* bottom — REVENUE */}
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="0s"   path="M 200,210 L 200,348"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0s"/>
-                </circle>
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="1s"   path="M 200,210 L 200,348"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1s"/>
-                </circle>
-                {/* bottom-left — OUTREACH */}
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.5s" path="M 200,210 L 75,282"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.5s"/>
-                </circle>
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.5s" path="M 200,210 L 75,282"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.5s"/>
-                </circle>
-                {/* top-left — OFFERS */}
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="0.83s" path="M 200,210 L 75,138"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="0.83s"/>
-                </circle>
-                <circle r="2.5" fill="#D4AF37" filter="url(#dotGlow)">
-                  <animateMotion dur="2s" repeatCount="indefinite" begin="1.83s" path="M 200,210 L 75,138"/>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2s" repeatCount="indefinite" begin="1.83s"/>
-                </circle>
+                <text x="200" y="69" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">AUTO</text>
+                <text x="200" y="78" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">MATE</text>
 
-                {/* ── 6 nodes ── */}
-                {/* top — AUTOMATION */}
-                <circle cx="200" cy="72" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade 4.2s ease-in-out 0.3s infinite" }}/>
-                <text x="200" y="69" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">AUTO</text>
-                <text x="200" y="79" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">MATION</text>
+                {/* ── Node: META ADS — top-right, mid-far r=25 ── */}
+                <circle cx="320" cy="140" r="25" fill="url(#ng2)" stroke="rgba(212,175,55,0.35)" strokeWidth="1"
+                  style={{ animation:"nodeFade2 3.8s ease-in-out 0.7s infinite" }}/>
+                <circle cx="320" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0s"    repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
+                </circle>
+                <circle cx="320" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="320" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                </circle>
+                <text x="320" y="137" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">META</text>
+                <text x="320" y="146" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">ADS</text>
 
-                {/* top-right — META ADS */}
-                <circle cx="325" cy="138" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade 3.8s ease-in-out 0.7s infinite" }}/>
-                <text x="325" y="135" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">META</text>
-                <text x="325" y="145" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">ADS</text>
+                {/* ── Node: SHOPIFY — bottom-right, mid-near r=28 ── */}
+                <circle cx="320" cy="280" r="28" fill="url(#ng2)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade2 4.5s ease-in-out 1.1s infinite" }}/>
+                <circle cx="320" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0s"    repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
+                </circle>
+                <circle cx="320" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="320" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                </circle>
+                <text x="320" y="277" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SHOP</text>
+                <text x="320" y="287" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">IFY</text>
 
-                {/* bottom-right — SHOPIFY */}
-                <circle cx="325" cy="282" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade 4.5s ease-in-out 1.1s infinite" }}/>
-                <text x="325" y="279" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SHOP</text>
-                <text x="325" y="289" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">IFY</text>
+                {/* ── Node: REVENUE — bottom, nearest/largest r=30, glow ── */}
+                <circle cx="200" cy="348" r="30" fill="url(#ng2)" stroke="rgba(212,175,55,0.5)" strokeWidth="1.5"
+                  filter="url(#gl2)" style={{ animation:"nodeFade2 3.5s ease-in-out 1.5s infinite" }}/>
+                <circle cx="200" cy="348" r="30" fill="none" stroke="rgba(212,175,55,0.42)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="r"       from="30" to="66"  dur="2s" begin="0s"    repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.42" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
+                </circle>
+                <circle cx="200" cy="348" r="30" fill="none" stroke="rgba(212,175,55,0.42)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="r"       from="30" to="66"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.42" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="200" cy="348" r="30" fill="none" stroke="rgba(212,175,55,0.42)" strokeWidth="1.2" opacity="0">
+                  <animate attributeName="r"       from="30" to="66"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.42" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                </circle>
+                <text x="200" y="345" textAnchor="middle" fill="rgba(212,175,55,0.95)" fontSize="8" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REVE</text>
+                <text x="200" y="356" textAnchor="middle" fill="rgba(212,175,55,0.95)" fontSize="8" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">NUE</text>
 
-                {/* bottom — REVENUE */}
-                <circle cx="200" cy="348" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade 3.5s ease-in-out 1.5s infinite" }}/>
-                <text x="200" y="345" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REVE</text>
-                <text x="200" y="355" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">NUE</text>
+                {/* ── Node: OUTREACH — bottom-left, mid-near r=28 ── */}
+                <circle cx="80" cy="280" r="28" fill="url(#ng2)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
+                  style={{ animation:"nodeFade2 4.8s ease-in-out 0.9s infinite" }}/>
+                <circle cx="80" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0s"    repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
+                </circle>
+                <circle cx="80" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="80" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                </circle>
+                <text x="80" y="277" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">OUT</text>
+                <text x="80" y="287" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REACH</text>
 
-                {/* bottom-left — OUTREACH */}
-                <circle cx="75" cy="282" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade 4.8s ease-in-out 0.9s infinite" }}/>
-                <text x="75" y="279" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">OUT</text>
-                <text x="75" y="289" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REACH</text>
-
-                {/* top-left — OFFERS */}
-                <circle cx="75" cy="138" r="26" fill="url(#nodeGrad)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade 4s ease-in-out 0.5s infinite" }}/>
-                <text x="75" y="135" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">OFFER</text>
-                <text x="75" y="145" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SYSTEM</text>
+                {/* ── Node: AI SCRIPTS — top-left, mid-far r=25 ── */}
+                <circle cx="80" cy="140" r="25" fill="url(#ng2)" stroke="rgba(212,175,55,0.35)" strokeWidth="1"
+                  style={{ animation:"nodeFade2 4s ease-in-out 0.5s infinite" }}/>
+                <circle cx="80" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0s"    repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
+                </circle>
+                <circle cx="80" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="80" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
+                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
+                </circle>
+                <text x="80" y="137" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">AI</text>
+                <text x="80" y="146" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SCRIPTS</text>
 
                 {/* corner ornaments */}
-                <rect x="16"  y="16"  width="22" height="1" fill="rgba(212,175,55,0.2)"/>
+                <rect x="16"  y="16"  width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
                 <rect x="16"  y="16"  width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
                 <rect x="362" y="16"  width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
                 <rect x="383" y="16"  width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
