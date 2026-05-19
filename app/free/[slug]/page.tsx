@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProduct, getProductsByTier } from "@/lib/products";
 import LeadMagnetForm from "@/components/ui/LeadMagnetForm";
+import MetaPixelEvent from "@/components/MetaPixelEvent";
 import Link from "next/link";
 
 interface Props {
@@ -17,6 +18,8 @@ export default function FreeProductPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#08080a] px-6 py-24 text-white">
+      {/* Track free resource views for audience building */}
+      <MetaPixelEvent event="ViewContent" params={{ content_ids: [product.slug], content_name: product.name, content_category: "lead_magnet", content_type: "product" }} />
       <section className="mx-auto max-w-2xl">
         <p className="text-xs uppercase tracking-[0.3em] text-amber-300">Free resource</p>
         <h1 className="mt-4 text-4xl font-bold leading-tight md:text-5xl">{product.name}</h1>

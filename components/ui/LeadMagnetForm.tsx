@@ -3,6 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 interface Props {
   slug: string;
   leadMagnetLabel?: string;
@@ -35,6 +41,8 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Error");
+      // Fire Meta Pixel Lead event on successful opt-in
+      window.fbq?.("track", "Lead", { content_name: slug, content_category: "lead_magnet" });
       setState("done");
       if (data.assetPath) {
         // Redirect to next tier after short delay
