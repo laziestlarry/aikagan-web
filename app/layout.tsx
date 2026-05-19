@@ -21,6 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* ── Meta Domain Verification ── */}
+        <meta name="facebook-domain-verification" content="xz1psq5ml5n8je8ljwl7k689or7wkp" />
         <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
         {/* ── Analytics: GA4 + Meta Pixel managed via GTM-NZW2CP6H ── */}
         {/* Add GA4 and Meta Pixel as tags inside Google Tag Manager instead of here */}
