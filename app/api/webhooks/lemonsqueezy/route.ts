@@ -51,17 +51,24 @@ export function generateDownloadToken(slug: string, orderId: string, email: stri
 }
 
 /**
- * Map LemonSqueezy product name (or variant name) to an internal product slug.
- * Falls back to the first product if no match is found.
+ * Map LemonSqueezy order to an internal product slug.
+ * Priority: custom_data.product_slug (set by CheckoutButton) → product name match → tier keyword.
+ * The custom_data field is the most reliable since it's set explicitly at checkout time.
  */
-function resolveSlug(productName: string, variantName: string): string {
+function resolveSlug(productName: string, variantName: string, customSlug?: string): string {
+  // 1. Trust explicit slug passed via checkout custom data
+  if (customSlug) {
+    const match = products.find((p) => p.slug === customSlug);
+    if (match) return match.slug;
+  }
+  // 2. Fuzzy match against product name / slug / tier
   const name = `${productName} ${variantName}`.toLowerCase();
   for (const product of products) {
     if (name.includes(product.slug.toLowerCase())) return product.slug;
     if (name.includes(product.name.toLowerCase())) return product.slug;
     if (name.includes(product.tier.toLowerCase())) return product.slug;
   }
-  // commander > pro > starter priority
+  // 3. Keyword fallback: commander > pro > starter
   if (name.includes("commander")) return "golden-delivery-commander";
   if (name.includes("pro")) return "golden-delivery-pro";
   if (name.includes("starter")) return "golden-delivery-starter";
@@ -95,8 +102,10 @@ export async function POST(req: NextRequest) {
   const email = String(data.user_email ?? data.email ?? "");
   const productName = String(data.first_order_item?.product_name ?? "");
   const variantName = String(data.first_order_item?.variant_name ?? "");
+  // custom_data is set by CheckoutButton as checkout[custom][product_slug]
+  const customSlug = String((event as { meta?: { custom_data?: { product_slug?: unknown } } }).meta?.custom_data?.product_slug ?? "");
 
-  const slug = resolveSlug(productName, variantName);
+  const slug = resolveSlug(productName, variantName, customSlug || undefined);
   const token = generateDownloadToken(slug, orderId, email);
 
   // Log for evidence trail (non-blocking)

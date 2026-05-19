@@ -5,6 +5,12 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { getProduct, getProduct as findProduct, products } from "@/lib/products";
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 const STEPS = [
   { icon: "\uD83C\uDF89", label: "Payment confirmed" },
   { icon: "\u2B07\uFE0F",  label: "Download your pack" },
@@ -50,6 +56,12 @@ function CheckoutSuccessContent() {
   const slugParam = searchParams.get("product"); // fallback for legacy links
   const [activeStep, setActiveStep] = useState(0);
 
+  // Resolve which product to show (declare before effects so effects can reference it)
+  const product =
+    (token ? undefined : slugParam ? findProduct(slugParam) : undefined) ||
+    products.find((p) => p.ladderTier !== "lead_magnet" && p.priceModel === "one_time") ||
+    products[2]; // fallback: golden-delivery-starter
+
   // Animate steps in on mount
   useEffect(() => {
     let i = 0;
@@ -61,11 +73,17 @@ function CheckoutSuccessContent() {
     return () => clearInterval(id);
   }, []);
 
-  // Resolve which product to show
-  const product =
-    (token ? undefined : slugParam ? findProduct(slugParam) : undefined) ||
-    products.find((p) => p.ladderTier !== "lead_magnet" && p.priceModel === "one_time") ||
-    products[2]; // fallback: golden-delivery-starter
+  // Fire Meta Pixel Purchase event once product is resolved
+  useEffect(() => {
+    if (!product || product.priceModel !== "one_time") return;
+    window.fbq?.("track", "Purchase", {
+      value: product.price,
+      currency: "USD",
+      content_ids: [product.slug],
+      content_type: "product",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.slug]);
 
   const downloadHref = token
     ? `/api/download/${token}`

@@ -22,6 +22,8 @@ const UTM_KEYS = [
   "utm_content",
   "ref",
   "click_id",
+  "fbclid",   // Facebook Click ID — appended by Meta Ads on every ad click
+  "igshid",   // Instagram Share ID
 ] as const;
 
 export type AttributionData = Partial<Record<typeof UTM_KEYS[number], string>>;

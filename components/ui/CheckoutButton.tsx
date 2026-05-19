@@ -19,7 +19,11 @@ export default function CheckoutButton({ href, slug, children, className }: Prop
     trackCheckoutIntent(slug);
   }, [slug]);
 
-  const url = appendAttribution(href);
+  // Append slug as custom checkout data so the webhook can resolve the correct ZIP.
+  // LemonSqueezy passes this back in meta.custom_data.product_slug.
+  const slugParam = `checkout[custom][product_slug]=${encodeURIComponent(slug)}`;
+  const hrefWithSlug = href.includes("?") ? `${href}&${slugParam}` : `${href}?${slugParam}`;
+  const url = appendAttribution(hrefWithSlug);
 
   return (
     <a

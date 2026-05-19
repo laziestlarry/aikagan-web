@@ -1,10 +1,21 @@
 import Link from "next/link";
 import { products } from "@/lib/products";
+import MetaPixelEvent from "@/components/MetaPixelEvent";
+import CheckoutButton from "@/components/CheckoutButton";
 
 export const metadata = {
   title: "AutonomaX Golden Delivery Pro Pack — Hit $1K/Month with Funnels + AI Tools",
   description:
     "9-file Revenue Operations System. Funnels, AI stack, 30-day calendar, traffic playbook, and 5 ready-to-sell offer templates — everything to systematically hit $1K/month. $79 one-time.",
+  openGraph: {
+    title: "From First Sale to $1K/Month — $79 Pro Pack",
+    description:
+      "3 funnel architectures, AI stack prompts, 30-day calendar, 5 organic traffic playbooks, and 5 offer templates. One-time $79.",
+    url: "https://aikagan.com/products/golden-delivery-pro",
+    siteName: "AIKAGAN",
+    images: [{ url: "https://aikagan.com/visuals/pro_pack.png", width: 1200, height: 630, alt: "Golden Delivery Pro Pack" }],
+    type: "website",
+  },
 };
 
 export default function Page() {
@@ -13,6 +24,8 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-[#08080a] text-white">
+      {/* Fire ViewContent for FB/IG ad optimisation */}
+      <MetaPixelEvent event="ViewContent" params={{ content_ids: ["golden-delivery-pro"], content_type: "product", value: 79, currency: "USD" }} />
 
       {/* HERO */}
       <section className="px-6 pt-24 pb-16 mx-auto max-w-4xl">
@@ -27,14 +40,14 @@ export default function Page() {
           9 files that give you three complete funnel architectures, a curated AI tools stack with exact prompts, a 30-day revenue calendar, traffic playbooks for 5 organic channels, and 5 ready-to-sell offer templates — at price points from $27 to $197.
         </p>
         <div className="mt-8 flex flex-wrap gap-4 items-center">
-          <a
-            href={product.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <CheckoutButton
+            href={product.checkoutUrl!}
+            slug="golden-delivery-pro"
+            price={79}
             className="inline-flex rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
           >
             Get Pro Access — $79
-          </a>
+          </CheckoutButton>
           <span className="text-sm text-neutral-400 line-through">${product.originalPrice} regular price</span>
         </div>
         <p className="mt-3 text-xs text-neutral-500">✓ Instant download &nbsp;·&nbsp; ✓ 30-day money-back guarantee &nbsp;·&nbsp; ✓ One-time payment</p>
@@ -198,14 +211,14 @@ export default function Page() {
                 </li>
               ))}
             </ul>
-            <a
-              href={product.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            <CheckoutButton
+              href={product.checkoutUrl!}
+              slug="golden-delivery-pro"
+              price={79}
               className="w-full inline-flex justify-center rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
             >
               Get Pro Access — $79
-            </a>
+            </CheckoutButton>
             <p className="mt-4 text-xs text-neutral-500 text-center">
               ✓ 30-day money-back guarantee — results or full refund.
             </p>
@@ -254,14 +267,14 @@ export default function Page() {
       <section className="px-6 py-16 border-t border-white/5 text-center">
         <div className="mx-auto max-w-xl">
           <h2 className="text-2xl font-semibold mb-4">Build the system that pays you every month.</h2>
-          <a
-            href={product.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <CheckoutButton
+            href={product.checkoutUrl!}
+            slug="golden-delivery-pro"
+            price={79}
             className="inline-flex rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
           >
             Download the Pro Pack — $79
-          </a>
+          </CheckoutButton>
           <p className="mt-4 text-xs text-neutral-500">30-day guarantee · Instant download · One-time payment</p>
         </div>
       </section>
