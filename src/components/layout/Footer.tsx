@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Zap } from 'lucide-react';
-import { SITE, NAV_LINKS } from '@/lib/constants';
+import { SITE, NAV_LINKS, SOCIAL } from '@/lib/constants';
 
 export default function Footer() {
   return (
@@ -87,6 +87,32 @@ export default function Footer() {
                 >
                   Explore Services →
                 </Link>
+              </li>
+            </ul>
+
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mt-8 mb-4">
+              Follow
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href={SOCIAL.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-kagan-light hover:text-kagan-gold transition-colors"
+                >
+                  Facebook →
+                </a>
+              </li>
+              <li>
+                <a
+                  href={SOCIAL.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-kagan-light hover:text-kagan-gold transition-colors"
+                >
+                  Instagram →
+                </a>
               </li>
             </ul>
           </div>

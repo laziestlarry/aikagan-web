@@ -1,64 +1,13 @@
-import Link from "next/link";
-import { products } from "@/lib/products";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Thank You | AIKAGAN",
-  description: "Your AIKAGAN digital product download page.",
-};
-
+/**
+ * The old /thank-you page showed all 3 product downloads to anyone
+ * with no purchase verification. It has been replaced by /checkout-success
+ * which requires a signed download token from the LemonSqueezy webhook.
+ *
+ * Existing links are redirected to the new page; buyers should use the
+ * token from their confirmation email.
+ */
 export default function ThankYouPage() {
-  return (
-    <main className="min-h-screen bg-[#08080a] text-white px-6 py-20">
-      <section className="mx-auto max-w-5xl">
-        <p className="mb-4 text-sm uppercase tracking-[0.3em] text-amber-300">
-          Purchase Received
-        </p>
-
-        <h1 className="text-4xl md:text-6xl font-semibold tracking-tight">
-          Your download pack is ready.
-        </h1>
-
-        <p className="mt-6 max-w-3xl text-lg text-neutral-300">
-          Download your purchased product below. Save the file locally after
-          downloading. For support, contact lazylarries@gmail.com.
-        </p>
-
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {products.map((product) => (
-            <div
-              key={product.slug}
-              className="rounded-3xl border border-white/10 bg-[#111827] p-6"
-            >
-              <p className="text-sm text-amber-300">{product.tier}</p>
-              <h2 className="mt-3 text-2xl font-semibold">{product.name}</h2>
-              <p className="mt-4 text-sm text-neutral-300">
-                {product.description}
-              </p>
-
-              <a
-                href={product.downloadUrl}
-                download
-                className="mt-6 inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-black transition hover:bg-amber-200"
-              >
-                Download Pack
-              </a>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-6">
-          <h2 className="text-xl font-semibold">Important</h2>
-          <p className="mt-3 text-neutral-300">
-            This first version uses direct file delivery. Verified order-based
-            download protection can be added next with checkout webhooks and
-            expiring download tokens.
-          </p>
-        </div>
-
-        <Link href="/" className="mt-10 inline-block text-sm text-neutral-400 hover:text-white">
-          ← Back to AIKAGAN
-        </Link>
-      </section>
-    </main>
-  );
+  redirect("/checkout-success");
 }
