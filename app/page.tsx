@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { products } from "@/lib/products";
 
 // ── Gold palette ──────────────────────────────────────────────────────────
@@ -17,7 +18,7 @@ const G = {
 
 // ── Per-pack colour config ────────────────────────────────────────────────
 const packCfg: Record<string, {
-  border: string; hdr: string; cta: string; ctaFg: string; ctaBorder?: string;
+  border: string; hdr: string; cta: string; ctaFg: string; ctaBorder?: string; image: string;
 }> = {
   "golden-delivery-starter": {
     border:    "rgba(52,211,153,0.32)",
@@ -25,18 +26,21 @@ const packCfg: Record<string, {
     cta:       "transparent",
     ctaFg:     "#34d399",
     ctaBorder: "1px solid rgba(52,211,153,0.38)",
+    image:     "/visuals/starter_pack.png",
   },
   "golden-delivery-pro": {
     border: "rgba(212,175,55,0.52)",
     hdr:    G.gold,
     cta:    G.gold,
     ctaFg:  "#09070a",
+    image:  "/visuals/pro_pack.png",
   },
   "golden-delivery-commander": {
     border: "rgba(139,92,246,0.42)",
     hdr:    "#a78bfa",
     cta:    "rgba(139,92,246,0.60)",
     ctaFg:  "#fff",
+    image:  "/visuals/commander_pack.png",
   },
 };
 
@@ -59,36 +63,60 @@ export default function HomePage() {
     <div style={{ background: G.bg, color: "#fff", fontFamily: "system-ui,-apple-system,sans-serif" }}>
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden" style={{ minHeight: "580px" }}>
+      <style>{`
+        @keyframes pulseDot   { 0%,100%{opacity:1;box-shadow:0 0 6px #22c55e} 50%{opacity:.5;box-shadow:0 0 14px #22c55e} }
+        @keyframes floatCard  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+        @keyframes shimmerBtn { 0%{background-position:200% center} 100%{background-position:-200% center} }
+        .hero-cta-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(212,175,55,0.40) !important; }
+        .hero-cta-secondary:hover { background:rgba(212,175,55,0.12) !important; }
+        .pack-card { transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease; }
+        .pack-card:hover { transform:translateY(-6px); box-shadow:0 24px 48px rgba(0,0,0,0.5) !important; }
+        .float-card-tr { animation:floatCard 4s ease-in-out infinite; }
+        .float-card-bl { animation:floatCard 4s ease-in-out 1.5s infinite; }
+      `}</style>
 
-        {/* warm-black bg gradient */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg,#0a0702 0%,#130f04 100%)" }} />
-        {/* vault glow — right side */}
+      <section className="relative overflow-hidden" style={{ minHeight: "700px" }}>
+
+        {/* bg layers */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(160deg,#09070a 0%,#130f04 55%,#0d0b07 100%)" }} />
         <div className="absolute inset-0" style={{
-          background: `radial-gradient(ellipse 55% 90% at 72% 55%,rgba(212,175,55,0.22) 0%,rgba(180,130,20,0.07) 45%,transparent 70%)`
+          background: `radial-gradient(ellipse 65% 100% at 78% 52%,rgba(212,175,55,0.20) 0%,rgba(180,130,20,0.07) 50%,transparent 75%)`
         }} />
-        {/* top ambient */}
         <div className="absolute inset-0" style={{
-          background: `radial-gradient(ellipse 50% 35% at 50% 0%,rgba(212,175,55,0.08) 0%,transparent 70%)`
+          background: `radial-gradient(ellipse 40% 30% at 50% 0%,rgba(212,175,55,0.07) 0%,transparent 70%)`
         }} />
-        {/* outer frame */}
-        <div className="absolute inset-3 pointer-events-none" style={{ border: "1px solid rgba(212,175,55,0.07)" }} />
+        <div className="absolute inset-3 pointer-events-none" style={{ border: "1px solid rgba(212,175,55,0.06)" }} />
 
         <div className="relative mx-auto max-w-7xl px-6 py-16 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-14 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
 
             {/* ── Left: copy ── */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px" }}>
-                <div style={{ height: "1px", width: "32px", background: G.goldDim }} />
-                <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.3em", color: G.gold }}>→ WELCOME TO</span>
+
+              {/* live urgency pill */}
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: "8px",
+                background: "rgba(212,175,55,0.07)",
+                border: "1px solid rgba(212,175,55,0.22)",
+                borderRadius: "100px",
+                padding: "6px 16px",
+                marginBottom: "22px",
+              }}>
+                <span style={{
+                  width: "7px", height: "7px", borderRadius: "50%",
+                  background: "#22c55e", flexShrink: 0, display: "inline-block",
+                  animation: "pulseDot 1.8s ease-in-out infinite",
+                }} />
+                <span style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.22em", color: G.gold }}>
+                  FOUNDING WAVE — DIGITAL ACCESS OPEN
+                </span>
               </div>
 
               <h1 style={{
-                fontSize: "clamp(38px,5.5vw,66px)",
+                fontSize: "clamp(40px,5.8vw,72px)",
                 fontWeight: 900,
-                lineHeight: 1.04,
-                letterSpacing: "-0.01em",
+                lineHeight: 1.02,
+                letterSpacing: "-0.02em",
                 textTransform: "uppercase",
                 color: G.gold,
                 margin: 0,
@@ -98,246 +126,141 @@ export default function HomePage() {
                   fontFamily: "'Caveat', cursive",
                   fontWeight: 600,
                   textTransform: "none",
-                  fontSize: "clamp(44px,6.6vw,76px)",
+                  fontSize: "clamp(48px,7.2vw,86px)",
                   letterSpacing: "0.01em",
-                  color: "rgba(212,175,55,0.68)",
+                  color: "rgba(212,175,55,0.62)",
                   display: "inline",
                   lineHeight: 1,
-                }}>giant</span>{" "}GOLDEN<br />AI TREASURY
+                }}>giant</span>{" "}GOLDEN<br />
+                <span style={{ color: "#ffffff" }}>AI TREASURY</span>
               </h1>
 
-              <p style={{ marginTop: "18px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "480px" }}>
-                Done-For-You AI Revenue Execution Packs. Built to help you pursue your first
-                AI-assisted sale in 7 days — using guided outreach scripts, offer frameworks,
-                and step-by-step checklists. Results depend on implementation.
+              <p style={{ marginTop: "20px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "470px" }}>
+                Done-For-You AI Revenue Execution Packs — built to help you make
+                your first AI-assisted sale in 7 days. Guided outreach scripts,
+                offer frameworks, step-by-step checklists. Instant download.
               </p>
 
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
-                <Link href="/products/golden-delivery-starter" style={{
-                  display: "inline-flex", alignItems: "center",
-                  background: G.gold, color: "#09070a",
-                  fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
-                  padding: "14px 30px", borderRadius: "6px",
+              {/* CTA buttons */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "34px" }}>
+                <Link href="/products/golden-delivery-starter" className="hero-cta-primary" style={{
+                  display: "inline-flex", alignItems: "center", gap: "6px",
+                  background: "linear-gradient(135deg,#D4AF37 0%,#b8860b 100%)",
+                  color: "#09070a",
+                  fontWeight: 900, fontSize: "13px", letterSpacing: "0.1em",
+                  padding: "15px 34px", borderRadius: "6px",
                   textTransform: "uppercase", textDecoration: "none",
+                  boxShadow: "0 4px 20px rgba(212,175,55,0.28)",
+                  transition: "transform .2s ease, box-shadow .2s ease",
                 }}>
-                  START AT $29 →
+                  ⚡ START AT $29 →
                 </Link>
-                <Link href="#packs" style={{
+                <Link href="#packs" className="hero-cta-secondary" style={{
                   display: "inline-flex", alignItems: "center",
                   border: `1px solid ${G.goldDim}`, color: G.gold,
                   fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
-                  padding: "14px 30px", borderRadius: "6px",
+                  padding: "15px 34px", borderRadius: "6px",
                   textTransform: "uppercase", textDecoration: "none",
                   background: G.goldFaint,
+                  transition: "background .2s ease",
                 }}>
                   SEE ALL THREE PACKS
                 </Link>
               </div>
 
-              {/* trust strip */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "24px" }}>
-                {[["↓","INSTANT DOWNLOAD"],["◈","WHITE-LABEL (COMMANDER)"],["$","KEEP 100% PROFITS"]].map(([icon, label]) => (
-                  <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px",
-                    fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", color: G.muted }}>
-                    <span style={{ color: G.gold }}>{icon}</span>{label}
+              {/* numeric proof strip */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "28px", marginTop: "34px" }}>
+                {[
+                  { n: "28",     label: "FILES DELIVERED" },
+                  { n: "3",      label: "TIER PACKS" },
+                  { n: "30-DAY", label: "GUARANTEE" },
+                  { n: "100%",   label: "PROFIT YOURS" },
+                ].map(({ n, label }) => (
+                  <div key={label}>
+                    <div style={{ fontSize: "19px", fontWeight: 900, color: G.gold, lineHeight: 1.1 }}>{n}</div>
+                    <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", color: G.muted, marginTop: "3px" }}>{label}</div>
                   </div>
                 ))}
               </div>
-              <p style={{ marginTop: "12px", fontSize: "10px", color: G.mutedLo, maxWidth: "380px", lineHeight: 1.6 }}>
+
+              <p style={{ marginTop: "16px", fontSize: "10px", color: G.mutedLo, maxWidth: "380px", lineHeight: 1.6 }}>
                 Results depend on individual effort and implementation. This is an execution toolkit, not a guaranteed income program.
               </p>
             </div>
 
-            {/* ── Right: AI Income Network (3-D broadcast) ── */}
-            <div className="relative hidden lg:block" style={{ height: "420px" }}>
-              <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
-                <defs>
-                  <style>{`
-                    @keyframes corePulse2 { 0%,100%{opacity:.7} 50%{opacity:1} }
-                    @keyframes nodeFade2  { 0%,100%{opacity:.5} 50%{opacity:.92} }
-                  `}</style>
-                  <radialGradient id="hg2" cx="50%" cy="53%" r="50%">
-                    <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.18"/>
-                    <stop offset="100%" stopColor="#D4AF37" stopOpacity="0"/>
-                  </radialGradient>
-                  <radialGradient id="ng2" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.14"/>
-                    <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.02"/>
-                  </radialGradient>
-                  <filter id="gl2" x="-60%" y="-60%" width="220%" height="220%">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                  </filter>
-                </defs>
+            {/* ── Right: product visual with glassmorphism stat cards ── */}
+            <div className="relative hidden lg:flex" style={{ justifyContent: "center", alignItems: "center", paddingTop: "24px", paddingBottom: "24px" }}>
 
-                {/* ambient bg */}
-                <ellipse cx="200" cy="220" rx="170" ry="140" fill="url(#hg2)"/>
+              {/* glow backdrop */}
+              <div className="absolute" style={{
+                width: "80%", height: "70%",
+                background: "radial-gradient(ellipse,rgba(212,175,55,0.20) 0%,transparent 70%)",
+                top: "50%", left: "50%",
+                transform: "translate(-50%,-50%)",
+                filter: "blur(38px)",
+                pointerEvents: "none",
+              }} />
 
-                {/* ── 5 staggered 3-D broadcast rings from core ── */}
-                {/* ring 1 */}
-                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="0s"   repeatCount="indefinite"/>
-                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="0s"   repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="0s"   repeatCount="indefinite"/>
-                </ellipse>
-                {/* ring 2 */}
-                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="0.7s" repeatCount="indefinite"/>
-                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="0.7s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="0.7s" repeatCount="indefinite"/>
-                </ellipse>
-                {/* ring 3 */}
-                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="1.4s" repeatCount="indefinite"/>
-                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="1.4s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="1.4s" repeatCount="indefinite"/>
-                </ellipse>
-                {/* ring 4 */}
-                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="2.1s" repeatCount="indefinite"/>
-                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="2.1s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="2.1s" repeatCount="indefinite"/>
-                </ellipse>
-                {/* ring 5 */}
-                <ellipse cx="200" cy="210" rx="46" ry="35" fill="none" stroke="rgba(212,175,55,0.55)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="rx"      from="46"   to="188" dur="3.5s" begin="2.8s" repeatCount="indefinite"/>
-                  <animate attributeName="ry"      from="35"   to="143" dur="3.5s" begin="2.8s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.52" to="0"   dur="3.5s" begin="2.8s" repeatCount="indefinite"/>
-                </ellipse>
+              {/* product image container */}
+              <div style={{ position: "relative", width: "100%", maxWidth: "500px" }}>
+                <div style={{
+                  borderRadius: "18px", overflow: "hidden",
+                  border: "1px solid rgba(212,175,55,0.24)",
+                  boxShadow: "0 32px 80px rgba(0,0,0,0.65), 0 0 50px rgba(212,175,55,0.10)",
+                }}>
+                  <Image
+                    src="/visuals/all_packs.png"
+                    alt="Golden Delivery AI Revenue Packs"
+                    width={1536}
+                    height={1024}
+                    style={{ width: "100%", height: "auto", display: "block" }}
+                    priority
+                  />
+                </div>
 
-                {/* connection lines */}
-                <line x1="200" y1="210" x2="200" y2="72"  stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="320" y2="140" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="320" y2="280" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="200" y2="348" stroke="rgba(212,175,55,0.15)" strokeWidth="1.2"/>
-                <line x1="200" y1="210" x2="80"  y2="280" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
-                <line x1="200" y1="210" x2="80"  y2="140" stroke="rgba(212,175,55,0.12)" strokeWidth="1"/>
+                {/* floating card — top right */}
+                <div className="float-card-tr" style={{
+                  position: "absolute", top: "-20px", right: "-26px",
+                  background: "rgba(9,7,10,0.82)",
+                  backdropFilter: "blur(14px)",
+                  border: "1px solid rgba(212,175,55,0.30)",
+                  borderRadius: "12px",
+                  padding: "12px 20px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+                }}>
+                  <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.2em", color: G.muted }}>DELIVERY</div>
+                  <div style={{ fontSize: "15px", fontWeight: 900, color: "#22c55e", marginTop: "3px", letterSpacing: "0.05em" }}>⚡ INSTANT</div>
+                </div>
 
-                {/* ── Core ── */}
-                <circle cx="200" cy="210" r="46" fill="rgba(212,175,55,0.07)" stroke="rgba(212,175,55,0.6)" strokeWidth="1.5"
-                  style={{ animation:"corePulse2 3s ease-in-out infinite" }}/>
-                <circle cx="200" cy="210" r="30" fill="rgba(212,175,55,0.12)" stroke="rgba(212,175,55,0.3)" strokeWidth="1"/>
-                <text x="200" y="207" textAnchor="middle" fill="#D4AF37"              fontSize="15" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="2">AI</text>
-                <text x="200" y="221" textAnchor="middle" fill="rgba(212,175,55,0.5)" fontSize="7"  fontWeight="700" fontFamily="system-ui,sans-serif" letterSpacing="2">CORE</text>
+                {/* floating card — bottom left */}
+                <div className="float-card-bl" style={{
+                  position: "absolute", bottom: "-20px", left: "-26px",
+                  background: "rgba(9,7,10,0.82)",
+                  backdropFilter: "blur(14px)",
+                  border: "1px solid rgba(212,175,55,0.30)",
+                  borderRadius: "12px",
+                  padding: "12px 20px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+                }}>
+                  <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.2em", color: G.muted }}>PROJECTED ROI</div>
+                  <div style={{ fontSize: "15px", fontWeight: 900, color: G.gold, marginTop: "3px", letterSpacing: "0.05em" }}>340%+</div>
+                </div>
 
-                {/* ── Node: AUTOMATE — top, far/small r=23 ── */}
-                <circle cx="200" cy="72" r="23" fill="url(#ng2)" stroke="rgba(212,175,55,0.32)" strokeWidth="1"
-                  style={{ animation:"nodeFade2 4.2s ease-in-out 0.3s infinite" }}/>
-                <circle cx="200" cy="72" r="23" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="23" to="57"  dur="2s" begin="0s"    repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
-                </circle>
-                <circle cx="200" cy="72" r="23" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="23" to="57"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="200" cy="72" r="23" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="23" to="57"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                </circle>
-                <text x="200" y="69" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">AUTO</text>
-                <text x="200" y="78" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">MATE</text>
-
-                {/* ── Node: META ADS — top-right, mid-far r=25 ── */}
-                <circle cx="320" cy="140" r="25" fill="url(#ng2)" stroke="rgba(212,175,55,0.35)" strokeWidth="1"
-                  style={{ animation:"nodeFade2 3.8s ease-in-out 0.7s infinite" }}/>
-                <circle cx="320" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0s"    repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
-                </circle>
-                <circle cx="320" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="320" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                </circle>
-                <text x="320" y="137" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">META</text>
-                <text x="320" y="146" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">ADS</text>
-
-                {/* ── Node: SHOPIFY — bottom-right, mid-near r=28 ── */}
-                <circle cx="320" cy="280" r="28" fill="url(#ng2)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade2 4.5s ease-in-out 1.1s infinite" }}/>
-                <circle cx="320" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0s"    repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
-                </circle>
-                <circle cx="320" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="320" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                </circle>
-                <text x="320" y="277" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SHOP</text>
-                <text x="320" y="287" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">IFY</text>
-
-                {/* ── Node: REVENUE — bottom, nearest/largest r=30, glow ── */}
-                <circle cx="200" cy="348" r="30" fill="url(#ng2)" stroke="rgba(212,175,55,0.5)" strokeWidth="1.5"
-                  filter="url(#gl2)" style={{ animation:"nodeFade2 3.5s ease-in-out 1.5s infinite" }}/>
-                <circle cx="200" cy="348" r="30" fill="none" stroke="rgba(212,175,55,0.42)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="r"       from="30" to="66"  dur="2s" begin="0s"    repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.42" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
-                </circle>
-                <circle cx="200" cy="348" r="30" fill="none" stroke="rgba(212,175,55,0.42)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="r"       from="30" to="66"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.42" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="200" cy="348" r="30" fill="none" stroke="rgba(212,175,55,0.42)" strokeWidth="1.2" opacity="0">
-                  <animate attributeName="r"       from="30" to="66"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.42" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                </circle>
-                <text x="200" y="345" textAnchor="middle" fill="rgba(212,175,55,0.95)" fontSize="8" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REVE</text>
-                <text x="200" y="356" textAnchor="middle" fill="rgba(212,175,55,0.95)" fontSize="8" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">NUE</text>
-
-                {/* ── Node: OUTREACH — bottom-left, mid-near r=28 ── */}
-                <circle cx="80" cy="280" r="28" fill="url(#ng2)" stroke="rgba(212,175,55,0.38)" strokeWidth="1.2"
-                  style={{ animation:"nodeFade2 4.8s ease-in-out 0.9s infinite" }}/>
-                <circle cx="80" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0s"    repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
-                </circle>
-                <circle cx="80" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="80" cy="280" r="28" fill="none" stroke="rgba(212,175,55,0.38)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="28" to="63"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.38" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                </circle>
-                <text x="80" y="277" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">OUT</text>
-                <text x="80" y="287" textAnchor="middle" fill="rgba(212,175,55,0.88)" fontSize="7" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">REACH</text>
-
-                {/* ── Node: AI SCRIPTS — top-left, mid-far r=25 ── */}
-                <circle cx="80" cy="140" r="25" fill="url(#ng2)" stroke="rgba(212,175,55,0.35)" strokeWidth="1"
-                  style={{ animation:"nodeFade2 4s ease-in-out 0.5s infinite" }}/>
-                <circle cx="80" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0s"    repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0s"    repeatCount="indefinite"/>
-                </circle>
-                <circle cx="80" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="0.66s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="80" cy="140" r="25" fill="none" stroke="rgba(212,175,55,0.36)" strokeWidth="1" opacity="0">
-                  <animate attributeName="r"       from="25" to="60"  dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" from="0.36" to="0" dur="2s" begin="1.32s" repeatCount="indefinite"/>
-                </circle>
-                <text x="80" y="137" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">AI</text>
-                <text x="80" y="146" textAnchor="middle" fill="rgba(212,175,55,0.85)" fontSize="6.5" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="1">SCRIPTS</text>
-
-                {/* corner ornaments */}
-                <rect x="16"  y="16"  width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
-                <rect x="16"  y="16"  width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
-                <rect x="362" y="16"  width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
-                <rect x="383" y="16"  width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
-                <rect x="16"  y="403" width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
-                <rect x="16"  y="382" width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
-                <rect x="362" y="403" width="22" height="1"  fill="rgba(212,175,55,0.2)"/>
-                <rect x="383" y="382" width="1"  height="22" fill="rgba(212,175,55,0.2)"/>
-              </svg>
+                {/* floating card — middle left edge */}
+                <div style={{
+                  position: "absolute", top: "50%", left: "-22px",
+                  transform: "translateY(-50%)",
+                  background: "rgba(9,7,10,0.82)",
+                  backdropFilter: "blur(14px)",
+                  border: "1px solid rgba(52,211,153,0.28)",
+                  borderRadius: "12px",
+                  padding: "10px 16px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                }}>
+                  <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", color: "#34d399" }}>PACKS</div>
+                  <div style={{ fontSize: "13px", fontWeight: 900, color: "#fff", marginTop: "2px" }}>3 TIERS</div>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -391,25 +314,53 @@ export default function HomePage() {
                   : `GET STARTER — $${product.price} →`;
 
               return (
-                <article key={product.slug} style={{
-                  background: G.bgCard,
+                <article key={product.slug} className="pack-card" style={{
+                  background: "rgba(10,8,2,0.80)",
+                  backdropFilter: "blur(10px)",
                   border: `1px solid ${cfg.border}`,
-                  borderRadius: "8px",
-                  padding: "28px 24px",
+                  borderRadius: "14px",
+                  overflow: "hidden",
                   position: "relative",
                   display: "flex",
                   flexDirection: "column",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
                 }}>
                   {isPro && (
                     <div style={{
                       position: "absolute", top: "-13px", left: "50%", transform: "translateX(-50%)",
-                      background: G.gold, color: "#09070a",
+                      background: "linear-gradient(135deg,#D4AF37,#b8860b)",
+                      color: "#09070a",
                       fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em",
                       padding: "4px 18px", borderRadius: "20px", whiteSpace: "nowrap",
+                      boxShadow: "0 4px 14px rgba(212,175,55,0.35)",
                     }}>⭐ MOST POPULAR ⭐</div>
                   )}
 
-                  {/* header row */}
+                  {/* product image */}
+                  {(product.slug === "golden-delivery-starter" || product.slug === "golden-delivery-pro" || product.slug === "golden-delivery-commander") && (
+                    <div style={{ position: "relative", borderBottom: `1px solid ${cfg.border}` }}>
+                      <Image
+                        src={cfg.image}
+                        alt={`${product.name} Pack`}
+                        width={1448}
+                        height={1086}
+                        style={{ width: "100%", height: "auto", display: "block" }}
+                      />
+                      {/* instant badge overlay */}
+                      <div style={{
+                        position: "absolute", bottom: "10px", right: "10px",
+                        background: "rgba(9,7,10,0.80)",
+                        backdropFilter: "blur(8px)",
+                        border: "1px solid rgba(34,197,94,0.35)",
+                        borderRadius: "8px",
+                        padding: "5px 10px",
+                        fontSize: "9px", fontWeight: 800, letterSpacing: "0.15em",
+                        color: "#22c55e",
+                      }}>⚡ INSTANT DOWNLOAD</div>
+                    </div>
+                  )}
+
+                  <div style={{ padding: "24px 22px", flex: 1, display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
                     <div>
                       <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", color: cfg.hdr, textTransform: "uppercase", marginBottom: "3px" }}>
@@ -446,19 +397,23 @@ export default function HomePage() {
                   {/* CTA */}
                   <Link href={`/products/${product.slug}`} style={{
                     display: "block", textAlign: "center",
-                    background: cfg.cta,
+                    background: isPro
+                      ? "linear-gradient(135deg,#D4AF37 0%,#b8860b 100%)"
+                      : cfg.cta,
                     color: cfg.ctaFg,
-                    border: cfg.ctaBorder ?? "none",
+                    border: isPro ? "none" : (cfg.ctaBorder ?? "none"),
                     borderRadius: "6px",
-                    padding: "12px 20px",
+                    padding: "13px 20px",
                     fontSize: "12px", fontWeight: 800, letterSpacing: "0.1em",
                     textTransform: "uppercase", textDecoration: "none",
+                    boxShadow: isPro ? "0 4px 16px rgba(212,175,55,0.30)" : "none",
                   }}>
                     {ctaLabel}
                   </Link>
                   <p style={{ fontSize: "10px", color: G.mutedLo, textAlign: "center", marginTop: "8px" }}>
                     {product.guarantee}
                   </p>
+                  </div>
                 </article>
               );
             })}
