@@ -55,7 +55,7 @@ export default function Page() {
       {/* WHAT'S INSIDE */}
       <section className="px-6 py-16 border-t border-white/5">
         <div className="mx-auto max-w-4xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What's Inside</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What&apos;s Inside</p>
           <h2 className="text-3xl md:text-4xl font-semibold mb-12">9 files. Full ops system.</h2>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -119,7 +119,7 @@ export default function Page() {
       {/* RESULTS TARGETS */}
       <section className="px-6 py-16 border-t border-white/5">
         <div className="mx-auto max-w-4xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What You're Building Toward</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What You&apos;re Building Toward</p>
           <h2 className="text-2xl font-semibold mb-8">The Pro Pack 30-day benchmark targets:</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[

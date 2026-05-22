@@ -44,10 +44,10 @@ export default function Page() {
       <section className="px-6 py-16 border-t border-white/5">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-2xl md:text-3xl font-semibold text-white">
-            At $1K/month, you've proven the model. The Commander Pack exists to break the ceiling.
+            At $1K/month, you&apos;ve proven the model. The Commander Pack exists to break the ceiling.
           </h2>
           <p className="mt-4 text-neutral-300 text-lg leading-relaxed max-w-3xl">
-            Most operators plateau because they're still running manual systems at volume. Commander gives you the architecture, automation OS, and strategic frameworks to run a business that scales without your time being the bottleneck.
+            Most operators plateau because they&apos;re still running manual systems at volume. Commander gives you the architecture, automation OS, and strategic frameworks to run a business that scales without your time being the bottleneck.
           </p>
         </div>
       </section>
@@ -55,7 +55,7 @@ export default function Page() {
       {/* WHAT'S INSIDE */}
       <section className="px-6 py-16 border-t border-white/5">
         <div className="mx-auto max-w-4xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What's Inside</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What&apos;s Inside</p>
           <h2 className="text-3xl md:text-4xl font-semibold mb-12">12 files. Empire architecture.</h2>
 
           <div className="grid md:grid-cols-2 gap-6">

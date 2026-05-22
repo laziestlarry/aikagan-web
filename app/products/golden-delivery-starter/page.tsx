@@ -44,10 +44,10 @@ export default function Page() {
       <section className="px-6 py-16 border-t border-white/5">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-2xl md:text-3xl font-semibold text-white">
-            Most people spend months "getting ready" and never make a single dollar.
+            Most people spend months &quot;getting ready&quot; and never make a single dollar.
           </h2>
           <p className="mt-4 text-neutral-300 text-lg leading-relaxed max-w-3xl">
-            They watch tutorials, tweak their offer, wait for the perfect moment. Meanwhile the window closes. The Starter Pack exists to end that loop — you'll have a concrete first-sale execution map in your hands in the next 5 minutes.
+            They watch tutorials, tweak their offer, wait for the perfect moment. Meanwhile the window closes. The Starter Pack exists to end that loop — you&apos;ll have a concrete first-sale execution map in your hands in the next 5 minutes.
           </p>
         </div>
       </section>
@@ -55,7 +55,7 @@ export default function Page() {
       {/* WHAT'S INSIDE */}
       <section className="px-6 py-16 border-t border-white/5">
         <div className="mx-auto max-w-4xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What's Inside</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-amber-300 mb-4">What&apos;s Inside</p>
           <h2 className="text-3xl md:text-4xl font-semibold mb-12">7 files. Zero fluff.</h2>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -115,9 +115,9 @@ export default function Page() {
               <h3 className="text-xl font-semibold text-green-400 mb-4">✓ This is for you if…</h3>
               <ul className="space-y-3 text-neutral-300 text-sm">
                 {[
-                  "You haven't made your first AI-assisted dollar yet",
+                  "You haven&apos;t made your first AI-assisted dollar yet",
                   "You have a service or skill but no repeatable sales process",
-                  "You've been 'getting ready' for weeks and need to ship",
+                  "You&apos;ve been &apos;getting ready&apos; for weeks and need to ship",
                   "You want exact scripts, not vague advice",
                   "You have less than 2 hours a day to dedicate to this",
                 ].map((item) => <li key={item}>• {item}</li>)}
@@ -127,10 +127,10 @@ export default function Page() {
               <h3 className="text-xl font-semibold text-red-400 mb-4">✗ This is NOT for you if…</h3>
               <ul className="space-y-3 text-neutral-300 text-sm">
                 {[
-                  "You're already making $1K+/month and need scaling strategy",
+                  "You&apos;re already making $1K+/month and need scaling strategy",
                   "You want a passive system with zero effort",
                   "You need live coaching or 1-on-1 support",
-                  "You're looking for a get-rich-quick scheme",
+                  "You&apos;re looking for a get-rich-quick scheme",
                 ].map((item) => <li key={item}>• {item}</li>)}
               </ul>
             </div>
@@ -149,7 +149,7 @@ export default function Page() {
             7 files. One week. First sale.
           </h2>
           <p className="text-neutral-300 mb-8 text-lg">
-            Skip the months of "preparation." Download the system, follow the map, close your first deal.
+            Skip the months of &quot;preparation.&quot; Download the system, follow the map, close your first deal.
           </p>
 
           <div className="rounded-3xl border border-white/10 bg-[#111827] p-8 text-left mb-8">
@@ -176,7 +176,7 @@ export default function Page() {
               Get Instant Access — $29
             </a>
             <p className="mt-4 text-xs text-neutral-500 text-center">
-              ✓ 30-day money-back guarantee — if you don't make progress, get a full refund.
+              ✓ 30-day money-back guarantee — if you don&apos;t make progress, get a full refund.
             </p>
           </div>
         </div>

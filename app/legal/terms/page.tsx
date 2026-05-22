@@ -90,7 +90,7 @@ export default function TermsPage() {
             <p>
               Payments are processed by LemonSqueezy. Prices displayed are in USD. VAT or sales
               tax may be added at checkout depending on your country of residence, as determined
-              by LemonSqueezy's tax compliance system. You are responsible for any additional
+              by LemonSqueezy&apos;s tax compliance system. You are responsible for any additional
               local taxes applicable to digital product purchases in your jurisdiction.
             </p>
           </div>
@@ -109,7 +109,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">7. Limitation of Liability</h2>
             <p>
-              AIKAGAN's liability is limited to the purchase price of the product. We are not
+              AIKAGAN&apos;s liability is limited to the purchase price of the product. We are not
               liable for indirect, incidental, or consequential damages arising from use or
               inability to use the materials.
             </p>
