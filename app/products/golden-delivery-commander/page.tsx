@@ -1,10 +1,21 @@
 import Link from "next/link";
 import { products } from "@/lib/products";
+import MetaPixelEvent from "@/components/MetaPixelEvent";
+import CheckoutButton from "@/components/CheckoutButton";
 
 export const metadata = {
   title: "AutonomaX Golden Delivery Commander Pack — Scale to $10K+/Month",
   description:
     "12-file Empire Architecture. White-label rights, 60-day sprint, partnership playbook, automation OS, KPI dashboard, and $10K+/month revenue path models. $149 one-time.",
+  openGraph: {
+    title: "Scale to $10K+/Month — $149 Commander Pack",
+    description:
+      "White-label rights, 60-day scaling sprint, partnership deal templates, automation OS, and 3 modeled paths to $10K+/month. One-time $149.",
+    url: "https://aikagan.com/products/golden-delivery-commander",
+    siteName: "AIKAGAN",
+    images: [{ url: "https://aikagan.com/visuals/commander_pack.png", width: 1200, height: 630, alt: "Golden Delivery Commander Pack" }],
+    type: "website",
+  },
 };
 
 export default function Page() {
@@ -13,6 +24,8 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-[#08080a] text-white">
+      {/* Fire ViewContent for FB/IG ad optimisation */}
+      <MetaPixelEvent event="ViewContent" params={{ content_ids: ["golden-delivery-commander"], content_type: "product", value: 149, currency: "USD" }} />
 
       {/* HERO */}
       <section className="px-6 pt-24 pb-16 mx-auto max-w-4xl">
@@ -27,14 +40,14 @@ export default function Page() {
           12 files that give you the complete architecture for a 5-layer AI revenue empire — including white-label rights to resell the system, a 60-day scaling sprint, partnership deal templates, a full automation OS, and three modeled paths to $10K+/month.
         </p>
         <div className="mt-8 flex flex-wrap gap-4 items-center">
-          <a
-            href={product.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <CheckoutButton
+            href={product.checkoutUrl!}
+            slug="golden-delivery-commander"
+            price={149}
             className="inline-flex rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
           >
             Get Commander Access — $149
-          </a>
+          </CheckoutButton>
           <span className="text-sm text-neutral-400 line-through">${product.originalPrice} regular price</span>
         </div>
         <p className="mt-3 text-xs text-neutral-500">✓ Instant download &nbsp;·&nbsp; ✓ 30-day money-back guarantee &nbsp;·&nbsp; ✓ One-time payment</p>
@@ -233,14 +246,14 @@ export default function Page() {
                 </li>
               ))}
             </ul>
-            <a
-              href={product.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            <CheckoutButton
+              href={product.checkoutUrl!}
+              slug="golden-delivery-commander"
+              price={149}
               className="w-full inline-flex justify-center rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
             >
               Get Commander Access — $149
-            </a>
+            </CheckoutButton>
             <p className="mt-4 text-xs text-neutral-500 text-center">
               ✓ 30-day money-back guarantee — results or full refund.
             </p>
@@ -289,14 +302,14 @@ export default function Page() {
       <section className="px-6 py-16 border-t border-white/5 text-center">
         <div className="mx-auto max-w-xl">
           <h2 className="text-2xl font-semibold mb-4">Build the empire. Own the system. Scale on your terms.</h2>
-          <a
-            href={product.checkoutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <CheckoutButton
+            href={product.checkoutUrl!}
+            slug="golden-delivery-commander"
+            price={149}
             className="inline-flex rounded-full bg-amber-300 px-10 py-4 text-base font-semibold text-black transition hover:bg-amber-200"
           >
             Download the Commander Pack — $149
-          </a>
+          </CheckoutButton>
           <p className="mt-4 text-xs text-neutral-500">30-day guarantee · Instant download · Includes white-label rights</p>
         </div>
       </section>

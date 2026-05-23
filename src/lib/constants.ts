@@ -203,3 +203,8 @@ export const TRUST_SIGNALS = [
   'No Placeholder Marketing',
   'Real Conversion Engineering',
 ] as const;
+
+export const SOCIAL = {
+  facebook:  'https://www.facebook.com/kagan.aikagan',
+  instagram: 'https://www.instagram.com/kagan.aikagan',
+} as const;
