@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AIKAGAN – The Kaganate | Premium AI Business Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ─── CSS Variables ─────────────────────────────────────── */
+  :root {
+    --gold:        #C9943A;
+    --gold-light:  #E8B84B;
+    --gold-bright: #FFD066;
+    --gold-dim:    #8A6520;
+    --black:       #080808;
+    --black-mid:   #0E0E0E;
+    --black-card:  #111111;
+    --black-card2: #161616;
+    --border:      rgba(201,148,58,.18);
+    --border-gold: rgba(201,148,58,.5);
+    --white:       #FFFFFF;
+    --off-white:   #D8D0C4;
+    --muted:       #7A7060;
+    --green:       #2EBE6E;
+    --purple:      #8B5CF6;
+    --font-head:   'Cinzel', serif;
+    --font-body:   'Rajdhani', sans-serif;
+    --font-serif:  'Cormorant Garamond', serif;
+  }
+
+  /* ─── Reset & Base ──────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: default;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  ul { list-style: none; }
+
+  /* ─── Noise Overlay ─────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .35;
+  }
+
+  /* ─── Canvas Particles ──────────────────────────────────── */
+  #stars-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* ─── Scroll progress bar ───────────────────────────────── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+    z-index: 9999; width: 0%; transition: width .1s linear;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  /* ─── Navigation ────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 72px;
+    background: rgba(8,8,8,.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow .3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 40px rgba(0,0,0,.8); }
+
+  .nav-logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    position: relative; flex-shrink: 0;
+    animation: logo-pulse 3s ease-in-out infinite;
+  }
+  @keyframes logo-pulse {
+    0%,100% { filter: drop-shadow(0 0 6px rgba(201,148,58,.4)); }
+    50%      { filter: drop-shadow(0 0 14px rgba(201,148,58,.9)); }
+  }
+  .logo-text { line-height: 1; }
+  .logo-text .main {
+    font-family: var(--font-head); font-size: 1.15rem; font-weight: 700;
+    letter-spacing: .12em;
+    background: linear-gradient(90deg, var(--gold-light), var(--gold-bright));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .logo-text .sub {
+    font-size: .6rem; letter-spacing: .2em;
+    color: var(--muted); font-family: var(--font-body); text-transform: uppercase;
+  }
+
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a {
+    font-size: .8rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--off-white); transition: color .25s;
+    font-family: var(--font-body); font-weight: 500;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--gold-light); }
+  .nav-links a.active { border-bottom: 1px solid var(--gold-light); padding-bottom: 2px; }
+
+  .nav-actions { display: flex; align-items: center; gap: 16px; }
+  .nav-icon-btn {
+    background: none; border: none; color: var(--off-white);
+    cursor: pointer; padding: 6px; transition: color .25s; font-size: 1rem;
+  }
+  .nav-icon-btn:hover { color: var(--gold-light); }
+  .cart-badge { position: relative; display: inline-block; }
+  .badge-dot {
+    position: absolute; top: -4px; right: -4px;
+    width: 16px; height: 16px; background: var(--gold);
+    border-radius: 50%; font-size: .55rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; color: var(--black);
+  }
+  .btn-account {
+    padding: 8px 20px; background: transparent;
+    border: 1px solid var(--gold); color: var(--gold-light);
+    font-family: var(--font-body); font-size: .75rem;
+    letter-spacing: .1em; text-transform: uppercase; cursor: pointer;
+    transition: all .25s; font-weight: 600;
+  }
+  .btn-account:hover { background: var(--gold); color: var(--black); box-shadow: 0 0 20px rgba(201,148,58,.4); }
+
+  /* ─── Section wrapper ───────────────────────────────────── */
+  section { position: relative; z-index: 1; }
+
+  /* ─── HERO ──────────────────────────────────────────────── */
+  #hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; padding: 120px 80px 80px;
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 60% 80% at 70% 50%, rgba(201,148,58,.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(201,148,58,.04) 0%, transparent 60%);
+  }
+  .hero-grid-lines {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(201,148,58,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,148,58,.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .hero-label {
+    font-size: .7rem; letter-spacing: .25em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px; font-family: var(--font-body);
+    font-weight: 600; display: flex; align-items: center; gap: 10px;
+    opacity: 0; animation: fade-up .8s .3s forwards;
+  }
+  .hero-label::before { content: ''; width: 30px; height: 1px; background: var(--gold); display: block; }
+
+  .hero-h1 {
+    font-family: var(--font-head); font-size: clamp(2.8rem, 5vw, 4.2rem);
+    font-weight: 900; line-height: 1.05; margin-bottom: 16px;
+    opacity: 0; animation: fade-up .8s .5s forwards;
+  }
+  .hero-h1 .line1 { color: var(--white); display: block; }
+  .hero-h1 .line2 {
+    display: block;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold));
+    background-size: 200% 100%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shimmer-text 3s linear infinite, fade-up .8s .5s forwards;
+  }
+  @keyframes shimmer-text {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .hero-sub {
+    color: var(--off-white); font-size: 1.1rem; margin-bottom: 40px;
+    max-width: 420px; font-family: var(--font-serif);
+    font-style: italic; font-weight: 300; line-height: 1.8;
+    opacity: 0; animation: fade-up .8s .7s forwards;
+  }
+
+  .hero-badges {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    opacity: 0; animation: fade-up .8s .9s forwards;
+  }
+  .hero-badge {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+    border: 1px solid var(--border); background: rgba(255,255,255,.02);
+    backdrop-filter: blur(8px); transition: border-color .3s, background .3s;
+  }
+  .hero-badge:hover { border-color: var(--gold-dim); background: rgba(201,148,58,.06); }
+  .hero-badge .icon { font-size: 1.1rem; }
+  .hero-badge .info { line-height: 1.2; }
+  .hero-badge .info strong {
+    display: block; font-size: .75rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--gold-light); font-weight: 600;
+  }
+  .hero-badge .info span { font-size: .68rem; color: var(--muted); }
+
+  /* ─── Hero Visual Wrapper ──────────────────────────────── */
+  .hero-visual {
+    display: flex; justify-content: center; align-items: center;
+    position: relative;
+    opacity: 0; animation: fade-in 1.2s 1s forwards;
+  }
+
+  /* ─── Keyframes ─────────────────────────────────────────── */
+  @keyframes fade-up  { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes conic-spin { to { transform: rotate(360deg); } }
+
+  /* ─── Section Titles ─────────────────────────────────────── */
+  .section-label {
+    text-align: center; font-size: .68rem; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--gold);
+    font-weight: 600; margin-bottom: 12px; font-family: var(--font-body);
+  }
+  .section-title {
+    text-align: center; font-family: var(--font-head);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700;
+    margin-bottom: 16px; color: var(--white);
+  }
+  .section-divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-bottom: 60px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; height: 1px; width: 60px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim));
+  }
+  .section-divider::after { transform: scaleX(-1); }
+  .divider-gem { width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); }
+
+  /* ─── Pricing Section ────────────────────────────────────── */
+  #pricing {
+    padding: 100px 60px;
+    background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(201,148,58,.05) 0%, transparent 60%);
+  }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+  .price-card {
+    position: relative; padding: 36px 28px;
+    background: var(--black-card); border: 1px solid var(--border);
+    transition: transform .35s, border-color .35s, box-shadow .35s; overflow: hidden;
+  }
+  .price-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,148,58,.06) 0%, transparent 60%);
+    opacity: 0; transition: opacity .35s;
+  }
+  .price-card:hover { transform: translateY(-8px); }
+  .price-card:hover::before { opacity: 1; }
+  .price-card.starter:hover { border-color: var(--green); box-shadow: 0 20px 60px rgba(46,190,110,.12); }
+  .price-card.pro { border-color: rgba(201,148,58,.35); background: var(--black-card2); }
+  .price-card.pro:hover { border-color: var(--gold); box-shadow: 0 20px 60px rgba(201,148,58,.2); }
+  .price-card.commander:hover { border-color: var(--purple); box-shadow: 0 20px 60px rgba(139,92,246,.15); }
+
+  .price-badge {
+    display: inline-block; padding: 4px 14px;
+    font-size: .6rem; letter-spacing: .18em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 20px; font-family: var(--font-body);
+  }
+  .price-badge.start  { background: var(--green); color: var(--black); }
+  .price-badge.pop    { background: var(--gold); color: var(--black); }
+  .price-badge.value  { background: var(--purple); color: var(--white); }
+
+  .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .card-icon {
+    width: 48px; height: 48px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0; background: rgba(255,255,255,.02);
+  }
+  .card-icon.pro-icon { border-color: var(--gold-dim); background: rgba(201,148,58,.06); }
+  .card-icon.cmd-icon { border-color: rgba(139,92,246,.3); background: rgba(139,92,246,.06); }
+  .card-name { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 2px; }
+  .card-desc { font-size: .82rem; color: var(--muted); }
+  .card-price { font-family: var(--font-head); font-size: 2.8rem; font-weight: 900; margin-bottom: 24px; }
+  .card-price.green  { color: var(--green); }
+  .card-price.golden { background: linear-gradient(90deg, var(--gold), var(--gold-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .card-price.purple { color: var(--purple); }
+
+  .feature-list { margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; color: var(--off-white); line-height: 1.4; }
+  .check { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .65rem; flex-shrink: 0; margin-top: 1px; }
+  .check.g { background: rgba(46,190,110,.15); color: var(--green); border: 1px solid rgba(46,190,110,.3); }
+  .check.o { background: rgba(201,148,58,.15); color: var(--gold-light); border: 1px solid rgba(201,148,58,.3); }
+  .check.p { background: rgba(139,92,246,.15); color: var(--purple); border: 1px solid rgba(139,92,246,.3); }
+
+  .btn-card { width: 100%; padding: 14px; border: none; cursor: pointer; font-family: var(--font-body); font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-card.green  { background: var(--green); color: var(--black); }
+  .btn-card.green:hover  { background: #38e080; box-shadow: 0 0 24px rgba(46,190,110,.4); }
+  .btn-card.golden { background: linear-gradient(90deg, var(--gold), var(--gold-bright)); color: var(--black); }
+  .btn-card.golden:hover { box-shadow: 0 0 32px rgba(201,148,58,.5); transform: translateY(-1px); }
+  .btn-card.purple { background: var(--purple); color: var(--white); }
+  .btn-card.purple:hover { background: #9b6ff7; box-shadow: 0 0 24px rgba(139,92,246,.4); }
+
+  /* ─── Trust Badges Bar ───────────────────────────────────── */
+  #trust { padding: 48px 60px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--black-mid); }
+  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1000px; margin: 0 auto; }
+  .trust-item { display: flex; align-items: center; gap: 14px; }
+  .trust-icon { width: 44px; height: 44px; flex-shrink: 0; border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+  .trust-label { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); font-weight: 600; display: block; margin-bottom: 2px; }
+  .trust-desc { font-size: .8rem; color: var(--off-white); line-height: 1.3; }
+
+  /* ─── CTA Section ────────────────────────────────────────── */
+  #cta { padding: 120px 60px; text-align: center; position: relative; overflow: hidden; }
+  #cta::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(201,148,58,.06) 0%, transparent 70%); pointer-events: none; }
+  .cta-symbol { width: 120px; height: 120px; margin: 0 auto 40px; position: relative; }
+  .cta-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(201,148,58,.2); animation: conic-spin 18s linear infinite; }
+  .cta-ring:nth-child(2) { inset: 12px; animation-duration: 12s; animation-direction: reverse; border-color: rgba(201,148,58,.3); }
+  .cta-inner-triangle { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .cta-tri { width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold), var(--gold-bright)); clip-path: polygon(50% 0%, 100% 100%, 0% 100%); filter: drop-shadow(0 0 12px var(--gold)); }
+  .cta-h2 { font-family: var(--font-head); font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; margin-bottom: 16px; }
+  .cta-sub { font-family: var(--font-serif); font-style: italic; font-weight: 300; font-size: 1.15rem; color: var(--off-white); margin-bottom: 48px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { padding: 16px 36px; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); color: var(--black); border: none; cursor: pointer; font-family: var(--font-body); font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; transition: all .25s; display: inline-flex; align-items: center; gap: 10px; }
+  .btn-primary:hover { box-shadow: 0 0 40px rgba(201,148,58,.5); transform: translateY(-2px); }
+  .btn-outline { padding: 16px 36px; background: transparent; color: var(--off-white); border: 1px solid var(--border-gold); cursor: pointer; font-family: var(--font-body); font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; transition: all .25s; display: inline-flex; align-items: center; gap: 10px; }
+  .btn-outline:hover { border-color: var(--gold-light); color: var(--gold-light); background: rgba(201,148,58,.06); }
+
+  /* ─── Footer ─────────────────────────────────────────────── */
+  footer { background: var(--black-mid); border-top: 1px solid var(--border); padding: 64px 60px 32px; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1.3fr; gap: 48px; margin-bottom: 60px; }
+  .footer-brand .tagline { font-size: .85rem; color: var(--muted); margin: 16px 0 20px; line-height: 1.7; font-family: var(--font-serif); font-style: italic; }
+  .social-row { display: flex; gap: 10px; }
+  .social-btn { width: 34px; height: 34px; border: 1px solid var(--border); background: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--muted); font-size: .9rem; transition: all .25s; }
+  .social-btn:hover { border-color: var(--gold-dim); color: var(--gold-light); background: rgba(201,148,58,.06); }
+  .footer-col h4 { font-family: var(--font-body); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: var(--white); font-weight: 600; margin-bottom: 18px; }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul li a { font-size: .83rem; color: var(--muted); transition: color .25s; }
+  .footer-col ul li a:hover { color: var(--gold-light); }
+  .newsletter-desc { font-size: .83rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+  .email-form { display: flex; }
+  .email-input { flex: 1; padding: 11px 14px; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-right: none; color: var(--white); font-family: var(--font-body); font-size: .83rem; outline: none; transition: border-color .25s; }
+  .email-input::placeholder { color: var(--muted); }
+  .email-input:focus { border-color: var(--gold-dim); }
+  .email-submit { padding: 11px 16px; background: var(--gold); border: 1px solid var(--gold); color: var(--black); cursor: pointer; font-size: 1rem; transition: all .25s; }
+  .email-submit:hover { background: var(--gold-bright); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-bottom p { font-size: .75rem; color: var(--muted); }
+  .footer-bottom .taglines { display: flex; gap: 24px; font-size: .72rem; color: var(--muted); }
+  .footer-bottom .taglines span { color: var(--gold-dim); font-style: italic; }
+
+  /* ─── Scroll reveal ─────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s, transform .7s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── Scrollbar ─────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+  /* ─── Responsive tweaks ──────────────────────────────────── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    #hero { grid-template-columns: 1fr; padding: 100px 32px 60px; text-align: center; }
+    .hero-visual { display: none; }
+    .hero-badges { justify-content: center; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+    .trust-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    #pricing { padding: 80px 24px; }
+    #cta { padding: 80px 32px; }
+    footer { padding: 48px 24px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Stars Canvas -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- ─── Navigation ──────────────────────────────────────── -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">
+      <div class="main">AIKAGAN</div>
+      <div class="sub">The Kaganate</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#hero">Home</a>
+    <a href="#pricing" class="active">Products</a>
+    <a href="#cta">About</a>
+    <a href="#">Blog</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" aria-label="Search">🔍</button>
+    <button class="nav-icon-btn cart-badge" aria-label="Cart">
+      🛒<span class="badge-dot">0</span>
+    </button>
+    <button class="btn-account">My Account</button>
+  </div>
+</nav>
+
+<!-- ─── Hero ────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-content">
+    <div class="hero-label">AIKAGAN GOLDEN DELIVERY</div>
+    <h1 class="hero-h1">
+      <span class="line1">Premium Delivery.</span>
+      <span class="line2">Instant Impact.</span>
+    </h1>
+    <p class="hero-sub">Plug-and-play AI business operating systems. Delivered instantly. Built to scale.</p>
+    <div class="hero-badges">
+      <div class="hero-badge">
+        <span class="icon">⚡</span>
+        <div class="info"><strong>Instant Access</strong><span>Download Immediately</span></div>
+      </div>
+      <div class="hero-badge">
+        <span class="icon">🛡️</span>
+        <div class="info"><strong>Proven Systems</strong><span>Ready to Deploy</span></div>
+      </div>
+      <div class="hero-badge">
+        <span class="icon">👑</span>
+        <div class="info"><strong>Elite Quality</strong><span>Built for Scale</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Hero Visual: Gold Jewelry Chest ─── -->
+  <div class="hero-visual">
+    <svg viewBox="0 0 420 490" xmlns="http://www.w3.org/2000/svg"
+      style="width:100%; max-width:460px; filter:drop-shadow(0 0 40px rgba(201,148,58,0.18))">
+      <defs>
+
+        <!-- Body front face gradient -->
+        <linearGradient id="gBodyFront" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stop-color="#2A1F06"/>
+          <stop offset="40%"  stop-color="#181200"/>
+          <stop offset="100%" stop-color="#0C0900"/>
+        </linearGradient>
+
+        <!-- Body right side (darker) -->
+        <linearGradient id="gBodyRight" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#1A1400"/>
+          <stop offset="100%" stop-color="#080600"/>
+        </linearGradient>
+
+        <!-- Lid front face -->
+        <linearGradient id="gLidFront" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#2E2408"/>
+          <stop offset="100%" stop-color="#1A1400"/>
+        </linearGradient>
+
+        <!-- Lid right side -->
+        <linearGradient id="gLidRight" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#1E1800"/>
+          <stop offset="100%" stop-color="#080600"/>
+        </linearGradient>
+
+        <!-- Lid top: polished gold surface -->
+        <linearGradient id="gLidTop" x1="15%" y1="0%" x2="85%" y2="100%">
+          <stop offset="0%"   stop-color="#8A6520"/>
+          <stop offset="22%"  stop-color="#C9943A"/>
+          <stop offset="45%"  stop-color="#FFD066"/>
+          <stop offset="65%"  stop-color="#E8B84B"/>
+          <stop offset="85%"  stop-color="#C9943A"/>
+          <stop offset="100%" stop-color="#6A4E18"/>
+        </linearGradient>
+
+        <!-- Gold trim (horizontal) -->
+        <linearGradient id="gTrimH" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#5A3E10"/>
+          <stop offset="20%"  stop-color="#C9943A"/>
+          <stop offset="50%"  stop-color="#FFD066"/>
+          <stop offset="80%"  stop-color="#C9943A"/>
+          <stop offset="100%" stop-color="#5A3E10"/>
+        </linearGradient>
+
+        <!-- Gold trim (vertical) -->
+        <linearGradient id="gTrimV" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#5A3E10"/>
+          <stop offset="30%"  stop-color="#E8B84B"/>
+          <stop offset="70%"  stop-color="#FFD066"/>
+          <stop offset="100%" stop-color="#5A3E10"/>
+        </linearGradient>
+
+        <!-- Ground glow -->
+        <radialGradient id="gGround" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#C9943A" stop-opacity="0.45"/>
+          <stop offset="60%"  stop-color="#C9943A" stop-opacity="0.1"/>
+          <stop offset="100%" stop-color="#C9943A" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Ambient atmosphere -->
+        <radialGradient id="gAtmos" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#E8B84B" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#C9943A" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Lock plate inner glow -->
+        <radialGradient id="gLock" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#FFD066" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#C9943A" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- Glow filter for lock/energy -->
+        <filter id="fGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+
+        <!-- Soft light filter -->
+        <filter id="fSoft" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+
+        <!-- Subtle glow for orbital lines -->
+        <filter id="fRing" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+
+      </defs>
+
+      <!-- ══ ATMOSPHERE & GROUND ══════════════════════════════ -->
+      <!-- Large background atmosphere glow -->
+      <ellipse cx="210" cy="265" rx="195" ry="165" fill="url(#gAtmos)"/>
+
+      <!-- Ground shadow / glow ellipse -->
+      <ellipse cx="213" cy="370" rx="165" ry="28" fill="url(#gGround)">
+        <animate attributeName="rx"      values="165;178;165" dur="10s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.8;1;0.8"   dur="10s" repeatCount="indefinite"/>
+      </ellipse>
+
+      <!-- ══ ORBITAL RINGS ════════════════════════════════════ -->
+      <!-- Ring 1: near-equatorial (slow) -->
+      <ellipse cx="210" cy="300" rx="192" ry="50" fill="none"
+        stroke="rgba(201,148,58,0.22)" stroke-width="1" filter="url(#fRing)">
+        <animateTransform attributeName="transform" type="rotate"
+          from="0 210 300" to="360 210 300" dur="22s" repeatCount="indefinite"/>
+      </ellipse>
+
+      <!-- Ring 2: tilted 38° -->
+      <g transform="rotate(38, 210, 295)">
+        <ellipse cx="210" cy="295" rx="192" ry="50" fill="none"
+          stroke="rgba(201,148,58,0.15)" stroke-width="0.8">
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 210 295" to="-360 210 295" dur="30s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+
+      <!-- Ring 3: tilted -38° -->
+      <g transform="rotate(-38, 210, 295)">
+        <ellipse cx="210" cy="295" rx="192" ry="50" fill="none"
+          stroke="rgba(201,148,58,0.12)" stroke-width="0.8">
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 210 295" to="360 210 295" dur="26s" repeatCount="indefinite"/>
+        </ellipse>
+      </g>
+
+      <!-- ══ ORBITING RUNE SYMBOLS ════════════════════════════ -->
+      <!-- Each rotates around center (210, 268) at radius ~170 -->
+
+      <!-- ∑ — orbit CW 22s -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="0 210 268" to="360 210 268" dur="22s" repeatCount="indefinite"/>
+        <text x="380" y="273" text-anchor="middle"
+          fill="rgba(201,148,58,0.72)" font-size="15" font-family="serif" font-weight="bold">∑</text>
+      </g>
+
+      <!-- Ω — orbit CCW 28s, offset 55° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="55 210 268" to="-305 210 268" dur="28s" repeatCount="indefinite"/>
+        <text x="378" y="273" text-anchor="middle"
+          fill="rgba(232,184,75,0.62)" font-size="14" font-family="serif">Ω</text>
+      </g>
+
+      <!-- ∂ — orbit CW 19s, offset 110° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="110 210 268" to="470 210 268" dur="19s" repeatCount="indefinite"/>
+        <text x="380" y="272" text-anchor="middle"
+          fill="rgba(201,148,58,0.55)" font-size="13" font-family="serif">∂</text>
+      </g>
+
+      <!-- ∞ — orbit CW 32s, offset 175° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="175 210 268" to="535 210 268" dur="32s" repeatCount="indefinite"/>
+        <text x="382" y="272" text-anchor="middle"
+          fill="rgba(255,208,102,0.6)" font-size="14" font-family="serif">∞</text>
+      </g>
+
+      <!-- AI — orbit CCW 20s, offset 230° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="230 210 268" to="-130 210 268" dur="20s" repeatCount="indefinite"/>
+        <text x="378" y="270" text-anchor="middle"
+          fill="rgba(201,148,58,0.82)" font-size="10" font-family="sans-serif"
+          font-weight="900" letter-spacing="2">AI</text>
+      </g>
+
+      <!-- ◈ — orbit CW 25s, offset 290° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="290 210 268" to="650 210 268" dur="25s" repeatCount="indefinite"/>
+        <text x="376" y="275" text-anchor="middle"
+          fill="rgba(232,184,75,0.55)" font-size="15">◈</text>
+      </g>
+
+      <!-- ✦ — tighter orbit r=150, fast 14s, offset 20° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="20 210 268" to="380 210 268" dur="14s" repeatCount="indefinite"/>
+        <text x="360" y="272" text-anchor="middle"
+          fill="rgba(255,208,102,0.5)" font-size="12">✦</text>
+      </g>
+
+      <!-- ⊕ — tighter orbit r=148, CCW 17s, offset 150° -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="150 210 268" to="-210 210 268" dur="17s" repeatCount="indefinite"/>
+        <text x="358" y="274" text-anchor="middle"
+          fill="rgba(201,148,58,0.45)" font-size="12">⊕</text>
+      </g>
+
+      <!-- ══ SPARKLE PARTICLES ════════════════════════════════ -->
+      <circle cx="138" cy="158" r="2"   fill="#FFD066" opacity="0"><animate attributeName="opacity" values="0;0.9;0" dur="3.2s" begin="0s"    repeatCount="indefinite"/></circle>
+      <circle cx="288" cy="135" r="1.5" fill="#E8B84B" opacity="0"><animate attributeName="opacity" values="0;0.7;0" dur="2.8s" begin="0.8s"  repeatCount="indefinite"/></circle>
+      <circle cx="352" cy="194" r="2"   fill="#FFD066" opacity="0"><animate attributeName="opacity" values="0;0.9;0" dur="3.6s" begin="1.6s"  repeatCount="indefinite"/></circle>
+      <circle cx="162" cy="108" r="1.5" fill="#E8B84B" opacity="0"><animate attributeName="opacity" values="0;0.65;0" dur="2.4s" begin="0.4s" repeatCount="indefinite"/></circle>
+      <circle cx="88"  cy="218" r="2"   fill="#FFD066" opacity="0"><animate attributeName="opacity" values="0;0.75;0" dur="4s"   begin="1.2s" repeatCount="indefinite"/></circle>
+      <circle cx="336" cy="312" r="1.5" fill="#C9943A" opacity="0"><animate attributeName="opacity" values="0;0.6;0"  dur="3.8s" begin="2s"   repeatCount="indefinite"/></circle>
+      <circle cx="252" cy="118" r="2"   fill="#FFD066" opacity="0"><animate attributeName="opacity" values="0;0.85;0" dur="3s"   begin="2.4s" repeatCount="indefinite"/></circle>
+      <circle cx="84"  cy="285" r="1.5" fill="#E8B84B" opacity="0"><animate attributeName="opacity" values="0;0.6;0"  dur="2.6s" begin="0.6s" repeatCount="indefinite"/></circle>
+      <circle cx="185" cy="96"  r="1.5" fill="#FFD066" opacity="0"><animate attributeName="opacity" values="0;0.7;0"  dur="3.4s" begin="1.8s" repeatCount="indefinite"/></circle>
+      <circle cx="318" cy="165" r="2"   fill="#E8B84B" opacity="0"><animate attributeName="opacity" values="0;0.8;0"  dur="2.9s" begin="0.3s" repeatCount="indefinite"/></circle>
+
+      <!-- ══ THE CHEST (floating group) ═══════════════════════ -->
+      <g>
+        <!-- Slow float: translate Y 0 → -24 → 0, 10s ease -->
+        <animateTransform attributeName="transform" type="translate"
+          values="0,0; 0,-24; 0,0"
+          dur="10s" calcMode="spline"
+          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          keyTimes="0;0.5;1"
+          repeatCount="indefinite"/>
+
+        <!-- ─ Inner light glow (BEHIND the chest, from below lid) ─ -->
+        <ellipse cx="207" cy="218" rx="90" ry="12" fill="#FFD066" opacity="0.06" filter="url(#fSoft)">
+          <animate attributeName="opacity" values="0.04;0.14;0.04" dur="4s" repeatCount="indefinite"/>
+        </ellipse>
+
+        <!-- ─ BODY: right side (perspective) ─ -->
+        <polygon points="310,218 343,196 343,322 310,340"
+          fill="url(#gBodyRight)" stroke="rgba(201,148,58,0.38)" stroke-width="0.8"/>
+        <!-- Body right: horizontal trim extensions -->
+        <polygon points="310,243 343,221 343,225 310,247" fill="url(#gTrimH)" opacity="0.45"/>
+        <polygon points="310,290 343,268 343,272 310,294" fill="url(#gTrimH)" opacity="0.45"/>
+        <!-- Body right: vertical edge trim -->
+        <line x1="343" y1="196" x2="343" y2="322" stroke="url(#gTrimV)" stroke-width="1.5"/>
+
+        <!-- ─ BODY: front face ─ -->
+        <rect x="105" y="218" width="205" height="122"
+          fill="url(#gBodyFront)" stroke="rgba(201,148,58,0.42)" stroke-width="1"/>
+
+        <!-- Front face: corner bracket ornaments -->
+        <path d="M105,230 L105,218 L118,218" fill="none" stroke="url(#gTrimH)" stroke-width="2"/>
+        <path d="M297,218 L310,218 L310,230" fill="none" stroke="url(#gTrimH)" stroke-width="2"/>
+        <path d="M105,328 L105,340 L118,340" fill="none" stroke="url(#gTrimH)" stroke-width="2"/>
+        <path d="M297,340 L310,340 L310,328" fill="none" stroke="url(#gTrimH)" stroke-width="2"/>
+
+        <!-- Front face: horizontal trim bands (reinforcement straps) -->
+        <rect x="105" y="243" width="205" height="4" fill="url(#gTrimH)" opacity="0.75"/>
+        <rect x="105" y="290" width="205" height="4" fill="url(#gTrimH)" opacity="0.75"/>
+
+        <!-- Corner studs (rivets) -->
+        <circle cx="113" cy="224" r="4.5" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <circle cx="302" cy="224" r="4.5" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <circle cx="113" cy="332" r="4.5" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <circle cx="302" cy="332" r="4.5" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+
+        <!-- ─ CENTER LOCK PLATE ─ -->
+        <!-- Outer lock plate glow layer -->
+        <rect x="180" y="252" width="55" height="48" rx="4"
+          fill="url(#gLock)" opacity="0.0" filter="url(#fGlow)">
+          <animate attributeName="opacity" values="0;0.6;0" dur="3.5s" repeatCount="indefinite"/>
+        </rect>
+        <!-- Lock plate base -->
+        <rect x="180" y="252" width="55" height="48" rx="4"
+          fill="#0E0A00" stroke="rgba(201,148,58,0.65)" stroke-width="1.5"/>
+        <!-- Lock plate inner border -->
+        <rect x="183" y="255" width="49" height="42" rx="3"
+          fill="none" stroke="rgba(201,148,58,0.25)" stroke-width="0.5"/>
+
+        <!-- Triangle inside lock (AIKAGAN logo) -->
+        <polygon points="207,261 222,286 192,286"
+          fill="url(#gTrimH)" filter="url(#fGlow)">
+          <animate attributeName="opacity" values="0.75;1;0.75" dur="3.5s" repeatCount="indefinite"/>
+        </polygon>
+        <!-- Inner small triangle -->
+        <polygon points="207,267 216,283 198,283"
+          fill="none" stroke="rgba(255,208,102,0.6)" stroke-width="0.8"/>
+
+        <!-- Keyhole below triangle -->
+        <circle cx="207" cy="292" r="4.5" fill="rgba(201,148,58,0.55)" filter="url(#fGlow)">
+          <animate attributeName="opacity" values="0.55;1;0.55" dur="3.5s" repeatCount="indefinite"/>
+        </circle>
+        <rect x="205.5" y="292" width="3" height="5" rx="1" fill="rgba(201,148,58,0.55)"/>
+
+        <!-- Brand text on front face -->
+        <text x="207" y="316" text-anchor="middle"
+          fill="rgba(201,148,58,0.88)" font-size="11.5" font-family="'Cinzel',serif"
+          font-weight="700" letter-spacing="3">AIKAGAN</text>
+        <text x="207" y="328" text-anchor="middle"
+          fill="rgba(201,148,58,0.4)" font-size="6.5" font-family="sans-serif"
+          font-weight="600" letter-spacing="2.5">GOLDEN DELIVERY</text>
+
+        <!-- ─ LID: right side ─ -->
+        <polygon points="310,152 343,130 343,196 310,218"
+          fill="url(#gLidRight)" stroke="rgba(201,148,58,0.4)" stroke-width="0.8"/>
+        <!-- Lid right: upper corner line -->
+        <line x1="343" y1="130" x2="343" y2="196" stroke="url(#gTrimV)" stroke-width="1.2"/>
+        <!-- Lid right: decorative line -->
+        <line x1="312" y1="158" x2="343" y2="136" stroke="rgba(201,148,58,0.28)" stroke-width="0.6"/>
+
+        <!-- ─ LID: TOP SURFACE (polished gold) ─ -->
+        <!-- This is the most prominent face — bright gold bullion surface -->
+        <polygon points="105,152 310,152 343,130 138,130"
+          fill="url(#gLidTop)" stroke="rgba(201,148,58,0.6)" stroke-width="1"/>
+
+        <!-- Lid top: specular highlight streak -->
+        <line x1="140" y1="134" x2="330" y2="138"
+          stroke="rgba(255,255,200,0.18)" stroke-width="2.5"/>
+        <line x1="150" y1="140" x2="322" y2="144"
+          stroke="rgba(255,255,200,0.08)" stroke-width="1.5"/>
+
+        <!-- Lid top: engraved center diamond ornament -->
+        <polygon points="224,136 230,143 224,150 218,143"
+          fill="rgba(255,208,102,0.65)" stroke="rgba(255,208,102,0.4)" stroke-width="0.5"
+          filter="url(#fGlow)"/>
+        <!-- Side accent diamonds on lid top -->
+        <polygon points="165,138 169,143 165,148 161,143"
+          fill="none" stroke="rgba(201,148,58,0.4)" stroke-width="0.8"/>
+        <polygon points="282,136 286,141 282,146 278,141"
+          fill="none" stroke="rgba(201,148,58,0.35)" stroke-width="0.8"/>
+
+        <!-- ─ LID: FRONT FACE ─ -->
+        <polygon points="105,152 310,152 310,218 105,218"
+          fill="url(#gLidFront)" stroke="rgba(201,148,58,0.42)" stroke-width="1"/>
+
+        <!-- Lid front: top gold trim strip -->
+        <rect x="105" y="152" width="205" height="3.5" fill="url(#gTrimH)" opacity="0.85"/>
+
+        <!-- Lid front: corner brackets -->
+        <path d="M105,164 L105,152 L118,152" fill="none" stroke="url(#gTrimH)" stroke-width="2"/>
+        <path d="M297,152 L310,152 L310,164" fill="none" stroke="url(#gTrimH)" stroke-width="2"/>
+        <path d="M105,206 L105,218 L118,218" fill="none" stroke="url(#gTrimH)" stroke-width="1.5"/>
+        <path d="M297,218 L310,218 L310,206" fill="none" stroke="url(#gTrimH)" stroke-width="1.5"/>
+
+        <!-- Lid front: corner studs -->
+        <circle cx="113" cy="159" r="4.5" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <circle cx="302" cy="159" r="4.5" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+
+        <!-- Lid front: decorative oval frame -->
+        <path d="M170,160 Q207,155 244,160 L242,215 Q207,218 172,215 Z"
+          fill="none" stroke="rgba(201,148,58,0.22)" stroke-width="0.8"/>
+
+        <!-- Lid front: filigree left flourish -->
+        <path d="M130,186 Q148,178 168,186 Q148,194 130,186"
+          fill="rgba(201,148,58,0.1)" stroke="rgba(201,148,58,0.32)" stroke-width="0.8"/>
+        <path d="M128,186 Q122,180 118,186 Q122,192 128,186"
+          fill="none" stroke="rgba(201,148,58,0.22)" stroke-width="0.6"/>
+
+        <!-- Lid front: filigree right flourish -->
+        <path d="M246,186 Q264,178 284,186 Q264,194 246,186"
+          fill="rgba(201,148,58,0.1)" stroke="rgba(201,148,58,0.32)" stroke-width="0.8"/>
+        <path d="M286,186 Q292,180 296,186 Q292,192 286,186"
+          fill="none" stroke="rgba(201,148,58,0.22)" stroke-width="0.6"/>
+
+        <!-- Lid front: central diamond (matches lid top ornament) -->
+        <polygon points="207,172 213,183 207,194 201,183"
+          fill="none" stroke="rgba(201,148,58,0.45)" stroke-width="1"/>
+        <polygon points="207,176 211,183 207,190 203,183"
+          fill="rgba(201,148,58,0.12)" stroke="rgba(201,148,58,0.3)" stroke-width="0.5"/>
+
+        <!-- Lid front: subtle script text (AI scripts theme) -->
+        <text x="207" y="210" text-anchor="middle"
+          fill="rgba(201,148,58,0.22)" font-size="5.5" font-family="serif"
+          letter-spacing="3" font-style="italic">· AI SYSTEMS · SCRIPTS · KNOWLEDGE ·</text>
+
+        <!-- ─ HINGE DETAILS (where lid meets body, at rear) ─ -->
+        <circle cx="138" cy="141" r="3" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <circle cx="207" cy="139" r="3" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <circle cx="278" cy="137" r="3" fill="url(#gTrimH)" stroke="rgba(201,148,58,0.5)" stroke-width="0.5"/>
+        <line x1="134" y1="152" x2="138" y2="141" stroke="rgba(201,148,58,0.5)" stroke-width="1.2"/>
+        <line x1="207" y1="152" x2="207" y2="139" stroke="rgba(201,148,58,0.5)" stroke-width="1.2"/>
+        <line x1="280" y1="152" x2="278" y2="137" stroke="rgba(201,148,58,0.5)" stroke-width="1.2"/>
+
+        <!-- ─ CHEST OPENING RIM GLOW (light from inside) ─ -->
+        <!-- Front rim -->
+        <line x1="107" y1="218" x2="309" y2="218"
+          stroke="#FFD066" stroke-width="2.5" opacity="0.0" filter="url(#fGlow)">
+          <animate attributeName="opacity" values="0.08;0.42;0.08" dur="4s" repeatCount="indefinite"/>
+        </line>
+        <!-- Right rim -->
+        <line x1="310" y1="218" x2="343" y2="196"
+          stroke="#FFD066" stroke-width="2" opacity="0.0" filter="url(#fGlow)">
+          <animate attributeName="opacity" values="0.06;0.32;0.06" dur="4s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- ─ LIGHT RAYS (from inside, subtle, upward) ─ -->
+        <line x1="155" y1="218" x2="145" y2="128"
+          stroke="rgba(255,208,102,0.07)" stroke-width="3">
+          <animate attributeName="opacity" values="0;0.22;0" dur="5s" begin="0s" repeatCount="indefinite"/>
+        </line>
+        <line x1="207" y1="218" x2="202" y2="88"
+          stroke="rgba(255,208,102,0.1)" stroke-width="4">
+          <animate attributeName="opacity" values="0;0.3;0" dur="5s" begin="1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="260" y1="218" x2="268" y2="118"
+          stroke="rgba(255,208,102,0.07)" stroke-width="3">
+          <animate attributeName="opacity" values="0;0.22;0" dur="5s" begin="2s" repeatCount="indefinite"/>
+        </line>
+
+      </g>
+      <!-- END CHEST -->
+
+      <!-- ══ BRAND LABEL BELOW ════════════════════════════════ -->
+      <text x="210" y="408" text-anchor="middle"
+        fill="rgba(201,148,58,0.55)" font-size="9.5" font-family="sans-serif"
+        font-weight="800" letter-spacing="5">AI BUSINESS SYSTEMS</text>
+      <text x="210" y="423" text-anchor="middle"
+        fill="rgba(201,148,58,0.28)" font-size="7.5" font-family="sans-serif"
+        letter-spacing="4">DELIVERED</text>
+
+    </svg>
+  </div>
+  <!-- END Hero Visual -->
+
+</section>
+
+<!-- ─── Pricing ──────────────────────────────────────────── -->
+<section id="pricing">
+  <div class="section-label reveal">Our Product Line</div>
+  <h2 class="section-title reveal">Choose Your Golden Delivery Pack</h2>
+  <div class="section-divider reveal"><div class="divider-gem"></div></div>
+
+  <div class="pricing-grid">
+    <!-- Starter -->
+    <div class="price-card starter reveal">
+      <div class="price-badge start">Start Here</div>
+      <div class="card-header">
+        <div class="card-icon">📦</div>
+        <div>
+          <div class="card-name">Golden Delivery Starter</div>
+          <div class="card-desc">Perfect for getting started with AI automation.</div>
+        </div>
+      </div>
+      <div class="card-price green">$97</div>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="check g">✓</span>10+ Essential AI Automations</li>
+        <li class="feature-item"><span class="check g">✓</span>Standard Operating Procedures</li>
+        <li class="feature-item"><span class="check g">✓</span>Plug &amp; Play Templates</li>
+        <li class="feature-item"><span class="check g">✓</span>Video Setup Guides</li>
+        <li class="feature-item"><span class="check g">✓</span>Community Access</li>
+        <li class="feature-item"><span class="check g">✓</span>Instant Download</li>
+      </ul>
+      <button class="btn-card green">View Details →</button>
+    </div>
+
+    <!-- Pro -->
+    <div class="price-card pro reveal">
+      <div class="price-badge pop">Most Popular</div>
+      <div class="card-header">
+        <div class="card-icon pro-icon">🔧</div>
+        <div>
+          <div class="card-name">Golden Delivery Pro</div>
+          <div class="card-desc">Advanced systems for growing businesses.</div>
+        </div>
+      </div>
+      <div class="card-price golden">$297</div>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="check o">✓</span>50+ Advanced AI Automations</li>
+        <li class="feature-item"><span class="check o">✓</span>Complete Business Playbooks</li>
+        <li class="feature-item"><span class="check o">✓</span>Advanced Integrations</li>
+        <li class="feature-item"><span class="check o">✓</span>Custom Workflows</li>
+        <li class="feature-item"><span class="check o">✓</span>Priority Support</li>
+        <li class="feature-item"><span class="check o">✓</span>Instant Download</li>
+      </ul>
+      <button class="btn-card golden">View Details →</button>
+    </div>
+
+    <!-- Commander -->
+    <div class="price-card commander reveal">
+      <div class="price-badge value">Best Value</div>
+      <div class="card-header">
+        <div class="card-icon cmd-icon">👑</div>
+        <div>
+          <div class="card-name">Golden Delivery Commander</div>
+          <div class="card-desc">Complete business empire automation system.</div>
+        </div>
+      </div>
+      <div class="card-price purple">$997</div>
+      <ul class="feature-list">
+        <li class="feature-item"><span class="check p">✓</span>100+ Complete AI Systems</li>
+        <li class="feature-item"><span class="check p">✓</span>Full Business Automation Suite</li>
+        <li class="feature-item"><span class="check p">✓</span>Advanced AI Agents</li>
+        <li class="feature-item"><span class="check p">✓</span>White-Label Rights</li>
+        <li class="feature-item"><span class="check p">✓</span>VIP Support &amp; Onboarding</li>
+        <li class="feature-item"><span class="check p">✓</span>Instant Download</li>
+      </ul>
+      <button class="btn-card purple">View Details →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Trust Bar ─────────────────────────────────────────── -->
+<section id="trust">
+  <div class="trust-grid">
+    <div class="trust-item reveal">
+      <div class="trust-icon">🛡️</div>
+      <div>
+        <span class="trust-label">30-Day Guarantee</span>
+        <span class="trust-desc">Full money-back guarantee, no questions asked.</span>
+      </div>
+    </div>
+    <div class="trust-item reveal">
+      <div class="trust-icon">⬇️</div>
+      <div>
+        <span class="trust-label">Instant Download</span>
+        <span class="trust-desc">Access your products immediately after purchase.</span>
+      </div>
+    </div>
+    <div class="trust-item reveal">
+      <div class="trust-icon">🔒</div>
+      <div>
+        <span class="trust-label">Secure &amp; Private</span>
+        <span class="trust-desc">Bank-level security for all your downloads.</span>
+      </div>
+    </div>
+    <div class="trust-item reveal">
+      <div class="trust-icon">🎧</div>
+      <div>
+        <span class="trust-label">Elite Support</span>
+        <span class="trust-desc">Get expert help whenever you need it.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ───────────────────────────────────────────────── -->
+<section id="cta">
+  <div class="cta-symbol reveal">
+    <div class="cta-ring"></div>
+    <div class="cta-ring"></div>
+    <div class="cta-inner-triangle"><div class="cta-tri"></div></div>
+  </div>
+  <h2 class="cta-h2 reveal">Ready to Transform Your Business?</h2>
+  <p class="cta-sub reveal">Join thousands of entrepreneurs who've already automated their success.</p>
+  <div class="cta-buttons reveal">
+    <button class="btn-primary">Browse All Products →</button>
+    <button class="btn-outline">Learn More →</button>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" style="margin-bottom:0">
+        <div class="logo-mark"></div>
+        <div class="logo-text">
+          <div class="main">AIKAGAN</div>
+          <div class="sub">The Kaganate</div>
+        </div>
+      </div>
+      <p class="tagline">AIKAGAN is a premium AI infrastructure, productization, checkout, and Golden Delivery system.</p>
+      <div class="social-row">
+        <button class="social-btn" aria-label="Twitter">𝕏</button>
+        <button class="social-btn" aria-label="YouTube">▶</button>
+        <button class="social-btn" aria-label="LinkedIn">in</button>
+        <button class="social-btn" aria-label="Instagram">◈</button>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="#">Golden Delivery Starter</a></li>
+        <li><a href="#">Golden Delivery Pro</a></li>
+        <li><a href="#">Golden Delivery Commander</a></li>
+        <li><a href="#">All Products</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About AIKAGAN</a></li>
+        <li><a href="#">Our Mission</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Refund Policy</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Stay Connected</h4>
+      <p class="newsletter-desc">Get the latest updates and exclusive offers delivered to your inbox.</p>
+      <div class="email-form">
+        <input class="email-input" type="email" placeholder="Enter your email" />
+        <button class="email-submit">→</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2024 AIKAGAN. All rights reserved.</p>
+    <div class="taglines">
+      <span>The Kaganate</span>
+      <p>· Building the Future with AI ·</p>
+      <span>Made with ♥ for entrepreneurs worldwide</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── Scripts ────────────────────────────────────────────── -->
+<script>
+/* ── Scroll progress ──────────────────── */
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  bar.style.width = (window.scrollY / (h.scrollHeight - h.clientHeight)) * 100 + '%';
+}, { passive: true });
+
+/* ── Navbar scroll ────────────────────── */
+const nb = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  nb.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+/* ── Reveal on scroll ─────────────────── */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.transitionDelay = (i * 0.08) + 's';
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+/* ── Star field canvas ─────────────────── */
+(function () {
+  const cvs = document.getElementById('stars-canvas');
+  const ctx = cvs.getContext('2d');
+  let W, H, stars = [];
+  function resize() { W = cvs.width = window.innerWidth; H = cvs.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 120; i++) {
+    stars.push({ x: Math.random()*1920, y: Math.random()*1080,
+      r: Math.random()*1.2+0.2, a: Math.random(), da: (Math.random()-0.5)*0.008 });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.a = Math.max(0.05, Math.min(1, s.a + s.da));
+      if (s.a <= 0.05 || s.a >= 1) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(201,148,58,${s.a * 0.5})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Button interactions ──────────────── */
+document.querySelectorAll('.btn-card, .btn-primary, .btn-outline, .btn-account').forEach(btn => {
+  btn.addEventListener('mouseenter', () => { btn.style.transition = 'all .15s'; });
+  btn.addEventListener('mouseleave', () => { btn.style.transition = 'all .25s'; });
+});
+
+/* ── Email subscribe ─────────────────── */
+const emailInput = document.querySelector('.email-input');
+const emailBtn   = document.querySelector('.email-submit');
+if (emailBtn) {
+  emailBtn.addEventListener('click', () => {
+    if (emailInput.value && emailInput.value.includes('@')) {
+      emailBtn.textContent = '✓';
+      emailBtn.style.background = '#2EBE6E';
+      emailInput.value = '';
+      setTimeout(() => { emailBtn.textContent = '→'; emailBtn.style.background = ''; }, 3000);
+    } else {
+      emailInput.style.borderColor = '#e55';
+      setTimeout(() => { emailInput.style.borderColor = ''; }, 1500);
+    }
+  });
+}
+</script>
+</body>
+</html>

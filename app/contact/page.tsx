@@ -1,42 +1,78 @@
-import type { Metadata } from 'next';
-import { buildMetadata } from '@/lib/metadata';
-import Section from '@/components/ui/Section';
-import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
-import { ArrowRight, Mail, MessageSquare, Clock, Building2 } from 'lucide-react';
+"use client";
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Contact',
-  description:
-    'Start a project, request an audit, or inquire about AI automation services. Structured intake — response within 48 hours.',
-  path: '/contact/',
-});
+import { useState } from "react";
+import Link from "next/link";
+import Section from "@/components/ui/Section";
+import Card from "@/components/ui/Card";
+import { ArrowRight, Mail, MessageSquare, Clock, Building2, CheckCircle, AlertCircle } from "lucide-react";
 
 const CONTACT_OPTIONS = [
   {
     icon: MessageSquare,
-    title: 'Project Request',
-    description: 'Submit a structured project brief. We respond with a scoping document within 48 hours.',
-    action: 'Start Project',
-    href: '#intake-form',
+    title: "Project Request",
+    description:
+      "Submit a structured project brief. We respond with a scoping document within 48 hours.",
+    action: "Start Project",
+    href: "#intake-form",
   },
   {
     icon: Building2,
-    title: 'Enterprise Inquiry',
-    description: 'For organizations evaluating AI infrastructure at scale. Architecture review and roadmap.',
-    action: 'Enterprise Inquiry',
-    href: '#intake-form',
+    title: "Enterprise Inquiry",
+    description:
+      "For organizations evaluating AI infrastructure at scale. Architecture review and roadmap.",
+    action: "Enterprise Inquiry",
+    href: "#intake-form",
   },
   {
     icon: Clock,
-    title: 'Quick Audit',
-    description: 'Need a focused technical review of your current stack? Structured audit with recommendations.',
-    action: 'Request Audit',
-    href: '#intake-form',
+    title: "Quick Audit",
+    description:
+      "Need a focused technical review of your current stack? Structured audit with recommendations.",
+    action: "Request Audit",
+    href: "#intake-form",
   },
 ];
 
+const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+
 export default function ContactPage() {
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("sending");
+    setErrorMsg("");
+
+    if (!FORMSPREE_ID) {
+      setStatus("error");
+      setErrorMsg("Form is not yet configured. Please contact us directly at the email below.");
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
+      });
+      if (res.ok) {
+        setStatus("success");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setStatus("error");
+        setErrorMsg(
+          data?.errors?.map((err: { message: string }) => err.message).join(", ") ||
+            "Submission failed. Please try again or email us directly."
+        );
+      }
+    } catch {
+      setStatus("error");
+      setErrorMsg("Network error. Check your connection and try again.");
+    }
+  }
+
   return (
     <>
       <Section variant="hero">
@@ -82,138 +118,158 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <form
-              action="https://formspree.io/f/your-form-id"
-              method="POST"
-              className="space-y-5"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Success state */}
+            {status === "success" ? (
+              <div className="flex flex-col items-center text-center gap-4 py-8">
+                <CheckCircle className="h-12 w-12 text-green-400" />
+                <h3 className="text-xl font-bold text-kagan-white">Request Received</h3>
+                <p className="text-kagan-light max-w-sm">
+                  We&apos;ll review your project details and respond with a scoping document within 48 hours.
+                </p>
+                <button
+                  onClick={() => setStatus("idle")}
+                  className="mt-2 text-sm text-kagan-gold underline hover:text-kagan-gold-light transition-colors"
+                >
+                  Submit another request
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-kagan-white mb-1.5">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-kagan-white mb-1.5">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors"
+                      placeholder="you@company.com"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-kagan-white mb-1.5">
-                    Full Name
+                  <label htmlFor="company" className="block text-sm font-medium text-kagan-white mb-1.5">
+                    Company / Project <span className="text-kagan-muted font-normal">(optional)</span>
                   </label>
                   <input
                     type="text"
-                    id="name"
-                    name="name"
-                    required
+                    id="company"
+                    name="company"
                     className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors"
-                    placeholder="Your name"
+                    placeholder="Company or project name"
                   />
                 </div>
+
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-kagan-white mb-1.5">
-                    Email Address
+                  <label htmlFor="interest" className="block text-sm font-medium text-kagan-white mb-1.5">
+                    What Are You Looking For?
                   </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
+                  <select
+                    id="interest"
+                    name="interest"
                     required
-                    className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors"
-                    placeholder="you@company.com"
+                    className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors appearance-none"
+                    style={{
+                      backgroundImage:
+                        'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 fill=%27%23c9923a%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M8 11L3 6h10l-5 5z%27/%3E%3C/svg%3E")',
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "right 12px center",
+                      paddingRight: "2.5rem",
+                    }}
+                  >
+                    <option value="" disabled>
+                      Select an option…
+                    </option>
+                    <option value="ai-automation">AI Automation (AutonomaX)</option>
+                    <option value="ecommerce-conversion">E-Commerce Conversion (ProPulse)</option>
+                    <option value="golden-delivery">Golden Delivery (Done-For-You)</option>
+                    <option value="advisory">Strategic Advisory</option>
+                    <option value="product-purchase">Product Purchase</option>
+                    <option value="other">Other / Multiple</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-kagan-white mb-1.5">
+                    Project Details
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={5}
+                    required
+                    className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors resize-y"
+                    placeholder="Describe what you&apos;re building, your current stack, timeline, budget range, and what success looks like…"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="company" className="block text-sm font-medium text-kagan-white mb-1.5">
-                  Company / Project <span className="text-kagan-muted font-normal">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors"
-                  placeholder="Company or project name"
-                />
-              </div>
+                {/* Error banner */}
+                {status === "error" && (
+                  <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                    <span>{errorMsg || "Something went wrong. Please try again."}</span>
+                  </div>
+                )}
 
-              <div>
-                <label htmlFor="interest" className="block text-sm font-medium text-kagan-white mb-1.5">
-                  What Are You Looking For?
-                </label>
-                <select
-                  id="interest"
-                  name="interest"
-                  required
-                  className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors appearance-none"
-                  style={{
-                    backgroundImage:
-                      'url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 fill=%27%23c9923a%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M8 11L3 6h10l-5 5z%27/%3E%3C/svg%3E")',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'right 12px center',
-                    paddingRight: '2.5rem',
-                  }}
+                <button
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="w-full rounded-lg bg-kagan-gold px-6 py-3 text-base font-semibold text-black hover:bg-kagan-gold-light transition-colors focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:ring-offset-2 focus:ring-offset-kagan-black disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <option value="" disabled selected>
-                    Select an option…
-                  </option>
-                  <option value="ai-automation">AI Automation (AutonomaX)</option>
-                  <option value="ecommerce-conversion">E-Commerce Conversion (ProPulse)</option>
-                  <option value="golden-delivery">Golden Delivery (Done-For-You)</option>
-                  <option value="advisory">Strategic Advisory</option>
-                  <option value="product-purchase">Product Purchase</option>
-                  <option value="other">Other / Multiple</option>
-                </select>
-              </div>
+                  {status === "sending" ? "Sending…" : "Submit Project Request"}
+                </button>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-kagan-white mb-1.5">
-                  Project Details
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={5}
-                  required
-                  className="w-full rounded-lg border border-kagan-border bg-kagan-dark px-4 py-2.5 text-kagan-white text-sm placeholder:text-kagan-muted focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:border-kagan-gold/50 transition-colors resize-y"
-                  placeholder="Describe what you're building, your current stack, timeline, budget range, and what success looks like…"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-kagan-gold px-6 py-3 text-base font-semibold text-black hover:bg-kagan-gold-light transition-colors focus:outline-none focus:ring-2 focus:ring-kagan-gold/50 focus:ring-offset-2 focus:ring-offset-kagan-black"
-              >
-                Submit Project Request
-              </button>
-
-              <p className="text-xs text-kagan-muted text-center mt-4">
-                We respond within 48 hours. No spam, no auto-responder sequences, no fluff.
-              </p>
-            </form>
+                <p className="text-xs text-kagan-muted text-center mt-4">
+                  We respond within 48 hours. No spam, no auto-responder sequences, no fluff.
+                </p>
+              </form>
+            )}
           </Card>
         </div>
       </Section>
 
       <Section variant="alt">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-kagan-white mb-6">
-            Not Ready to Submit? Start Here.
-          </h2>
+          <h2 className="text-2xl font-bold text-kagan-white mb-6">Not Ready to Submit? Start Here.</h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
+            <Link
               href="/products/"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
               Browse Products
               <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
+            </Link>
+            <Link
               href="/services/"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
               Explore Services
               <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
+            </Link>
+            <Link
               href="/mission-control/"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
               View Process
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </Section>

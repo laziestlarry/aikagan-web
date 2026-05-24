@@ -3,6 +3,8 @@ export const metadata = {
   description: "Get help with your AIKAGAN order, product questions, or business inquiries.",
 };
 
+import Link from "next/link";
+
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white">
@@ -21,14 +23,14 @@ export default function ContactPage() {
             Or grab Pro if you already have an offer and need the full funnel + automation stack.
           </p>
           <div className="flex flex-wrap gap-3">
-            <a href="/products/golden-delivery-starter"
+            <Link href="/products/golden-delivery-starter"
               className="inline-block bg-amber-300 text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-amber-200 transition">
               Starter — $29 →
-            </a>
-            <a href="/products/golden-delivery-pro"
+            </Link>
+            <Link href="/products/golden-delivery-pro"
               className="inline-block border border-amber-300/40 text-amber-300 font-semibold text-sm px-6 py-3 rounded-xl hover:bg-amber-300/10 transition">
               Pro — $79 →
-            </a>
+            </Link>
           </div>
         </div>
 

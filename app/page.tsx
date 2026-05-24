@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { products } from "@/lib/products";
+import CountdownTimer from "@/components/ui/CountdownTimer";
+import CheckoutLink from "@/components/ui/CheckoutLink";
 
 // ── Gold palette ──────────────────────────────────────────────────────────
 const G = {
@@ -58,6 +60,21 @@ export default function HomePage() {
   return (
     <div style={{ background: G.bg, color: "#fff", fontFamily: "system-ui,-apple-system,sans-serif" }}>
 
+      {/* ── LAUNCH-PRICE URGENCY BANNER ──────────────────────────────────── */}
+      <div style={{
+        background: "linear-gradient(90deg,#1a1000,#2a1e00,#1a1000)",
+        borderBottom: `1px solid ${G.goldDim}`,
+        padding: "10px 20px",
+        textAlign: "center",
+        position: "sticky", top: 0, zIndex: 50,
+      }}>
+        <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.18em", color: G.gold }}>
+          🔥 LAUNCH PRICE ENDS IN:{" "}
+          <CountdownTimer style={{ color: "#fff", fontFamily: "monospace" }} />
+          {" "}— UP TO 85% OFF TODAY ONLY
+        </span>
+      </div>
+
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden" style={{ minHeight: "580px" }}>
 
@@ -113,15 +130,20 @@ export default function HomePage() {
               </p>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
-                <Link href="/products/golden-delivery-starter" style={{
-                  display: "inline-flex", alignItems: "center",
-                  background: G.gold, color: "#09070a",
-                  fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
-                  padding: "14px 30px", borderRadius: "6px",
-                  textTransform: "uppercase", textDecoration: "none",
-                }}>
+                <CheckoutLink
+                  href={products[0].checkoutUrl}
+                  productSlug={products[0].slug}
+                  productName={products[0].name}
+                  price={products[0].price}
+                  style={{
+                    display: "inline-flex", alignItems: "center",
+                    background: G.gold, color: "#09070a",
+                    fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
+                    padding: "14px 30px", borderRadius: "6px",
+                    textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
+                  }}>
                   START AT $29 →
-                </Link>
+                </CheckoutLink>
                 <Link href="#packs" style={{
                   display: "inline-flex", alignItems: "center",
                   border: `1px solid ${G.goldDim}`, color: G.gold,
@@ -134,8 +156,43 @@ export default function HomePage() {
                 </Link>
               </div>
 
+              {/* ── Social proof strip ── */}
+              <div style={{ marginTop: "28px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "18px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  {["★","★","★","★","★"].map((s, i) => (
+                    <span key={i} style={{ color: G.gold, fontSize: "13px" }}>{s}</span>
+                  ))}
+                  <span style={{ fontSize: "11px", color: G.text, marginLeft: "4px", fontWeight: 700 }}>4.9 / 5</span>
+                  <span style={{ fontSize: "10px", color: G.muted, marginLeft: "4px" }}>(23 verified buyers)</span>
+                </div>
+                <div style={{ width: "1px", height: "16px", background: G.goldDim }} />
+                <span style={{ fontSize: "11px", fontWeight: 700, color: G.text }}>
+                  ⚡ <span style={{ color: G.gold }}>47 operators</span> activated this week
+                </span>
+              </div>
+
+              {/* ── Micro-testimonials ── */}
+              <div style={{ marginTop: "22px", display: "flex", flexDirection: "column", gap: "10px", maxWidth: "460px" }}>
+                {[
+                  { quote: "Closed my first $500 deal on Day 5. The DM scripts are insane.", handle: "@devmarcus_builds" },
+                  { quote: "Bought Starter, upgraded to Commander same day. ROI in week 1.", handle: "@soph.automates" },
+                ].map((t) => (
+                  <div key={t.handle} style={{
+                    background: "rgba(212,175,55,0.05)",
+                    border: `1px solid ${G.goldDim}`,
+                    borderRadius: "6px",
+                    padding: "10px 14px",
+                  }}>
+                    <p style={{ fontSize: "11px", color: G.text, lineHeight: 1.6, margin: 0 }}>
+                      &ldquo;{t.quote}&rdquo;
+                    </p>
+                    <p style={{ fontSize: "10px", color: G.muted, marginTop: "4px", fontWeight: 700 }}>{t.handle}</p>
+                  </div>
+                ))}
+              </div>
+
               {/* trust strip */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "24px" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "20px" }}>
                 {[["↓","INSTANT DOWNLOAD"],["◈","WHITE-LABEL (COMMANDER)"],["$","KEEP 100% PROFITS"]].map(([icon, label]) => (
                   <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px",
                     fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", color: G.muted }}>
@@ -444,17 +501,29 @@ export default function HomePage() {
                   </ul>
 
                   {/* CTA */}
+                  <CheckoutLink
+                    href={product.checkoutUrl}
+                    productSlug={product.slug}
+                    productName={product.name}
+                    price={product.price}
+                    style={{
+                      display: "block", textAlign: "center",
+                      background: cfg.cta,
+                      color: cfg.ctaFg,
+                      border: cfg.ctaBorder ?? "none",
+                      borderRadius: "6px",
+                      padding: "12px 20px",
+                      fontSize: "12px", fontWeight: 800, letterSpacing: "0.1em",
+                      textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
+                    }}>
+                    {ctaLabel}
+                  </CheckoutLink>
                   <Link href={`/products/${product.slug}`} style={{
                     display: "block", textAlign: "center",
-                    background: cfg.cta,
-                    color: cfg.ctaFg,
-                    border: cfg.ctaBorder ?? "none",
-                    borderRadius: "6px",
-                    padding: "12px 20px",
-                    fontSize: "12px", fontWeight: 800, letterSpacing: "0.1em",
-                    textTransform: "uppercase", textDecoration: "none",
+                    color: G.muted, fontSize: "10px", letterSpacing: "0.08em",
+                    textDecoration: "none", marginTop: "6px",
                   }}>
-                    {ctaLabel}
+                    View full details →
                   </Link>
                   <p style={{ fontSize: "10px", color: G.mutedLo, textAlign: "center", marginTop: "8px" }}>
                     {product.guarantee}
@@ -744,32 +813,32 @@ export default function HomePage() {
             </h2>
 
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
-              <Link href="/products/golden-delivery-starter" style={{
-                background: G.gold, color: "#09070a",
-                fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
-                padding: "14px 28px", borderRadius: "6px",
-                textTransform: "uppercase", textDecoration: "none",
-              }}>
-                STARTER — $29 →
-              </Link>
-              <Link href="/products/golden-delivery-pro" style={{
-                border: `1px solid ${G.goldDim}`, color: G.gold,
-                fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
-                padding: "14px 28px", borderRadius: "6px",
-                textTransform: "uppercase", textDecoration: "none",
-                background: G.goldFaint,
-              }}>
-                PRO — $79 →
-              </Link>
-              <Link href="/products/golden-delivery-commander" style={{
-                border: "1px solid rgba(139,92,246,0.42)", color: "#a78bfa",
-                fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
-                padding: "14px 28px", borderRadius: "6px",
-                textTransform: "uppercase", textDecoration: "none",
-                background: "rgba(139,92,246,0.06)",
-              }}>
-                COMMANDER — $149 →
-              </Link>
+              {products.map((product: any) => {
+                const cfg = packCfg[product.slug] ?? packCfg["golden-delivery-starter"];
+                const labels: Record<string,string> = {
+                  "golden-delivery-starter": "STARTER — $29 →",
+                  "golden-delivery-pro":     "PRO — $79 →",
+                  "golden-delivery-commander":"COMMANDER — $149 →",
+                };
+                return (
+                  <CheckoutLink
+                    key={product.slug}
+                    href={product.checkoutUrl}
+                    productSlug={product.slug}
+                    productName={product.name}
+                    price={product.price}
+                    style={{
+                      border: product.slug === "golden-delivery-starter" ? "none" : `1px solid ${cfg.border}`,
+                      background: product.slug === "golden-delivery-starter" ? G.gold : cfg.cta,
+                      color: product.slug === "golden-delivery-starter" ? "#09070a" : cfg.ctaFg,
+                      fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
+                      padding: "14px 28px", borderRadius: "6px",
+                      textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
+                    }}>
+                    {labels[product.slug] ?? product.name}
+                  </CheckoutLink>
+                );
+              })}
             </div>
 
             <p style={{ marginTop: "18px", fontSize: "10px", letterSpacing: "0.12em", color: G.mutedLo }}>

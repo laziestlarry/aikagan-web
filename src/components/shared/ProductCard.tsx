@@ -65,13 +65,13 @@ export default function ProductCard({
         {checkoutUrl && !checkoutUrl.includes('REPLACE') ? (
           <a
             href={checkoutUrl}
-            className={`w-full inline-flex justify-center items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition
+            className={`lemonsqueezy-button w-full inline-flex justify-center items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition
               ${featured
                 ? 'bg-kagan-gold text-black hover:bg-kagan-gold/90'
                 : 'border border-kagan-gold/40 text-kagan-gold hover:bg-kagan-gold/10'
               }`}
           >
-            {featured ? 'Get Started' : 'Buy Now'}
+            {featured ? 'Get Started Now' : 'Buy Now'}
           </a>
         ) : (
           <Button
