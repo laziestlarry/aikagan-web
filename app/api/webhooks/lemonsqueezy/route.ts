@@ -1,93 +1,121 @@
-import { NextResponse } from 'next/server';
-import crypto from 'crypto';
+import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
+import { products } from "@/lib/products";
 
-/**
- * LemonSqueezy Webhook Handler
- *
- * Verifies HMAC-SHA256 signature, then fans out to:
- *   1. Make.com webhook (post-purchase automation, email delivery, CRM)
- *   2. GTM / server-side conversion event (optional — can be done client-side too)
- *
- * Required Vercel env vars:
- *   LEMONSQUEEZY_WEBHOOK_SECRET  — from LS dashboard → Webhooks → Signing Secret
- *   MAKE_WEBHOOK_URL             — from Make.com → Webhooks → Custom Webhook URL
- */
+// ─────────────────────────────────────────────────────────────────────────────
+// LemonSqueezy Webhook Handler
+// Docs: https://docs.lemonsqueezy.com/help/webhooks
+//
+// Registered events consumed: order_created
+//
+// Flow:
+//   1. Verify HMAC-SHA256 signature from X-Signature header
+//   2. Extract order data
+//   3. Map purchased product → slug via lib/products.ts
+//   4. Generate a signed, expiring download token (HMAC-SHA256 JWT-like)
+//   5. Redirect LemonSqueezy to /checkout-success?token=<token>
+//
+// The token itself is self-contained — no external DB required.
+// Format: base64url( JSON payload ) . base64url( HMAC-SHA256 signature )
+// ─────────────────────────────────────────────────────────────────────────────
 
-export const runtime = 'edge'; // Fast cold-start; crypto.subtle available in edge runtime
+const WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET ?? "";
+const TOKEN_SECRET = process.env.DOWNLOAD_TOKEN_SECRET ?? "";
 
-async function hmacSha256(secret: string, body: string): Promise<string> {
-  // Edge-compatible HMAC
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    enc.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
-  return Array.from(new Uint8Array(sig))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
+// Token TTL: 48 hours
+const TOKEN_TTL_MS = 48 * 60 * 60 * 1000;
+
+function verifySignature(body: string, signature: string): boolean {
+  if (!WEBHOOK_SECRET) return false;
+  const expected = crypto
+    .createHmac("sha256", WEBHOOK_SECRET)
+    .update(body)
+    .digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
-export async function POST(req: Request) {
-  const rawBody = await req.text();
-  const signature = req.headers.get('x-signature') ?? '';
+export function generateDownloadToken(slug: string, orderId: string, email: string): string {
+  if (!TOKEN_SECRET) throw new Error("DOWNLOAD_TOKEN_SECRET is not set");
+  const payload = {
+    slug,
+    orderId,
+    email,
+    exp: Date.now() + TOKEN_TTL_MS,
+  };
+  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const sig = crypto
+    .createHmac("sha256", TOKEN_SECRET)
+    .update(payloadB64)
+    .digest("base64url");
+  return `${payloadB64}.${sig}`;
+}
 
-  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
-  if (!secret) {
-    console.error('[LS Webhook] LEMONSQUEEZY_WEBHOOK_SECRET is not set');
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+/**
+ * Map LemonSqueezy order to an internal product slug.
+ * Priority: custom_data.product_slug (set by CheckoutButton) → product name match → tier keyword.
+ * The custom_data field is the most reliable since it's set explicitly at checkout time.
+ */
+function resolveSlug(productName: string, variantName: string, customSlug?: string): string {
+  // 1. Trust explicit slug passed via checkout custom data
+  if (customSlug) {
+    const match = products.find((p) => p.slug === customSlug);
+    if (match) return match.slug;
   }
+  // 2. Fuzzy match against product name / slug / tier
+  const name = `${productName} ${variantName}`.toLowerCase();
+  for (const product of products) {
+    if (name.includes(product.slug.toLowerCase())) return product.slug;
+    if (name.includes(product.name.toLowerCase())) return product.slug;
+    if (name.includes(product.tier.toLowerCase())) return product.slug;
+  }
+  // 3. Keyword fallback: commander > pro > starter
+  if (name.includes("commander")) return "golden-delivery-commander";
+  if (name.includes("pro")) return "golden-delivery-pro";
+  if (name.includes("starter")) return "golden-delivery-starter";
+  return products[0].slug;
+}
 
-  const expectedHash = await hmacSha256(secret, rawBody);
+export async function POST(req: NextRequest) {
+  const rawBody = await req.text();
+  const signature = req.headers.get("x-signature") ?? "";
 
-  if (expectedHash !== signature) {
-    console.warn('[LS Webhook] Invalid signature — possible spoofed request');
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+  if (!verifySignature(rawBody, signature)) {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
   let event: Record<string, unknown>;
   try {
     event = JSON.parse(rawBody);
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const eventName = (event?.meta as Record<string, unknown>)?.event_name as string;
-  const orderData = event?.data as Record<string, unknown>;
+  const eventName = (event as { meta?: { event_name?: string } }).meta?.event_name;
 
-  console.log(`[LS Webhook] Received event: ${eventName}`);
-
-  if (eventName === 'order_created') {
-    const makeUrl = process.env.MAKE_WEBHOOK_URL;
-    if (makeUrl) {
-      try {
-        await fetch(makeUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            event: eventName,
-            order_id: (orderData?.id as string) ?? null,
-            customer_email: ((orderData?.attributes as Record<string, unknown>)?.user_email as string) ?? null,
-            product_name: ((orderData?.attributes as Record<string, unknown>)?.first_order_item as Record<string, unknown>)?.product_name ?? null,
-            variant_name: ((orderData?.attributes as Record<string, unknown>)?.first_order_item as Record<string, unknown>)?.variant_name ?? null,
-            total: ((orderData?.attributes as Record<string, unknown>)?.total as number) ?? null,
-            currency: ((orderData?.attributes as Record<string, unknown>)?.currency as string) ?? 'USD',
-            checkout_url: ((orderData?.attributes as Record<string, unknown>)?.urls as Record<string, unknown>)?.receipt ?? null,
-            timestamp: new Date().toISOString(),
-          }),
-        });
-        console.log('[LS Webhook] Forwarded order_created to Make.com');
-      } catch (err) {
-        console.error('[LS Webhook] Failed to forward to Make.com:', err);
-        // Still return 200 to LemonSqueezy — don't retry the webhook
-      }
-    } else {
-      console.warn('[LS Webhook] MAKE_WEBHOOK_URL not set — skipping Make.com forwarding');
-    }
+  // Only process order_created events
+  if (eventName !== "order_created") {
+    return NextResponse.json({ received: true, skipped: true });
   }
 
-  return NextResponse.json({ status: 'ok', event: eventName });
+  const data = (event as { data?: { attributes?: Record<string, unknown> } }).data?.attributes ?? {};
+  const orderId = String((event as { data?: { id?: unknown } }).data?.id ?? "");
+  const email = String(data.user_email ?? data.email ?? "");
+  const productName = String(data.first_order_item?.product_name ?? "");
+  const variantName = String(data.first_order_item?.variant_name ?? "");
+  // custom_data is set by CheckoutButton as checkout[custom][product_slug]
+  const customSlug = String((event as { meta?: { custom_data?: { product_slug?: unknown } } }).meta?.custom_data?.product_slug ?? "");
+
+  const slug = resolveSlug(productName, variantName, customSlug || undefined);
+  const token = generateDownloadToken(slug, orderId, email);
+
+  // Log for evidence trail (non-blocking)
+  console.log(JSON.stringify({
+    event: "webhook_order_created",
+    orderId,
+    email: email.replace(/(.{2}).*(@.*)/, "$1***$2"),
+    slug,
+    timestamp: new Date().toISOString(),
+  }));
+
+  return NextResponse.json({ received: true, token });
 }

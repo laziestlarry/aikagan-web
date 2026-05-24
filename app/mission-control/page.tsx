@@ -2,23 +2,16 @@ import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/metadata';
 import Section from '@/components/ui/Section';
 import ProcessStages from '@/components/shared/ProcessStages';
+import LiveKPIs from '@/components/shared/LiveKPIs';
 import CTA from '@/components/ui/CTA';
 import Badge from '@/components/ui/Badge';
-import { Activity, BarChart3, Clock, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Mission Control',
   description:
-    'The Kaganate operating process — from intake through architecture, build, Golden Delivery, and ongoing operations.',
+    'The Kaganate operating process \u2014 from intake through architecture, build, Golden Delivery, and ongoing operations.',
   path: '/mission-control/',
 });
-
-const STATS = [
-  { label: 'Active Pipelines', value: '12+', icon: Activity },
-  { label: 'Avg. Delivery Cycle', value: '7 Days', icon: Clock },
-  { label: 'SLA Uptime', value: '99.9%', icon: ShieldCheck },
-  { label: 'Conversion Lift', value: '3.2× avg', icon: BarChart3 },
-];
 
 export default function MissionControlPage() {
   return (
@@ -34,19 +27,8 @@ export default function MissionControlPage() {
           </p>
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-          {STATS.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-xl border border-kagan-border bg-kagan-card/60 p-5 text-center"
-            >
-              <stat.icon className="h-5 w-5 text-kagan-gold mx-auto mb-2" />
-              <div className="text-2xl font-bold text-kagan-white mb-1 font-mono">{stat.value}</div>
-              <div className="text-xs text-kagan-muted">{stat.label}</div>
-            </div>
-          ))}
-        </div>
+        {/* Live KPI tiles \u2014 hydrates with live data from autonomax revenue ops */}
+        <LiveKPIs />
 
         {/* Process stages */}
         <div className="max-w-3xl mx-auto">

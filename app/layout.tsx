@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { buildMetadata } from '@/lib/metadata';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import AttributionInit from '@/components/AttributionInit';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -31,12 +32,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="facebook-domain-verification" content="xz1psq5ml5n8je8ljwl7k689or7wkp" />
         <Script src="https://assets.lemonsqueezy.com/lemon.js" strategy="afterInteractive" />
         {/* ── Analytics: GA4 + Meta Pixel managed via GTM-NZW2CP6H ── */}
-        {/* Add GA4 and Meta Pixel as tags inside Google Tag Manager instead of here */}
       </head>
       <body className="min-h-screen flex flex-col">
         {/* ── Google Tag Manager (noscript) ── */}
         <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZW2CP6H" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} />
         {/* ── End Google Tag Manager (noscript) ── */}
+        {/* Captures UTM params on every page load; persists to sessionStorage */}
+        <AttributionInit />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

@@ -2,262 +2,175 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import { products } from "@/lib/products";
+import { Suspense, useEffect, useState } from "react";
+import { getProduct, getProduct as findProduct, products } from "@/lib/products";
 
-const G = {
-  gold:     "#D4AF37",
-  goldDim:  "rgba(212,175,55,0.30)",
-  goldFaint:"rgba(212,175,55,0.07)",
-  bg:       "#09070a",
-  bgCard:   "#0d0b07",
-  text:     "#c5b47a",
-  muted:    "#7a6830",
-};
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
-const UPSELL: Record<string, string> = {
-  "golden-delivery-starter":   "golden-delivery-pro",
-  "golden-delivery-pro":       "golden-delivery-commander",
-  "golden-delivery-commander": "",
-};
+const STEPS = [
+  { icon: "\uD83C\uDF89", label: "Payment confirmed" },
+  { icon: "\u2B07\uFE0F",  label: "Download your pack" },
+  { icon: "\uD83D\uDCC2", label: "Open START_HERE" },
+  { icon: "\uD83D\uDE80", label: "Execute day one" },
+  { icon: "\uD83D\uDCAC", label: "Support always available" },
+];
 
-const DAY1_CHECKLIST: Record<string, string[]> = {
-  "golden-delivery-starter": [
-    "Open START_HERE.pdf — read it fully (15 min)",
-    "Complete the Offer Creation Worksheet — fill every section",
-    "Pick 5 people from your existing network to DM today",
-    "Customise Objection Crusher Script #1 with your offer name",
-    "Send your first outreach message before midnight",
-  ],
-  "golden-delivery-pro": [
-    "Open START_HERE.pdf — set up your revenue tracking sheet",
-    "Choose ONE funnel architecture from the Funnel Master Guide",
-    "Pick your first traffic channel from the Traffic Playbook",
-    "Load Day 1 tasks from the 30-Day Revenue Calendar",
-    "Build your first offer using the Offer Template (start $47–$97)",
-  ],
-  "golden-delivery-commander": [
-    "Open START_HERE.pdf — orient to the 5-layer empire map",
-    "Read the White-Label License — understand your rights fully",
-    "Schedule your 60-Day Sprint kickoff using the week-by-week plan",
-    "Identify your first Partnership target from the Playbook",
-    "Set up the Automation OS baseline — begin cron schedule config",
-  ],
-};
+function OrderBump({ currentSlug }: { currentSlug: string }) {
+  const current = getProduct(currentSlug);
+  if (!current?.nextSlug) return null;
+  const next = getProduct(current.nextSlug);
+  if (!next || next.priceModel === "free" || !next.checkoutUrl) return null;
+
+  return (
+    <div className="mt-8 rounded-3xl border border-amber-300/40 bg-amber-300/5 p-8">
+      <p className="text-xs uppercase tracking-[0.3em] text-amber-300">One-time upgrade offer</p>
+      <h3 className="mt-3 text-2xl font-bold">
+        Upgrade to {next.name} — just ${next.price - current.price} more
+      </h3>
+      <p className="mt-3 text-neutral-300">{next.description}</p>
+      <ul className="mt-4 space-y-1.5 text-sm text-neutral-400">
+        {next.bullets.slice(0, 3).map((b) => (
+          <li key={b} className="flex items-start gap-2">
+            <span className="mt-0.5 text-amber-300">✓</span>
+            {b}
+          </li>
+        ))}
+      </ul>
+      <a
+        href={next.checkoutUrl!}
+        className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200"
+      >
+        Upgrade to {next.name} →
+      </a>
+    </div>
+  );
+}
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
-  const slug = searchParams.get("product") ?? "golden-delivery-starter";
-  const purchased = products.find((p) => p.slug === slug) ?? products[0];
-  const upsellSlug = UPSELL[purchased.slug];
-  const upsellProduct = upsellSlug ? products.find((p) => p.slug === upsellSlug) : null;
-  const checklist = DAY1_CHECKLIST[purchased.slug] ?? DAY1_CHECKLIST["golden-delivery-starter"];
+  const token = searchParams.get("token");
+  const slugParam = searchParams.get("product"); // fallback for legacy links
+  const [activeStep, setActiveStep] = useState(0);
 
-  const tierColor: Record<string, string> = {
-    "golden-delivery-starter":   "#34d399",
-    "golden-delivery-pro":       G.gold,
-    "golden-delivery-commander": "#a78bfa",
-  };
-  const accentColor = tierColor[purchased.slug] ?? G.gold;
+  // Resolve which product to show (declare before effects so effects can reference it)
+  const product =
+    (token ? undefined : slugParam ? findProduct(slugParam) : undefined) ||
+    products.find((p) => p.ladderTier !== "lead_magnet" && p.priceModel === "one_time") ||
+    products[2]; // fallback: golden-delivery-starter
+
+  // Animate steps in on mount
+  useEffect(() => {
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      setActiveStep(i);
+      if (i >= STEPS.length) clearInterval(id);
+    }, 400);
+    return () => clearInterval(id);
+  }, []);
+
+  // Fire Meta Pixel Purchase event once product is resolved
+  useEffect(() => {
+    if (!product || product.priceModel !== "one_time") return;
+    window.fbq?.("track", "Purchase", {
+      value: product.price,
+      currency: "USD",
+      content_ids: [product.slug],
+      content_type: "product",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.slug]);
+
+  const downloadHref = token
+    ? `/api/download/${token}`
+    : product?.zipFilename
+    ? `/api/download/demo-${product.slug}` // dev fallback
+    : null;
 
   return (
-    <main style={{ background: G.bg, minHeight: "100vh", color: "#fff", fontFamily: "system-ui,-apple-system,sans-serif" }}>
+    <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white">
+      <section className="mx-auto max-w-3xl">
+        {/* Header */}
+        <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Order confirmed</p>
+        <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
+          Your Golden Delivery pack is ready.
+        </h1>
+        <p className="mt-4 text-lg text-neutral-400">
+          Follow the steps below to claim your download and start day one.
+        </p>
 
-      {/* ── SUCCESS HEADER ── */}
-      <section style={{ padding: "60px 24px 40px", maxWidth: "780px", margin: "0 auto", textAlign: "center" }}>
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: "10px",
-          background: "rgba(52,211,153,0.10)", border: "1px solid rgba(52,211,153,0.28)",
-          borderRadius: "30px", padding: "6px 20px", marginBottom: "24px",
-        }}>
-          <span style={{ color: "#34d399", fontSize: "14px" }}>✓</span>
-          <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.18em", color: "#34d399" }}>
-            ORDER CONFIRMED
-          </span>
+        {/* Progress steps */}
+        <ol className="mt-10 space-y-3">
+          {STEPS.map((step, i) => (
+            <li
+              key={step.label}
+              className={`flex items-center gap-4 rounded-2xl border px-6 py-4 transition-all duration-500 ${
+                i < activeStep
+                  ? "border-amber-300/30 bg-amber-300/10 text-white"
+                  : "border-white/5 bg-white/2 text-neutral-500"
+              }`}
+            >
+              <span className="text-2xl">{step.icon}</span>
+              <span className={`font-medium ${i < activeStep ? "text-white" : "text-neutral-500"}`}>
+                {step.label}
+              </span>
+              {i < activeStep && (
+                <span className="ml-auto text-amber-300 text-sm">✓</span>
+              )}
+            </li>
+          ))}
+        </ol>
+
+        {/* Download card */}
+        <div className="mt-10 rounded-3xl border border-amber-300/20 bg-[#111827] p-8">
+          <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+            {product?.tier ?? "Your pack"}
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold">{product?.name ?? "Your pack"}</h2>
+          <p className="mt-3 text-neutral-300">{product?.description}</p>
+
+          {downloadHref ? (
+            <a
+              href={downloadHref}
+              download
+              className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200"
+            >
+              <span>\u2B07\uFE0F</span> Download ZIP Pack
+            </a>
+          ) : (
+            <p className="mt-6 rounded-xl bg-red-900/30 border border-red-500/30 px-5 py-4 text-sm text-red-300">
+              Download link not found. Please check your confirmation email or{" "}
+              <a href="mailto:lazylarries@gmail.com" className="underline">contact support</a>.
+            </p>
+          )}
+
+          <p className="mt-4 text-xs text-neutral-500">
+            Link valid for 48 hours. Re-download from your confirmation email if it expires.
+          </p>
         </div>
 
-        <h1 style={{ fontSize: "clamp(28px,5vw,52px)", fontWeight: 900, letterSpacing: "-0.01em", color: G.gold, lineHeight: 1.1, marginBottom: "16px" }}>
-          Welcome to The Kaganate.
-        </h1>
-        <p style={{ fontSize: "16px", color: G.text, maxWidth: "520px", margin: "0 auto 32px", lineHeight: 1.7 }}>
-          Your <strong style={{ color: "#fff" }}>{purchased.tier}</strong> is ready for instant download.
-          Check your inbox — a download link is on its way.
-        </p>
-
-        <a
-          href={purchased.downloadUrl}
-          download
-          style={{
-            display: "inline-flex", alignItems: "center", gap: "10px",
-            background: accentColor,
-            color: purchased.slug === "golden-delivery-pro" ? "#09070a" : "#fff",
-            fontWeight: 800, fontSize: "14px", letterSpacing: "0.08em",
-            padding: "16px 36px", borderRadius: "8px",
-            textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
-          }}
-        >
-          ↓ DOWNLOAD {purchased.name.toUpperCase()} PACK NOW
-        </a>
-        <p style={{ marginTop: "10px", fontSize: "10px", color: G.muted, letterSpacing: "0.1em" }}>
-          ZIP file · Instant · Lifetime re-download access
-        </p>
-      </section>
-
-      {/* ── WHAT TO DO NEXT 60 MINUTES ── */}
-      <section style={{ padding: "0 24px 48px", maxWidth: "780px", margin: "0 auto" }}>
-        <div style={{
-          background: G.bgCard,
-          border: `1px solid ${G.goldDim}`,
-          borderRadius: "10px",
-          padding: "32px",
-        }}>
-          <p style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.22em", color: G.gold, marginBottom: "16px" }}>
-            ⚜ YOUR FIRST 60 MINUTES — DO THIS NOW
-          </p>
-          <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#fff", marginBottom: "24px" }}>
-            Start here. In this order.
-          </h2>
-          <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
-            {checklist.map((step, i) => (
-              <li key={step} style={{
-                display: "flex", gap: "14px", alignItems: "flex-start",
-                padding: "12px 16px",
-                background: "rgba(212,175,55,0.04)",
-                border: `1px solid ${G.goldDim}`,
-                borderRadius: "6px",
-              }}>
-                <span style={{
-                  flexShrink: 0, width: "24px", height: "24px",
-                  background: "rgba(212,175,55,0.12)",
-                  border: `1px solid ${G.goldDim}`,
-                  borderRadius: "50%",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "10px", fontWeight: 900, color: G.gold,
-                }}>
-                  {i + 1}
-                </span>
-                <span style={{ fontSize: "13px", color: G.text, lineHeight: 1.55 }}>{step}</span>
-              </li>
-            ))}
+        {/* What to do next */}
+        <div className="mt-8 rounded-3xl border border-white/10 bg-black/40 p-8">
+          <h2 className="text-xl font-semibold">Your first 24 hours</h2>
+          <ol className="mt-5 space-y-3 text-neutral-300">
+            <li className="flex gap-3"><span className="text-amber-300 font-bold">1.</span>Download and unzip the pack.</li>
+            <li className="flex gap-3"><span className="text-amber-300 font-bold">2.</span>Open <strong>START_HERE.pdf</strong> first — it maps the exact execution sequence.</li>
+            <li className="flex gap-3"><span className="text-amber-300 font-bold">3.</span>Complete the 24-Hour Quick Win Checklist.</li>
+            <li className="flex gap-3"><span className="text-amber-300 font-bold">4.</span>Questions? Email <a href="mailto:lazylarries@gmail.com" className="text-amber-300 underline">lazylarries@gmail.com</a>.</li>
           </ol>
         </div>
-      </section>
 
-      {/* ── UPSELL (non-Commander buyers) ── */}
-      {upsellProduct && (
-        <section style={{ padding: "0 24px 56px", maxWidth: "780px", margin: "0 auto" }}>
-          <div style={{
-            background: "linear-gradient(135deg,rgba(212,175,55,0.08) 0%,rgba(139,92,246,0.05) 100%)",
-            border: `1px solid ${G.goldDim}`,
-            borderRadius: "10px",
-            padding: "36px 32px",
-            position: "relative",
-            overflow: "hidden",
-          }}>
-            <div style={{
-              position: "absolute", top: 0, right: 0, width: "180px", height: "180px",
-              background: "radial-gradient(circle,rgba(212,175,55,0.10) 0%,transparent 70%)",
-              pointerEvents: "none",
-            }} />
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              background: "rgba(212,175,55,0.12)", border: `1px solid ${G.goldDim}`,
-              borderRadius: "20px", padding: "4px 14px", marginBottom: "18px",
-            }}>
-              <span style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.18em", color: G.gold }}>
-                ⚡ ONE-TIME UPGRADE — {purchased.name.toUpperCase()} BUYERS ONLY
-              </span>
-            </div>
+        {/* Order bump */}
+        {product && <OrderBump currentSlug={product.slug} />}
 
-            <h2 style={{ fontSize: "clamp(18px,3vw,26px)", fontWeight: 900, color: "#fff", marginBottom: "10px", lineHeight: 1.2 }}>
-              You just activated {purchased.tier}.<br />
-              <span style={{ color: G.gold }}>Here&rsquo;s what you&rsquo;re missing in {upsellProduct.tier}.</span>
-            </h2>
-            <p style={{ fontSize: "13px", color: G.text, marginBottom: "22px", maxWidth: "500px", lineHeight: 1.7 }}>
-              Most operators who reach $1K+/month upgraded within two weeks of their first sale.
-              {upsellProduct.slug === "golden-delivery-pro"
-                ? " The Pro Pack adds funnels, traffic strategy, a 30-day calendar, and 5 ready-to-sell offer templates."
-                : " The Commander Pack adds white-label rights, a 60-day scale sprint, and the full empire architecture."
-              }
-            </p>
-
-            <ul style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "28px", listStyle: "none", padding: 0 }}>
-              {upsellProduct.bullets.slice(0, 4).map((b) => (
-                <li key={b} style={{ display: "flex", gap: "10px", fontSize: "13px", color: "#d1d5db" }}>
-                  <span style={{ color: G.gold, flexShrink: 0 }}>✓</span>
-                  {b}
-                </li>
-              ))}
-            </ul>
-
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "18px" }}>
-              <a
-                href={upsellProduct.checkoutUrl}
-                className="lemonsqueezy-button"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: "8px",
-                  background: G.gold, color: "#09070a",
-                  fontWeight: 800, fontSize: "13px", letterSpacing: "0.08em",
-                  padding: "14px 28px", borderRadius: "6px",
-                  textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
-                }}
-              >
-                UPGRADE TO {upsellProduct.name.toUpperCase()} — ${upsellProduct.price} →
-              </a>
-              <div>
-                <div style={{ display: "flex", gap: "8px", alignItems: "baseline" }}>
-                  <span style={{ fontSize: "20px", fontWeight: 900, color: G.gold }}>${upsellProduct.price}</span>
-                  <span style={{ fontSize: "13px", color: "#444", textDecoration: "line-through" }}>${upsellProduct.originalPrice}</span>
-                </div>
-                <p style={{ fontSize: "10px", color: G.muted, marginTop: "2px" }}>30-day guarantee · instant download</p>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Commander: partnership invite */}
-      {purchased.slug === "golden-delivery-commander" && (
-        <section style={{ padding: "0 24px 56px", maxWidth: "780px", margin: "0 auto" }}>
-          <div style={{
-            background: "rgba(139,92,246,0.07)",
-            border: "1px solid rgba(139,92,246,0.28)",
-            borderRadius: "10px",
-            padding: "32px",
-          }}>
-            <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#a78bfa", marginBottom: "12px" }}>
-              👑 You&apos;re at the top of the ladder.
-            </h2>
-            <p style={{ fontSize: "13px", color: G.text, lineHeight: 1.7, marginBottom: "20px" }}>
-              Commander owners hold white-label rights. You can resell this system as your own and keep 100%
-              of your revenue. The Partnership Playbook inside your pack shows exactly how — 5 deal
-              structures, outreach templates, and commission tables included.
-            </p>
-            <Link href="/contact" style={{
-              display: "inline-flex", alignItems: "center",
-              border: "1px solid rgba(139,92,246,0.42)", color: "#a78bfa",
-              fontWeight: 700, fontSize: "12px", letterSpacing: "0.1em",
-              padding: "12px 22px", borderRadius: "6px",
-              textTransform: "uppercase", textDecoration: "none",
-            }}>
-              APPLY FOR KAGANATE COUNCIL →
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* ── SUPPORT ── */}
-      <section style={{ padding: "0 24px 60px", maxWidth: "780px", margin: "0 auto", textAlign: "center" }}>
-        <p style={{ fontSize: "12px", color: G.muted }}>
-          Questions? Email{" "}
-          <a href="mailto:lazylarries@gmail.com" style={{ color: G.gold }}>lazylarries@gmail.com</a>
-          {" "}— we respond within 24 hours.
-        </p>
-        <Link href="/" style={{ display: "inline-block", marginTop: "16px", fontSize: "12px", color: "#444", textDecoration: "none" }}>
+        <Link href="/" className="mt-10 inline-block text-sm text-neutral-400 hover:text-white">
           ← Back to AIKAGAN
         </Link>
       </section>
-
     </main>
   );
 }

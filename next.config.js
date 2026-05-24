@@ -2,9 +2,12 @@
 const nextConfig = {
   // output: 'export' removed — Vercel SSR enables API routes (webhooks, dynamic pages)
   images: {
-    unoptimized: true,
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [],
   },
-  trailingSlash: true,
+  turbopack: {
+    root: __dirname,
+  },
 };
 
 module.exports = nextConfig;
