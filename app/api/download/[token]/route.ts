@@ -47,9 +47,10 @@ function verifyAndDecodeToken(token: string): TokenPayload | null {
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
-  const payload = verifyAndDecodeToken(params.token);
+  const { token } = await params;
+  const payload = verifyAndDecodeToken(token);
 
   if (!payload) {
     return NextResponse.json(

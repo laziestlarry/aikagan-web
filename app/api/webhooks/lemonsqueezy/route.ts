@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { products } from "@/lib/products";
+import { generateDownloadToken } from "@/lib/download-token";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LemonSqueezy Webhook Handler
@@ -20,10 +21,6 @@ import { products } from "@/lib/products";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET ?? "";
-const TOKEN_SECRET = process.env.DOWNLOAD_TOKEN_SECRET ?? "";
-
-// Token TTL: 48 hours
-const TOKEN_TTL_MS = 48 * 60 * 60 * 1000;
 
 function verifySignature(body: string, signature: string): boolean {
   if (!WEBHOOK_SECRET) return false;
@@ -32,22 +29,6 @@ function verifySignature(body: string, signature: string): boolean {
     .update(body)
     .digest("hex");
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
-}
-
-export function generateDownloadToken(slug: string, orderId: string, email: string): string {
-  if (!TOKEN_SECRET) throw new Error("DOWNLOAD_TOKEN_SECRET is not set");
-  const payload = {
-    slug,
-    orderId,
-    email,
-    exp: Date.now() + TOKEN_TTL_MS,
-  };
-  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString("base64url");
-  const sig = crypto
-    .createHmac("sha256", TOKEN_SECRET)
-    .update(payloadB64)
-    .digest("base64url");
-  return `${payloadB64}.${sig}`;
 }
 
 /**
@@ -97,11 +78,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true, skipped: true });
   }
 
-  const data = (event as { data?: { attributes?: Record<string, unknown> } }).data?.attributes ?? {};
+  const data = ((event as { data?: { attributes?: Record<string, unknown> } }).data?.attributes ?? {}) as Record<string, unknown>;
   const orderId = String((event as { data?: { id?: unknown } }).data?.id ?? "");
-  const email = String(data.user_email ?? data.email ?? "");
-  const productName = String(data.first_order_item?.product_name ?? "");
-  const variantName = String(data.first_order_item?.variant_name ?? "");
+  const email = String((data.user_email as unknown) ?? (data.email as unknown) ?? "");
+  const firstItem = (data.first_order_item ?? {}) as Record<string, unknown>;
+  const productName = String(firstItem.product_name ?? "");
+  const variantName = String(firstItem.variant_name ?? "");
   // custom_data is set by CheckoutButton as checkout[custom][product_slug]
   const customSlug = String((event as { meta?: { custom_data?: { product_slug?: unknown } } }).meta?.custom_data?.product_slug ?? "");
 

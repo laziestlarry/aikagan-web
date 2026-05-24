@@ -5,15 +5,16 @@ import MetaPixelEvent from "@/components/MetaPixelEvent";
 import Link from "next/link";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
   return getProductsByTier("lead_magnet").map((p) => ({ slug: p.slug }));
 }
 
-export default function FreeProductPage({ params }: Props) {
-  const product = getProduct(params.slug);
+export default async function FreeProductPage({ params }: Props) {
+  const { slug } = await params;
+  const product = getProduct(slug);
   if (!product || product.ladderTier !== "lead_magnet") notFound();
 
   return (
