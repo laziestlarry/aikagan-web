@@ -20,6 +20,43 @@ Once `main` is pushed, Vercel auto-deploys to production (workflow `deploy2.yml`
 
 ---
 
+## 1b. Point `aikagan.com` to the Vercel project
+
+Current live preview: `https://aikagan-web.vercel.app/` (works). To get the apex domain `aikagan.com` live:
+
+### A. In the Vercel dashboard
+1. Open the project → **Settings → Domains**.
+2. Click **Add Domain**, type `aikagan.com` → **Add**.
+3. Vercel will also offer to add `www.aikagan.com` — accept (it auto-redirects to apex).
+4. Vercel shows the DNS records you need to set.
+
+### B. At your DNS registrar (where `aikagan.com` is registered)
+Set these records on the apex zone:
+
+| Type | Host | Value | Notes |
+|---|---|---|---|
+| A | `@` | `76.76.21.21` | Vercel's apex anycast IP |
+| CNAME | `www` | `cname.vercel-dns.com.` | redirects www → apex |
+
+Alternative (preferred if your registrar supports ALIAS/ANAME records at apex):
+
+| Type | Host | Value |
+|---|---|---|
+| ALIAS | `@` | `cname.vercel-dns.com.` |
+| CNAME | `www` | `cname.vercel-dns.com.` |
+
+### C. Remove any stale Netlify DNS
+The legacy `/Users/pq/aikagan.com` Netlify site is archived. If you previously pointed `aikagan.com` at Netlify, delete the Netlify A/CNAME records first so they don't conflict.
+
+### D. Verify
+- DNS propagation: `dig aikagan.com +short` should return `76.76.21.21` within 5–60 minutes.
+- Vercel will show **Valid Configuration** in Settings → Domains once DNS resolves, then auto-issues an SSL cert (Let's Encrypt) — usually 1–3 minutes after that.
+
+### E. CI `--yes` flag (already fixed)
+The workflow `deploy2.yml` runs `vercel --prod --yes --token …` — the `--yes` flag bypasses the interactive prompt. If it still waits for confirmation, double-check that `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` are set in the GitHub repo's **Settings → Secrets and variables → Actions**.
+
+---
+
 ## 2. Set production secrets in Vercel
 
 Already in `.env.local`: `NEXT_PUBLIC_FORMSPREE_ID`, `NEXT_PUBLIC_LS_STARTER_URL`, `NEXT_PUBLIC_LS_PRO_URL`, `NEXT_PUBLIC_LS_COMMANDER_URL`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_META_PIXEL_ID`.
@@ -33,6 +70,9 @@ Already in `.env.local`: `NEXT_PUBLIC_FORMSPREE_ID`, `NEXT_PUBLIC_LS_STARTER_URL
 | `NEXT_PUBLIC_AUTONOMAX_API_URL` | `https://autonomax-revenue-ops-71658389068.us-central1.run.app` (already in example) |
 | `AUTONOMAX_API_KEY` | Bearer token for the revenue-ops backend (Cloud Run). |
 | `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Vercel KV (optional — only if attribution writes are persisted). |
+| `NEXT_PUBLIC_LS_MC_STARTER_URL` | LemonSqueezy checkout for the Masterclass Starter ($49) — paid row card 1. |
+| `NEXT_PUBLIC_LS_MC_PRO_URL` | LemonSqueezy checkout for the Masterclass Pro ($97) — paid row card 2. |
+| `NEXT_PUBLIC_LS_MC_COMMANDER_URL` | LemonSqueezy checkout for the Masterclass Commander ($197) — paid row card 3. |
 
 Also set the same `NEXT_PUBLIC_*` keys for Production so they're inlined at build time.
 

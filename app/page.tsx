@@ -21,6 +21,49 @@ const G = {
 const packCfg: Record<string, {
   border: string; hdr: string; cta: string; ctaFg: string; ctaBorder?: string;
 }> = {
+  // Free row — emerald accent
+  "weekly-operating-map": {
+    border:    "rgba(52,211,153,0.32)",
+    hdr:       "#34d399",
+    cta:       "transparent",
+    ctaFg:     "#34d399",
+    ctaBorder: "1px solid rgba(52,211,153,0.38)",
+  },
+  "builder-starter-checklist": {
+    border:    "rgba(52,211,153,0.32)",
+    hdr:       "#34d399",
+    cta:       "transparent",
+    ctaFg:     "#34d399",
+    ctaBorder: "1px solid rgba(52,211,153,0.38)",
+  },
+  "golden-delivery-sample": {
+    border:    "rgba(52,211,153,0.32)",
+    hdr:       "#34d399",
+    cta:       "transparent",
+    ctaFg:     "#34d399",
+    ctaBorder: "1px solid rgba(52,211,153,0.38)",
+  },
+  // Paid row — gold/purple
+  "masterclass-starter": {
+    border:    "rgba(245,158,11,0.42)",
+    hdr:       "#f59e0b",
+    cta:       "transparent",
+    ctaFg:     "#f59e0b",
+    ctaBorder: "1px solid rgba(245,158,11,0.55)",
+  },
+  "masterclass-pro": {
+    border: "rgba(212,175,55,0.52)",
+    hdr:    G.gold,
+    cta:    G.gold,
+    ctaFg:  "#09070a",
+  },
+  "masterclass-commander": {
+    border: "rgba(139,92,246,0.42)",
+    hdr:    "#a78bfa",
+    cta:    "rgba(139,92,246,0.60)",
+    ctaFg:  "#fff",
+  },
+  // Legacy golden-delivery paid packs (still rendered on /products/[slug])
   "golden-delivery-starter": {
     border:    "rgba(52,211,153,0.32)",
     hdr:       "#34d399",
@@ -42,6 +85,10 @@ const packCfg: Record<string, {
   },
 };
 
+// Slugs shown on the home grid in display order
+const FREE_ROW_SLUGS  = ["weekly-operating-map", "builder-starter-checklist", "golden-delivery-sample"];
+const PAID_ROW_SLUGS  = ["masterclass-starter", "masterclass-pro", "masterclass-commander"];
+
 // ── Shared section header ─────────────────────────────────────────────────
 function OrnHeader({ label, sub }: { label: string; sub?: string }) {
   return (
@@ -61,12 +108,14 @@ export default function HomePage() {
     <div style={{ background: G.bg, color: "#fff", fontFamily: "system-ui,-apple-system,sans-serif" }}>
 
       {/* ── LAUNCH-PRICE URGENCY BANNER ──────────────────────────────────── */}
+      {/* Non-sticky: lives above the Navbar at top of page only. Scrolls out
+          of view so it never overlaps the sticky Navbar (top-0 z-50) below.   */}
       <div style={{
         background: "linear-gradient(90deg,#1a1000,#2a1e00,#1a1000)",
         borderBottom: `1px solid ${G.goldDim}`,
         padding: "10px 20px",
         textAlign: "center",
-        position: "sticky", top: 0, zIndex: 50,
+        position: "relative", zIndex: 1,
       }}>
         <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.18em", color: G.gold }}>
           🔥 LAUNCH PRICE ENDS IN:{" "}
@@ -434,13 +483,87 @@ export default function HomePage() {
       {/* ── PICK YOUR LEVEL ──────────────────────────────────────────────── */}
       <section id="packs" style={{ background: G.bgSection, padding: "80px 24px", borderTop: "1px solid rgba(212,175,55,0.08)" }}>
         <div className="mx-auto max-w-6xl">
-          <OrnHeader label="PICK YOUR LEVEL" sub="EVERYTHING YOU NEED TO WIN ONLINE" />
+          {/* ── ROW 1 — 3 free gifts (email-gated download) ─────────────── */}
+          <OrnHeader label="FREE GIFTS — INSTANT DOWNLOAD" sub="ENTER EMAIL · WE SEND IT · NO CARD" />
 
           <div className="grid md:grid-cols-3 gap-5">
-            {products.map((product: any) => {
-              const cfg = packCfg[product.slug] ?? packCfg["golden-delivery-starter"];
-              const isPro = product.slug === "golden-delivery-pro";
-              const isCmd = product.slug === "golden-delivery-commander";
+            {FREE_ROW_SLUGS.map((slug) => {
+              const product = products.find((p) => p.slug === slug);
+              if (!product) return null;
+              const cfg = packCfg[product.slug] ?? packCfg["weekly-operating-map"];
+              return (
+                <article key={product.slug} style={{
+                  background: G.bgCard,
+                  border: `1px solid ${cfg.border}`,
+                  borderRadius: "8px",
+                  padding: "28px 24px",
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                }}>
+                  {/* header row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
+                    <div>
+                      <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", color: cfg.hdr, textTransform: "uppercase", marginBottom: "3px" }}>
+                        {product.name}
+                      </div>
+                      <div style={{ fontSize: "10px", color: G.mutedLo, letterSpacing: "0.05em" }}>{product.tier}</div>
+                    </div>
+                    <div style={{ fontSize: "22px", fontWeight: 900, color: cfg.hdr, letterSpacing: "0.02em" }}>FREE</div>
+                  </div>
+
+                  {/* divider strip */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px", paddingBottom: "16px", borderBottom: `1px solid ${cfg.border}` }}>
+                    <span style={{ fontSize: "22px" }}>🎁</span>
+                    <span style={{ fontSize: "10px", color: G.muted, letterSpacing: "0.1em", textTransform: "uppercase" }}>Email Delivery</span>
+                  </div>
+
+                  {/* bullets */}
+                  <ul style={{ flex: 1, marginBottom: "20px", listStyle: "none", padding: 0, margin: "0 0 20px 0" }}>
+                    {(product.bullets ?? []).slice(0, 5).map((item: string) => (
+                      <li key={item} style={{
+                        display: "flex", gap: "8px", alignItems: "flex-start",
+                        fontSize: "12px", color: "#9ca3af", marginBottom: "8px", lineHeight: 1.45,
+                      }}>
+                        <span style={{ color: cfg.hdr, flexShrink: 0, marginTop: "1px" }}>✓</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA — straight to lead-magnet email form */}
+                  <Link href={`/free/${product.slug}`} style={{
+                    display: "block", textAlign: "center",
+                    background: cfg.cta,
+                    color: cfg.ctaFg,
+                    border: cfg.ctaBorder ?? "none",
+                    borderRadius: "6px",
+                    padding: "12px 20px",
+                    fontSize: "12px", fontWeight: 800, letterSpacing: "0.1em",
+                    textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
+                  }}>
+                    SEND IT TO MY EMAIL →
+                  </Link>
+                  <p style={{ fontSize: "10px", color: G.mutedLo, textAlign: "center", marginTop: "8px" }}>
+                    No spam. Unsubscribe any time.
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+
+          {/* ── ROW 2 — 3 paid Masterclass products ─────────────────────── */}
+          <div style={{ marginTop: "72px" }}>
+            <OrnHeader label="MASTERCLASS — PICK YOUR LEVEL" sub="EVERYTHING YOU NEED TO WIN ONLINE" />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {PAID_ROW_SLUGS.map((slug) => {
+              const product = products.find((p) => p.slug === slug);
+              if (!product) return null;
+              const cfg = packCfg[product.slug] ?? packCfg["masterclass-pro"];
+              const isPro = product.slug === "masterclass-pro";
+              const isCmd = product.slug === "masterclass-commander";
               const ctaLabel = isPro
                 ? `GET PRO — $${product.price} →`
                 : isCmd
@@ -470,7 +593,7 @@ export default function HomePage() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
                     <div>
                       <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", color: cfg.hdr, textTransform: "uppercase", marginBottom: "3px" }}>
-                        {product.name} Pack
+                        {product.name}
                       </div>
                       <div style={{ fontSize: "10px", color: G.mutedLo, letterSpacing: "0.05em" }}>{product.tier}</div>
                     </div>
