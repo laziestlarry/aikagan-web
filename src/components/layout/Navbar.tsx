@@ -49,7 +49,7 @@ export default function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
             <Link
-              href="/products/golden-delivery-starter"
+              href="/products/masterclass-starter"
               className="text-sm font-medium text-kagan-light hover:text-kagan-gold transition-colors"
             >
               Starter — $29
@@ -98,11 +98,11 @@ export default function Navbar() {
               );
             })}
             <Link
-              href="/products/golden-delivery-starter"
+              href="/products/masterclass-starter"
               onClick={() => setOpen(false)}
               className="block mt-3 text-center rounded-lg bg-kagan-gold px-4 py-3 text-sm font-semibold text-black hover:bg-kagan-gold-light transition-colors"
             >
-              Get Starter Pack — $29
+              Get Starter — $29
             </Link>
           </div>
         </div>

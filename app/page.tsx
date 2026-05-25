@@ -261,6 +261,16 @@ export default function HomePage() {
                   <style>{`
                     @keyframes corePulse2 { 0%,100%{opacity:.7} 50%{opacity:1} }
                     @keyframes nodeFade2  { 0%,100%{opacity:.5} 50%{opacity:.92} }
+                    /* Rare white energy flash inside the AI core.
+                       Most of the 14s cycle is invisible — only a brief
+                       ~700ms shimmer near the start of every loop.        */
+                    @keyframes whiteSpark {
+                      0%   { opacity: 0; r: 4;  }
+                      3%   { opacity: 0.95; r: 14; }
+                      8%   { opacity: 0.6; r: 22; }
+                      14%  { opacity: 0; r: 28; }
+                      100% { opacity: 0; r: 4;  }
+                    }
                   `}</style>
                   <radialGradient id="hg2" cx="50%" cy="53%" r="50%">
                     <stop offset="0%"   stopColor="#D4AF37" stopOpacity="0.18"/>
@@ -323,6 +333,11 @@ export default function HomePage() {
                 <circle cx="200" cy="210" r="46" fill="rgba(212,175,55,0.07)" stroke="rgba(212,175,55,0.6)" strokeWidth="1.5"
                   style={{ animation:"corePulse2 3s ease-in-out infinite" }}/>
                 <circle cx="200" cy="210" r="30" fill="rgba(212,175,55,0.12)" stroke="rgba(212,175,55,0.3)" strokeWidth="1"/>
+                {/* Rare white energy flash — fires for ~1s of every 14s loop.
+                    Anti-boredom: gives long lookers a tiny "alive" moment
+                    without continuous distraction. */}
+                <circle cx="200" cy="210" r="4" fill="#ffffff" filter="url(#gl2)" opacity="0"
+                  style={{ animation:"whiteSpark 14s ease-out infinite" }}/>
                 <text x="200" y="207" textAnchor="middle" fill="#D4AF37"              fontSize="15" fontWeight="800" fontFamily="system-ui,sans-serif" letterSpacing="2">AI</text>
                 <text x="200" y="221" textAnchor="middle" fill="rgba(212,175,55,0.5)" fontSize="7"  fontWeight="700" fontFamily="system-ui,sans-serif" letterSpacing="2">CORE</text>
 

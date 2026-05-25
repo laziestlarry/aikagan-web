@@ -29,7 +29,7 @@ export default function CheckoutButton({ href, slug, children, className }: Prop
     <a
       href={url}
       onClick={handleClick}
-      className={className}
+      className={`lemonsqueezy-button${className ? ` ${className}` : ""}`}
       rel="noopener"
     >
       {children}

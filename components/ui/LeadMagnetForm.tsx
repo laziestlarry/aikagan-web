@@ -24,6 +24,9 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const router = useRouter();
 
+  const [assetUrl, setAssetUrl] = useState<string | null>(null);
+  const [nextHref, setNextHref] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -43,12 +46,23 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
       if (!res.ok) throw new Error(data.error ?? "Error");
       // Fire Meta Pixel Lead event on successful opt-in
       window.fbq?.("track", "Lead", { content_name: slug, content_category: "lead_magnet" });
+      setAssetUrl(data.assetPath ?? null);
+      setNextHref(data.nextSlug ? `/products/${data.nextSlug}` : null);
       setState("done");
+
+      // Auto-download: programmatically trigger asset download immediately
       if (data.assetPath) {
-        // Redirect to next tier after short delay
-        setTimeout(() => {
-          if (data.nextSlug) router.push(`/products/${data.nextSlug}`);
-        }, 3000);
+        const a = document.createElement("a");
+        a.href = data.assetPath;
+        a.download = "";
+        a.rel = "noopener";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        // Soft redirect to upsell after 5s (gives time for download to start)
+        if (data.nextSlug) {
+          setTimeout(() => router.push(`/products/${data.nextSlug}`), 5000);
+        }
       }
     } catch {
       setState("error");
@@ -58,8 +72,20 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
   if (state === "done") {
     return (
       <div className={`rounded-2xl border border-amber-300/30 bg-amber-300/10 px-6 py-5 text-center ${className}`}>
-        <p className="font-semibold text-amber-300">\u2713 You\u2019re in! Check your inbox.</p>
-        <p className="mt-1 text-sm text-neutral-400">Redirecting you to your first upgrade\u2026</p>
+        <p className="font-semibold text-amber-300">\u2713 You&apos;re in! Your download is starting.</p>
+        {assetUrl && (
+          <p className="mt-2 text-sm text-neutral-300">
+            Didn&apos;t auto-start?{" "}
+            <a href={assetUrl} download className="text-amber-300 underline hover:text-amber-200">
+              Click here to download manually
+            </a>.
+          </p>
+        )}
+        {nextHref && (
+          <p className="mt-3 text-xs text-neutral-400">
+            Taking you to the next upgrade in a moment\u2026
+          </p>
+        )}
       </div>
     );
   }

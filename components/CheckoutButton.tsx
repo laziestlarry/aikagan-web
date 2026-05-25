@@ -19,7 +19,10 @@ interface Props {
 
 /**
  * Checkout CTA that fires Meta Pixel InitiateCheckout + internal revenue-ops
- * tracking before handing off to the LemonSqueezy checkout page.
+ * tracking, then opens the LemonSqueezy checkout AS AN IN-PAGE OVERLAY.
+ * The `lemonsqueezy-button` class is picked up by lemon.js (loaded in
+ * app/layout.tsx) which intercepts the click and opens the checkout in a
+ * modal — the buyer never leaves aikagan.com.
  */
 export default function CheckoutButton({ href, slug, price, children, className }: Props) {
   function handleClick() {
@@ -35,10 +38,8 @@ export default function CheckoutButton({ href, slug, price, children, className 
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
       onClick={handleClick}
-      className={className}
+      className={`lemonsqueezy-button${className ? ` ${className}` : ""}`}
     >
       {children}
     </a>
