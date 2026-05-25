@@ -34,6 +34,7 @@ const CONTACT_OPTIONS = [
 ];
 
 const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+const SUPPORT_EMAIL = "lazylarries@gmail.com";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
@@ -44,13 +45,52 @@ export default function ContactPage() {
     setStatus("sending");
     setErrorMsg("");
 
+    const formData = new FormData(e.currentTarget);
+
+    // Fallback path: if Formspree isn't configured, POST to our /api/lead so the
+    // submission goes through the autonomax pipeline AND opens a mail draft so
+    // the user has a guaranteed delivery channel.
     if (!FORMSPREE_ID) {
-      setStatus("error");
-      setErrorMsg("Form is not yet configured. Please contact us directly at the email below.");
+      try {
+        const payload = {
+          email: String(formData.get("email") ?? ""),
+          slug: "intake-form",
+          name: String(formData.get("name") ?? ""),
+          company: String(formData.get("company") ?? ""),
+          interest: String(formData.get("interest") ?? ""),
+          message: String(formData.get("message") ?? ""),
+          source: "contact-page",
+        };
+        await fetch("/api/lead", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        // Also open a pre-filled mailto so the user can complete delivery themselves.
+        const subject = `Project Intake — ${payload.name || payload.email}`;
+        const body =
+`Hi AIKAGAN,
+
+${payload.message}
+
+— ${payload.name || "Unknown"}
+Email:   ${payload.email}
+Company: ${payload.company || "-"}
+Interest: ${payload.interest || "-"}
+`;
+        window.location.href =
+          `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}` +
+          `&body=${encodeURIComponent(body)}`;
+        setStatus("success");
+      } catch {
+        setStatus("error");
+        setErrorMsg(
+          `Network error. Email us directly at ${SUPPORT_EMAIL} — we respond within 24 hours.`
+        );
+      }
       return;
     }
 
-    const formData = new FormData(e.currentTarget);
     try {
       const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
         method: "POST",
@@ -64,12 +104,14 @@ export default function ContactPage() {
         setStatus("error");
         setErrorMsg(
           data?.errors?.map((err: { message: string }) => err.message).join(", ") ||
-            "Submission failed. Please try again or email us directly."
+            `Submission failed. Email us directly at ${SUPPORT_EMAIL}.`
         );
       }
     } catch {
       setStatus("error");
-      setErrorMsg("Network error. Check your connection and try again.");
+      setErrorMsg(
+        `Network error. Check your connection or email ${SUPPORT_EMAIL} directly.`
+      );
     }
   }
 
@@ -242,6 +284,18 @@ export default function ContactPage() {
               </form>
             )}
           </Card>
+
+          {/* Always-visible direct email fallback — guarantees a working contact path */}
+          <p className="mt-6 text-center text-sm text-kagan-light">
+            Prefer email? Write us directly at{" "}
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="text-kagan-gold underline hover:text-kagan-gold-light transition-colors"
+            >
+              {SUPPORT_EMAIL}
+            </a>
+            .
+          </p>
         </div>
       </Section>
 

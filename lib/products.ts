@@ -96,7 +96,7 @@ export const products: Product[] = [
     bullets: [
       "10 sequential steps from idea to first \$1",
       "No audience, no ads required",
-      "Removes \u2018where do I even start\u2019 paralysis",
+      "Removes ‘where do I even start’ paralysis",
       "Instant digital delivery",
     ],
     checkoutUrl: null,

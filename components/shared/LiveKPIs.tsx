@@ -12,7 +12,7 @@ const FALLBACK_KPIS: KPI[] = [
   { label: "Active Pipelines", value: "12+" },
   { label: "Avg. Delivery Cycle", value: "7 Days" },
   { label: "SLA Uptime", value: "99.9%" },
-  { label: "Conversion Lift", value: "3.2\u00d7 avg" },
+  { label: "Conversion Lift", value: "3.2× avg" },
 ];
 
 export default function LiveKPIs() {

@@ -10,11 +10,26 @@ declare global {
 }
 
 interface Props {
-  href: string;
+  href: string | null;
   slug: string;
   price: number;
   children: ReactNode;
   className?: string;
+}
+
+function decorate(raw: string, slug: string): string {
+  try {
+    const u = new URL(raw);
+    u.searchParams.set("checkout[custom][product_slug]", slug);
+    const origin =
+      typeof window !== "undefined" && window.location?.origin
+        ? window.location.origin
+        : "https://aikagan.com";
+    u.searchParams.set("checkout[success_url]", `${origin}/checkout-success`);
+    return u.toString();
+  } catch {
+    return raw;
+  }
 }
 
 /**
@@ -25,7 +40,15 @@ interface Props {
  * modal — the buyer never leaves aikagan.com.
  */
 export default function CheckoutButton({ href, slug, price, children, className }: Props) {
-  function handleClick() {
+  const hasHref = typeof href === "string" && href.startsWith("http");
+  const finalHref = hasHref ? decorate(href!, slug) : "/products";
+
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (!hasHref) {
+      e.preventDefault();
+      window.location.href = "/products";
+      return;
+    }
     window.fbq?.("track", "InitiateCheckout", {
       value: price,
       currency: "USD",
@@ -37,9 +60,10 @@ export default function CheckoutButton({ href, slug, price, children, className 
 
   return (
     <a
-      href={href}
+      href={finalHref}
       onClick={handleClick}
       className={`lemonsqueezy-button${className ? ` ${className}` : ""}`}
+      data-product-slug={slug}
     >
       {children}
     </a>

@@ -250,7 +250,7 @@ export default function HomePage() {
                 ))}
               </div>
               <p style={{ marginTop: "12px", fontSize: "10px", color: G.mutedLo, maxWidth: "380px", lineHeight: 1.6 }}>
-                Results depend on individual effort and implementation. This is an execution toolkit, not a guaranteed income program.
+                <strong style={{ color: G.text }}>What you actually get:</strong> a digital toolkit — branded PDFs, fillable templates, ready-to-send scripts, and a step-by-step checklist. <strong style={{ color: G.text }}>Not</strong> an automated AI software, hosted SaaS, or done-for-you service. Results depend on individual effort and implementation.
               </p>
             </div>
 
@@ -570,6 +570,26 @@ export default function HomePage() {
           {/* ── ROW 2 — 3 paid Masterclass products ─────────────────────── */}
           <div style={{ marginTop: "72px" }}>
             <OrnHeader label="MASTERCLASS — PICK YOUR LEVEL" sub="EVERYTHING YOU NEED TO WIN ONLINE" />
+          </div>
+
+          {/* Expectation-management disclaimer — visible directly above the paid row */}
+          <div style={{
+            maxWidth: "780px",
+            margin: "0 auto 32px",
+            padding: "14px 20px",
+            border: `1px solid ${G.goldDim}`,
+            borderRadius: "8px",
+            background: G.goldFaint,
+            textAlign: "center",
+          }}>
+            <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.18em", color: G.gold, marginBottom: "6px" }}>
+              ⚠  WHAT YOU&apos;RE BUYING — READ FIRST
+            </p>
+            <p style={{ fontSize: "12px", color: G.text, lineHeight: 1.6 }}>
+              This is a <strong style={{ color: "#fff" }}>digital toolkit</strong> — branded PDFs, fillable templates, ready-to-send scripts, and step-by-step checklists.
+              It is <strong style={{ color: "#fff" }}>not</strong> an automated AI software, hosted SaaS, or done-for-you service.
+              You execute it yourself. We provide the system, you provide the work.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-5">

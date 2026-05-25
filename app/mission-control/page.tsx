@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { buildMetadata } from '@/lib/metadata';
 import Section from '@/components/ui/Section';
 import ProcessStages from '@/components/shared/ProcessStages';
@@ -9,31 +10,79 @@ import Badge from '@/components/ui/Badge';
 export const metadata: Metadata = buildMetadata({
   title: 'Mission Control',
   description:
-    'The Kaganate operating process \u2014 from intake through architecture, build, Golden Delivery, and ongoing operations.',
+    'Where you are in the AIKAGAN customer journey — discover, try, buy, execute, support. Plus live operational KPIs and our 6-stage delivery process.',
   path: '/mission-control/',
 });
+
+const JOURNEY = [
+  { n: '1', label: 'Discover',  body: 'Land on aikagan.com. Read the offer. Decide if the toolkit fits.',                   href: '/',                                         linkLabel: 'Home →' },
+  { n: '2', label: 'Try free',  body: 'Grab one of the 3 free gifts — instant email-gated download, no card.',             href: '/free/golden-delivery-sample',              linkLabel: 'Grab a gift →' },
+  { n: '3', label: 'Buy',       body: 'Upgrade to a Masterclass tier (Starter $29 · Pro $79 · Commander $149).',           href: '/products/masterclass-starter',             linkLabel: 'See the offer →' },
+  { n: '4', label: 'Execute',   body: 'Open START_HERE inside the ZIP. Follow the day-by-day blueprint. Ship.',            href: '/products/masterclass-starter',             linkLabel: 'Sample plan →' },
+  { n: '5', label: 'Support',   body: 'Stuck? Email us. We answer within 24 hours. Refund window stays open 30 days.',     href: '/contact',                                  linkLabel: 'Contact →' },
+];
 
 export default function MissionControlPage() {
   return (
     <>
       <Section variant="hero">
-        <div className="text-center mb-14">
-          <Badge variant="green" className="mb-4">Operational</Badge>
+        <div className="text-center mb-10">
+          <Badge variant="green" className="mb-4">Operational · Transparent</Badge>
           <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
             Mission <span className="text-gradient">Control</span>
           </h1>
           <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Every engagement follows a proven six-stage process. This is how The Kaganate ships.
+            Where you are in the AIKAGAN customer journey — and what we are doing in the background to support you.
           </p>
         </div>
 
-        {/* Live KPI tiles \u2014 hydrates with live data from autonomax revenue ops */}
-        <LiveKPIs />
+        {/* ── Customer journey breadcrumb ─────────────────────────────────── */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
+            ⚜ Customer Journey ⚜
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            {JOURNEY.map((s, i) => (
+              <Link
+                key={s.n}
+                href={s.href}
+                className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
+              >
+                {i < JOURNEY.length - 1 && (
+                  <span className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-kagan-gold/40 text-lg">→</span>
+                )}
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full border border-kagan-gold/40 text-xs font-bold text-kagan-gold">
+                    {s.n}
+                  </span>
+                  <span className="text-sm font-bold uppercase tracking-wider text-kagan-white">
+                    {s.label}
+                  </span>
+                </div>
+                <p className="text-xs text-kagan-light leading-relaxed">{s.body}</p>
+                <span className="mt-auto text-xs text-kagan-gold/80 group-hover:text-kagan-gold">
+                  {s.linkLabel}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
 
-        {/* Process stages */}
+        {/* ── Live operational KPIs (revenue-ops backend) ─────────────────── */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-2 uppercase">
+            ⚜ Live KPIs — Operational Transparency ⚜
+          </h2>
+          <p className="text-center text-xs text-kagan-light mb-6 max-w-xl mx-auto">
+            Updated every 30 seconds from our revenue-ops backend. We publish these so you can see the operation is real and accountable before you spend a dollar.
+          </p>
+          <LiveKPIs />
+        </div>
+
+        {/* ── 6-stage delivery process ────────────────────────────────────── */}
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-kagan-white mb-8 text-center">
-            Delivery Process
+          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
+            ⚜ How We Ship — 6-Stage Delivery Process ⚜
           </h2>
           <ProcessStages />
         </div>
@@ -42,11 +91,11 @@ export default function MissionControlPage() {
       <Section variant="alt">
         <CTA
           title="Initiate a Mission"
-          subtitle="Submit your project request and enter The Kaganate delivery pipeline. First response within 48 hours."
-          primaryLabel="Start Project"
-          primaryHref="/contact/"
-          secondaryLabel="Explore Services"
-          secondaryHref="/services/"
+          subtitle="Two paths in: grab a free gift to test-drive the system, or jump straight to the Masterclass. First response within 24 hours either way."
+          primaryLabel="Start with Starter — $29"
+          primaryHref="/products/masterclass-starter/"
+          secondaryLabel="Grab a free gift"
+          secondaryHref="/free/golden-delivery-sample/"
         />
       </Section>
     </>

@@ -13,7 +13,7 @@ declare global {
 
 const STEPS = [
   { icon: "\uD83C\uDF89", label: "Payment confirmed" },
-  { icon: "\u2B07\uFE0F",  label: "Download your pack" },
+  { icon: "\u2B07", label: "Download your pack" },
   { icon: "\uD83D\uDCC2", label: "Open START_HERE" },
   { icon: "\uD83D\uDE80", label: "Execute day one" },
   { icon: "\uD83D\uDCAC", label: "Support always available" },
@@ -139,17 +139,26 @@ function CheckoutSuccessContent() {
               download
               className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200"
             >
-              <span>\u2B07\uFE0F</span> Download ZIP Pack
+              <span>\u2B07</span> Download ZIP Pack
             </a>
           ) : (
-            <p className="mt-6 rounded-xl bg-red-900/30 border border-red-500/30 px-5 py-4 text-sm text-red-300">
-              Download link not found. Please check your confirmation email or{" "}
-              <a href="mailto:lazylarries@gmail.com" className="underline">contact support</a>.
-            </p>
+            <div className="mt-6 rounded-xl bg-amber-300/10 border border-amber-300/30 px-5 py-4 text-sm text-amber-200">
+              <p className="font-semibold">Your download is on its way.</p>
+              <p className="mt-1 text-neutral-300">
+                Within ~60 seconds you&apos;ll receive a confirmation email with your secure
+                download link (valid 48 hours). If it doesn&apos;t arrive, check your spam
+                folder, or email{" "}
+                <a href="mailto:lazylarries@gmail.com" className="text-amber-300 underline">
+                  lazylarries@gmail.com
+                </a>{" "}
+                with your order number and we&apos;ll re-send it manually within an hour.
+              </p>
+            </div>
           )}
 
           <p className="mt-4 text-xs text-neutral-500">
-            Link valid for 48 hours. Re-download from your confirmation email if it expires.
+            Download link valid for 48 hours. Re-download from your confirmation email if it expires.
+            All deliveries are <strong>digital PDF + ZIP files</strong> \u2014 no physical shipment.
           </p>
         </div>
 

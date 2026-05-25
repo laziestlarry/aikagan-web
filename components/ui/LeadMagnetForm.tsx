@@ -72,7 +72,7 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
   if (state === "done") {
     return (
       <div className={`rounded-2xl border border-amber-300/30 bg-amber-300/10 px-6 py-5 text-center ${className}`}>
-        <p className="font-semibold text-amber-300">\u2713 You&apos;re in! Your download is starting.</p>
+        <p className="font-semibold text-amber-300">✓ You&apos;re in! Your download is starting.</p>
         {assetUrl && (
           <p className="mt-2 text-sm text-neutral-300">
             Didn&apos;t auto-start?{" "}
@@ -83,7 +83,7 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
         )}
         {nextHref && (
           <p className="mt-3 text-xs text-neutral-400">
-            Taking you to the next upgrade in a moment\u2026
+            Taking you to the next upgrade in a moment…
           </p>
         )}
       </div>
@@ -105,7 +105,7 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
         disabled={state === "loading"}
         className="rounded-xl bg-amber-300 px-6 py-3 font-semibold text-black hover:bg-amber-200 disabled:opacity-50"
       >
-        {state === "loading" ? "Sending\u2026" : leadMagnetLabel}
+        {state === "loading" ? "Sending…" : leadMagnetLabel}
       </button>
       {state === "error" && (
         <p className="w-full text-xs text-red-400">Something went wrong. Try again.</p>
