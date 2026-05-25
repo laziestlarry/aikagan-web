@@ -231,7 +231,7 @@ If the contact form on `/contact` doesn't send messages:
 - **Analytics**: Google Tag Manager `GTM-NZW2CP6H` + `@vercel/analytics`
 - **Webhook endpoint**: `POST https://aikagan.com/api/webhooks/lemonsqueezy`
 - **Env vars needed in Vercel**: `LEMONSQUEEZY_WEBHOOK_SECRET`, `MAKE_WEBHOOK_URL`
-- **Support email**: lazylarries@gmail.com
+- **Support email**: kagan@aikagan.com
 
 ---
 

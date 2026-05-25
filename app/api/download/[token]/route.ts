@@ -54,7 +54,7 @@ export async function GET(
 
   if (!payload) {
     return NextResponse.json(
-      { error: "Invalid or expired download link. Contact support at lazylarries@gmail.com" },
+      { error: "Invalid or expired download link. Contact support at kagan@aikagan.com" },
       { status: 403 }
     );
   }

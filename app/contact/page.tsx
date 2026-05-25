@@ -34,7 +34,7 @@ const CONTACT_OPTIONS = [
 ];
 
 const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID;
-const SUPPORT_EMAIL = "lazylarries@gmail.com";
+const SUPPORT_EMAIL = "kagan@aikagan.com";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");

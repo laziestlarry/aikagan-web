@@ -139,7 +139,7 @@ function CheckoutSuccessContent() {
               download
               className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200"
             >
-              <span>\u2B07</span> Download ZIP Pack
+              <span>⬇</span> Download ZIP Pack
             </a>
           ) : (
             <div className="mt-6 rounded-xl bg-amber-300/10 border border-amber-300/30 px-5 py-4 text-sm text-amber-200">
@@ -148,8 +148,8 @@ function CheckoutSuccessContent() {
                 Within ~60 seconds you&apos;ll receive a confirmation email with your secure
                 download link (valid 48 hours). If it doesn&apos;t arrive, check your spam
                 folder, or email{" "}
-                <a href="mailto:lazylarries@gmail.com" className="text-amber-300 underline">
-                  lazylarries@gmail.com
+                <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">
+                  kagan@aikagan.com
                 </a>{" "}
                 with your order number and we&apos;ll re-send it manually within an hour.
               </p>
@@ -158,7 +158,7 @@ function CheckoutSuccessContent() {
 
           <p className="mt-4 text-xs text-neutral-500">
             Download link valid for 48 hours. Re-download from your confirmation email if it expires.
-            All deliveries are <strong>digital PDF + ZIP files</strong> \u2014 no physical shipment.
+            All deliveries are <strong>digital PDF + ZIP files</strong> — no physical shipment.
           </p>
         </div>
 
@@ -169,7 +169,7 @@ function CheckoutSuccessContent() {
             <li className="flex gap-3"><span className="text-amber-300 font-bold">1.</span>Download and unzip the pack.</li>
             <li className="flex gap-3"><span className="text-amber-300 font-bold">2.</span>Open <strong>START_HERE.pdf</strong> first — it maps the exact execution sequence.</li>
             <li className="flex gap-3"><span className="text-amber-300 font-bold">3.</span>Complete the 24-Hour Quick Win Checklist.</li>
-            <li className="flex gap-3"><span className="text-amber-300 font-bold">4.</span>Questions? Email <a href="mailto:lazylarries@gmail.com" className="text-amber-300 underline">lazylarries@gmail.com</a>.</li>
+            <li className="flex gap-3"><span className="text-amber-300 font-bold">4.</span>Questions? Email <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a>.</li>
           </ol>
         </div>
 
