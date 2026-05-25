@@ -950,13 +950,17 @@ export default function HomePage() {
               YOUR FUTURE.<br />YOUR FREEDOM.<br />YOUR LEGACY.
             </h2>
 
+            {/* 3 paid Masterclass CTAs — checkout opens IN-DOMAIN via lemonsqueezy-button */}
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
-              {products.map((product: any) => {
-                const cfg = packCfg[product.slug] ?? packCfg["golden-delivery-starter"];
+              {PAID_ROW_SLUGS.map((slug) => {
+                const product = products.find((p) => p.slug === slug);
+                if (!product) return null;
+                const cfg = packCfg[product.slug] ?? packCfg["masterclass-pro"];
+                const isStarter = product.slug === "masterclass-starter";
                 const labels: Record<string,string> = {
-                  "golden-delivery-starter": "STARTER — $29 →",
-                  "golden-delivery-pro":     "PRO — $79 →",
-                  "golden-delivery-commander":"COMMANDER — $149 →",
+                  "masterclass-starter":  "STARTER — $29 →",
+                  "masterclass-pro":      "PRO — $79 →",
+                  "masterclass-commander":"COMMANDER — $149 →",
                 };
                 return (
                   <CheckoutLink
@@ -966,9 +970,9 @@ export default function HomePage() {
                     productName={product.name}
                     price={product.price}
                     style={{
-                      border: product.slug === "golden-delivery-starter" ? "none" : `1px solid ${cfg.border}`,
-                      background: product.slug === "golden-delivery-starter" ? G.gold : cfg.cta,
-                      color: product.slug === "golden-delivery-starter" ? "#09070a" : cfg.ctaFg,
+                      border: isStarter ? "none" : `1px solid ${cfg.border}`,
+                      background: isStarter ? G.gold : cfg.cta,
+                      color: isStarter ? "#09070a" : cfg.ctaFg,
                       fontWeight: 700, fontSize: "13px", letterSpacing: "0.08em",
                       padding: "14px 28px", borderRadius: "6px",
                       textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
@@ -980,8 +984,38 @@ export default function HomePage() {
             </div>
 
             <p style={{ marginTop: "18px", fontSize: "10px", letterSpacing: "0.12em", color: G.mutedLo }}>
-              ALL PACKS · 30-DAY GUARANTEE · INSTANT DOWNLOAD · ONE-TIME PAYMENT
+              30-DAY GUARANTEE · IN-DOMAIN CHECKOUT · INSTANT DOWNLOAD · ONE-TIME PAYMENT
             </p>
+
+            {/* ── Free-gift fallback row ─────────────────────────────────── */}
+            <div style={{
+              marginTop: "32px",
+              paddingTop: "26px",
+              borderTop: `1px dashed ${G.goldDim}`,
+            }}>
+              <p style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.22em", color: G.muted, marginBottom: "14px" }}>
+                ⚜  OR GRAB A FREE GIFT FIRST  ⚜
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px" }}>
+                {FREE_ROW_SLUGS.map((slug) => {
+                  const product = products.find((p) => p.slug === slug);
+                  if (!product) return null;
+                  return (
+                    <Link key={slug} href={`/free/${slug}`} style={{
+                      display: "inline-flex", alignItems: "center", gap: "6px",
+                      border: `1px solid rgba(52,211,153,0.38)`,
+                      color: "#34d399",
+                      fontWeight: 700, fontSize: "11px", letterSpacing: "0.08em",
+                      padding: "10px 18px", borderRadius: "6px",
+                      textTransform: "uppercase", textDecoration: "none",
+                      background: "rgba(52,211,153,0.04)",
+                    }}>
+                      🎁 {product.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </section>
