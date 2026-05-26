@@ -2,16 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProduct, products } from "@/lib/products";
+import CheckoutLink from "@/components/ui/CheckoutLink";
+import ExitIntentModal from "@/components/ui/ExitIntentModal";
 
 export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  return products
+    .filter((product) => product.priceModel === "one_time")
+    .map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = getProduct(slug);
 
-  if (!product) {
+  if (!product || product.priceModel !== "one_time") {
     return {
       title: "Product Not Found | AIKAGAN"
     };
@@ -27,7 +31,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const product = getProduct(slug);
 
-  if (!product) {
+  if (!product || product.priceModel !== "one_time") {
     notFound();
   }
 
@@ -146,12 +150,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             One-time purchase. Instant access. Built for execution.
           </p>
 
-          <a
+          <CheckoutLink
             href={product.checkoutUrl}
+            productSlug={product.slug}
+            productName={product.name}
+            price={product.price}
             className="mt-8 block rounded-2xl bg-amber-300 px-6 py-4 text-center font-semibold text-black transition hover:bg-amber-200"
           >
             Buy Now — ${product.price}
-          </a>
+          </CheckoutLink>
 
           <Link
             href="/legal/refund"
@@ -170,22 +177,22 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="mt-6 border-t border-white/10 pt-6">
             <p className="text-xs text-neutral-500 mb-3 uppercase tracking-widest">Also available</p>
             <div className="space-y-2">
-              {product.slug !== "golden-delivery-starter" && (
-                <Link href="/products/golden-delivery-starter"
+              {product.slug !== "masterclass-starter" && (
+                <Link href="/products/masterclass-starter"
                   className="block text-sm text-green-400 hover:text-green-300 transition">
-                  → Starter Pack — $29
+                  → Starter — $29
                 </Link>
               )}
-              {product.slug !== "golden-delivery-pro" && (
-                <Link href="/products/golden-delivery-pro"
+              {product.slug !== "masterclass-pro" && (
+                <Link href="/products/masterclass-pro"
                   className="block text-sm text-amber-300 hover:text-amber-200 transition">
-                  → Pro Pack — $79
+                  → Pro — $79
                 </Link>
               )}
-              {product.slug !== "golden-delivery-commander" && (
-                <Link href="/products/golden-delivery-commander"
+              {product.slug !== "masterclass-commander" && (
+                <Link href="/products/masterclass-commander"
                   className="block text-sm text-purple-400 hover:text-purple-300 transition">
-                  → Commander Pack — $149 (white-label)
+                  → Commander — $149 (white-label)
                 </Link>
               )}
             </div>
@@ -203,6 +210,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </aside>
       </section>
+
+      <ExitIntentModal
+        productName={product.name}
+        checkoutUrl={product.checkoutUrl ?? undefined}
+        productSlug={product.slug}
+        price={product.price}
+        fallbackHref="/free/golden-delivery-sample"
+      />
     </main>
   );
 }

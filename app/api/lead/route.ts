@@ -16,7 +16,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "email required" }, { status: 400 });
   }
 
-  const { email, slug, utm_source, utm_medium, utm_campaign, ref } = body;
+  const {
+    email,
+    slug,
+    website,
+    utm_source,
+    utm_medium,
+    utm_campaign,
+    utm_term,
+    utm_content,
+    click_id,
+    fbclid,
+    igshid,
+    ref,
+  } = body;
+
+  // Bot honeypot check - if filled out, silently ignore but return success
+  if (website) {
+    const product = slug ? getProduct(slug) : null;
+    return NextResponse.json({
+      ok: true,
+      assetPath: product?.leadMagnetPath ?? null,
+      nextSlug: product?.nextSlug ?? "masterclass-starter",
+    });
+  }
 
   // Validate email
   if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
@@ -42,6 +65,11 @@ export async function POST(req: NextRequest) {
         utm_source: utm_source ?? null,
         utm_medium: utm_medium ?? null,
         utm_campaign: utm_campaign ?? null,
+        utm_term: utm_term ?? null,
+        utm_content: utm_content ?? null,
+        click_id: click_id ?? null,
+        fbclid: fbclid ?? null,
+        igshid: igshid ?? null,
         ref: ref ?? null,
         timestamp: new Date().toISOString(),
       }),
@@ -58,6 +86,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     assetPath: product?.leadMagnetPath ?? null,
-    nextSlug: product?.nextSlug ?? "golden-delivery-starter",
+    nextSlug: product?.nextSlug ?? "masterclass-starter",
   });
 }

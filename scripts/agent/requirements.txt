@@ -1,0 +1,4 @@
+google-antigravity
+requests
+python-dotenv
+pydantic

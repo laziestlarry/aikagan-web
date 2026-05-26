@@ -37,6 +37,7 @@ function verifySignature(body: string, signature: string): boolean {
  * The custom_data field is the most reliable since it's set explicitly at checkout time.
  */
 function resolveSlug(productName: string, variantName: string, customSlug?: string): string {
+  const fallbackPaidSlug = products.find((product) => product.priceModel === "one_time")?.slug ?? products[0].slug;
   // 1. Trust explicit slug passed via checkout custom data
   if (customSlug) {
     const match = products.find((p) => p.slug === customSlug);
@@ -50,10 +51,10 @@ function resolveSlug(productName: string, variantName: string, customSlug?: stri
     if (name.includes(product.tier.toLowerCase())) return product.slug;
   }
   // 3. Keyword fallback: commander > pro > starter
-  if (name.includes("commander")) return "golden-delivery-commander";
-  if (name.includes("pro")) return "golden-delivery-pro";
-  if (name.includes("starter")) return "golden-delivery-starter";
-  return products[0].slug;
+  if (name.includes("commander")) return "masterclass-commander";
+  if (name.includes("pro")) return "masterclass-pro";
+  if (name.includes("starter")) return "masterclass-starter";
+  return fallbackPaidSlug;
 }
 
 export async function POST(req: NextRequest) {

@@ -1,17 +1,30 @@
 "use client";
 import { useEffect, useState } from "react";
 
-const DURATION_HOURS = 72;
+const DURATION_HOURS = 48;
+const COOKIE_NAME = "kagan_sale_end";
+
+function setCookie(name: string, value: string, days: number) {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+}
+
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : null;
+}
 
 function getEndTime(): number {
   if (typeof window === "undefined") return Date.now() + DURATION_HOURS * 3600 * 1000;
-  const stored = localStorage.getItem("kagan_sale_end");
+  
+  const stored = getCookie(COOKIE_NAME);
   if (stored) {
     const t = parseInt(stored, 10);
     if (t > Date.now()) return t;
   }
+  
   const end = Date.now() + DURATION_HOURS * 3600 * 1000;
-  localStorage.setItem("kagan_sale_end", String(end));
+  setCookie(COOKIE_NAME, String(end), DURATION_HOURS / 24);
   return end;
 }
 

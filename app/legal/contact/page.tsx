@@ -23,11 +23,11 @@ export default function ContactPage() {
             Or grab Pro if you already have an offer and need the full funnel + automation stack.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/products/golden-delivery-starter"
+            <Link href="/products/masterclass-starter"
               className="inline-block bg-amber-300 text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-amber-200 transition">
               Starter — $29 →
             </Link>
-            <Link href="/products/golden-delivery-pro"
+            <Link href="/products/masterclass-pro"
               className="inline-block border border-amber-300/40 text-amber-300 font-semibold text-sm px-6 py-3 rounded-xl hover:bg-amber-300/10 transition">
               Pro — $79 →
             </Link>

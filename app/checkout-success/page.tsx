@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { getProduct, getProduct as findProduct, products } from "@/lib/products";
+import CheckoutLink from "@/components/ui/CheckoutLink";
 
 declare global {
   interface Window {
@@ -40,12 +41,15 @@ function OrderBump({ currentSlug }: { currentSlug: string }) {
           </li>
         ))}
       </ul>
-      <a
+      <CheckoutLink
         href={next.checkoutUrl!}
+        productSlug={next.slug}
+        productName={next.name}
+        price={next.price}
         className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200"
       >
         Upgrade to {next.name} →
-      </a>
+      </CheckoutLink>
     </div>
   );
 }
@@ -60,7 +64,7 @@ function CheckoutSuccessContent() {
   const product =
     (token ? undefined : slugParam ? findProduct(slugParam) : undefined) ||
     products.find((p) => p.ladderTier !== "lead_magnet" && p.priceModel === "one_time") ||
-    products[2]; // fallback: golden-delivery-starter
+    products[0];
 
   // Animate steps in on mount
   useEffect(() => {
@@ -97,7 +101,7 @@ function CheckoutSuccessContent() {
         {/* Header */}
         <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Order confirmed</p>
         <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
-          Your Golden Delivery pack is ready.
+          Your {product?.name ?? "AIKAGAN"} pack is ready.
         </h1>
         <p className="mt-4 text-lg text-neutral-400">
           Follow the steps below to claim your download and start day one.

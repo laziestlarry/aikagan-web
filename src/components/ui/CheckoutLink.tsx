@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { appendAttribution, trackCheckoutIntent } from "@/src/lib/attribution";
 
 interface CheckoutLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
   /** LemonSqueezy checkout URL (may be null/undefined — we render a safe fallback). */
@@ -77,14 +78,14 @@ export default function CheckoutLink({
           ],
         },
       });
+      trackCheckoutIntent(productSlug);
     }
     onClick?.(e);
   }
 
-  const finalHref = hasHref ? decorateCheckoutUrl(href!, productSlug) : "/products";
+  const finalHref = hasHref ? appendAttribution(decorateCheckoutUrl(href!, productSlug)) : "/products";
 
   return (
-    // eslint-disable-next-line jsx-a11y/anchor-has-content
     <a
       {...rest}
       href={finalHref}

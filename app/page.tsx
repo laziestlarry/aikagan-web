@@ -88,6 +88,10 @@ const packCfg: Record<string, {
 // Slugs shown on the home grid in display order
 const FREE_ROW_SLUGS  = ["weekly-operating-map", "builder-starter-checklist", "golden-delivery-sample"];
 const PAID_ROW_SLUGS  = ["masterclass-starter", "masterclass-pro", "masterclass-commander"];
+const HERO_STARTER_PRODUCT =
+  products.find((product) => product.slug === "masterclass-starter")
+  ?? products.find((product) => product.priceModel === "one_time")
+  ?? products[0];
 
 // ── Shared section header ─────────────────────────────────────────────────
 function OrnHeader({ label, sub }: { label: string; sub?: string }) {
@@ -180,10 +184,10 @@ export default function HomePage() {
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
                 <CheckoutLink
-                  href={products[0].checkoutUrl}
-                  productSlug={products[0].slug}
-                  productName={products[0].name}
-                  price={products[0].price}
+                  href={HERO_STARTER_PRODUCT.checkoutUrl}
+                  productSlug={HERO_STARTER_PRODUCT.slug}
+                  productName={HERO_STARTER_PRODUCT.name}
+                  price={HERO_STARTER_PRODUCT.price}
                   style={{
                     display: "inline-flex", alignItems: "center",
                     background: G.gold, color: "#09070a",

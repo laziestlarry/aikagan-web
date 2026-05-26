@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAttribution } from "@/src/lib/attribution";
 
 declare global {
   interface Window {
@@ -21,6 +23,7 @@ interface Props {
  */
 export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Access", className }: Props) {
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const router = useRouter();
 
@@ -32,14 +35,24 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
     if (!email) return;
     setState("loading");
     try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const attribution = getAttribution();
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
           slug,
-          utm_source: new URLSearchParams(window.location.search).get("utm_source") ?? undefined,
-          ref: new URLSearchParams(window.location.search).get("ref") ?? undefined,
+          website: honeypot,
+          utm_source: urlParams.get("utm_source") ?? attribution.utm_source ?? undefined,
+          utm_medium: urlParams.get("utm_medium") ?? attribution.utm_medium ?? undefined,
+          utm_campaign: urlParams.get("utm_campaign") ?? attribution.utm_campaign ?? undefined,
+          utm_term: urlParams.get("utm_term") ?? attribution.utm_term ?? undefined,
+          utm_content: urlParams.get("utm_content") ?? attribution.utm_content ?? undefined,
+          click_id: urlParams.get("click_id") ?? attribution.click_id ?? undefined,
+          fbclid: urlParams.get("fbclid") ?? attribution.fbclid ?? undefined,
+          igshid: urlParams.get("igshid") ?? attribution.igshid ?? undefined,
+          ref: urlParams.get("ref") ?? attribution.ref ?? undefined,
         }),
       });
       const data = await res.json();
@@ -82,9 +95,12 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
           </p>
         )}
         {nextHref && (
-          <p className="mt-3 text-xs text-neutral-400">
-            Taking you to the next upgrade in a moment…
-          </p>
+          <div className="mt-3 space-y-2 text-xs text-neutral-400">
+            <p>Taking you to the next upgrade in a moment…</p>
+            <Link href={nextHref} className="inline-flex items-center justify-center text-amber-300 underline hover:text-amber-200">
+              See the recommended next step now
+            </Link>
+          </div>
         )}
       </div>
     );
@@ -92,6 +108,19 @@ export default function LeadMagnetForm({ slug, leadMagnetLabel = "Get Free Acces
 
   return (
     <form onSubmit={handleSubmit} className={`flex flex-col sm:flex-row gap-3 ${className}`}>
+      {/* Honeypot field - visually hidden but available to screen readers / bots */}
+      <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }} aria-hidden="true">
+        <label htmlFor="website">Website</label>
+        <input
+          type="text"
+          id="website"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
       <input
         type="email"
         required

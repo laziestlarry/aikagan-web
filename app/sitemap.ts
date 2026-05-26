@@ -1,8 +1,15 @@
 import { MetadataRoute } from 'next';
+import { products } from "@/lib/products";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://aikagan.com';
   const now = new Date();
+  const productRoutes = products.map((product) => ({
+    url: `${base}/${product.priceModel === "free" ? "free" : "products"}/${product.slug}/`,
+    lastModified: now,
+    changeFrequency: product.priceModel === "free" ? "weekly" : "daily",
+    priority: product.priceModel === "free" ? 0.75 : 0.9,
+  })) satisfies MetadataRoute.Sitemap;
 
   return [
     {
@@ -17,30 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-    {
-      url: `${base}/products/golden-delivery-starter/`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${base}/products/golden-delivery-pro/`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${base}/products/golden-delivery-commander/`,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${base}/checkout-success/`,
-      lastModified: now,
-      changeFrequency: 'monthly',
-      priority: 0.3,
-    },
+    ...productRoutes,
     {
       url: `${base}/about/`,
       lastModified: now,
@@ -52,6 +36,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
+    },
+    {
+      url: `${base}/legal/contact/`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${base}/legal/refund/`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.4,
     },
   ];
 }
