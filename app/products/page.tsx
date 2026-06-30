@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ShoppingCart, Lock, Download, Sparkles, Shield, Zap, FileText } from 'lucide-react';
 import { buildMetadata } from '@/lib/metadata';
 import Section from '@/components/ui/Section';
 import ProductCard from '@/components/shared/ProductCard';
@@ -88,36 +89,78 @@ export default function ProductsPage() {
       </Section>
 
       <Section variant="alt">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-kagan-white mb-6">How It Works</h2>
-          <div className="space-y-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-kagan-white mb-2">How It Works</h2>
+            <p className="text-sm text-kagan-light">From zero to operational in three steps</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                n: '1',
+                icon: ShoppingCart,
                 title: 'Choose Your Offer',
                 body: 'Select the pack, audit, or bundle that matches where you are. Need guidance? Book a call.',
+                accent: 'text-amber-300',
+                bgGlow: 'from-amber-300/5',
+                borderGlow: 'border-amber-300/20 hover:border-amber-300/40',
               },
               {
-                n: '2',
+                icon: Lock,
                 title: 'Complete Checkout',
-                body: 'Secure one-time payment. Instant access. No subscriptions, no upsell traps.',
+                body: 'Secure one-time payment via LemonSqueezy. Instant access. No subscriptions, no upsell traps.',
+                accent: 'text-emerald-300',
+                bgGlow: 'from-emerald-300/5',
+                borderGlow: 'border-emerald-300/20 hover:border-emerald-300/40',
               },
               {
-                n: '3',
+                icon: Download,
                 title: 'Receive Delivery',
-                body: 'Downloads delivered instantly. Audits and bundles delivered on a defined timeline with weekly updates.',
+                body: 'Digital packs download instantly. Audits and bundles delivered on a defined timeline with weekly updates.',
+                accent: 'text-purple-300',
+                bgGlow: 'from-purple-300/5',
+                borderGlow: 'border-purple-300/20 hover:border-purple-300/40',
               },
-            ].map(({ n, title, body }) => (
-              <div key={n} className="flex gap-4">
-                <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-kagan-gold/10 border border-kagan-gold/20 flex items-center justify-center text-kagan-gold font-bold text-sm">
-                  {n}
+            ].map(({ icon: Icon, title, body, accent, bgGlow, borderGlow }) => (
+              <div
+                key={title}
+                className={`group relative rounded-2xl border ${borderGlow} bg-gradient-to-b ${bgGlow} to-transparent p-6 transition-all duration-200 hover:-translate-y-0.5`}
+              >
+                {/* Glow effect on hover */}
+                <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-b ${bgGlow} blur-xl pointer-events-none`} />
+                <div className="relative">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl border ${borderGlow.replace('hover:', '')} bg-black/40 ${accent}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <span className="text-xs uppercase tracking-[0.15em] text-kagan-light/60 font-medium">
+                      Step {['Choose', 'Complete', 'Receive'].indexOf(title.split(' ')[0]) + 1}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-kagan-white mb-2">{title}</h3>
+                  <p className="text-sm text-kagan-light leading-relaxed">{body}</p>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-kagan-white mb-1">{title}</h3>
-                  <p className="text-sm text-kagan-light">{body}</p>
+                {/* Subtle corner decoration */}
+                <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden opacity-20">
+                  <div className="absolute top-0 right-0 w-8 h-8 rounded-bl-2xl border-b border-l border-current opacity-40" />
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Trust strip under steps */}
+          <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs text-kagan-light/50">
+            <span className="inline-flex items-center gap-1.5">
+              <Shield className="h-3.5 w-3.5 text-emerald-400/60" /> 30-Day Guarantee
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 text-amber-400/60" /> Instant Digital Delivery
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5 text-purple-400/60" /> Download Links Valid 48h
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400/60" /> No Subscription Required
+            </span>
           </div>
         </div>
       </Section>

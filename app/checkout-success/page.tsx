@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { CheckCircle, Download, FileText, Mail, Sparkles, Zap, Shield } from "lucide-react";
 import { getProduct, getProduct as findProduct, products } from "@/lib/products";
 import CheckoutLink from "@/components/ui/CheckoutLink";
 
@@ -13,11 +15,11 @@ declare global {
 }
 
 const STEPS = [
-  { icon: "\uD83C\uDF89", label: "Payment confirmed" },
-  { icon: "\u2B07", label: "Download your pack" },
-  { icon: "\uD83D\uDCC2", label: "Open START_HERE" },
-  { icon: "\uD83D\uDE80", label: "Execute day one" },
-  { icon: "\uD83D\uDCAC", label: "Support always available" },
+  { icon: CheckCircle, label: "Payment confirmed" },
+  { icon: Download, label: "Download your pack" },
+  { icon: FileText, label: "Open START_HERE" },
+  { icon: Zap, label: "Execute day one" },
+  { icon: Mail, label: "Support always available" },
 ];
 
 function OrderBump({ currentSlug }: { currentSlug: string }) {
@@ -96,10 +98,46 @@ function CheckoutSuccessContent() {
     : null;
 
   return (
-    <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white">
-      <section className="mx-auto max-w-3xl">
+    <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white relative overflow-hidden">
+      {/* Confetti particles (CSS) */}
+      <style>{`
+        @keyframes float-up {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti-piece {
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          border-radius: 2px;
+          animation: float-up linear forwards;
+          pointer-events: none;
+          z-index: 0;
+        }
+      `}</style>
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div
+          key={i}
+          className="confetti-piece"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${80 + Math.random() * 30}%`,
+            background: ['#D4AF37','#a78bfa','#34d399','#d97706','#6F42C1'][i % 5],
+            width: `${4 + Math.random() * 6}px`,
+            height: `${4 + Math.random() * 6}px`,
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            animationDuration: `${3 + Math.random() * 4}s`,
+            animationDelay: `${Math.random() * 2}s`,
+          }}
+        />
+      ))}
+
+      <section className="mx-auto max-w-3xl relative z-10">
         {/* Header */}
-        <p className="text-sm uppercase tracking-[0.3em] text-amber-300">Order confirmed</p>
+        <div className="flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-amber-300">
+          <Sparkles className="h-4 w-4" />
+          Order confirmed
+        </div>
         <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
           Your {product?.name ?? "AIKAGAN"} pack is ready.
         </h1>
@@ -109,78 +147,131 @@ function CheckoutSuccessContent() {
 
         {/* Progress steps */}
         <ol className="mt-10 space-y-3">
-          {STEPS.map((step, i) => (
+          {STEPS.map(({ icon: StepIcon, label }, i) => (
             <li
-              key={step.label}
+              key={label}
               className={`flex items-center gap-4 rounded-2xl border px-6 py-4 transition-all duration-500 ${
                 i < activeStep
                   ? "border-amber-300/30 bg-amber-300/10 text-white"
                   : "border-white/5 bg-white/2 text-neutral-500"
               }`}
             >
-              <span className="text-2xl">{step.icon}</span>
+              <StepIcon className={`h-5 w-5 ${i < activeStep ? 'text-amber-300' : 'text-neutral-600'}`} />
               <span className={`font-medium ${i < activeStep ? "text-white" : "text-neutral-500"}`}>
-                {step.label}
+                {label}
               </span>
               {i < activeStep && (
-                <span className="ml-auto text-amber-300 text-sm">✓</span>
+                <CheckCircle className="ml-auto h-4 w-4 text-amber-300" />
               )}
             </li>
           ))}
         </ol>
 
         {/* Download card */}
-        <div className="mt-10 rounded-3xl border border-amber-300/20 bg-[#111827] p-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
-            {product?.tier ?? "Your pack"}
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold">{product?.name ?? "Your pack"}</h2>
-          <p className="mt-3 text-neutral-300">{product?.description}</p>
+        <div className="mt-10 rounded-3xl border border-amber-300/20 bg-[#111827] p-8 relative overflow-hidden">
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `radial-gradient(circle at 25px 25px, #D4AF37 1px, transparent 1px)`,
+            backgroundSize: '50px 50px',
+          }} />
 
-          {downloadHref ? (
-            <a
-              href={downloadHref}
-              download
-              className="mt-8 inline-flex items-center gap-3 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200"
-            >
-              <span>⬇</span> Download ZIP Pack
-            </a>
-          ) : (
-            <div className="mt-6 rounded-xl bg-amber-300/10 border border-amber-300/30 px-5 py-4 text-sm text-amber-200">
-              <p className="font-semibold">Your download is on its way.</p>
-              <p className="mt-1 text-neutral-300">
-                Within ~60 seconds you&apos;ll receive a confirmation email with your secure
-                download link (valid 48 hours). If it doesn&apos;t arrive, check your spam
-                folder, or email{" "}
-                <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">
-                  kagan@aikagan.com
-                </a>{" "}
-                with your order number and we&apos;ll re-send it manually within an hour.
-              </p>
+          <div className="relative flex flex-col md:flex-row gap-6">
+            {/* Product preview */}
+            <div className="flex-shrink-0">
+              <div className="w-full md:w-36 h-36 rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-300/10 to-purple-300/10 flex items-center justify-center">
+                {product?.image ? (
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={144}
+                    height={144}
+                    className="w-full h-full object-contain p-3"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <Download className="h-10 w-10 text-amber-300/40 mx-auto" />
+                    <p className="text-[10px] text-amber-300/30 mt-1 uppercase tracking-wider">Digital Pack</p>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+            <div className="flex-1">
+              <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+                {product?.tier ?? "Your pack"}
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold">{product?.name ?? "Your pack"}</h2>
+              <p className="mt-2 text-neutral-300">{product?.description}</p>
 
-          <p className="mt-4 text-xs text-neutral-500">
-            Download link valid for 48 hours. Re-download from your confirmation email if it expires.
-            All deliveries are <strong>digital PDF + ZIP files</strong> — no physical shipment.
-          </p>
+              {downloadHref ? (
+                <a
+                  href={downloadHref}
+                  download
+                  className="mt-5 inline-flex items-center gap-3 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200 transition-all hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]"
+                >
+                  <Download className="h-5 w-5" /> Download ZIP Pack
+                </a>
+              ) : (
+                <div className="mt-5 rounded-xl bg-amber-300/10 border border-amber-300/30 px-5 py-4 text-sm text-amber-200">
+                  <p className="font-semibold flex items-center gap-2">
+                    <Mail className="h-4 w-4" /> Your download is on its way.
+                  </p>
+                  <p className="mt-1 text-neutral-300">
+                    Within ~60 seconds you&apos;ll receive a confirmation email with your secure
+                    download link (valid 48 hours). If it doesn&apos;t arrive, check your spam
+                    folder, or email{" "}
+                    <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">
+                      kagan@aikagan.com
+                    </a>{" "}
+                    with your order number and we&apos;ll re-send it manually within an hour.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Trust row */}
+          <div className="relative mt-6 pt-6 border-t border-white/10 flex flex-wrap gap-4 text-xs text-neutral-500">
+            <span className="inline-flex items-center gap-1.5">
+              <Shield className="h-3.5 w-3.5 text-emerald-400/60" /> Secure Payment
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Download className="h-3.5 w-3.5 text-amber-400/60" /> Instant Download
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5 text-purple-400/60" /> 48h Link Validity
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Mail className="h-3.5 w-3.5 text-blue-400/60" /> Email Backup
+            </span>
+          </div>
         </div>
 
         {/* What to do next */}
         <div className="mt-8 rounded-3xl border border-white/10 bg-black/40 p-8">
-          <h2 className="text-xl font-semibold">Your first 24 hours</h2>
-          <ol className="mt-5 space-y-3 text-neutral-300">
-            <li className="flex gap-3"><span className="text-amber-300 font-bold">1.</span>Download and unzip the pack.</li>
-            <li className="flex gap-3"><span className="text-amber-300 font-bold">2.</span>Open <strong>START_HERE.pdf</strong> first — it maps the exact execution sequence.</li>
-            <li className="flex gap-3"><span className="text-amber-300 font-bold">3.</span>Complete the 24-Hour Quick Win Checklist.</li>
-            <li className="flex gap-3"><span className="text-amber-300 font-bold">4.</span>Questions? Email <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a>.</li>
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Zap className="h-5 w-5 text-amber-300" /> Your first 24 hours
+          </h2>
+          <ol className="mt-5 space-y-4 text-neutral-300">
+            {[
+              { icon: Download, text: 'Download and unzip the pack.' },
+              { icon: FileText, text: <><strong>Open START_HERE.pdf</strong> first — it maps the exact execution sequence.</> },
+              { icon: CheckCircle, text: 'Complete the 24-Hour Quick Win Checklist.' },
+              { icon: Mail, text: <>Questions? Email <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a></> },
+            ].map(({ icon: ItemIcon, text }, i) => (
+              <li key={i} className="flex gap-3 items-start">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-300/10 border border-amber-300/20 flex-shrink-0 mt-0.5">
+                  <ItemIcon className="h-3.5 w-3.5 text-amber-300" />
+                </span>
+                <span className="text-sm">{text}</span>
+              </li>
+            ))}
           </ol>
         </div>
 
         {/* Order bump */}
         {product && <OrderBump currentSlug={product.slug} />}
 
-        <Link href="/" className="mt-10 inline-block text-sm text-neutral-400 hover:text-white">
+        <Link href="/" className="mt-10 inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to AIKAGAN
         </Link>
       </section>
