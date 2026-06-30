@@ -1,0 +1,73 @@
+{
+  "name": "AIKAGAN — Omnichannel Router (auto-provisioned, minimal)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": "AIKAGAN_OMNI_HOOK",
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": { "parameters": { "hook": { "label": "AIKAGAN omni-hook" } } }
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://httpbin.org/post",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "X-AIKAGAN-Source", "value": "omnichannel-archive" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "contentType": "application/json",
+        "data": "{\"received\":true,\"campaign\":\"{{1.campaign}}\",\"wave\":{{1.wave}}}",
+        "useNewZLibDeCompress": true
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "restore": {
+          "parameters": {
+            "method": { "label": "POST" },
+            "bodyType": { "label": "Raw" },
+            "contentType": { "label": "JSON (application/json)" }
+          },
+          "expect": {
+            "method": { "label": "POST" },
+            "headers": { "items": [null, null] }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu2.make.com",
+    "notes": [
+      "MINIMAL provisioning blueprint — only the webhook trigger + a no-op archive POST.",
+      "Replace the httpbin.org URL with your own archive endpoint, OR build out the router and platform modules inside the Make.com UI.",
+      "For the full router design with all 7 platform paths, import scripts/agent/make_blueprints/omnichannel-router-full.blueprint.json via Make.com → New scenario → Import blueprint (may require manual fix-up if your zone uses different module IDs)."
+    ]
+  }
+}

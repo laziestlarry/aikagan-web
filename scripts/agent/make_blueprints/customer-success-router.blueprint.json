@@ -1,0 +1,73 @@
+{
+  "name": "AIKAGAN — Customer Success Router (auto-provisioned, minimal)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": "AIKAGAN_CS_HOOK",
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": { "parameters": { "hook": { "label": "AIKAGAN CS hook" } } }
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://httpbin.org/post",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "X-AIKAGAN-Source", "value": "cs-archive" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "contentType": "application/json",
+        "data": "{\"received\":true,\"type\":\"{{1.type}}\",\"to\":\"{{1.reply_email_address}}\"}",
+        "useNewZLibDeCompress": true
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "restore": {
+          "parameters": {
+            "method": { "label": "POST" },
+            "bodyType": { "label": "Raw" },
+            "contentType": { "label": "JSON (application/json)" }
+          },
+          "expect": {
+            "method": { "label": "POST" },
+            "headers": { "items": [null, null] }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu2.make.com",
+    "notes": [
+      "MINIMAL provisioning blueprint — only the webhook trigger + a no-op archive POST.",
+      "Add a Router + Gmail Send Email module inside the Make.com UI for the per-message reply path.",
+      "Full design lives at scripts/agent/make_blueprints/customer-success-router-full.blueprint.json (import via Make.com UI; may need module-ID fix-up)."
+    ]
+  }
+}

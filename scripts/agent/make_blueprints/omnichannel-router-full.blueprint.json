@@ -1,0 +1,270 @@
+{
+  "name": "AIKAGAN — Omnichannel Router (auto-provisioned)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": "AIKAGAN_OMNI_HOOK",
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": { "parameters": { "hook": { "label": "AIKAGAN omni-hook" } } },
+        "expect": [
+          { "name": "campaign",          "type": "text", "label": "Campaign name" },
+          { "name": "wave",              "type": "number", "label": "Wave (1-3)" },
+          { "name": "launch_day",        "type": "number", "label": "Launch day (1-7)" },
+          { "name": "generated_at_utc",  "type": "date", "label": "Generated at" },
+          { "name": "site_url",          "type": "url",  "label": "Site URL" },
+          { "name": "buyer_persona",     "type": "text", "label": "Buyer persona" },
+          { "name": "pain_point_summary","type": "text", "label": "Pain summary" },
+          { "name": "launch_thesis",     "type": "text", "label": "Launch thesis" },
+          { "name": "offer_name",        "type": "text", "label": "Offer name" },
+          { "name": "offer_url",         "type": "url",  "label": "Offer URL" },
+          { "name": "lead_magnet_url",   "type": "url",  "label": "Lead magnet URL" },
+          { "name": "discount_code",     "type": "text", "label": "Discount code" },
+          { "name": "priority_channels", "type": "array", "label": "Priority channels" },
+          { "name": "execution_waves",   "type": "array", "label": "Execution waves" },
+          { "name": "launch_posts",      "type": "array", "label": "Launch posts (per channel)" },
+          { "name": "customer_service_posts", "type": "array", "label": "Customer service posts" },
+          { "name": "objection_replies", "type": "array", "label": "Objection replies" },
+          { "name": "cta_table",         "type": "collection", "label": "CTA table per platform" }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicAggregator",
+      "version": 1,
+      "parameters": {
+        "feeder": 1,
+        "target": "launch_posts"
+      },
+      "mapper": {},
+      "metadata": { "designer": { "x": 240, "y": 0 } }
+    },
+    {
+      "id": 3,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": { "designer": { "x": 480, "y": 0 } },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 10,
+              "module": "builtin:BasicSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "X / Twitter",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "x", "o": "text:equal:ci" }]]
+              },
+              "mapper": { "duration": "0" },
+              "metadata": { "designer": { "x": 720, "y": -360 } }
+            },
+            {
+              "id": 11,
+              "module": "twitter:ActionCreateTweet",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": { "status": "{{1.announcement_copy}}" },
+              "metadata": { "designer": { "x": 960, "y": -360 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 20,
+              "module": "builtin:BasicSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "LinkedIn",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "linkedin", "o": "text:equal:ci" }]]
+              },
+              "mapper": { "duration": "180" },
+              "metadata": { "designer": { "x": 720, "y": -240 } }
+            },
+            {
+              "id": 21,
+              "module": "linkedin:ActionCreatePost",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": { "visibility": "PUBLIC", "text": "{{1.announcement_copy}}" },
+              "metadata": { "designer": { "x": 960, "y": -240 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 30,
+              "module": "builtin:BasicSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "Facebook Page",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "facebook", "o": "text:equal:ci" }]]
+              },
+              "mapper": { "duration": "300" },
+              "metadata": { "designer": { "x": 720, "y": -120 } }
+            },
+            {
+              "id": 31,
+              "module": "facebook-pages:ActionCreatePost",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": { "message": "{{1.announcement_copy}}" },
+              "metadata": { "designer": { "x": 960, "y": -120 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 40,
+              "module": "builtin:BasicSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "Instagram",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "instagram", "o": "text:equal:ci" }]]
+              },
+              "mapper": { "duration": "420" },
+              "metadata": { "designer": { "x": 720, "y": 0 } }
+            },
+            {
+              "id": 41,
+              "module": "instagram-business:CreateAPost",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": { "caption": "{{1.announcement_copy}}" },
+              "metadata": { "designer": { "x": 960, "y": 0 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 50,
+              "module": "builtin:BasicSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "Substack draft",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "substack", "o": "text:equal:ci" }]]
+              },
+              "mapper": { "duration": "540" },
+              "metadata": { "designer": { "x": 720, "y": 120 } }
+            },
+            {
+              "id": 51,
+              "module": "google-email:ActionSendEmail",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": {
+                "to": ["{{$env.SUBSTACK_DRAFT_INBOX}}"],
+                "subject": "Substack draft — wave {{2.wave}}",
+                "html": "{{1.announcement_copy}}"
+              },
+              "metadata": { "designer": { "x": 960, "y": 120 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 60,
+              "module": "google-email:ActionSendEmail",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "filter": {
+                "name": "Reddit + HN + Quora (manual queue)",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "reddit|hackernews|quora", "o": "text:pattern" }]]
+              },
+              "mapper": {
+                "to": ["{{$env.MANUAL_QUEUE_INBOX}}"],
+                "subject": "AIKAGAN manual-post queue — {{1.channel}} wave {{2.wave}}",
+                "html": "<pre>{{1.announcement_copy}}\n\nFollow-up: {{1.follow_up_comment}}\n\nCTA: {{1.call_to_action}}</pre>"
+              },
+              "metadata": { "designer": { "x": 960, "y": 240 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 70,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {},
+              "filter": {
+                "name": "Discord",
+                "conditions": [[{ "a": "{{1.channel}}", "b": "discord", "o": "text:equal:ci" }]]
+              },
+              "mapper": {
+                "url": "{{$env.DISCORD_WEBHOOK_URL}}",
+                "method": "POST",
+                "headers": [ { "name": "Content-Type", "value": "application/json" } ],
+                "body": "{\"content\": \"{{replace(1.announcement_copy; \"\\\"\"; \"\\\\\\\"\")}}\"}"
+              },
+              "metadata": { "designer": { "x": 960, "y": 360 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 90,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {},
+              "filter": {
+                "name": "Catch-all archive",
+                "conditions": [[{ "a": "{{1.channel}}", "b": ".*", "o": "text:pattern" }]]
+              },
+              "mapper": {
+                "url": "{{$env.AIKAGAN_ARCHIVE_URL}}",
+                "method": "POST",
+                "headers": [
+                  { "name": "Content-Type", "value": "application/json" },
+                  { "name": "X-AIKAGAN-Source", "value": "make-omni" }
+                ],
+                "body": "{\"campaign\":\"{{2.campaign}}\",\"wave\":{{2.wave}},\"channel\":\"{{1.channel}}\",\"copy\":\"{{replace(1.announcement_copy;\"\\\"\";\"\\\\\\\"\")}}\",\"cta\":\"{{replace(1.call_to_action;\"\\\"\";\"\\\\\\\"\")}}\"}"
+              },
+              "metadata": { "designer": { "x": 960, "y": 480 } }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu2.make.com",
+    "notes": [
+      "Replace __IMTCONN__ in each platform module with the saved Make.com connection (X, LinkedIn, Facebook Page, Instagram Business, Gmail).",
+      "Populate SUBSTACK_DRAFT_INBOX, MANUAL_QUEUE_INBOX, DISCORD_WEBHOOK_URL, AIKAGAN_ARCHIVE_URL under your Make.com team's Custom Variables.",
+      "Stagger Sleep durations are in seconds — increase if any platform rate-limits.",
+      "Router filters live on the FIRST module of each route (Make.com schema requirement)."
+    ]
+  }
+}

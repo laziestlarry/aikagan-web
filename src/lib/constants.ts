@@ -4,6 +4,7 @@ export const SITE = {
   description:
     'Premium AI infrastructure, e-commerce conversion, productized services, and Golden Delivery — orchestrated for serious operators.',
   url: 'https://aikagan.com',
+  appUrl: 'https://app.aikagan.com',
   author: 'Kagan / Lazy Larry',
   year: 2026,
 } as const;

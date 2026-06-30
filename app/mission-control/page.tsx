@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ExternalLink as ExtIcon } from 'lucide-react';
 import { buildMetadata } from '@/lib/metadata';
+import { SITE } from '@/lib/constants';
 import Section from '@/components/ui/Section';
 import ProcessStages from '@/components/shared/ProcessStages';
 import LiveKPIs from '@/components/shared/LiveKPIs';
@@ -20,6 +22,7 @@ const JOURNEY = [
   { n: '3', label: 'Buy',       body: 'Upgrade to a Masterclass tier (Starter $29 · Pro $79 · Commander $149).',           href: '/products/masterclass-starter',             linkLabel: 'See the offer →' },
   { n: '4', label: 'Execute',   body: 'Open START_HERE inside the ZIP. Follow the day-by-day blueprint. Ship.',            href: '/products/masterclass-starter',             linkLabel: 'Sample plan →' },
   { n: '5', label: 'Support',   body: 'Stuck? Email us. We answer within 24 hours. Refund window stays open 30 days.',     href: '/contact',                                  linkLabel: 'Contact →' },
+  { n: '6', label: 'Upgrade',   body: 'Ready for the full system? The Autonoma-X Engine runs 24/7 AI operations for your business.', href: 'https://app.aikagan.com', linkLabel: 'Launch Engine →', external: true },
 ];
 
 export default function MissionControlPage() {
@@ -41,30 +44,52 @@ export default function MissionControlPage() {
           <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
             ⚜ Customer Journey ⚜
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-            {JOURNEY.map((s, i) => (
-              <Link
-                key={s.n}
-                href={s.href}
-                className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
-              >
-                {i < JOURNEY.length - 1 && (
-                  <span className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-kagan-gold/40 text-lg">→</span>
-                )}
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full border border-kagan-gold/40 text-xs font-bold text-kagan-gold">
-                    {s.n}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
+            {JOURNEY.map((s, i) => {
+              const isExternal = 'external' in s && s.external;
+              const content = (
+                <>
+                  {i < JOURNEY.length - 1 && (
+                    <span className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-kagan-gold/40 text-lg">→</span>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full border border-kagan-gold/40 text-xs font-bold text-kagan-gold">
+                      {s.n}
+                    </span>
+                    <span className="text-sm font-bold uppercase tracking-wider text-kagan-white">
+                      {s.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-kagan-light leading-relaxed">{s.body}</p>
+                  <span className="mt-auto inline-flex items-center gap-1 text-xs text-kagan-gold/80 group-hover:text-kagan-gold">
+                    {s.linkLabel}
+                    {isExternal && <ExtIcon className="h-3 w-3" />}
                   </span>
-                  <span className="text-sm font-bold uppercase tracking-wider text-kagan-white">
-                    {s.label}
-                  </span>
-                </div>
-                <p className="text-xs text-kagan-light leading-relaxed">{s.body}</p>
-                <span className="mt-auto text-xs text-kagan-gold/80 group-hover:text-kagan-gold">
-                  {s.linkLabel}
-                </span>
-              </Link>
-            ))}
+                </>
+              );
+              if (isExternal) {
+                return (
+                  <a
+                    key={s.n}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-amber/30 bg-kagan-amber/[0.06] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+              return (
+                <Link
+                  key={s.n}
+                  href={s.href}
+                  className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
+                >
+                  {content}
+                </Link>
+              );
+            })}
           </div>
         </div>
 
@@ -91,12 +116,20 @@ export default function MissionControlPage() {
       <Section variant="alt">
         <CTA
           title="Initiate a Mission"
-          subtitle="Two paths in: grab a free gift to test-drive the system, or jump straight to the Masterclass. First response within 24 hours either way."
+          subtitle="Three paths: grab a free gift to test-drive the system, jump to the Masterclass toolkits, or launch the full AI Engine for autonomous operations."
           primaryLabel="Start with Starter — $29"
           primaryHref="/products/masterclass-starter/"
-          secondaryLabel="Grab a free gift"
-          secondaryHref="/free/golden-delivery-sample/"
+          secondaryLabel="Launch AI Engine"
+          secondaryHref={SITE.appUrl}
         />
+        <div className="text-center mt-6">
+          <Link
+            href="/free/golden-delivery-sample/"
+            className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors"
+          >
+            Or grab a free gift first →
+          </Link>
+        </div>
       </Section>
     </>
   );

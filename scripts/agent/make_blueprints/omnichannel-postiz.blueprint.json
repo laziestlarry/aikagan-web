@@ -1,0 +1,113 @@
+{
+  "name": "AIKAGAN — Omnichannel via Postiz (recommended fan-out)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": "AIKAGAN_OMNI_HOOK",
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": { "parameters": { "hook": { "label": "AIKAGAN omni-hook" } } }
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicFeeder",
+      "version": 1,
+      "parameters": {},
+      "mapper": { "array": "{{1.launch_posts}}" },
+      "metadata": {
+        "designer": { "x": 280, "y": 0 },
+        "restore": { "expect": { "array": { "mode": "edit" } } }
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://{{$env.POSTIZ_HOST}}/api/public/v1/posts",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "Authorization", "value": "{{$env.POSTIZ_API_KEY}}" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "contentType": "application/json",
+        "data": "{\"type\":\"now\",\"date\":\"{{formatDate(now; \"YYYY-MM-DDTHH:mm:ss[Z]\")}}\",\"posts\":[{\"integration\":{\"id\":\"{{ifempty(get($env.POSTIZ_INTEGRATIONS; 2.channel); $env.POSTIZ_DEFAULT_INTEGRATION_ID)}}\"},\"value\":[{\"content\":\"{{replace(2.announcement_copy;\"\\\"\";\"\\\\\\\"\")}}\"}],\"settings\":{}}]}",
+        "useNewZLibDeCompress": true
+      },
+      "metadata": {
+        "designer": { "x": 560, "y": 0 },
+        "restore": {
+          "parameters": {
+            "method": { "label": "POST" },
+            "bodyType": { "label": "Raw" },
+            "contentType": { "label": "JSON (application/json)" }
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "{{$env.AIKAGAN_ARCHIVE_URL}}",
+        "method": "POST",
+        "headers": [
+          { "name": "Content-Type", "value": "application/json" },
+          { "name": "X-AIKAGAN-Source", "value": "make-postiz-fanout" }
+        ],
+        "qs": [],
+        "bodyType": "raw",
+        "contentType": "application/json",
+        "data": "{\"campaign\":\"{{1.campaign}}\",\"wave\":{{1.wave}},\"channel\":\"{{2.channel}}\",\"postiz_status\":{{3.statusCode}}}",
+        "useNewZLibDeCompress": true
+      },
+      "metadata": {
+        "designer": { "x": 840, "y": 0 },
+        "restore": {
+          "parameters": {
+            "method": { "label": "POST" },
+            "bodyType": { "label": "Raw" },
+            "contentType": { "label": "JSON (application/json)" }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": true,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu2.make.com",
+    "notes": [
+      "POSTIZ FAN-OUT — single OAuth at Postiz reaches 28+ channels. Set these Make.com team Custom Variables:",
+      "  POSTIZ_HOST                  = api.postiz.com   (or self-hosted hostname)",
+      "  POSTIZ_API_KEY               = Bearer <token>   (Postiz Settings → API)",
+      "  POSTIZ_INTEGRATIONS          = JSON map e.g. {\"x\":\"abc123\",\"linkedin\":\"def456\",\"facebook\":\"ghi789\"}",
+      "  POSTIZ_DEFAULT_INTEGRATION_ID = used when the channel isn't in the map",
+      "  AIKAGAN_ARCHIVE_URL          = receipt endpoint (use https://httpbin.org/post for testing)",
+      "Import this via Make.com → New scenario → Import blueprint. The Iterator fires once per element of launch_posts[]; each iteration POSTs to Postiz with the correct integration ID."
+    ]
+  }
+}

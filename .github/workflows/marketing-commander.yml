@@ -1,0 +1,168 @@
+name: AIKAGAN Commanders
+
+on:
+  schedule:
+    # 14:00 UTC every day — Marketing Commander runs the wave-of-the-day.
+    - cron: "0 14 * * *"
+    # Every hour at :15 — Customer Success Commander drains the inbox.
+    - cron: "15 * * * *"
+    # 15:00 UTC daily — Customer Success playbook refresh.
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which commander to run"
+        required: true
+        default: "marketing"
+        type: choice
+        options:
+          - marketing
+          - customer-success-playbook
+          - customer-success-inbox
+          - all
+      wave:
+        description: "Force a launch wave (1-3). Leave empty to infer from LAUNCH_DAY_OVERRIDE."
+        required: false
+        default: ""
+      launch_day:
+        description: "Override LAUNCH_DAY_OVERRIDE for this run (1-7)."
+        required: false
+        default: ""
+
+concurrency:
+  group: aikagan-commanders
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # -------------------------------------------------------------------------
+  # Wave 1/2/3 daily publisher
+  # -------------------------------------------------------------------------
+  marketing-commander-grand-launch:
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      (github.event.inputs.target == 'marketing' || github.event.inputs.target == 'all') ||
+      (github.event_name == 'schedule' && github.event.schedule == '0 14 * * *')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('scripts/agent/requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/agent/requirements.txt
+
+      - name: Run Marketing Commander
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          MAKE_OMNICHANNEL_WEBHOOK_URL: ${{ secrets.MAKE_OMNICHANNEL_WEBHOOK_URL }}
+          AIKAGAN_BASE_URL: ${{ vars.AIKAGAN_BASE_URL || 'https://aikagan.com' }}
+          LEMONSQUEEZY_STORE_URL: ${{ vars.LEMONSQUEEZY_STORE_URL || 'https://autonomax.lemonsqueezy.com' }}
+          CAMPAIGN_NAME: ${{ vars.CAMPAIGN_NAME || 'chimera-genesis' }}
+          SUBREDDIT_TARGETS: ${{ vars.SUBREDDIT_TARGETS }}
+          AIKAGAN_LAUNCH_CHANNELS: ${{ vars.AIKAGAN_LAUNCH_CHANNELS }}
+          AIKAGAN_OFFER_NAME: ${{ vars.AIKAGAN_OFFER_NAME }}
+          AIKAGAN_OFFER_URL: ${{ vars.AIKAGAN_OFFER_URL }}
+          AIKAGAN_LEAD_MAGNET_URL: ${{ vars.AIKAGAN_LEAD_MAGNET_URL }}
+          AIKAGAN_DISCOUNT_CODE: ${{ vars.AIKAGAN_DISCOUNT_CODE }}
+          LAUNCH_DAY_OVERRIDE: ${{ github.event.inputs.launch_day || vars.LAUNCH_DAY_OVERRIDE || '1' }}
+        run: |
+          args=()
+          if [ -n "${{ github.event.inputs.wave }}" ]; then
+            args+=("--wave" "${{ github.event.inputs.wave }}")
+          fi
+          python scripts/agent/omnichannel_publisher_agent.py "${args[@]}"
+
+      - name: Upload wave payload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave-payload-${{ github.run_id }}
+          path: scripts/agent/content_backlog/*.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  # -------------------------------------------------------------------------
+  # Hourly inbox drain — replies to buyer questions
+  # -------------------------------------------------------------------------
+  customer-service-commander:
+    if: |
+      (github.event_name == 'workflow_dispatch' &&
+       (github.event.inputs.target == 'customer-success-inbox' || github.event.inputs.target == 'all')) ||
+      (github.event_name == 'schedule' && github.event.schedule == '15 * * * *')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/agent/requirements.txt
+
+      - name: Drain inbox + auto-reply
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          MAKE_CUSTOMER_SERVICE_WEBHOOK_URL: ${{ secrets.MAKE_CUSTOMER_SERVICE_WEBHOOK_URL }}
+          MAKE_CUSTOMER_SERVICE_POLL_URL: ${{ secrets.MAKE_CUSTOMER_SERVICE_POLL_URL }}
+          AIKAGAN_BASE_URL: ${{ vars.AIKAGAN_BASE_URL || 'https://aikagan.com' }}
+          REPLY_FROM_EMAIL: ${{ vars.REPLY_FROM_EMAIL || 'support@aikagan.com' }}
+        run: python scripts/agent/customer_success_commander.py --inbox-dir --poll
+
+  # -------------------------------------------------------------------------
+  # Daily playbook refresh — FAQ + reply macros
+  # -------------------------------------------------------------------------
+  customer-service-playbook-refresh:
+    if: |
+      (github.event_name == 'workflow_dispatch' &&
+       (github.event.inputs.target == 'customer-success-playbook' || github.event.inputs.target == 'all')) ||
+      (github.event_name == 'schedule' && github.event.schedule == '0 15 * * *')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/agent/requirements.txt
+
+      - name: Refresh playbook
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          MAKE_CUSTOMER_SERVICE_WEBHOOK_URL: ${{ secrets.MAKE_CUSTOMER_SERVICE_WEBHOOK_URL }}
+          AIKAGAN_BASE_URL: ${{ vars.AIKAGAN_BASE_URL || 'https://aikagan.com' }}
+          AIKAGAN_OFFER_NAME: ${{ vars.AIKAGAN_OFFER_NAME }}
+          AIKAGAN_OFFER_URL: ${{ vars.AIKAGAN_OFFER_URL }}
+          REPLY_FROM_EMAIL: ${{ vars.REPLY_FROM_EMAIL || 'support@aikagan.com' }}
+        run: python scripts/agent/customer_success_commander.py --playbook

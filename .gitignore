@@ -6,3 +6,6 @@ out/
 .DS_Store
 .vercel
 .env*
+.venv/
+__pycache__/
+scripts/agent/__pycache__/

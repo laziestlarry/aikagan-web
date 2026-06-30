@@ -826,6 +826,203 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── UPGRADE: AUTONOMAX AI ENGINE ──────────────────────────────────── */}
+      <section style={{
+        background: 'linear-gradient(160deg,#0a0702 0%,#130f04 100%)',
+        padding: "80px 24px",
+        borderTop: `1px solid ${G.goldDim}`,
+        borderBottom: `1px solid ${G.goldDim}`,
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        {/* subtle radial glow */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: `radial-gradient(ellipse 50% 60% at 50% 50%,rgba(111,66,193,0.12) 0%,rgba(212,175,55,0.04) 40%,transparent 70%)`,
+        }} />
+
+        <div className="mx-auto max-w-6xl relative">
+          <style>{`
+            .engine-card { transition: all 0.2s ease; cursor: pointer; }
+            .engine-card:hover { transform: translateY(-2px); }
+            .diag-card:hover { border-color: rgba(111,66,193,0.60) !important; }
+            .cmd-card:hover { border-color: rgba(212,175,55,0.70) !important; }
+            .act-card:hover { border-color: rgba(34,197,94,0.50) !important; }
+          `}</style>
+          <OrnHeader label="READY FOR THE FULL SYSTEM?" sub="THE AIKAGAN ENGINE — DONE-FOR-YOU AUTOMATION" />
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center mt-8">
+
+            {/* Left: copy */}
+            <div>
+              <h3 style={{
+                fontSize: "clamp(22px,3vw,34px)",
+                fontWeight: 900, lineHeight: 1.15,
+                color: "#fff", margin: "0 0 18px 0",
+                letterSpacing: "-0.01em",
+              }}>
+                From Toolkits to{" "}
+                <span style={{ color: G.gold }}>Autonomous Operations</span>
+              </h3>
+
+              <p style={{ fontSize: "13px", color: G.text, lineHeight: 1.8, marginBottom: "16px" }}>
+                The Masterclass toolkits give you the blueprint. The{" "}
+                <strong style={{ color: "#fff" }}>Autonoma-X Engine</strong>{" "}
+                is the live system that runs it for you — AI agents, automated
+                pipelines, real-time analytics, and 24/7 operations monitoring.
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px", margin: "24px 0" }}>
+                {[
+                  { icon: "🤖", title: "Multi-Provider AI Engine", desc: "Groq, DeepSeek, Gemini, OpenAI — auto-fallback, zero downtime" },
+                  { icon: "⚡", title: "Automated 24/7 Operations", desc: "Bot execution, health checks, pipeline monitoring — no human needed" },
+                  { icon: "📊", title: "Live Revenue Dashboard", desc: "MRR tracking, conversion analytics, churn prediction in real time" },
+                  { icon: "🛡", title: "Stripe Payment Intelligence", desc: "Multi-rail revenue processing with automatic failover" },
+                  { icon: "🔗", title: "Seamless API Integration", desc: "Connect your existing stack — Stripe, analytics, webhooks, CRM" },
+                ].map((item) => (
+                  <div key={item.title} style={{
+                    display: "flex", gap: "12px", alignItems: "flex-start",
+                    padding: "10px 14px",
+                    background: "rgba(212,175,55,0.04)",
+                    border: "1px solid rgba(212,175,55,0.10)",
+                    borderRadius: "8px",
+                  }}>
+                    <span style={{ fontSize: "16px", flexShrink: 0, marginTop: "2px" }}>{item.icon}</span>
+                    <div>
+                      <div style={{ fontSize: "13px", fontWeight: 700, color: "#f0f0f5", marginBottom: "2px" }}>{item.title}</div>
+                      <div style={{ fontSize: "11px", color: G.muted, lineHeight: 1.5 }}>{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: pricing cards */}
+            <div>
+              {/* Tier 1: Diagnostic */}
+              <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
+                style={{ display: "block", textDecoration: "none", marginBottom: "16px" }}>
+                <div className="engine-card diag-card" style={{
+                  background: "rgba(111,66,193,0.06)",
+                  border: "1px solid rgba(111,66,193,0.30)",
+                  borderRadius: "10px",
+                  padding: "22px 24px",
+                  transition: "all 0.2s",
+                  cursor: "pointer",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "0.12em", color: "#a78bfa", textTransform: "uppercase" }}>
+                      🔍 Diagnostic
+                    </div>
+                    <div style={{ fontSize: "24px", fontWeight: 900, color: "#a78bfa" }}>$497</div>
+                  </div>
+                  <p style={{ fontSize: "11px", color: G.muted, lineHeight: 1.5, margin: 0 }}>
+                    7-Day Action Plan · Pipeline Audit · Revenue Leak Report · One-Time
+                  </p>
+                </div>
+              </a>
+
+              {/* Tier 2: Command — Most Popular */}
+              <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
+                style={{ display: "block", textDecoration: "none", marginBottom: "16px" }}>
+                <div className="engine-card cmd-card" style={{
+                  background: "rgba(212,175,55,0.06)",
+                  border: "2px solid rgba(212,175,55,0.40)",
+                  borderRadius: "10px",
+                  padding: "22px 24px",
+                  position: "relative",
+                  transition: "all 0.2s",
+                  cursor: "pointer",
+                }}>
+                  <div style={{
+                    position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)",
+                    background: G.gold, color: "#09070a",
+                    fontSize: "9px", fontWeight: 800, letterSpacing: "0.18em",
+                    padding: "3px 16px", borderRadius: "20px", whiteSpace: "nowrap",
+                  }}>⭐ ACTIVATED</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "0.12em", color: G.gold, textTransform: "uppercase" }}>
+                      ⚡ Command
+                    </div>
+                    <div style={{ fontSize: "24px", fontWeight: 900, color: G.gold }}>$997</div>
+                  </div>
+                  <p style={{ fontSize: "11px", color: G.muted, lineHeight: 1.5, margin: 0 }}>
+                    AI Agents · Automated Workflows · Monthly Retainer · Slack Integration
+                  </p>
+                </div>
+              </a>
+
+              {/* Tier 3: Activation */}
+              <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
+                style={{ display: "block", textDecoration: "none" }}>
+                <div className="engine-card act-card" style={{
+                  background: "rgba(34,197,94,0.06)",
+                  border: "1px solid rgba(34,197,94,0.28)",
+                  borderRadius: "10px",
+                  padding: "22px 24px",
+                  transition: "all 0.2s",
+                  cursor: "pointer",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <div style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "0.12em", color: "#34d399", textTransform: "uppercase" }}>
+                      👑 Activation
+                    </div>
+                    <div style={{ fontSize: "24px", fontWeight: 900, color: "#34d399" }}>$2,497</div>
+                  </div>
+                  <p style={{ fontSize: "11px", color: G.muted, lineHeight: 1.5, margin: 0 }}>
+                    Full-System Deployment · 72hr Turnaround · Done-For-You · One-Time
+                  </p>
+                </div>
+              </a>
+
+              {/* CTA buttons */}
+              <div style={{ marginTop: "28px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: G.gold, color: "#09070a",
+                    fontWeight: 800, fontSize: "12px", letterSpacing: "0.08em",
+                    padding: "14px 28px", borderRadius: "6px",
+                    textTransform: "uppercase", textDecoration: "none",
+                  }}>
+                  Launch the Engine →
+                </a>
+                <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    border: `1px solid ${G.goldDim}`, color: G.gold,
+                    fontWeight: 700, fontSize: "12px", letterSpacing: "0.08em",
+                    padding: "14px 28px", borderRadius: "6px",
+                    textTransform: "uppercase", textDecoration: "none",
+                    background: G.goldFaint,
+                  }}>
+                  Compare Plans →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* separator note */}
+          <div style={{
+            marginTop: "48px",
+            padding: "14px 20px",
+            border: `1px solid ${G.goldDim}`,
+            borderRadius: "8px",
+            background: G.goldFaint,
+            textAlign: "center",
+          }}>
+            <p style={{ fontSize: "11px", color: G.text, lineHeight: 1.6, margin: 0 }}>
+              <strong style={{ color: G.gold }}>Already bought a Masterclass pack?</strong>{" "}
+              Your toolkit knowledge applies directly. The Engine automates everything
+              the packs teach you —{" "}
+              <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
+                style={{ color: G.gold, textDecoration: "underline" }}>
+                upgrade to live operations →
+              </a>
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section style={{ background: G.bg, padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
         <div className="mx-auto max-w-5xl">

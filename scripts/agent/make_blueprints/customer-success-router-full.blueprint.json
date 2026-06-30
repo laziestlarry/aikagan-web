@@ -1,0 +1,170 @@
+{
+  "name": "AIKAGAN — Customer Success Router (auto-provisioned)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": "AIKAGAN_CS_HOOK",
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": { "parameters": { "hook": { "label": "AIKAGAN CS hook" } } },
+        "expect": [
+          { "name": "type",                    "type": "text",  "label": "Payload type (reply | playbook)" },
+          { "name": "message_id",              "type": "text",  "label": "Inbound message ID" },
+          { "name": "reply_email_address",     "type": "email", "label": "Reply-to email" },
+          { "name": "reply_from",              "type": "email", "label": "From email" },
+          { "name": "subject",                 "type": "text",  "label": "Email subject" },
+          { "name": "ai_generated_reply",      "type": "text",  "label": "Reply body" },
+          { "name": "objection_category",      "type": "text",  "label": "Objection category" },
+          { "name": "recommended_offer_tier",  "type": "text",  "label": "Recommended tier" },
+          { "name": "recommended_cta_url",     "type": "url",   "label": "CTA URL" },
+          { "name": "recommended_cta_label",   "type": "text",  "label": "CTA label" },
+          { "name": "faq_updates",             "type": "array", "label": "FAQ updates (playbook)" },
+          { "name": "reply_macros",            "type": "array", "label": "Reply macros (playbook)" },
+          { "name": "support_posts",           "type": "array", "label": "Support posts (playbook)" },
+          { "name": "escalation_rules",        "type": "array", "label": "Escalation rules (playbook)" }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": { "designer": { "x": 240, "y": 0 } },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 10,
+              "module": "builtin:BasicSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "Per-message reply (auto-send)",
+                "conditions": [[{ "a": "{{1.type}}", "b": "reply", "o": "text:equal:ci" }]]
+              },
+              "mapper": { "duration": "0" },
+              "metadata": { "designer": { "x": 480, "y": -160 } }
+            },
+            {
+              "id": 11,
+              "module": "google-email:ActionSendEmail",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": {
+                "to": ["{{1.reply_email_address}}"],
+                "from": "{{1.reply_from}}",
+                "subject": "{{1.subject}}",
+                "html": "<p>{{replace(1.ai_generated_reply; newline; \"</p><p>\")}}</p><p>— AIKAGAN Customer Success</p><hr><p>P.S. <a href=\"{{1.recommended_cta_url}}\">{{1.recommended_cta_label}}</a></p>"
+              },
+              "metadata": { "designer": { "x": 720, "y": -160 } }
+            },
+            {
+              "id": 12,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {},
+              "mapper": {
+                "url": "{{$env.AIKAGAN_ARCHIVE_URL}}",
+                "method": "POST",
+                "headers": [
+                  { "name": "Content-Type", "value": "application/json" },
+                  { "name": "X-AIKAGAN-Source", "value": "cs-reply" }
+                ],
+                "body": "{\"type\":\"reply\",\"message_id\":\"{{1.message_id}}\",\"objection_category\":\"{{1.objection_category}}\",\"tier\":\"{{1.recommended_offer_tier}}\",\"to\":\"{{1.reply_email_address}}\"}"
+              },
+              "metadata": { "designer": { "x": 960, "y": -160 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 20,
+              "module": "google-docs:replaceTextInDocument",
+              "version": 1,
+              "parameters": { "__IMTCONN__": null },
+              "filter": {
+                "name": "Daily playbook refresh",
+                "conditions": [[{ "a": "{{1.type}}", "b": "playbook", "o": "text:equal:ci" }]]
+              },
+              "mapper": {
+                "documentId": "{{$env.AIKAGAN_FAQ_DOC_ID}}",
+                "containsText": "<!-- AIKAGAN-FAQ-START -->",
+                "replaceText": "<!-- AIKAGAN-FAQ-START -->\n{{join(map(1.faq_updates; \"### \" + question + \"\\n\" + answer); \"\\n\\n\")}}\n<!-- AIKAGAN-FAQ-END -->"
+              },
+              "metadata": { "designer": { "x": 480, "y": 160 } }
+            },
+            {
+              "id": 21,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {},
+              "mapper": {
+                "url": "{{$env.AIKAGAN_ARCHIVE_URL}}",
+                "method": "POST",
+                "headers": [
+                  { "name": "Content-Type", "value": "application/json" },
+                  { "name": "X-AIKAGAN-Source", "value": "cs-playbook" }
+                ],
+                "body": "{\"type\":\"playbook\",\"faq_count\":{{length(1.faq_updates)}},\"macros\":{{length(1.reply_macros)}}}"
+              },
+              "metadata": { "designer": { "x": 720, "y": 160 } }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 30,
+              "module": "slack:CreateMessage",
+              "version": 5,
+              "parameters": { "__IMTCONN__": null },
+              "filter": {
+                "name": "Escalations to human",
+                "conditions": [
+                  [
+                    { "a": "{{1.recommended_offer_tier}}", "b": "commander", "o": "text:equal:ci" },
+                    { "a": "{{1.objection_category}}", "b": "refund|legal|accessibility", "o": "text:pattern" }
+                  ]
+                ]
+              },
+              "mapper": {
+                "channelId": "{{$env.AIKAGAN_SUPPORT_SLACK_CHANNEL}}",
+                "text": "⚠️ Escalation needed — {{1.objection_category}} from {{1.reply_email_address}}\n\n> {{1.ai_generated_reply}}"
+              },
+              "metadata": { "designer": { "x": 480, "y": 320 } }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu2.make.com",
+    "notes": [
+      "Replace __IMTCONN__ in Gmail / Google Docs / Slack modules with your saved connections.",
+      "AIKAGAN_FAQ_DOC_ID, AIKAGAN_ARCHIVE_URL, AIKAGAN_SUPPORT_SLACK_CHANNEL live in Make.com Custom Variables — set them once.",
+      "Router filters live on the FIRST module of each route (Make.com schema requirement)."
+    ]
+  }
+}

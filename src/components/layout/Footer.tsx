@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
+import { Zap, ExternalLink } from 'lucide-react';
 import { SITE, NAV_LINKS, SOCIAL } from '@/lib/constants';
 
 export default function Footer() {
@@ -55,6 +55,16 @@ export default function Footer() {
               <li>
                 <span className="text-sm text-kagan-light">Kaganate Council</span>
               </li>
+              <li>
+                <a
+                  href={SITE.appUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold transition-colors font-medium"
+                >
+                  AI Engine <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -64,6 +74,16 @@ export default function Footer() {
               Start
             </h4>
             <ul className="space-y-2">
+              <li>
+                <a
+                  href={SITE.appUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold-light transition-colors font-medium"
+                >
+                  Launch AI Engine <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
               <li>
                 <Link
                   href="/contact/"
