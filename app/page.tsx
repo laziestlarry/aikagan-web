@@ -1247,8 +1247,6 @@ export default function HomePage() {
       {/* Social proof — real testimonials */}
       <SocialProof />
 
-    </div>
-
       {/* Exit-intent overlay — captures abandoning visitors */}
       <ExitIntentModal
         discountCode="KAGANATE"
@@ -1257,5 +1255,6 @@ export default function HomePage() {
         price={29}
         fallbackHref="/free/golden-delivery-sample/"
       />
+    </div>
   );
 }
