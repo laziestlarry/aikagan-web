@@ -205,6 +205,39 @@ export const TRUST_SIGNALS = [
   'Real Conversion Engineering',
 ] as const;
 
+export const PROJECT_OFFERS = [
+  {
+    id: 'freelance-automation',
+    title: 'AI Automation — Freelance',
+    subtitle: 'Project-Based at $75/hr',
+    description: 'Available for freelance AI automation projects. Checkout routing, delivery automation, KPI tracking, workflow orchestration. Python, FastAPI, Cloud Run, Paddle, make.com.',
+    features: ['Revenue ops setup', 'Checkout integration', 'Workflow automation', '3-5 day delivery', 'Documentation included'],
+    icon: 'Code',
+    cta: 'Hire on Fiverr',
+    ctaUrl: 'https://www.fiverr.com/propulse_ai',
+  },
+  {
+    id: 'digital-products',
+    title: 'Digital Products — Passive',
+    subtitle: 'One-Time Purchase, Lifetime Access',
+    description: 'Ready-to-use digital toolkits for revenue operations. 7-Day First Sale Blueprint, Funnel Master Guide, AI Tools Stack. Instant ZIP delivery. 30-day refund.',
+    features: ['Starter Pack $29', 'Pro Pack $79', 'Commander Pack $149', 'Instant download', 'White-label available'],
+    icon: 'Package',
+    cta: 'Browse Products',
+    ctaUrl: '/products/',
+  },
+  {
+    id: 'printables-marketplace',
+    title: 'Printables — Etsy',
+    subtitle: 'Digital Downloads from $4.99',
+    description: 'Printable revenue planners, AI automation checklists, and Zen Art wall art collection. Instant PDF download. Print at home or through any POD service.',
+    features: ['Weekly Operating Map $4.99', 'Checklist Bundle $9.99', 'Zen Art Collection $14.99', 'Instant PDF delivery', '300 DPI print-ready'],
+    icon: 'Printer',
+    cta: 'Shop Etsy',
+    ctaUrl: 'https://www.etsy.com/shop/zentronomax',
+  },
+] as const;
+
 export const SOCIAL = {
   facebook:  'https://www.facebook.com/kagan.aikagan',
   instagram: 'https://www.instagram.com/kagan.aikagan',
