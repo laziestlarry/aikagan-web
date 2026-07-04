@@ -19,7 +19,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <Zap className="h-6 w-6 text-kagan-gold group-hover:text-kagan-gold-light transition-colors" />
             <span className="text-lg font-bold tracking-tight text-kagan-white">
-              AI<span className="text-kagan-gold">KAGAN</span>
+              Autonoma<span className="text-kagan-gold">X</span>
             </span>
           </Link>
 

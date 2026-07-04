@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!product || product.priceModel !== "one_time") {
     return {
-      title: "Product Not Found | AIKAGAN"
+      title: "Product Not Found | AutonomaX"
     };
   }
 
   return {
-    title: `${product.name} | AIKAGAN`,
+    title: `${product.name} | AutonomaX`,
     description: product.description
   };
 }
@@ -35,12 +35,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
 
+  const isPaddle = product.checkoutUrl === "paddle";
+
   return (
     <main className="min-h-screen bg-[#08080a] px-6 py-16 text-white">
       <section className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <div>
           <Link href="/" className="text-sm text-amber-300">
-            ← Back to AIKAGAN
+            ← Back to AutonomaX
           </Link>
 
           {/* Product visual */}
@@ -86,7 +88,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h2 className="text-2xl font-semibold">What happens after purchase</h2>
             <ol className="mt-5 space-y-3 text-neutral-300">
               {[
-                "Checkout completes — LemonSqueezy emails your confirmation and download link instantly.",
+                "Checkout completes via Paddle — you're redirected back to aikagan.com where your download link appears instantly.",
                 "Open the ZIP and read START_HERE.pdf first — it maps every file in the pack.",
                 "Follow the included execution checklist and use the scripts and templates directly.",
                 "Need help? Email support@aikagan.com within 30 days.",
@@ -170,7 +172,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="mt-8 border-t border-white/10 pt-6 text-sm text-neutral-400 space-y-1">
             <p>✓ Instant download after checkout</p>
             <p>✓ One-time payment, no subscription</p>
-            <p>✓ Secure checkout via LemonSqueezy</p>
+            <p>✓ Secure checkout via Paddle</p>
             <p>✓ Results depend on implementation</p>
           </div>
 

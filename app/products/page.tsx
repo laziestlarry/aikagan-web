@@ -107,7 +107,7 @@ export default function ProductsPage() {
               {
                 icon: Lock,
                 title: 'Complete Checkout',
-                body: 'Secure one-time payment via LemonSqueezy. Instant access. No subscriptions, no upsell traps.',
+                body: 'Secure one-time payment via Paddle. Instant access. No subscriptions, no upsell traps.',
                 accent: 'text-emerald-300',
                 bgGlow: 'from-emerald-300/5',
                 borderGlow: 'border-emerald-300/20 hover:border-emerald-300/40',

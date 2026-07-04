@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Contact & Support | AIKAGAN",
-  description: "Get help with your AIKAGAN order, product questions, or business inquiries.",
+  title: "Contact & Support | AutonomaX",
+  description: "Get help with your AutonomaX order, product questions, or business inquiries.",
 };
 
 import Link from "next/link";

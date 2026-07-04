@@ -8,7 +8,7 @@ export default function NotFound() {
         <p className="text-8xl font-extrabold text-kagan-gold/20 mb-4 font-mono">404</p>
         <h1 className="text-3xl font-bold text-kagan-white mb-3">Page Not Found</h1>
         <p className="text-kagan-light mb-8 max-w-md mx-auto">
-          This route doesn&apos;t exist in The Kaganate. Return to base and try again.
+          This route doesn&apos;t exist. Return to base and try again.
         </p>
         <Button href="/" variant="primary" size="lg">
           Return Home

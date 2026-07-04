@@ -9,7 +9,7 @@ import { Zap, Cpu, ShoppingCart } from 'lucide-react';
 export const metadata: Metadata = buildMetadata({
   title: 'About',
   description:
-    'The story behind AIKAGAN: Kagan, Lazy Larry, AutonomaX, ProPulse, and the mission to build the operating system for AI commerce.',
+    'The story behind AutonomaX Profit OS: from scattered tools to one measurable revenue operations system.',
   path: '/about/',
 });
 
@@ -40,7 +40,7 @@ export default function AboutPage() {
       <Section variant="hero">
         <div className="text-center mb-14">
           <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
-            About <span className="text-gradient">The Kaganate</span>
+            About <span className="text-gradient">AutonomaX</span>
           </h1>
           <p className="text-lg text-kagan-light max-w-2xl mx-auto">
             A brief history of the systems, the operator, and the mission.
@@ -65,7 +65,7 @@ export default function AboutPage() {
                   systems do the heavy lifting, but someone has to design them right.
                 </p>
                 <p className="text-kagan-light leading-relaxed">
-                  AIKAGAN is the public operating settlement for the Kaganate — a collection of integrated AI
+                  AutonomaX is the public operating surface — a collection of integrated AI
                   systems (AutonomaX, ProPulse) and the Golden Delivery execution methodology. Every system
                   is battle-tested against real commercial requirements: conversion, uptime, observability,
                   and continuous delivery.
@@ -96,7 +96,7 @@ export default function AboutPage() {
 
       <Section variant="alt">
         <CTA
-          title="Work With The Kaganate"
+          title="Work With AutonomaX"
           subtitle="Direct access to Kagan for architecture reviews, strategy sessions, and AI infrastructure deployment."
           primaryLabel="Start Project"
           primaryHref="/contact/"

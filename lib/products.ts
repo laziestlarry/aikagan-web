@@ -4,8 +4,12 @@
 // Offer ladder (mirrors autonomax_revenue_ops/data/offer_ladder.json):
 //   lead_magnet (free) → tripwire ($29) → core ($149–$249) → premium ($299+) → recurring
 //
-// Checkout URLs are LemonSqueezy — env vars override hardcoded defaults.
+// Checkout handled by Paddle Billing (/api/paddle-checkout).
 // zipFilename maps to private/downloads/<file> (not publicly accessible).
+//
+// Paddle (Merchant of Record) replaces Stripe — Stripe does not support
+// Turkish-registered merchants. Paddle handles global tax/VAT compliance
+// and pays out to Payoneer (already held).
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type ProductTier =
@@ -28,6 +32,7 @@ export interface Product {
   priceModel: "free" | "one_time" | "monthly";
   description: string;
   bullets: string[];
+  /** Paddle Checkout — set to "paddle" for paid products; null for free */
   checkoutUrl: string | null;
   /** Filename inside private/downloads/ — null for lead magnets */
   zipFilename: string | null;
@@ -41,24 +46,12 @@ export interface Product {
   leadMagnetPath?: string;
 }
 
-// LemonSqueezy checkout URLs — env vars override hardcoded fallbacks.
-// The 3 paid SKUs are the Masterclass tiers; legacy golden-delivery URLs
-// remain as hardcoded fallbacks because some Masterclass envs may not be
-// set yet — they buy the same bonus ZIP, just at the same price points.
-const CHECKOUT = {
-  masterclassStarter:
-    process.env.NEXT_PUBLIC_LS_MC_STARTER_URL
-    ?? process.env.NEXT_PUBLIC_LS_STARTER_URL
-    ?? "https://autonomax.lemonsqueezy.com/checkout/buy/2dd8d2ad-0fc5-495f-bd42-594484e981d3",
-  masterclassPro:
-    process.env.NEXT_PUBLIC_LS_MC_PRO_URL
-    ?? process.env.NEXT_PUBLIC_LS_PRO_URL
-    ?? "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160",
-  masterclassCommander:
-    process.env.NEXT_PUBLIC_LS_MC_COMMANDER_URL
-    ?? process.env.NEXT_PUBLIC_LS_COMMANDER_URL
-    ?? "https://autonomax.lemonsqueezy.com/checkout/buy/eb358df9-f77c-4009-af74-a0ec005bb744",
-};
+// ── Paddle (Merchant of Record) ───────────────────────────────────────────
+// Replaces Stripe which does not support Turkish-registered merchants.
+// Paddle handles global tax/VAT compliance and pays out to Payoneer.
+// The client-side CheckoutLink component calls /api/paddle-checkout.
+// ───────────────────────────────────────────────────────────────────────────
+const PADDLE_PLACEHOLDER = "paddle";
 
 export const products: Product[] = [
   // ───────────────────────────────────────────────────────
@@ -96,7 +89,7 @@ export const products: Product[] = [
     bullets: [
       "10 sequential steps from idea to first \$1",
       "No audience, no ads required",
-      "Removes ‘where do I even start’ paralysis",
+      "Removes 'where do I even start' paralysis",
       "Instant digital delivery",
     ],
     checkoutUrl: null,
@@ -130,7 +123,7 @@ export const products: Product[] = [
     accentColor: "#34d399",
   },
   // ───────────────────────────────────────────────────────
-  // TIER 2 — AutonomaX Masterclass (paid)
+  // TIER 2 — AutonomaX Masterclass (paid via Stripe)
   // Each tier bundles its matching Golden Delivery ZIP as a bonus.
   // ───────────────────────────────────────────────────────
   {
@@ -150,7 +143,7 @@ export const products: Product[] = [
       "Masterclass-grade execution workbook",
       "Bonus: full Golden Delivery — Starter Pack ZIP",
     ],
-    checkoutUrl: CHECKOUT.masterclassStarter || null,
+    checkoutUrl: PADDLE_PLACEHOLDER,
     zipFilename: "AutonomaX_Masterclass_Starter_Pack_v2.zip",
     nextSlug: "masterclass-pro",
     badge: "Best for beginners",
@@ -175,7 +168,7 @@ export const products: Product[] = [
       "6 Automation Workflow Templates",
       "Bonus: full Golden Delivery — Pro Pack ZIP",
     ],
-    checkoutUrl: CHECKOUT.masterclassPro || null,
+    checkoutUrl: PADDLE_PLACEHOLDER,
     zipFilename: "AutonomaX_Masterclass_Pro_Pack_v2.zip",
     nextSlug: "masterclass-commander",
     badge: "Most popular",
@@ -200,7 +193,7 @@ export const products: Product[] = [
       "KPI Dashboard (4 metric tiers, diagnostics, red flags)",
       "Bonus: full Golden Delivery — Commander Pack ZIP",
     ],
-    checkoutUrl: CHECKOUT.masterclassCommander || null,
+    checkoutUrl: PADDLE_PLACEHOLDER,
     zipFilename: "AutonomaX_Masterclass_Commander_Pack_v2.zip",
     nextSlug: null,
     badge: "Maximum value",

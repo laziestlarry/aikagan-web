@@ -12,12 +12,12 @@ import Badge from '@/components/ui/Badge';
 export const metadata: Metadata = buildMetadata({
   title: 'Mission Control',
   description:
-    'Where you are in the AIKAGAN customer journey — discover, try, buy, execute, support. Plus live operational KPIs and our 6-stage delivery process.',
+    'Where you are in the AutonomaX customer journey — discover, try, buy, execute, support. Plus live operational KPIs and our 6-stage delivery process.',
   path: '/mission-control/',
 });
 
 const JOURNEY = [
-  { n: '1', label: 'Discover',  body: 'Land on aikagan.com. Read the offer. Decide if the toolkit fits.',                   href: '/',                                         linkLabel: 'Home →' },
+  { n: '1', label: 'Discover',  body: 'Land on the site. Read the offer. Decide if the toolkit fits.',                   href: '/',                                         linkLabel: 'Home →' },
   { n: '2', label: 'Try free',  body: 'Grab one of the 3 free gifts — instant email-gated download, no card.',             href: '/free/golden-delivery-sample',              linkLabel: 'Grab a gift →' },
   { n: '3', label: 'Buy',       body: 'Upgrade to a Masterclass tier (Starter $29 · Pro $79 · Commander $149).',           href: '/products/masterclass-starter',             linkLabel: 'See the offer →' },
   { n: '4', label: 'Execute',   body: 'Open START_HERE inside the ZIP. Follow the day-by-day blueprint. Ship.',            href: '/products/masterclass-starter',             linkLabel: 'Sample plan →' },
@@ -35,7 +35,7 @@ export default function MissionControlPage() {
             Mission <span className="text-gradient">Control</span>
           </h1>
           <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Where you are in the AIKAGAN customer journey — and what we are doing in the background to support you.
+            Where you are in the AutonomaX customer journey — and what we are doing in the background to support you.
           </p>
         </div>
 

@@ -12,7 +12,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-3">
               <Zap className="h-5 w-5 text-kagan-gold" />
               <span className="text-lg font-bold tracking-tight text-kagan-white">
-                AI<span className="text-kagan-gold">KAGAN</span>
+                Autonoma<span className="text-kagan-gold">X</span>
               </span>
             </Link>
             <p className="text-sm text-kagan-muted leading-relaxed">{SITE.description}</p>

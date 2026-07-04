@@ -31,7 +31,7 @@ export function buildMetadata({
           url: '/og.png',
           width: 1200,
           height: 630,
-          alt: `${SITE.name} — Done-For-You AI Revenue Packs`,
+          alt: `AutonomaX Profit OS — AI Revenue Ops`,
         },
       ],
     },

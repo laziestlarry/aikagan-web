@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Terms of Service | AIKAGAN",
-  description: "Terms governing the purchase and use of AIKAGAN digital products.",
+  title: "Terms of Service | AutonomaX",
+  description: "Terms governing the purchase and use of AutonomaX digital products.",
 };
 
 export default function TermsPage() {
@@ -16,8 +16,8 @@ export default function TermsPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">1. Products and Delivery</h2>
             <p>
-              AIKAGAN sells digital business execution packs delivered as downloadable ZIP files.
-              Upon successful checkout via LemonSqueezy, you will receive an email confirmation
+              AutonomaX sells digital business execution packs delivered as downloadable ZIP files.
+              Upon successful checkout via Paddle, you will receive an email confirmation
               and download link. Delivery is instant and automated. If you do not receive your
               download within 30 minutes of purchase, contact{" "}
               <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>.
@@ -67,7 +67,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">3. No Income Guarantee</h2>
             <p>
-              AIKAGAN products are execution toolkits — templates, scripts, checklists, and
+              AutonomaX products are execution toolkits — templates, scripts, checklists, and
               frameworks. Purchase does not guarantee any specific financial result, revenue level,
               or business outcome. Results are determined entirely by your individual effort, market
               conditions, business decisions, and implementation quality. Any income figures
@@ -81,16 +81,15 @@ export default function TermsPage() {
               <li>You must use the materials in compliance with applicable laws in your jurisdiction.</li>
               <li>You are responsible for your own tax obligations on any income generated.</li>
               <li>You may not share, upload, or distribute downloaded files to third parties (except under Commander white-label rights).</li>
-              <li>You may not claim authorship of the original AIKAGAN brand or system architecture.</li>
+              <li>You may not claim authorship of the original AutonomaX brand or system architecture.</li>
             </ul>
           </div>
 
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">5. Payment and VAT</h2>
             <p>
-              Payments are processed by LemonSqueezy. Prices displayed are in USD. VAT or sales
-              tax may be added at checkout depending on your country of residence, as determined
-              by LemonSqueezy&apos;s tax compliance system. You are responsible for any additional
+ Payments are processed by Paddle. Prices displayed are in USD. Applicable taxes
+are determined by your country of residence. You are responsible for any additional
               local taxes applicable to digital product purchases in your jurisdiction.
             </p>
           </div>
@@ -109,7 +108,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">7. Limitation of Liability</h2>
             <p>
-              AIKAGAN&apos;s liability is limited to the purchase price of the product. We are not
+              AutonomaX&apos;s liability is limited to the purchase price of the product. We are not
               liable for indirect, incidental, or consequential damages arising from use or
               inability to use the materials.
             </p>

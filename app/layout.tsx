@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" sizes="any" />
         {/* ── Meta Domain Verification ── */}
         <meta name="facebook-domain-verification" content="xz1psq5ml5n8je8ljwl7k689or7wkp" />
-        <Script src="https://assets.lemonsqueezy.com/lemon.js" strategy="afterInteractive" />
+        {/* LemonSqueezy JS removed — Stripe Checkout replaced LS overlay */}
         {/* ── Analytics: GA4 + Meta Pixel managed via GTM-NZW2CP6H ── */}
       </head>
       <body className="min-h-screen flex flex-col">

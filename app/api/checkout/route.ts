@@ -1,10 +1,12 @@
-// This Stripe checkout route is deprecated — payments are handled via LemonSqueezy overlay.
-// Keeping file to avoid 404 on any cached references.
-import { NextResponse } from 'next/server';
+// This legacy endpoint is replaced by /api/paddle-checkout.
+// Payments are now handled via Paddle Billing.
+// Keep this file for backward compatibility only.
+
+import { NextResponse } from "next/server";
 
 export async function POST() {
   return NextResponse.json(
-    { error: 'Stripe checkout is not active. Use LemonSqueezy.' },
+    { error: "Use /api/paddle-checkout instead." },
     { status: 410 }
   );
 }

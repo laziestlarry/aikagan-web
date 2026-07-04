@@ -1,11 +1,11 @@
 export const SITE = {
-  name: 'AIKAGAN',
-  tagline: 'The Kaganate',
+  name: 'AutonomaX Profit OS',
+  tagline: 'AI Revenue Ops — Checkout, Delivery & Growth',
   description:
-    'Premium AI infrastructure, e-commerce conversion, productized services, and Golden Delivery — orchestrated for serious operators.',
+    'AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.',
   url: 'https://aikagan.com',
   appUrl: 'https://app.aikagan.com',
-  author: 'Kagan / Lazy Larry',
+  author: 'AutonomaX / ProPulse Group',
   year: 2026,
 } as const;
 

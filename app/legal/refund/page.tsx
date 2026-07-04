@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Refund Policy | AIKAGAN",
-  description: "AIKAGAN 30-day digital product refund policy.",
+  title: "Refund Policy | AutonomaX",
+  description: "AutonomaX 30-day digital product refund policy.",
 };
 
 export default function RefundPage() {
@@ -51,7 +51,7 @@ export default function RefundPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Payment Processor</h2>
             <p>
-              Payments are processed by LemonSqueezy. Refunds are issued to your original payment
+              Payments are processed by Paddle (Merchant of Record). Refunds are issued to your original payment
               method. Processing time may vary depending on your bank or card issuer (typically
               3–10 business days after approval).
             </p>
@@ -60,7 +60,7 @@ export default function RefundPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">No Income Guarantee</h2>
             <p>
-              AIKAGAN products are business execution tools. Purchase does not guarantee any specific
+              AutonomaX products are business execution tools. Purchase does not guarantee any specific
               financial outcome, revenue level, or business result. Results depend entirely on your
               individual effort, market conditions, and implementation.
             </p>

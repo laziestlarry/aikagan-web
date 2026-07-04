@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Privacy Policy | AIKAGAN",
-  description: "How AIKAGAN collects, uses, and protects your information.",
+  title: "Privacy Policy | AutonomaX",
+  description: "How AutonomaX collects, uses, and protects your information.",
 };
 
 export default function PrivacyPage() {
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Who We Are</h2>
             <p>
-              AIKAGAN is an AI-powered digital product business operating at aikagan.com.
+              AutonomaX is an AI-powered digital product business operating at aikagan.com.
               For privacy inquiries contact:{" "}
               <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>
             </p>
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
               <li>Communications you send us via email or contact form.</li>
             </ul>
             <p className="mt-3">
-              Payment card details are handled entirely by LemonSqueezy and are never stored by AIKAGAN.
+              Payment card details are handled entirely by Paddle (Merchant of Record) and are never stored by AutonomaX.
             </p>
           </div>
 
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
               We do not sell your personal data. We share information only with:
             </p>
             <ul className="list-disc list-inside space-y-1 text-neutral-400 mt-2">
-              <li>LemonSqueezy (payment processing and digital delivery).</li>
+              <li>Paddle (payment processing, tax compliance, and digital delivery).</li>
               <li>Analytics providers (aggregate, anonymised traffic data only).</li>
               <li>Legal authorities if required by applicable law.</li>
             </ul>

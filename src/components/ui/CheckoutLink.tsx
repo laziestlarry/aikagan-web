@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
+import Link from "next/link";
 import { appendAttribution, trackCheckoutIntent } from "@/src/lib/attribution";
 
 interface CheckoutLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
-  /** LemonSqueezy checkout URL (may be null/undefined — we render a safe fallback). */
+  /** Product slug — used to call POST /api/paddle-checkout */
   href?: string | null;
   productSlug: string;
   productName: string;
@@ -17,28 +18,14 @@ declare global {
   }
 }
 
-// Decorate the raw LS URL with:
-//   • checkout[custom][product_slug] → consumed by /api/webhooks/lemonsqueezy
-//     to resolve which ZIP to deliver
-//   • checkout[success_url]          → LemonSqueezy redirects the buyer here
-//     after purchase, so they land on our in-domain /checkout-success page
-function decorateCheckoutUrl(rawHref: string, productSlug: string): string {
-  try {
-    // Use a base just to allow URLSearchParams editing on absolute URLs
-    const url = new URL(rawHref);
-    url.searchParams.set("checkout[custom][product_slug]", productSlug);
-    // Always send buyers back to our own success page so the funnel stays in-domain.
-    const successUrl =
-      typeof window !== "undefined" && window.location?.origin
-        ? `${window.location.origin}/checkout-success`
-        : "https://aikagan.com/checkout-success";
-    url.searchParams.set("checkout[success_url]", successUrl);
-    return url.toString();
-  } catch {
-    return rawHref;
-  }
-}
-
+/**
+ * Checkout Link — Paddle edition.
+ *
+ * When clicked, calls POST /api/paddle-checkout with { slug },
+ * then redirects the user to the Paddle Checkout URL.
+ *
+ * Prices come from lib/products.ts.
+ */
 export default function CheckoutLink({
   href,
   productSlug,
@@ -48,18 +35,13 @@ export default function CheckoutLink({
   onClick,
   ...rest
 }: CheckoutLinkProps) {
-  // Safe-fallback: if the env var is missing AND the hardcoded fallback was
-  // dropped, render an outline link that opens the /products page rather
-  // than an inert <a> the user can click with no effect.
-  const hasHref = typeof href === "string" && href.startsWith("http");
+  const [loading, setLoading] = useState(false);
 
-  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
-    if (!hasHref) {
-      // Don't let the broken link silently fail — route them to /products
-      e.preventDefault();
-      window.location.href = "/products";
-      return;
-    }
+  const isPaddle = href === "paddle";
+
+  const handleClick = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
     // Push GTM begin_checkout event
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer ?? [];
@@ -68,32 +50,83 @@ export default function CheckoutLink({
         ecommerce: {
           currency: "USD",
           value: price,
-          items: [
-            {
-              item_id: productSlug,
-              item_name: productName,
-              price: price,
-              quantity: 1,
-            },
-          ],
+          items: [{ item_id: productSlug, item_name: productName, price, quantity: 1 }],
         },
       });
       trackCheckoutIntent(productSlug);
     }
+
+    if (!isPaddle) {
+      // If not a Paddle product (e.g. legacy link), navigate directly
+      if (href) window.location.href = href;
+      return;
+    }
+
+    // Paddle flow: create checkout session via our API
+    setLoading(true);
+    try {
+      const res = await fetch("/api/paddle-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: productSlug }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Unknown error" }));
+        console.error("❌ Checkout error:", err.error);
+        // Fallback: redirect to product page
+        window.location.href = `/products/${productSlug}`;
+        return;
+      }
+
+      const { url } = await res.json();
+      if (url) {
+        window.location.href = url;
+      } else {
+        window.location.href = `/products/${productSlug}`;
+      }
+    } catch (err) {
+      console.error("❌ Checkout network error:", err);
+      window.location.href = `/products/${productSlug}`;
+    } finally {
+      setLoading(false);
+    }
+
     onClick?.(e);
+  }, [href, isPaddle, productSlug, productName, price, onClick]);
+
+  // For free/lead-magnet products, pass through normally
+  if (!isPaddle && href) {
+    const finalHref = appendAttribution(href);
+    return (
+      <a {...rest} href={finalHref} onClick={onClick}>
+        {children}
+      </a>
+    );
   }
 
-  const finalHref = hasHref ? appendAttribution(decorateCheckoutUrl(href!, productSlug)) : "/products";
+  // If no checkout available, redirect to /products
+  if (!href) {
+    return (
+      <Link
+        href="/products"
+        className={rest.className}
+        style={rest.style}
+      >
+        {children}
+      </Link>
+    );
+  }
 
   return (
     <a
       {...rest}
-      href={finalHref}
-      className={`lemonsqueezy-button${rest.className ? ` ${rest.className}` : ""}`}
+      href="/api/paddle-checkout"
       onClick={handleClick}
       data-product-slug={productSlug}
+      style={{ ...(rest.style ?? {}), cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
     >
-      {children}
+      {loading ? "Opening checkout..." : children}
     </a>
   );
 }

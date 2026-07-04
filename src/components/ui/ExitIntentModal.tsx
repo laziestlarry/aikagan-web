@@ -1,21 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Gift, ArrowRight } from "lucide-react";
 import CheckoutLink from "@/components/ui/CheckoutLink";
-
-function addDiscountCode(checkoutUrl: string, discountCode: string): string {
-  try {
-    const url = new URL(checkoutUrl);
-    if (!url.searchParams.has("checkout[discount_code]")) {
-      url.searchParams.set("checkout[discount_code]", discountCode);
-    }
-    return url.toString();
-  } catch {
-    return checkoutUrl;
-  }
-}
 
 export default function ExitIntentModal({ 
   discountCode = "KAGANATE", 
@@ -34,7 +22,6 @@ export default function ExitIntentModal({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -60,14 +47,8 @@ export default function ExitIntentModal({
 
   if (!isOpen) return null;
 
-  const discountedCheckoutUrl = checkoutUrl ? addDiscountCode(checkoutUrl, discountCode) : undefined;
-  const canCheckout = Boolean(discountedCheckoutUrl && productSlug && typeof price === "number");
-
-  function handleCopyCode() {
-    navigator.clipboard.writeText(discountCode);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
-  }
+  const isPaddle = checkoutUrl === "paddle";
+  const canCheckout = Boolean(isPaddle && productSlug && typeof price === "number");
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
@@ -99,20 +80,27 @@ export default function ExitIntentModal({
 
           <div 
             className="w-full bg-kagan-dark border border-dashed border-kagan-gold/50 rounded-lg p-4 mb-6 relative group cursor-pointer"
-            onClick={handleCopyCode}
+            onClick={() => {
+              navigator.clipboard.writeText(discountCode);
+              const el = document.getElementById("exit-copied-msg");
+              if (el) { el.style.display = "block"; setTimeout(() => { el.style.display = "none"; }, 1500); }
+            }}
           >
             <div className="text-xs text-kagan-muted uppercase tracking-wider mb-1 font-bold">Use code at checkout:</div>
             <div className="text-2xl font-mono font-bold text-kagan-gold tracking-widest">{discountCode}</div>
             <div className="absolute inset-0 bg-kagan-gold/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg backdrop-blur-[2px]">
-              <span className="text-sm font-bold text-kagan-gold uppercase tracking-widest bg-kagan-dark/80 px-3 py-1 rounded">
-                {copied ? "Copied" : "Click to Copy"}
+              <span id="exit-copied-msg" className="text-sm font-bold text-kagan-gold uppercase tracking-widest bg-kagan-dark/80 px-3 py-1 rounded" style={{display: "none"}}>
+                Copied
+              </span>
+              <span className="text-sm font-bold text-kagan-gold uppercase tracking-widest bg-kagan-dark/80 px-3 py-1 rounded group-hover:hidden">
+                Click to Copy
               </span>
             </div>
           </div>
 
           {canCheckout ? (
             <CheckoutLink
-              href={discountedCheckoutUrl}
+              href="paddle"
               productSlug={productSlug!}
               productName={productName}
               price={price!}

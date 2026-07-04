@@ -69,7 +69,7 @@ export default function ContactPage() {
         // Also open a pre-filled mailto so the user can complete delivery themselves.
         const subject = `Project Intake — ${payload.name || payload.email}`;
         const body =
-`Hi AIKAGAN,
+`Hi AutonomaX,
 
 ${payload.message}
 

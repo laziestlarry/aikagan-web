@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import CheckoutLink from '@/components/ui/CheckoutLink';
 
 interface ProductCardProps {
   name: string;
@@ -30,24 +31,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const badgeVariant = featured ? 'gold' : badge.includes('Popular') ? 'amber' : 'blue';
   const productHref = `/products/${slug}/`;
-
-  // Decorate raw LS URL with custom_data + success_url so we keep buyers in-domain
-  // and the webhook can resolve which ZIP to deliver.
-  const decoratedHref = (() => {
-    if (!checkoutUrl || checkoutUrl.includes('REPLACE')) return null;
-    try {
-      const u = new URL(checkoutUrl);
-      u.searchParams.set('checkout[custom][product_slug]', slug);
-      u.searchParams.set(
-        'checkout[success_url]',
-        // SSR-safe default; lemon.js overlay reads it on click
-        'https://aikagan.com/checkout-success'
-      );
-      return u.toString();
-    } catch {
-      return checkoutUrl;
-    }
-  })();
+  const isPaddle = checkoutUrl === 'paddle';
 
   return (
     <Card hover glow={featured} className={`flex flex-col ${featured ? 'ring-1 ring-kagan-gold/40' : ''}`}>
@@ -79,18 +63,32 @@ export default function ProductCard({
       </ul>
 
       <div className="flex flex-col gap-2">
-        {/* Primary CTA: direct checkout if URL is set, otherwise product detail page */}
-        {decoratedHref ? (
-          <a
-            href={decoratedHref}
-            data-product-slug={slug}
-            className={`lemonsqueezy-button w-full inline-flex justify-center items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition
+        {/* Primary CTA: Paddle checkout via CheckoutLink */}
+        {isPaddle ? (
+          <CheckoutLink
+            href="paddle"
+            productSlug={slug}
+            productName={name}
+            price={parseInt(price.replace(/[^0-9]/g, '')) || 0}
+            className={`w-full inline-flex justify-center items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition cursor-pointer
               ${featured
                 ? 'bg-kagan-gold text-black hover:bg-kagan-gold/90'
                 : 'border border-kagan-gold/40 text-kagan-gold hover:bg-kagan-gold/10'
               }`}
           >
             {featured ? 'Get Started Now' : 'Buy Now'}
+          </CheckoutLink>
+        ) : checkoutUrl ? (
+          <a
+            href={checkoutUrl}
+            data-product-slug={slug}
+            className={`w-full inline-flex justify-center items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition
+              ${featured
+                ? 'bg-kagan-gold text-black hover:bg-kagan-gold/90'
+                : 'border border-kagan-gold/40 text-kagan-gold hover:bg-kagan-gold/10'
+              }`}
+          >
+            {featured ? 'Get Started' : 'Buy Now'}
           </a>
         ) : (
           <Button

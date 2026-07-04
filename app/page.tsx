@@ -163,7 +163,7 @@ export default function HomePage() {
                 color: G.gold,
                 margin: 0,
               }}>
-                AIKAGAN&apos;S<br />
+                AutonomaX&apos;s<br />
                 <span style={{
                   fontFamily: "'Caveat', cursive",
                   fontWeight: 600,
@@ -815,7 +815,7 @@ export default function HomePage() {
             gap: "28px",
           }}>
             {[
-              "⚡ Delivered via LemonSqueezy",
+              "⚡ Delivered via Paddle",
               "📧 Download link to your inbox",
               "♾  Lifetime access — re-download anytime",
               "🔒 256-bit encrypted checkout",
@@ -848,7 +848,7 @@ export default function HomePage() {
             .cmd-card:hover { border-color: rgba(212,175,55,0.70) !important; }
             .act-card:hover { border-color: rgba(34,197,94,0.50) !important; }
           `}</style>
-          <OrnHeader label="READY FOR THE FULL SYSTEM?" sub="THE AIKAGAN ENGINE — DONE-FOR-YOU AUTOMATION" />
+          <OrnHeader label="READY FOR THE FULL SYSTEM?" sub="THE AUTONOMAX ENGINE — DONE-FOR-YOU AUTOMATION" />
 
           <div className="grid lg:grid-cols-2 gap-12 items-center mt-8">
 
@@ -876,8 +876,8 @@ export default function HomePage() {
                   { icon: "🤖", title: "Multi-Provider AI Engine", desc: "Groq, DeepSeek, Gemini, OpenAI — auto-fallback, zero downtime" },
                   { icon: "⚡", title: "Automated 24/7 Operations", desc: "Bot execution, health checks, pipeline monitoring — no human needed" },
                   { icon: "📊", title: "Live Revenue Dashboard", desc: "MRR tracking, conversion analytics, churn prediction in real time" },
-                  { icon: "🛡", title: "Stripe Payment Intelligence", desc: "Multi-rail revenue processing with automatic failover" },
-                  { icon: "🔗", title: "Seamless API Integration", desc: "Connect your existing stack — Stripe, analytics, webhooks, CRM" },
+                  { icon: "🛡", title: "Paddle Payment Intelligence", desc: "Multi-rail revenue processing with automatic failover" },
+                  { icon: "🔗", title: "Seamless API Integration", desc: "Connect your existing stack — Paddle, analytics, webhooks, CRM" },
                 ].map((item) => (
                   <div key={item.title} style={{
                     display: "flex", gap: "12px", alignItems: "flex-start",
@@ -1171,7 +1171,7 @@ export default function HomePage() {
               YOUR FUTURE.<br />YOUR FREEDOM.<br />YOUR LEGACY.
             </h2>
 
-            {/* 3 paid Masterclass CTAs — checkout opens IN-DOMAIN via lemonsqueezy-button */}
+            {/* 3 paid Masterclass CTAs — calls /api/paddle-checkout */}
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
               {PAID_ROW_SLUGS.map((slug) => {
                 const product = products.find((p) => p.slug === slug);

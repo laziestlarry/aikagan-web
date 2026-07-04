@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { appendAttribution, trackCheckoutIntent } from "@/src/lib/attribution";
 
 interface Props {
@@ -11,28 +11,66 @@ interface Props {
 }
 
 /**
- * Wraps a checkout link to append UTM attribution params
- * and fire a checkout_intent event to revenue ops.
+ * Paddle Checkout Button.
+ *
+ * Calls POST /api/paddle-checkout and redirects to Paddle.
  */
 export default function CheckoutButton({ href, slug, children, className }: Props) {
-  const handleClick = useCallback(() => {
-    trackCheckoutIntent(slug);
-  }, [slug]);
+  const [loading, setLoading] = useState(false);
+  const isPaddle = href === "paddle";
 
-  // Append slug as custom checkout data so the webhook can resolve the correct ZIP.
-  // LemonSqueezy passes this back in meta.custom_data.product_slug.
-  const slugParam = `checkout[custom][product_slug]=${encodeURIComponent(slug)}`;
-  const hrefWithSlug = href.includes("?") ? `${href}&${slugParam}` : `${href}?${slugParam}`;
-  const url = appendAttribution(hrefWithSlug);
+  const handleClick = useCallback(async () => {
+    trackCheckoutIntent(slug);
+
+    if (!isPaddle) {
+      if (href) window.location.href = href;
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/paddle-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+
+      if (!res.ok) {
+        window.location.href = `/products/${slug}`;
+        return;
+      }
+
+      const { url } = await res.json();
+      window.location.href = url ?? `/products/${slug}`;
+    } catch {
+      window.location.href = `/products/${slug}`;
+    } finally {
+      setLoading(false);
+    }
+  }, [href, isPaddle, slug]);
+
+  if (!isPaddle && href) {
+    const url = appendAttribution(href);
+    return (
+      <a
+        href={url}
+        onClick={() => trackCheckoutIntent(slug)}
+        className={className}
+        rel="noopener"
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
-    <a
-      href={url}
+    <button
       onClick={handleClick}
-      className={`lemonsqueezy-button${className ? ` ${className}` : ""}`}
-      rel="noopener"
+      disabled={loading}
+      className={className}
+      style={{ cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
     >
-      {children}
-    </a>
+      {loading ? "Opening checkout..." : children}
+    </button>
   );
 }
