@@ -346,6 +346,41 @@ function CheckoutSuccessContent() {
         {/* Order bump */}
         {product && <OrderBump currentSlug={product.slug} />}
 
+        {/* Done-With-You Setup Upsell — appears for all purchases */}
+        {product && product.priceModel === "one_time" && (
+          <div className="mt-8 rounded-3xl border border-emerald-400/40 bg-emerald-400/5 p-8">
+            <p className="text-xs uppercase tracking-[0.3em] text-emerald-300">Done-with-you service</p>
+            <h3 className="mt-3 text-2xl font-bold">
+              Want us to set it up for you?
+            </h3>
+            <p className="mt-3 text-neutral-300">
+              Skip the DIY. Our team configures your checkout routing, delivery automation, and KPI tracking within one week. You get a fully working revenue system — not just the blueprint.
+            </p>
+            <ul className="mt-4 space-y-1.5 text-sm text-neutral-400">
+              {[
+                "Checkout routing (Paddle + Shopier multi-region)",
+                "Automated digital delivery with email fulfillment",
+                "KPI event tracking (traffic → payment → delivery)",
+                "30-minute strategy call + documentation handoff",
+                "72-hour standard delivery",
+              ].map((b) => (
+                <li key={b} className="flex items-start gap-2">
+                  <span className="mt-0.5 text-emerald-300">✓</span> {b}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="https://www.fiverr.com/propulse_ai/build-ai-automation-systems-for-business-workflows"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-emerald-500 px-7 py-4 font-semibold text-black hover:bg-emerald-400 transition-all"
+            >
+              Order Setup — $249 →
+            </a>
+            <p className="mt-3 text-xs text-neutral-500">Available on Fiverr. 30-day post-delivery support included.</p>
+          </div>
+        )}
+
         <Link href="/" className="mt-10 inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to AutonomaX
         </Link>

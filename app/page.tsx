@@ -2,6 +2,8 @@ import Link from "next/link";
 import { products } from "@/lib/products";
 import CountdownTimer from "@/components/ui/CountdownTimer";
 import CheckoutLink from "@/components/ui/CheckoutLink";
+import ExitIntentModal from "@/components/ui/ExitIntentModal";
+import SocialProof from "@/components/home/SocialProof";
 
 // ── Gold palette ──────────────────────────────────────────────────────────
 const G = {
@@ -850,6 +852,7 @@ export default function HomePage() {
           `}</style>
           <OrnHeader label="READY FOR THE FULL SYSTEM?" sub="THE AUTONOMAX ENGINE — DONE-FOR-YOU AUTOMATION" />
 
+
           <div className="grid lg:grid-cols-2 gap-12 items-center mt-8">
 
             {/* Left: copy */}
@@ -1241,6 +1244,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Social proof — real testimonials */}
+      <SocialProof />
+
     </div>
+
+      {/* Exit-intent overlay — captures abandoning visitors */}
+      <ExitIntentModal
+        discountCode="KAGANATE"
+        productName="AutonomaX Profit OS"
+        productSlug="masterclass-starter"
+        price={29}
+        fallbackHref="/free/golden-delivery-sample/"
+      />
   );
 }
