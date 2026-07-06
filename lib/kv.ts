@@ -255,6 +255,25 @@ export async function kvLrange<T>(key: string, start: number, stop: number): Pro
   return (rangeListMem(key, start, stop) as T[]) ?? [];
 }
 
+/** Read a sorted set range (zrange with REV so newest first). */
+export async function kvZrevrange<T>(key: string, start: number, stop: number): Promise<T[]> {
+  const kv = await getKv();
+  if (kv && typeof kv.zrange === "function") {
+    try {
+      // Upstash @vercel/kv supports { rev: true } for reverse order
+      const v = (await (kv.zrange as (k: string, s: number, e: number, o?: { rev?: boolean }) => Promise<unknown[]>)(key, start, stop, { rev: true })) as T[];
+      return v ?? [];
+    } catch {
+      // fall through
+    }
+  }
+  // Memory fallback — read the in-memory sorted array
+  const mem = getMem(key);
+  if (!Array.isArray(mem)) return [];
+  const sliced = mem.slice(start, stop < 0 ? mem.length + stop + 1 : stop + 1) as Array<[number, T]>;
+  return sliced.map(([, m]) => m);
+}
+
 export async function kvLlen(key: string): Promise<number> {
   const kv = await getKv();
   if (kv && typeof kv.llen === "function") {

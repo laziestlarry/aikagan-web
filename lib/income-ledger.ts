@@ -21,7 +21,7 @@
  * once before the webhook returns, so evidence is durable before we ack.
  */
 
-import { getKv, kvSet, kvGet, kvIncrBy, kvZadd, kvLpush, kvLrange, kvExpire } from "./kv";
+import { getKv, kvSet, kvGet, kvIncrBy, kvZadd, kvLpush, kvLrange, kvZrevrange, kvExpire, kvDel } from "./kv";
 
 // CAPI attempts
 const CAPI_TTL_S = 30 * 24 * 60 * 60;
@@ -120,6 +120,9 @@ function dayKey(ts: number): string {
   return new Date(ts).toISOString().slice(0, 10);
 }
 
+/** List of self-test seeded transaction ids, for /api/income/clear-test-data. */
+const SELF_TEST_INDEX = "tx:index:selftest";
+
 export async function recordTransaction(tx: TransactionRecord): Promise<void> {
   const day = dayKey(tx.capturedAt);
   const txKey = `tx:${tx.provider}:${tx.orderId}`;
@@ -150,6 +153,10 @@ export async function recordTransaction(tx: TransactionRecord): Promise<void> {
   if (tx.refCode) {
     await kvIncrBy(`p:${day}:affiliated_count`, 1, DAY_TTL_S);
   }
+  // Track self-test seed for later cleanup
+  if (tx.eventId.startsWith("self_test_evt_")) {
+    await kvLpush(SELF_TEST_INDEX, tx.orderId, 7 * 24 * 60 * 60);
+  }
 }
 
 export async function getTransaction(
@@ -160,10 +167,36 @@ export async function getTransaction(
   return v ?? null;
 }
 
+/** Delete a transaction record and decrement daily aggregates. */
+export async function deleteTransaction(
+  provider: Provider,
+  orderId: string,
+): Promise<void> {
+  const tx = await getTransaction(provider, orderId);
+  if (!tx) return;
+  const txKey = `tx:${provider}:${orderId}`;
+  const day = dayKey(tx.capturedAt);
+  await kvDel(txKey);
+  // We can't decrement counters atomically without racing; the safer approach
+  // is to set the day's value to max(0, current - tx.value) via read-modify-write.
+  // For the in-memory case this is fine; for KV it may briefly drift. The
+  // operator should re-seed or treat the cleared day as a known drift.
+  const currentCount = (await kvGet<number>(`p:${day}:count`)) ?? 0;
+  const currentRev = (await kvGet<number>(`p:${day}:revenue_cents`)) ?? 0;
+  const newCount = Math.max(0, Number(currentCount) - 1);
+  const newRev = Math.max(0, Number(currentRev) - Math.round(tx.value * 100));
+  await kvSet(`p:${day}:count`, newCount, DAY_TTL_S);
+  await kvSet(`p:${day}:revenue_cents`, newRev, DAY_TTL_S);
+}
+
+/** List self-test orderIds (for clear endpoint). */
+export async function listSelfTestOrderIds(): Promise<string[]> {
+  return kvLrange<string>(SELF_TEST_INDEX, 0, 1000);
+}
+
 export async function listRecentTransactions(limit = 50): Promise<TransactionRecord[]> {
-  // Walk recent index newest-first, fetch each record.
-  // For larger limits we'd switch to a sorted-set range query; 50 keeps latency bounded.
-  const recent = await kvLrange<string>("tx:index:recent", 0, limit - 1);
+  // tx:index:recent is a sorted set (zadd) keyed by capturedAt — read in reverse (newest first).
+  const recent = await kvZrevrange<string>("tx:index:recent", 0, limit - 1);
   if (recent.length === 0) return [];
   const out: TransactionRecord[] = [];
   for (const orderId of recent) {
