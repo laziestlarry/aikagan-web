@@ -8,6 +8,11 @@ interface KPI {
   delta?: string;
 }
 
+interface IncomeReality {
+  traffic: { pageviews: number; checkoutIntents: number; leads: number; purchases: number; leadRatePct: number; intentRatePct: number };
+  revenue: { grossUsd: number; transactionsCount: number };
+}
+
 const FALLBACK_KPIS: KPI[] = [
   { label: "Active Pipelines", value: "12+" },
   { label: "Avg. Delivery Cycle", value: "7 Days" },
@@ -15,19 +20,62 @@ const FALLBACK_KPIS: KPI[] = [
   { label: "Conversion Lift", value: "3.2× avg" },
 ];
 
+/** Map real income reality to KPI tiles. No synthetic numbers. */
+function realityToKpis(r: IncomeReality): KPI[] {
+  const conversionPct =
+    r.traffic.checkoutIntents > 0
+      ? Math.round((r.traffic.purchases / r.traffic.checkoutIntents) * 1000) / 10
+      : 0;
+  return [
+    { label: "Gross Revenue (7d)", value: `$${r.revenue.grossUsd.toFixed(2)}` },
+    { label: "Transactions (7d)", value: String(r.revenue.transactionsCount) },
+    { label: "Leads (7d)", value: String(r.traffic.leads) },
+    { label: "Intent→Sale", value: `${conversionPct.toFixed(1)}%` },
+  ];
+}
+
 export default function LiveKPIs() {
   const [kpis, setKpis] = useState<KPI[]>(FALLBACK_KPIS);
   const [live, setLive] = useState(false);
+  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
-    fetch("/api/revenue-ops/api/mission/status")
+    let cancelled = false;
+
+    // Prefer the local evidence ledger (zero-gap ground truth).
+    fetch("/api/income/reality?days=7", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (!data?.kpis) return;
-        setKpis(data.kpis);
-        setLive(true);
+        if (cancelled) return;
+        if (data?.traffic && data?.revenue) {
+          setKpis(realityToKpis(data as IncomeReality));
+          setLive(true);
+          setOffline(false);
+          return;
+        }
+        // Fall back to the AutonomaX mission endpoint if available
+        return fetch("/api/revenue-ops/api/mission/status", { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((m) => {
+            if (cancelled || !m?.kpis) {
+              if (!cancelled) setOffline(true);
+              return;
+            }
+            setKpis(m.kpis);
+            setLive(true);
+            setOffline(false);
+          })
+          .catch(() => {
+            if (!cancelled) setOffline(true);
+          });
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setOffline(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -46,14 +94,20 @@ export default function LiveKPIs() {
           <div className="text-xs text-kagan-muted">{kpi.label}</div>
         </div>
       ))}
-      {live && (
-        <div className="col-span-full text-right">
+      <div className="col-span-full text-right">
+        {live && (
           <span className="inline-flex items-center gap-1.5 text-xs text-green-400">
             <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-            Live
+            Live · from evidence ledger
           </span>
-        </div>
-      )}
+        )}
+        {offline && (
+          <span className="inline-flex items-center gap-1.5 text-xs text-amber-400">
+            <span className="h-2 w-2 rounded-full bg-amber-400" />
+            Offline — showing fallback
+          </span>
+        )}
+      </div>
     </div>
   );
 }

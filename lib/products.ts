@@ -49,9 +49,12 @@ export interface Product {
 // ── Paddle (Merchant of Record) ───────────────────────────────────────────
 // Replaces Stripe which does not support Turkish-registered merchants.
 // Paddle handles global tax/VAT compliance and pays out to Payoneer.
-// The client-side CheckoutLink component calls /api/paddle-checkout.
+// The client-side CheckoutButton/CheckoutLink calls /api/income/checkout
+// which always returns a working URL. The placeholder string is the
+// "use the income/checkout endpoint" sentinel — it intentionally does
+// not start with http so client-side decorate() doesn't try to parse it.
 // ───────────────────────────────────────────────────────────────────────────
-const PADDLE_PLACEHOLDER = "paddle";
+export const CHECKOUT_SENTINEL = "paddle"; // see CheckoutButton / CheckoutLink
 
 export const products: Product[] = [
   // ───────────────────────────────────────────────────────
@@ -143,7 +146,7 @@ export const products: Product[] = [
       "Masterclass-grade execution workbook",
       "Bonus: full Golden Delivery — Starter Pack ZIP",
     ],
-    checkoutUrl: PADDLE_PLACEHOLDER,
+    checkoutUrl: CHECKOUT_SENTINEL,
     zipFilename: "AutonomaX_Masterclass_Starter_Pack_v2.zip",
     nextSlug: "masterclass-pro",
     badge: "Best for beginners",
@@ -168,7 +171,7 @@ export const products: Product[] = [
       "6 Automation Workflow Templates",
       "Bonus: full Golden Delivery — Pro Pack ZIP",
     ],
-    checkoutUrl: PADDLE_PLACEHOLDER,
+    checkoutUrl: CHECKOUT_SENTINEL,
     zipFilename: "AutonomaX_Masterclass_Pro_Pack_v2.zip",
     nextSlug: "masterclass-commander",
     badge: "Most popular",
@@ -193,7 +196,7 @@ export const products: Product[] = [
       "KPI Dashboard (4 metric tiers, diagnostics, red flags)",
       "Bonus: full Golden Delivery — Commander Pack ZIP",
     ],
-    checkoutUrl: PADDLE_PLACEHOLDER,
+    checkoutUrl: CHECKOUT_SENTINEL,
     zipFilename: "AutonomaX_Masterclass_Commander_Pack_v2.zip",
     nextSlug: null,
     badge: "Maximum value",

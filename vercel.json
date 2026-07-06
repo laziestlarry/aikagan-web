@@ -25,5 +25,15 @@
       "source": "/api/revenue-ops/:path*",
       "destination": "/api/revenue-ops/:path*"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/affiliate-payouts",
+      "schedule": "0 9 * * 1"
+    },
+    {
+      "path": "/api/cron/weekly-intelligence",
+      "schedule": "0 8 * * 1"
+    }
   ]
 }
