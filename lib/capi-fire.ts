@@ -60,7 +60,7 @@ export interface CapiResult {
   event_id: string;
 }
 
-const PIXEL_ID = process.env.META_PIXEL_ID || "";
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID || "";
 const ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || "";
 const TEST_EVENT_CODE = process.env.META_PIXEL_TEST_EVENT_CODE || "";
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v22.0";

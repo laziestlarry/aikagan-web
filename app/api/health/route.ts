@@ -60,7 +60,7 @@ export async function GET() {
     : { status: "degraded", latency_ms: 0, detail: "DOWNLOAD_TOKEN_SECRET not set" };
 
   // 3. Meta CAPI configured?
-  const pixelId = process.env.META_PIXEL_ID || "";
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID || "";
   const capiToken = process.env.META_CAPI_ACCESS_TOKEN || "";
   checks["meta_capi_config"] = pixelId && capiToken
     ? { status: "ok", latency_ms: 0 }
