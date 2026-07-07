@@ -1,26 +1,32 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/session-token
-//
-// Returns a download token for a completed Paddle transaction.
-// The success page polls this endpoint until the webhook has processed the
-// transaction, or — as a faster path — verifies the transaction directly via
-// Paddle API and generates a token on-the-fly.
-//
-// Query params:
-//   transaction_id  — Paddle transaction ID (txn_...)
-//
-// Responses:
-//   200 { token: string, slug: string }  — ready to download
-//   202 { status: "processing" }         — payment not yet confirmed
-//   400 { error: string }                 — missing parameter
-//   404 { error: string }                 — transaction not found
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/session-token
+ *
+ * Returns a download token for a completed Paddle transaction.
+ * The success page polls this endpoint until the webhook has processed the
+ * transaction, or — as a faster path — verifies the transaction directly via
+ * Paddle API and generates a token on-the-fly.
+ *
+ * Query params:
+ *   transaction_id  — Paddle transaction ID (txn_...)
+ *
+ * Responses:
+ *   200 { token: string, slug: string }  — ready to download
+ *   202 { status: "processing" }         — payment not yet confirmed
+ *   400 { error: string }                 — missing parameter
+ *   404 { error: string }                 — transaction not found
+ *
+ * Storage: Uses token-store (Vercel KV + in-memory fallback) so tokens survive
+ *          serverless instance recycling across successive polling calls.
+ */
 
 import { NextRequest, NextResponse } from "next/server";
 import { getPaddleClient } from "@/lib/paddle-client";
 import { generateDownloadToken } from "@/lib/download-token";
 import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const transactionId = req.nextUrl.searchParams.get("transaction_id");
@@ -29,8 +35,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing transaction_id parameter" }, { status: 400 });
   }
 
-  // 1. Check in-memory store (populated by webhook or pre-registered)
-  const cached = tokenStore.get(transactionId);
+  // 1. Check token store (populated by webhook or pre-registered)
+  const cached = await tokenStore.get(transactionId);
   if (cached?.token) {
     return NextResponse.json({
       token: cached.token,
@@ -72,7 +78,7 @@ export async function GET(req: NextRequest) {
     const token = generateDownloadToken(slug, transactionId, email);
 
     // Cache it for subsequent calls
-    tokenStore.set(transactionId, {
+    await tokenStore.set(transactionId, {
       token,
       slug,
       email,

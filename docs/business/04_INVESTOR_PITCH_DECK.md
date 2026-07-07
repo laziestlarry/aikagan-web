@@ -1,7 +1,7 @@
 # INVESTOR PITCH DECK
 ## AutonomaX Business Unit — AI-Powered Business Operations Engine
 
-**One-liner:** *AutonomaX turns any product into a must-buy with AI-powered ops agents, Stripe-native checkout, and multi-channel fulfillment — on day one, zero monthly fees.*
+**One-liner:** *AutonomaX turns any product into a must-buy with AI-powered ops agents, Paddle-native checkout, and multi-channel fulfillment — on day one, zero monthly fees.*
 
 ---
 
@@ -27,7 +27,7 @@
 ```
 Traditional Setup (Month 1):          AutonomaX (Day 1):
 ┌─────────────────────────┐           ┌─────────────────────────┐
-│ ClickFunnels:    $147   │           │ Stripe Checkout:  ✅    │
+│ ClickFunnels:    $147   │           │ Paddle Checkout:  ✅    │
 │ Email Service:   $59    │           │ AI Ops Agents:   ✅    │
 │ AI Content:      $49    │           │ Digital Delivery: ✅    │
 │ Analytics:       $29    │           │ Multi-Channel:   ✅    │
@@ -96,11 +96,11 @@ Market Growth Indicators:
 | **AutonomaX** | **$29** | **✅ 8 agents** | **✅ 4 channels** | **✅ at $149** | **✅ Yes** |
 
 **Our Moat:**
-1. **Multi-channel by default** — Stripe + Shopier + Shopify in one system
+1. **Multi-channel by default** — Paddle + Shopier + Shopify in one system
 2. **AI-native ops** — Groq→DeepSeek→Gemini→OpenAI auto-fallback, never down
 3. **Zero marginal cost** — Infinite inventory, 95% gross margins
 4. **Viral white-label** — Buyers of Commander can rebrand and resell
-5. **LIVE payments already configured** — Real Stripe account, real money on day 1
+5. **LIVE payments already configured** — Real Paddle account, real money on day 1
 
 ---
 
@@ -109,12 +109,12 @@ Market Growth Indicators:
 ### Live Production Assets
 
 ```
-✅ ○ Stripe Checkout Integration — LIVE keys, 7 API routes, 4 components
+✅ ○ Paddle Checkout Integration — LIVE keys, 7 API routes, 4 components
 ✅ ○ 19 Digital Products LIVE on Shopier — autonomax.shopier.com
 ✅ ○ 4 Make.com Webhooks Configured — WhatsApp, marketing, revenue, retry
 ✅ ○ 6 AI Provider API Keys — Groq, DeepSeek, Gemini, OpenAI, Ollama, Custom
 ✅ ○ 94-Entry AI Agent Monorepo — 8 agents, agent chains, auto-resolution
-✅ ○ Express Ops Engine Server — Stripe, Prisma, 10-model schema, rate-limited
+✅ ○ Express Ops Engine Server — Paddle, Prisma, 10-model schema, rate-limited
 ✅ ○ 3 Product ZIPs Ready for Delivery — Starter, Pro, Commander
 ✅ ○ Complete Tax/Legal Pages — Refund, Privacy, Terms, GDPR
 ```
@@ -122,7 +122,7 @@ Market Growth Indicators:
 **Missing (Deployment Only):**
 - ⏳ Vercel deploy for aikagan.com
 - ⏳ Fly.io deploy for app.aikagan.com
-- ⏳ Stripe webhook secret configuration
+- ⏳ Paddle webhook secret configuration
 
 ---
 
@@ -131,7 +131,7 @@ Market Growth Indicators:
 ### The Numbers
 
 ```
-Product      Price     Stripe Fee     Net Revenue     COGS     Gross Profit
+Product      Price     Paddle Fee     Net Revenue     COGS     Gross Profit
 ───────      ─────     ──────────     ───────────     ────     ─────────────
 Starter      $29       $1.14          $27.86          $0.25    $27.61 (95.2%)
 Pro          $79       $2.59          $76.41          $0.50    $75.91 (96.1%)
@@ -185,7 +185,7 @@ Revenue Projection:
 **Valuation Proposition:**
 ```
 Pre-revenue valuation: $500K
-  ├── LIVE Stripe infrastructure: $100K
+  ├── LIVE Paddle infrastructure: $100K
   ├── Complete AI monorepo (94 entries): $150K
   ├── Shopier store + 19 products: $50K
   ├── Brand + domains + web presence: $50K
@@ -202,7 +202,7 @@ Pre-revenue valuation: $500K
 |------|--------|--------|
 | **Founder & Full-Stack Dev** | Kagan | Active — built everything |
 | **AI Agent System** | Code | 8 agents, auto-deployed |
-| **Ops Engine** | Express/Stripe | Ready on server.ts |
+| **Ops Engine** | Express/Paddle | Ready on server.ts |
 | **Content** | AI-generated + curated | 3 product tiers complete |
 | **Growth** | Founder (until scale) | Manual + AI-assisted |
 
@@ -217,7 +217,7 @@ Pre-revenue valuation: $500K
 
 | Milestone | Target | Timeline |
 |-----------|--------|----------|
-| First Stripe sale | ✅ ALL SETUP — just need deploy | Day 1 |
+| First Paddle sale | ✅ ALL SETUP — just need deploy | Day 1 |
 | $1,000 total revenue | 17 sales at avg $58 | Week 2 |
 | $50k annual run rate | 72 sales/month | Month 3 |
 | $250k ARR | 360 sales/month | Month 6 |
@@ -231,11 +231,11 @@ Pre-revenue valuation: $500K
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|-----------|-----------|
 | Low organic traffic | High | Medium | Start Google Ads $10/day Day 15 |
-| Stripe dispute/chargeback | Low | Low | Digital goods = low chargeback rate |
+| Paddle dispute/chargeback | Low | Low | Digital goods = low chargeback rate |
 | AI provider failure | Low | Medium | 5-provider auto-fallback chain |
 | Competitor price drop | Medium | Low | Already $29 — hard to go lower |
 | Platform dependency (Vercel) | Low | Low | Static export possible |
-| Turkey economic volatility | Medium | Low | Shopier is secondary, Stripe is primary |
+| Turkey economic volatility | Medium | Low | Shopier is secondary, Paddle is primary |
 | Customer support burden | Medium | Medium | AI chatbot can handle 80% |
 
 ---

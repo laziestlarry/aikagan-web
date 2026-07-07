@@ -21,7 +21,7 @@ Weighted to favor speed with sufficient impact.
 
 | Rank | Initiative | V | I | E | Score | Action | Est. Weekly Revenue |
 |------|-----------|---|---|---|-------|--------|-------------------|
-| **1** | **Deploy aikagan.com Stripe Checkout LIVE** | 10 | 9 | 2 | **22.4** | Set Vercel env vars, run `vercel --prod`, Stripe is already LIVE (`sk_live_*`). Products priced $29/$79/$149. The code compiles and is ready. | **$500–$2,000** |
+| **1** | **Deploy aikagan.com Paddle Checkout LIVE** | 10 | 9 | 2 | **22.4** | Create Paddle account, set Vercel env vars (`PADDLE_API_KEY`, `PADDLE_WEBHOOK_SECRET`), run `vercel --prod`. Products priced $29/$79/$149. Paddle SDK integrated, code compiles. | **$500–$2,000** |
 | **2** | **Activate Golden Delivery free → paid funnel** | 9 | 8 | 3 | **19.1** | 3 free lead magnets → email capture → upsell to $29 Masterclass. Requires Formspree ID setup + email sequence. | **$200–$800** |
 | **3** | **Launch 7-Day Hype Machine (organic social)** | 8 | 7 | 2 | **17.6** | Use existing scripts from unified_ai_income. Reddit, IndieHackers, LinkedIn posts. Zero ad spend. | **$100–$500** |
 | **4** | **Push Shopier Turkey store (already LIVE)** | 10 | 4 | 1 | **17.2** | 19 products already live at autonomax.shopier.com. Promote via Turkish social channels. | **$50–$300** |
@@ -31,9 +31,11 @@ Weighted to favor speed with sufficient impact.
 
 ### DAY 1 ACTIONS:
 ```
-□ Set Vercel env vars (STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, DOWNLOAD_TOKEN_SECRET)
+□ Create Paddle account (paddle.com/sign-up) → get PADDLE_API_KEY (pdl_...)
+□ Set Vercel env vars (PADDLE_API_KEY, NEXT_PUBLIC_PADDLE_CLIENT_TOKEN, PADDLE_WEBHOOK_SECRET)
 □ Run: vercel --prod
-□ Test full purchase flow: visit aikagan.com → Buy Starter $29 → Stripe checkout → token → download
+□ Configure Paddle webhook: Endpoint URL https://aikagan.com/api/webhooks/paddle, event transaction.completed
+□ Test full purchase flow: visit aikagan.com → Buy Starter $29 → Paddle checkout → token → download
 □ Claim Shopier store: autonomax.shopier.com → promote first Turkish product
 ```
 
@@ -44,7 +46,7 @@ Weighted to favor speed with sufficient impact.
 | Rank | Initiative | V | I | E | Score | Action | Est. Monthly Revenue |
 |------|-----------|---|---|---|-------|--------|-------------------|
 | **6** | **Activate app.aikagan.com premium ops engine** | 6 | 9 | 4 | **15.8** | Deploy Fly.io Express backend ($497/$997/$2,497 tiers). Stripe Checkout Sessions + AI agents. | **$2,000–$8,000** |
-| **7** | **Google Ads (Masterclass low-funnel)** | 5 | 8 | 3 | **14.1** | $10–$20/day on "business toolkit" keywords. Direct to product pages with Stripe checkout. | **$500–$2,000** |
+| **7** | **Google Ads (Masterclass low-funnel)** | 5 | 8 | 3 | **14.1** | $10–$20/day on "business toolkit" keywords. Direct to product pages with Paddle checkout. | **$500–$2,000** |
 | **8** | **Make.com omnichannel automation** | 5 | 7 | 3 | **12.6** | Wire existing 4 webhooks: WhatsApp alerts, marketing, revenue dashboard, failed-payment recovery. | **$200–$1,000** |
 | **9** | **Partner affiliate program (manual first)** | 4 | 8 | 3 | **11.6** | 20% commission on referrals. Manual tracking → automate later. Reach out to 10 micro-influencers. | **$500–$2,500** |
 | **10** | **Deploy AI Business Commander agent** | 4 | 7 | 4 | **9.5** | Run `python ai_business_commander.py` from unified_ai_income. Automate content, outreach, offers. | **$300–$1,500** |
@@ -103,8 +105,8 @@ Cumulative 90-day cash range: $31,500 – $130,000
 ```
 Immediate (Day 1):
   ┌─────────────────────────────────────────────┐
-  │ 1. Deploy aikagan-web to Vercel ────────────┤
-  │    → unlocks Stripe checkout → income       │
+  │ 1. Create Paddle account + API keys ────────┤
+  │    → unlocks Paddle checkout → income       │
   ├─────────────────────────────────────────────┤
   │ 2. Claim Shopier TR store ──────────────────┤
   │    → live products, existing traffic         │
@@ -112,7 +114,7 @@ Immediate (Day 1):
 
 Week 1:
   ┌─────────────────────────────────────────────┐
-  │ 3. Set Vercel env vars (Stripe keys) ───────┤
+  │ 3. Set Vercel env vars (Paddle keys) ───────┤
   │    → LIVE payments enabled                   │
   ├─────────────────────────────────────────────┤
   │ 4. Wire Make.com webhooks ──────────────────┤
@@ -137,7 +139,7 @@ Each initiative also scored for **Risk** (execution failure probability):
 
 | Rank | Initiative | Risk | Mitigation |
 |------|-----------|------|-----------|
-| 1 | Deploy Stripe LIVE | Very Low | Code already compiles. LIVE keys in .env. Test mode first. |
+| 1 | Deploy Paddle LIVE | Very Low | Code compiles. Paddle SDK integrated. Sandbox mode available. |
 | 2 | Free → paid funnel | Low | Email capture only. No payment risk. |
 | 3 | 7-Day Hype Machine | Low | Zero ad spend. Organic only. |
 | 4 | Shopier promotion | Very Low | Already live. Just need to promote. |
@@ -158,22 +160,28 @@ Each initiative also scored for **Risk** (execution failure probability):
 ## IMMEDIATE EXECUTION CHECKLIST (Next 24h)
 
 ```
-[ ] 1. Set Vercel production env vars:
-       - STRIPE_SECRET_KEY=sk_live_51Ry1Qu...
-       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_51N0noS...
+[ ] 1. Create Paddle account → Developer Tools → copy API key (pdl_...)
+
+[ ] 2. Set Vercel production env vars:
+       - PADDLE_API_KEY=pdl_...
+       - NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=pct_...
+       - PADDLE_WEBHOOK_SECRET=psk_...
        - DOWNLOAD_TOKEN_SECRET=e2032e5b6...
        - NEXT_PUBLIC_SITE_URL=https://aikagan.com
 
-[ ] 2. Deploy: vercel --prod
+[ ] 3. Create Paddle webhook: Endpoint URL → https://aikagan.com/api/webhooks/paddle
+       Events: transaction.completed
 
-[ ] 3. Test full flow: Buy Starter $29 → Stripe → redirect → download
+[ ] 4. Deploy: vercel --prod
 
-[ ] 4. Post to 3 subreddits (r/Entrepreneur, r/SideProject, r/digital_marketing)
+[ ] 5. Test full flow: Buy Starter $29 → Paddle checkout → redirect → token → download
+
+[ ] 6. Post to 3 subreddits (r/Entrepreneur, r/SideProject, r/digital_marketing)
        about the free Golden Delivery Sample Kit
 
-[ ] 5. Set Make.com omnichannel webhook to fire on new Stripe payments
+[ ] 7. Set Make.com omnichannel webhook to fire on new Paddle payments
 
-[ ] 6. Promote one Shopier product on Turkish Twitter/Instagram
+[ ] 8. Promote one Shopier product on Turkish Twitter/Instagram
 
 === WEEK 1 REVENUE TARGET: $500 ===
 ```

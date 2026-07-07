@@ -66,16 +66,38 @@ export async function GET() {
     ? { status: "ok", latency_ms: 0 }
     : { status: "degraded", latency_ms: 0, detail: "META_PIXEL_ID or META_CAPI_ACCESS_TOKEN not set" };
 
-  // 4. Vercel KV (income ledger)
+  // 4. Vercel KV (income ledger) — also pings the actual client
+  let kvPingLatency = 0;
+  let kvError: string | undefined;
   const kv = await getKv();
-  checks["vercel_kv"] = kv
-    ? { status: "ok", latency_ms: 0 }
-    : {
-        status: "degraded",
-        latency_ms: 0,
-        detail:
-          "KV_REST_API_URL / KV_REST_API_TOKEN not set — income ledger is using in-memory fallback only",
+  if (kv) {
+    const pingStart = performance.now();
+    try {
+      if (kv.type === "upstash") {
+        await (kv as unknown as { ping: () => Promise<boolean> }).ping();
+      }
+      kvPingLatency = Math.round(performance.now() - pingStart);
+      checks["vercel_kv"] = {
+        status: "ok",
+        latency_ms: kvPingLatency,
+        detail: `Connected via ${kv.type} REST client`,
       };
+    } catch (err) {
+      kvError = err instanceof Error ? err.message : String(err);
+      checks["vercel_kv"] = {
+        status: "degraded",
+        latency_ms: Math.round(performance.now() - pingStart),
+        detail: `KV client present but ping failed: ${kvError}`,
+      };
+    }
+  } else {
+    checks["vercel_kv"] = {
+      status: "degraded",
+      latency_ms: 0,
+      detail:
+        "KV_REST_API_URL / KV_REST_API_TOKEN not set — income ledger is using in-memory fallback only",
+    };
+  }
 
   // 5. Revenue Ops backend reachability (Cloud Run) — try a known dashboard route
   const revenueOpsUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || "";

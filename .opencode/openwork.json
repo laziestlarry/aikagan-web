@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "workspace": {
+    "name": "aikagan-web",
+    "createdAt": 1783363383162,
+    "preset": "starter"
+  },
+  "authorizedRoots": [
+    "/Users/pq/aikagan-web"
+  ],
+  "reload": null
+}

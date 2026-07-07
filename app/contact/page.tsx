@@ -311,10 +311,10 @@ Interest: ${payload.interest || "-"}
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/services/"
+              href="/products/"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
-              Explore Services
+              Browse All Packs
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link

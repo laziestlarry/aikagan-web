@@ -24,6 +24,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${base}/services/`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    },
+    {
+      url: `${base}/mission-control/`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.85,
+    },
+    {
+      url: `${base}/affiliates/`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${base}/marketing/`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${base}/dashboard/`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.75,
+    },
     ...productRoutes,
     {
       url: `${base}/about/`,
@@ -45,6 +75,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${base}/legal/refund/`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${base}/legal/privacy/`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${base}/legal/terms/`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.4,

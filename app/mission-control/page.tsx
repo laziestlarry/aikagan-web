@@ -8,6 +8,7 @@ import ProcessStages from '@/components/shared/ProcessStages';
 import LiveKPIs from '@/components/shared/LiveKPIs';
 import CTA from '@/components/ui/CTA';
 import Badge from '@/components/ui/Badge';
+import CRMPipeline from '@/components/shared/CRMPipeline';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Mission Control',
@@ -22,7 +23,7 @@ const JOURNEY = [
   { n: '3', label: 'Buy',       body: 'Upgrade to a Masterclass tier (Starter $29 · Pro $79 · Commander $149).',           href: '/products/masterclass-starter',             linkLabel: 'See the offer →' },
   { n: '4', label: 'Execute',   body: 'Open START_HERE inside the ZIP. Follow the day-by-day blueprint. Ship.',            href: '/products/masterclass-starter',             linkLabel: 'Sample plan →' },
   { n: '5', label: 'Support',   body: 'Stuck? Email us. We answer within 24 hours. Refund window stays open 30 days.',     href: '/contact',                                  linkLabel: 'Contact →' },
-  { n: '6', label: 'Upgrade',   body: 'Ready for the full system? The Autonoma-X Engine runs 24/7 AI operations for your business.', href: 'https://app.aikagan.com', linkLabel: 'Launch Engine →', external: true },
+  { n: '6', label: 'Upgrade',   body: 'Ready for the full system? The Autonoma-X Platform runs 24/7 AI operations for your business.', href: 'https://app.aikagan.com', linkLabel: 'Open Platform →', external: true },
 ];
 
 export default function MissionControlPage() {
@@ -104,6 +105,9 @@ export default function MissionControlPage() {
           <LiveKPIs />
         </div>
 
+        {/* ── CRM pipeline (FastAPI backend) ──────────────────────────────── */}
+        <CRMPipeline />
+
         {/* ── 6-stage delivery process ────────────────────────────────────── */}
         <div className="max-w-3xl mx-auto">
           <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
@@ -116,10 +120,10 @@ export default function MissionControlPage() {
       <Section variant="alt">
         <CTA
           title="Initiate a Mission"
-          subtitle="Three paths: grab a free gift to test-drive the system, jump to the Masterclass toolkits, or launch the full AI Engine for autonomous operations."
+          subtitle="Three paths: grab a free gift to test-drive the system, jump to the Masterclass toolkits, or open the full platform for autonomous operations."
           primaryLabel="Start with Starter — $29"
           primaryHref="/products/masterclass-starter/"
-          secondaryLabel="Launch AI Engine"
+          secondaryLabel="Open Platform"
           secondaryHref={SITE.appUrl}
         />
         <div className="text-center mt-6">

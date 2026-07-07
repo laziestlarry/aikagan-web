@@ -44,27 +44,10 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            <a
-              href={SITE.appUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 rounded-lg text-sm font-medium text-kagan-amber hover:text-kagan-gold hover:bg-kagan-gold/10 transition-colors flex items-center gap-1.5"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-kagan-amber animate-pulse" />
-              AI Engine
-            </a>
           </div>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href={SITE.appUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg border border-kagan-amber/40 px-4 py-2 text-sm font-semibold text-kagan-amber hover:bg-kagan-amber/10 transition-colors"
-            >
-              Launch Engine →
-            </a>
             <Link
               href="/products/"
               className="inline-flex items-center gap-2 rounded-lg bg-kagan-gold px-4 py-2 text-sm font-semibold text-black hover:bg-kagan-gold-light transition-colors"
@@ -108,15 +91,6 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            <a
-              href={SITE.appUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-              className="block mt-2 text-center rounded-lg border border-kagan-amber/40 px-4 py-3 text-sm font-semibold text-kagan-amber hover:bg-kagan-amber/10 transition-colors"
-            >
-              🚀 AI Engine — Launch App →
-            </a>
             <Link
               href="/products/masterclass-starter"
               onClick={() => setOpen(false)}

@@ -62,7 +62,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold transition-colors font-medium"
                 >
-                  AI Engine <ExternalLink className="h-3 w-3" />
+                  App <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
             </ul>
@@ -81,15 +81,15 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold-light transition-colors font-medium"
                 >
-                  Launch AI Engine <ExternalLink className="h-3 w-3" />
+                  Open App <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
               <li>
                 <Link
-                  href="/contact/"
+                  href="/products/"
                   className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium"
                 >
-                  Submit Project Request →
+                  Browse All Packs →
                 </Link>
               </li>
               <li>
@@ -102,10 +102,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/services/"
+                  href="/products/"
                   className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium"
                 >
-                  Explore Services →
+                  View All Products →
                 </Link>
               </li>
             </ul>

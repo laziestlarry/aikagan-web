@@ -175,13 +175,11 @@ export default function HomePage() {
                   color: "rgba(212,175,55,0.68)",
                   display: "inline",
                   lineHeight: 1,
-                }}>giant</span>{" "}GOLDEN<br />AI TREASURY
+                }}>giant</span>{" "}DIGITAL<br />TOOLKIT VAULT
               </h1>
 
               <p style={{ marginTop: "18px", fontSize: "15px", lineHeight: 1.8, color: G.text, maxWidth: "480px" }}>
-                Done-For-You AI Revenue Execution Packs. Built to help you pursue your first
-                AI-assisted sale in 7 days — using guided outreach scripts, offer frameworks,
-                and step-by-step checklists. Results depend on implementation.
+                Instant-Download Digital Toolkits. Ready-to-use PDF templates, outreach scripts, and step-by-step checklists — designed to help you pursue your first sale in 7 days. Results depend on implementation.
               </p>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
@@ -484,8 +482,8 @@ export default function HomePage() {
               { icon: "🔒", label: "SECURE CHECKOUT" },
               { icon: "⚡", label: "INSTANT DELIVERY" },
               { icon: "↩", label: "30-DAY GUARANTEE" },
-              { icon: "🤖", label: "AI-POWERED SYSTEMS" },
-              { icon: "☁", label: "TRUSTED INFRASTRUCTURE" },
+              { icon: "📄", label: "PDF TEMPLATES" },
+              { icon: "⚡", label: "FAST DOWNLOAD" },
               { icon: "💳", label: "ONE-TIME PAYMENT" },
             ].map(({ icon, label }) => (
               <div key={label} style={{
@@ -869,14 +867,14 @@ export default function HomePage() {
 
               <p style={{ fontSize: "13px", color: G.text, lineHeight: 1.8, marginBottom: "16px" }}>
                 The Masterclass toolkits give you the blueprint. The{" "}
-                <strong style={{ color: "#fff" }}>Autonoma-X Engine</strong>{" "}
-                is the live system that runs it for you — AI agents, automated
+                <strong style={{ color: "#fff" }}>Autonoma-X Platform</strong>{" "}
+                runs it for you — AI agents, automated
                 pipelines, real-time analytics, and 24/7 operations monitoring.
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "14px", margin: "24px 0" }}>
                 {[
-                  { icon: "🤖", title: "Multi-Provider AI Engine", desc: "Groq, DeepSeek, Gemini, OpenAI — auto-fallback, zero downtime" },
+                  { icon: "🤖", title: "Multi-Provider AI Network", desc: "Groq, DeepSeek, Gemini, OpenAI — auto-fallback, zero downtime" },
                   { icon: "⚡", title: "Automated 24/7 Operations", desc: "Bot execution, health checks, pipeline monitoring — no human needed" },
                   { icon: "📊", title: "Live Revenue Dashboard", desc: "MRR tracking, conversion analytics, churn prediction in real time" },
                   { icon: "🛡", title: "Paddle Payment Intelligence", desc: "Multi-rail revenue processing with automatic failover" },
@@ -987,7 +985,7 @@ export default function HomePage() {
                     padding: "14px 28px", borderRadius: "6px",
                     textTransform: "uppercase", textDecoration: "none",
                   }}>
-                  Launch the Engine →
+                  Open the Platform →
                 </a>
                 <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
                   style={{
@@ -1015,7 +1013,7 @@ export default function HomePage() {
           }}>
             <p style={{ fontSize: "11px", color: G.text, lineHeight: 1.6, margin: 0 }}>
               <strong style={{ color: G.gold }}>Already bought a Masterclass pack?</strong>{" "}
-              Your toolkit knowledge applies directly. The Engine automates everything
+              Your toolkit knowledge applies directly. The platform automates everything
               the packs teach you —{" "}
               <a href="https://app.aikagan.com" target="_blank" rel="noopener noreferrer"
                 style={{ color: G.gold, textDecoration: "underline" }}>

@@ -22,7 +22,7 @@
 ```
 1. Affiliate signs up → gets unique link: aikagan.com/?ref=name
 2. Shares link with their audience
-3. Customer buys → Stripe records referral source
+3. Customer buys via Paddle → referral tracked manually
 4. 20% commission paid every Friday (manual → automated)
 5. Affiliate dashboard shows clicks, conversions, earnings
 ```
@@ -64,7 +64,7 @@ Kagan
 ### Affiliate Management
 | Frequency | Action | Tool |
 |-----------|--------|------|
-| Weekly | Pay commissions (manual → Stripe Connect) | Stripe/Manual |
+| Weekly | Pay commissions (manual) | Manual/Paddle |
 | Bi-weekly | Send new promo materials | Email/Drive |
 | Monthly | Top-performer bonus ($100 for 10+ sales) | Manual |
 | Quarterly | Tier upgrade for top 20% affiliates | Review |
@@ -89,7 +89,7 @@ Hi [partner name],
 
 I see you help [audience type] with [their problem].
 
-I've built something your audience would find immediately useful: AutonomaX — a complete business ops system with Stripe checkout, AI agents, and multi-channel fulfillment. One-time $29-$149.
+I've built something your audience would find immediately useful: AutonomaX — a complete business ops system with Paddle checkout, AI agents, and multi-channel fulfillment. One-time $29-$149.
 
 I'd love to partner in a way that works for you:
 

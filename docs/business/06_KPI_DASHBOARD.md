@@ -31,11 +31,11 @@ TIER 3: CUSTOMER HEALTH      TIER 4: OPERATIONAL
 
 | Metric | Calculation | Daily Target | Weekly Target | Monthly Target | Alert | Action if Red |
 |--------|------------|-------------|---------------|---------------|-------|--------------|
-| **Daily Revenue** | Sum of all Stripe + Shopier + Shopify sales | $50 | $350 | $1,500 | < $10/day for 3 days | Increase ad spend, post more content |
+| **Daily Revenue** | Sum of all Paddle + Shopier + Shopify sales | $50 | $350 | $1,500 | < $10/day for 3 days | Increase ad spend, post more content |
 | **Weekly Revenue** | 7-day rolling sum | — | $500-$3,600 | — | < $200/week | Audit all channels, revert to Phase 1 |
 | **Monthly Revenue** | Month-to-date | — | — | $3,400-$14,400 | < $1,000/mo end of week 2 | Full funnel audit |
 | **Monthly Recurring** | Sum of active monthly subscriptions | — | — | $470+ (10 subs × $47) | < $470 | Activate subscription campaign |
-| **Gross Margin** | (Revenue - Stripe/Shopier fees - COGS) / Revenue | > 90% | > 92% | > 94% | < 88% | Check for unexpected costs |
+| **Gross Margin** | (Revenue - Paddle/Shopier fees - COGS) / Revenue | > 90% | > 92% | > 94% | < 88% | Check for unexpected costs |
 
 ### Order Metrics
 
@@ -44,7 +44,7 @@ TIER 3: CUSTOMER HEALTH      TIER 4: OPERATIONAL
 | **Orders/Day** | Count of completed payments | 5+/day (Month 1) | 0 orders in 24h | Emergency Protocol |
 | **Avg Order Value** | Revenue / Orders | $58+ | < $29 | Check products sold (starter only?) |
 | **Refund Rate** | Refunds / Total Orders | < 5% | > 10% | Review product quality, support issues |
-| **Chargeback Rate** | Disputes / Orders | < 0.5% | > 1% | Stripe may restrict. Check fraud. |
+| **Chargeback Rate** | Disputes / Orders | < 0.5% | > 1% | Paddle may restrict. Check fraud. |
 
 ### Financial Targets
 
@@ -76,7 +76,7 @@ Day 91-365: $30,000 - $250,000  (scaled system)
 |--------|------------|--------|-------|--------|
 | **Overall CVR** | Orders / Unique Visitors | 2.0%+ | < 0.5% | Audit checkout flow |
 | **Page to Checkout** | Checkout starts / Page views | 5%+ | < 2% | Improve product page CTA |
-| **Checkout to Payment** | Completed / Started | 70%+ | < 50% | Check Stripe errors, card acceptance |
+| **Checkout to Payment** | Completed / Started | 70%+ | < 50% | Check Paddle errors, card acceptance |
 | **Email Opt-In Rate** | Email captures / Visitors | 5%+ | < 2% | Improve lead magnet offer |
 | **Lead to Sale** | Purchase / Email captures | 5%+ in 30 days | < 2% | Improve email sequence |
 
@@ -135,9 +135,9 @@ Month 3    ___           $___          ___%         ___%
 | Metric | Target | Alert | Action |
 |--------|--------|-------|--------|
 | **Site Uptime** | 99.9%+ | < 99% | Check Vercel status, restart |
-| **Checkout API Response** | < 500ms | > 2s | Check Stripe API latency |
+| **Checkout API Response** | < 500ms | > 2s | Check Paddle API latency |
 | **Token Delivery Time** | < 3s from payment | > 10s | Check token-store fallback |
-| **Webhook Success Rate** | 99%+ | < 95% | Check Stripe Dashboard |
+| **Webhook Success Rate** | 99%+ | < 95% | Check Paddle Dashboard |
 | **AI Agent Uptime** | 95%+ | < 80% | Provider fallback chain |
 | **Download Speed** | > 50 Mbps | < 10 Mbps | Check Vercel Blob/CDN |
 | **SSL Certificate** | 30+ days to expiry | < 7 days | Auto-renew (Vercel handles) |
@@ -146,11 +146,11 @@ Month 3    ___           $___          ___%         ___%
 
 | Scenario | Recovery Time | Action |
 |----------|--------------|--------|
-| Stripe Checkout fails | < 5 min | Switch to backup payment method |
+| Paddle Checkout fails | < 5 min | Switch to backup payment method |
 | Site down | < 15 min | Vercel auto-restore or manual deploy |
 | Token delivery broken | < 30 min | Email support@aikagan.com with order ID |
 | AI agents all offline | < 5 min | Fallback to static content |
-| Security breach | < 60 min | Revoke all keys, contact Stripe |
+| Security breach | < 60 min | Revoke all keys, contact Paddle |
 
 ---
 
@@ -159,7 +159,7 @@ Month 3    ___           $___          ___%         ___%
 ### Automated Sources
 | Data | Source | Update Frequency |
 |------|--------|-----------------|
-| Revenue & Orders | Stripe API (via webhook + dashboard) | Real-time |
+| Revenue & Orders | Paddle API (via webhook + dashboard) | Real-time |
 | Traffic & Behavior | Google Analytics 4 | Real-time |
 | Email metrics | Resend/SendGrid API | Daily (batch) |
 | AI agent performance | unified_ai_income logs | Real-time |
@@ -181,7 +181,7 @@ Month 3    ___           $___          ___%         ___%
 
 ### Daily (5 minutes)
 ```
-□ Stripe Dashboard: new sales, revenue
+□ Paddle Dashboard: new sales, revenue
 □ Email: customer inquiries
 □ Google Analytics: unusual patterns?
 □ Social: engagement on latest posts
@@ -202,7 +202,7 @@ Month 3    ___           $___          ___%         ___%
 □ Full financial review
 □ Customer cohort analysis
 □ Product performance review
-□ Cost analysis (Stripe fees, AI API costs, hosting)
+□ Cost analysis (Paddle fees, AI API costs, hosting)
 □ Month-over-month growth
 → Monthly report + next month plan
 ```

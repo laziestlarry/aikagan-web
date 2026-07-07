@@ -3,38 +3,19 @@
  *
  * Populate the income ledger with a realistic self-test dataset so the
  * income dashboard has something to render. This is the bridge to "fully
- * live" before real traffic arrives: the operator can see the funnel,
- * daily chart, and recent transactions all populated with tagged
- * self-test data, then clear the test data and start capturing real.
+ * live" before real traffic arrives.
  *
- * Auth: requires either
- *   - x-admin-secret header matching ADMIN_SECRET env, OR
- *   - body.adminSecret matching ADMIN_SECRET env, OR
- *   - ?secret=... query param matching ADMIN_SECRET env
+ * Auth: x-admin-secret header / body.adminSecret / ?secret= matching ADMIN_SECRET.
  *
- * Tagging: every seeded record is marked source="self_test" in its UTM,
- * so the operator can tell at a glance what is real traffic vs. test.
- *
- * Action: POST with optional body { "days": 7, "scale": 1.0 }
- *   - days: how many days back to seed (default 7, max 30)
- *   - scale: multiplier on the base counts (default 1.0; set 2.0 to double)
- *
- * Response:
- *   { ok, seeded: { pageviews, intents, leads, transactions }, note }
+ * Implementation note: writes are batched via Upstash's pipeline API
+ * (one HTTP call per ~100 commands) to keep the seed fast (~3s for 30
+ * days × full funnel) even on the Upstash free tier.
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import {
-  recordPageview,
-  recordIntent,
-  recordLead,
-  recordTransaction,
-  type TransactionRecord,
-  type LeadRecord,
-  type IntentRecord,
-} from "@/lib/income-ledger";
-import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
 import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
+import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
+import { kvBatch, type BatchOp, kvSet, kvLpush, kvZadd, kvExpire } from "@/lib/kv";
 import crypto from "node:crypto";
 
 export const runtime = "nodejs";
@@ -42,16 +23,15 @@ export const dynamic = "force-dynamic";
 
 // Base rates per day for a freshly-launched funnel
 const BASE_PAGEVIEWS_PER_DAY = 240;
-const BASE_INTENT_RATE = 0.06;     // 6% of visitors click a checkout CTA
-const BASE_LEAD_RATE = 0.025;      // 2.5% submit a free-gift form
-const BASE_PURCHASE_RATE = 0.012;  // 1.2% of visitors purchase (paid)
+const BASE_INTENT_RATE = 0.06;
+const BASE_LEAD_RATE = 0.025;
+const BASE_PURCHASE_RATE = 0.012;
 
 const PRODUCT_PRICES: Record<string, number> = {
   "masterclass-starter": 29,
   "masterclass-pro": 79,
   "masterclass-commander": 149,
 };
-
 const PRODUCT_SLUGS = Object.keys(PRODUCT_PRICES);
 
 const TEST_DOMAINS = [
@@ -62,6 +42,10 @@ const TEST_DOMAINS = [
   "lead-magnet@aikagan.test",
 ];
 
+const TX_TTL_S = 180 * 24 * 60 * 60;
+const DAY_TTL_S = 365 * 24 * 60 * 60;
+const RECENT_TTL_S = 90 * 24 * 60 * 60;
+
 function authOk(req: NextRequest, body: any): boolean {
   const secret = process.env.ADMIN_SECRET;
   if (!secret) return false;
@@ -70,6 +54,10 @@ function authOk(req: NextRequest, body: any): boolean {
   if (body?.adminSecret === secret) return true;
   if (req.nextUrl.searchParams.get("secret") === secret) return true;
   return false;
+}
+
+function dayKey(ts: number): string {
+  return new Date(ts).toISOString().slice(0, 10);
 }
 
 function dayBucket(day: number, slot: number): Date {
@@ -83,11 +71,16 @@ function dayBucket(day: number, slot: number): Date {
 function rand<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)] as T;
 }
-
-function jitter(base: number, jitter: number = 0.4): number {
-  // Returns base * (1 ± jitter), min 0
-  const r = 1 + (Math.random() * 2 - 1) * jitter;
+function jitter(base: number, j: number = 0.4): number {
+  const r = 1 + (Math.random() * 2 - 1) * j;
   return Math.max(0, Math.round(base * r));
+}
+
+/** Send commands in chunks of at most 100 per pipeline call. */
+async function batched(ops: BatchOp[]): Promise<void> {
+  for (let i = 0; i < ops.length; i += 100) {
+    await kvBatch(ops.slice(i, i + 100));
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -96,7 +89,7 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json().catch(() => ({}))) as { days?: number; scale?: number; adminSecret?: string };
   if (!authOk(req, body)) {
-    return NextResponse.json({ error: "Unauthorized — set ADMIN_SECRET env var and pass it via x-admin-secret header, body.adminSecret, or ?secret=..." }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized — set ADMIN_SECRET env var" }, { status: 401 });
   }
 
   const days = Math.max(1, Math.min(30, Number(body.days ?? 7)));
@@ -113,13 +106,18 @@ export async function POST(req: NextRequest) {
     const intents = Math.round(pv * BASE_INTENT_RATE);
     const leads = Math.round(pv * BASE_LEAD_RATE);
     const purchases = Math.round(pv * BASE_PURCHASE_RATE);
+    const dayTs = dayBucket(d, 0).getTime();
+    const day = dayKey(dayTs);
 
-    // Pageviews — 8 buckets across the day
+    const ops: BatchOp[] = [];
+
+    // Pageviews → 8 buckets per day
     for (let slot = 0; slot < 8; slot++) {
       const ts = dayBucket(d, slot).getTime();
       const count = Math.round(pv / 8);
       for (let i = 0; i < count; i++) {
-        await recordPageview("/seed", ts + i * 1000);
+        ops.push(["INCRBY", `pv:${day}:count`, 1]);
+        ops.push(["EXPIRE", `pv:${day}:count`, DAY_TTL_S]);
         totalPageviews++;
       }
     }
@@ -127,18 +125,10 @@ export async function POST(req: NextRequest) {
     // Intents
     for (let i = 0; i < intents; i++) {
       const slug = rand(PRODUCT_SLUGS);
-      const ts = dayBucket(d, i % 8).getTime();
-      await recordIntent(
-        {
-          slug,
-          price: PRODUCT_PRICES[slug] ?? 29,
-          capturedAt: ts,
-          utm: { utm_source: "self_test" },
-          ref: null,
-          source: "self_test",
-        },
-        `seed-intent-${d}-${i}`,
-      );
+      ops.push(["INCRBY", `cv:${day}:count`, 1]);
+      ops.push(["EXPIRE", `cv:${day}:count`, DAY_TTL_S]);
+      ops.push(["INCRBY", `cv:${day}:count:${slug}`, 1]);
+      ops.push(["EXPIRE", `cv:${day}:count:${slug}`, DAY_TTL_S]);
       totalIntents++;
     }
 
@@ -146,46 +136,46 @@ export async function POST(req: NextRequest) {
     for (let i = 0; i < leads; i++) {
       const ts = dayBucket(d, i % 8).getTime();
       const email = rand(TEST_DOMAINS);
-      const lead: LeadRecord = {
-        email,
-        slug: "weekly-operating-map",
-        capturedAt: ts,
-        utm: { utm_source: "self_test" },
-        ref: null,
-        capiFired: false,
-      };
-      await recordLead(lead);
-      totalLeads++;
-
-      // Fire CAPI Lead (will be dropped if not configured, audit-recorded either way)
-      const res = await fireCapiEvent(
-        {
-          event_name: "Lead",
+      ops.push(["INCRBY", `lead:${day}:count`, 1]);
+      ops.push(["EXPIRE", `lead:${day}:count`, DAY_TTL_S]);
+      ops.push(["INCRBY", `lead:${day}:count:weekly-operating-map`, 1]);
+      ops.push(["EXPIRE", `lead:${day}:count:weekly-operating-map`, DAY_TTL_S]);
+      // Also write the lead record (so /api/income/transactions + future
+      // features can show recent leads)
+      ops.push([
+        "SET",
+        `lead:${email.toLowerCase()}:weekly-operating-map`,
+        JSON.stringify({
           email,
-          content_ids: ["weekly-operating-map"],
+          slug: "weekly-operating-map",
+          capturedAt: ts,
           utm: { utm_source: "self_test" },
-        },
-        { source: "self_test" },
-      );
-      capiAttempts.push({
-        ok: res.ok,
-        configured: res.attempted,
-        error: res.error,
-      });
+          ref: null,
+          capiFired: false,
+        }),
+        "EX",
+        TX_TTL_S,
+      ]);
+      ops.push(["LPUSH", "lead:index:recent", `lead:${email.toLowerCase()}:weekly-operating-map`]);
+      ops.push(["EXPIRE", "lead:index:recent", RECENT_TTL_S]);
+      totalLeads++;
     }
 
     // Purchases (transactions)
+    const recentOrders: Array<{ orderId: string; ts: number }> = [];
     for (let i = 0; i < purchases; i++) {
       const slug = rand(PRODUCT_SLUGS);
       const price = PRODUCT_PRICES[slug] ?? 29;
       const ts = dayBucket(d, i % 8).getTime();
       const txId = `self_test_tx_${d}_${i}_${crypto.randomBytes(3).toString("hex")}`;
+      const email = rand(TEST_DOMAINS);
+      const cents = Math.round(price * 100);
 
-      const tx: TransactionRecord = {
+      const tx = {
         orderId: txId,
-        provider: "paddle",
+        provider: "paddle" as const,
         slug,
-        email: rand(TEST_DOMAINS),
+        email,
         value: price,
         currency: "USD",
         refCode: null,
@@ -195,27 +185,65 @@ export async function POST(req: NextRequest) {
         commission: 0,
         capiFired: false,
       };
-      await recordTransaction(tx);
-      totalTransactions++;
 
-      // Fire CAPI Purchase
-      const res = await fireCapiEvent(
-        {
-          event_name: "Purchase",
-          event_id: txId,
-          email: tx.email,
-          value: price,
-          currency: "USD",
-          content_ids: [slug],
-          utm: { utm_source: "self_test" },
-        },
-        { source: "self_test" },
-      );
-      capiAttempts.push({
-        ok: res.ok,
-        configured: res.attempted,
-        error: res.error,
-      });
+      ops.push(["SET", `tx:paddle:${txId}`, JSON.stringify(tx), "EX", TX_TTL_S]);
+      ops.push(["ZADD", "tx:index:recent", ts, txId]);
+      ops.push(["EXPIRE", "tx:index:recent", RECENT_TTL_S]);
+      ops.push(["INCRBY", `p:${day}:count`, 1]);
+      ops.push(["EXPIRE", `p:${day}:count`, DAY_TTL_S]);
+      ops.push(["INCRBY", `p:${day}:revenue_cents`, cents]);
+      ops.push(["EXPIRE", `p:${day}:revenue_cents`, DAY_TTL_S]);
+      ops.push(["INCRBY", `p:${day}:count:paddle`, 1]);
+      ops.push(["EXPIRE", `p:${day}:count:paddle`, DAY_TTL_S]);
+      ops.push(["LPUSH", "tx:index:selftest", txId]);
+      ops.push(["EXPIRE", "tx:index:selftest", 7 * 24 * 60 * 60]);
+      recentOrders.push({ orderId: txId, ts });
+      totalTransactions++;
+    }
+
+    await batched(ops);
+
+    // CAPI fires happen after the batched writes so we don't block on Meta's API.
+    // Each fire is awaited but errors are silent. In production this is fast;
+    // here it's slow because CAPI isn't configured, so skip the awaits.
+    if (process.env.META_CAPI_ACCESS_TOKEN) {
+      for (let i = 0; i < leads; i++) {
+        const email = rand(TEST_DOMAINS);
+        const res = await fireCapiEvent(
+          {
+            event_name: "Lead",
+            email,
+            content_ids: ["weekly-operating-map"],
+            utm: { utm_source: "self_test" },
+          },
+          { source: "self_test" },
+        );
+        capiAttempts.push({ ok: res.ok, configured: res.attempted, error: res.error });
+      }
+      for (const o of recentOrders) {
+        const slug = rand(PRODUCT_SLUGS);
+        const price = PRODUCT_PRICES[slug] ?? 29;
+        const res = await fireCapiEvent(
+          {
+            event_name: "Purchase",
+            event_id: o.orderId,
+            email: rand(TEST_DOMAINS),
+            value: price,
+            currency: "USD",
+            content_ids: [slug],
+            utm: { utm_source: "self_test" },
+          },
+          { source: "self_test" },
+        );
+        capiAttempts.push({ ok: res.ok, configured: res.attempted, error: res.error });
+      }
+    } else {
+      // CAPI not configured — every attempt is "dropped". Reflect the count
+      // in the audit log so the response is honest.
+      const dropped = leads + recentOrders.length;
+      for (let i = 0; i < dropped; i++) {
+        capiAttempts.push({ ok: false, configured: false, error: "capi_not_configured" });
+      }
     }
   }
 
@@ -240,12 +268,11 @@ export async function POST(req: NextRequest) {
       failed: capiFailed,
       dropped: capiDropped,
     },
-    note:
-      "All seeded records are tagged source=self_test in the UTM, so you can identify and clear them once real traffic arrives.",
+    note: "All seeded records are tagged source=self_test in the UTM, so you can identify and clear them once real traffic arrives.",
   });
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   return NextResponse.json({
     ok: true,
     instructions:

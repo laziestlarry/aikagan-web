@@ -16,7 +16,7 @@
                                            ▼
                     ┌─────────────────────────────────────────────────────────────┐
                     │                   FINANCIAL CONVERSION                      │
-                    │  (Stripe Checkout, Shopier Cart, Shopify Buy)               │
+                    │  (Paddle Checkout, Shopier Cart, Shopify Buy)               │
                     └──────────────────────┬──────────────────────────────────────┘
                                            │
                                            ▼
@@ -43,8 +43,8 @@
 │  Traffic Source  │───▶│  Landing Page    │───▶│  Lead Magnet (Free) │
 │  (Organic/Paid)  │    │  (aikagan.com)   │    │  (Email Opt-in)     │
 └─────────────────┘    └──────────────────┘    └─────────────────────┘
-                                                            │
-                                                            ▼
+                                                             │
+                                                             ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
 │  Social Proof    │◀───│  Product Page    │◀───│  Email Sequence     │
 │  (Testimonials)  │    │  ($29/$79/$149)  │    │  (Nurture → Sell)   │
@@ -53,8 +53,8 @@
                               ▼
                     ┌───────────────────────┐
                     │  Checkout Initiated   │────▶ Layer 2
-                    │  (Stripe Checkout     │
-                    │   Session Created)    │
+                    │  (Paddle Transaction  │
+                    │   Created via API)    │
                     └───────────────────────┘
 ```
 
@@ -81,17 +81,17 @@
 
 ## LAYER 2: FINANCIAL CONVERSION
 
-### Stripe Checkout Flow (aikagan.com)
+### Paddle Checkout Flow (aikagan.com)
 
 ```
 ┌─────────────────────┐
 │  User Clicks "Buy"  │
 │  (CheckoutLink.tsx) │
 └─────────┬───────────┘
-          │ POST /api/stripe-checkout
+          │ POST /api/paddle-checkout
           ▼
 ┌─────────────────────┐
-│  Create Stripe       │
+│  Create Paddle       │
 │  Checkout Session   │  ← Uses price_data (no Price ID needed)
 │  mode: payment      │
 └─────────┬───────────┘
@@ -99,9 +99,9 @@
           ▼
 ┌─────────────────────┐
 │  Redirect to         │
-│  Stripe Checkout     │  ← Stripe-hosted checkout page
-│  (checkout.stripe.   │
-│   com/c/pay_...)     │
+│  Paddle Checkout     │  ← Paddle-hosted checkout page
+│  (checkout.paddle.    │
+│   com/txn_...)       │
 └─────────┬───────────┘
           │
           ▼
@@ -112,28 +112,27 @@
      │       │
      ▼       ▼
 SUCCESS   FAILURE
-(payment_  (payment_
- intent.   intent.
- succeeded)payment_failed)
+(payment  (payment
+ completed) failed)
 ```
 
 ### Settlement Flow (Successful Payment)
 
 ```
-Stripe Success
+Paddle Success
       │
       ├──────────────────────────────────────────────────────┐
       │                                                      │
       ▼                                                      ▼
 Webhook Processing                                Client-side Fallback
-(Stripe sends event)                             (Success page polls)
+(Paddle sends event)                             (Success page polls)
       │                                                      │
-      │ POST /api/webhooks/stripe                            │ GET /api/session-token
-      │ (verify signature)                                   │ (verify session_id)
+      │ POST /api/webhooks/paddle                            │ GET /api/session-token
+      │ (verify p-pl signature)                              │ (verify transaction_id)
       ▼                                                      ▼
 ┌─────────────────────┐                           ┌─────────────────────┐
 │  Store download      │                           │  Verify session     │
-│  token in memory     │                           │  via Stripe API     │
+│  token in memory     │                           │  via Paddle API     │
 │  (token-store.ts)    │                           │  (fallback)         │
 └─────────┬───────────┘                           └─────────┬───────────┘
           │                                                    │
@@ -197,20 +196,20 @@ AUTOMATION PLAN: Build Shopier API scraper → cron job → auto-email
 
 | Channel | Settlement | Hold Period | Withdrawal | Notes |
 |---------|-----------|-------------|-----------|-------|
-| **Stripe** | T+2 business days | 0 days (low-risk digital goods) | Instant to debit card | 1.9% + $0.30 (US cards), 2.9% + $0.30 (intl) |
+| **Paddle** | T+2 business days | 0 days (low-risk digital goods) | Instant to Payoneer | 5% + $0.50 (global, MoR tax included) |
 | **Shopier** | T+7 business days | Varies by order | Bank transfer weekly | 2.9% fee, Turkish lira |
 | **Shopify** | T+2 (Payments) | 3-day rolling reserve | Daily auto-transfer | 2.9% + $0.30 + $30/mo |
 
 ### Payment Reconciliation
 ```
 Each transaction recorded:
-├── stripe_charge_id (ch_...)
+├── paddle_transaction_id (txn_...)
 ├── amount (cents)
 ├── currency (usd/try)
 ├── product_slug
 ├── customer_email
 ├── timestamp
-├── channel (stripe/shopier/shopify)
+├── channel (paddle/shopier/shopify)
 └── fulfillment_status (pending/complete/refunded)
 
 → Viewable in /api/transactions (once built)
@@ -227,7 +226,7 @@ Each transaction recorded:
 ```
 Purchase Event
       │
-      ├──▶ Stripe Webhook: checkout.session.completed
+      ├──▶ Paddle Webhook: transaction.completed
       │     ├── email
       │     ├── name (if collected)
       │     ├── product_slug
@@ -251,19 +250,19 @@ Purchase Event
 ### Data Points Collected
 | Data Point | Source | Use | Retention |
 |-----------|--------|-----|-----------|
-| Email | Stripe Checkout | Fulfillment, marketing | Indefinite (opt-out) |
-| Purchase amount | Stripe webhook | Revenue tracking | 7 years (tax) |
-| Product purchased | Stripe session | Fulfillment, recommendations | Indefinite |
-| Date/time | Stripe event | Analytics | 7 years |
-| Country/IP | Stripe metadata | Market analysis | 90 days |
-| Order ID | Stripe generated | Support, refunds | 7 years |
+| Email | Paddle Checkout | Fulfillment, marketing | Indefinite (opt-out) |
+| Purchase amount | Paddle webhook | Revenue tracking | 7 years (tax) |
+| Product purchased | Paddle session | Fulfillment, recommendations | Indefinite |
+| Date/time | Paddle event | Analytics | 7 years |
+| Country/IP | Paddle metadata | Market analysis | 90 days |
+| Order ID | Paddle generated | Support, refunds | 7 years |
 | Lead magnet downloads | Formspree | Email list building | Indefinite |
 
 ### Privacy & Compliance
 - **GDPR:** EU customers have right to deletion. Include email footer link.
 - **Turkey KVKK:** Shopier customers must be offered data deletion.
 - **CCPA:** California residents can opt out of data sale. (We don't sell data.)
-- **PCI DSS:** Handled by Stripe (Stripe Checkout is PCI Level 1).
+- **PCI DSS:** Handled by Paddle (Paddle Checkout is PCI Level 1).
 - **No customer data stored on our servers** — only tokens (transient) + email in token-store (in-memory).
 - **Future:** Add data deletion endpoint: `POST /api/delete-my-data`
 
@@ -332,7 +331,7 @@ Sees Twitter      ┘                │
                                Clicks "Buy Now"
                                       │
                                       ▼
-                              Stripe Checkout Session
+                              Paddle Checkout Session
                                       │
                                   ───┴───
                                  │       │
@@ -360,9 +359,9 @@ Every flow has monitoring points:
 
 | Checkpoint | Monitor | Alert If | Recovery |
 |-----------|---------|----------|----------|
-| Stripe Checkout creation | API error count | > 1% error rate | Check Stripe API status |
-| Webhook processing | Failed events | > 2 failed in 24h | Replay from Stripe Dashboard |
-| Token delivery | Session poll timeout | > 30s without token | Direct Stripe API fallback |
+| Paddle Checkout creation | API error count | > 1% error rate | Check Paddle API status |
+| Webhook processing | Failed events | > 2 failed in 24h | Replay from Paddle Dashboard |
+| Token delivery | Session poll timeout | > 30s without token | Direct Paddle API fallback |
 | ZIP download | File not found | Any 404 | Verify private/downloads/ |
 | Make.com webhook | HTTP 500 responses | Any failure | Check Make.com dashboard |
 | AI provider chain | All providers fail | Total AI outage | Fallback to static content |
@@ -376,10 +375,10 @@ Every flow has monitoring points:
 
 | Trigger | Action | Tool | Priority |
 |---------|--------|------|----------|
-| `checkout.session.completed` | Generate download token | Stripe webhook → token-store | P0 |
-| `checkout.session.completed` | Send WhatsApp alert | Stripe webhook → Make.com | P1 |
-| `checkout.session.completed` | Send thank-you email | Stripe webhook → Resend/SendGrid | P1 |
-| `payment_intent.failed` | Alert for retry | Stripe webhook → Make.com | P1 |
+| `transaction.completed` | Generate download token | Paddle webhook → token-store | P0 |
+| `transaction.completed` | Send WhatsApp alert | Paddle webhook → Make.com | P1 |
+| `transaction.completed` | Send thank-you email | Paddle webhook → Resend/SendGrid | P1 |
+| `transaction.payment_failed` | Alert for retry | Paddle webhook → Make.com | P1 |
 | New email on lead form | Add to nurture sequence | Formspree → Mailchimp/Resend | P2 |
 | AI agent completes task | Log to analytics | AI agent → console/file | P2 |
 | New Shopier order | Send manual download link | Human (until scripted) | P2 |

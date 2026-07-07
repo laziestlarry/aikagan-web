@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'AutonomaX Profit OS',
-  tagline: 'AI Revenue Ops — Checkout, Delivery & Growth',
+  tagline: 'Instant-Download Digital Toolkits — Checkout, Delivery & Growth',
   description:
     'AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.',
   url: 'https://aikagan.com',
@@ -11,8 +11,10 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services/' },
   { label: 'Products', href: '/products/' },
+  { label: 'Marketing', href: '/marketing/' },
+  { label: 'Affiliates', href: '/affiliates/' },
+  { label: 'Dashboard', href: '/dashboard/' },
   { label: 'Mission Control', href: '/mission-control/' },
   { label: 'About', href: '/about/' },
   { label: 'Contact', href: '/contact/' },
@@ -198,11 +200,11 @@ export const MISSION_STAGES = [
 ] as const;
 
 export const TRUST_SIGNALS = [
-  'Production-Grade AI',
-  'SLA-Backed Delivery',
-  'End-to-End Execution',
-  'No Placeholder Marketing',
-  'Real Conversion Engineering',
+  'Instant ZIP Delivery',
+  '30-Day Guarantee',
+  'Download Anytime',
+  'No Subscription Required',
+  'Real Digital Products',
 ] as const;
 
 export const PROJECT_OFFERS = [

@@ -9,16 +9,17 @@
 
 ### Critical Path Checklist
 ```
+[ ] Create Paddle account (paddle.com/sign-up) → Developer Tools
 [ ] Set Vercel env vars:
-    - STRIPE_SECRET_KEY=sk_live_***REDACTED***
-    - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_***REDACTED***
+    - PADDLE_API_KEY=pdl_...
+    - NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=pct_...
+    - PADDLE_WEBHOOK_SECRET=psk_...
     - DOWNLOAD_TOKEN_SECRET=***REDACTED***
     - NEXT_PUBLIC_SITE_URL=https://aikagan.com
 
-[ ] Create Stripe webhook endpoint:
-    - URL: https://aikagan.com/api/webhooks/stripe
-    - Events: checkout.session.completed, payment_intent.succeeded, payment_intent.payment_failed
-    - Set STRIPE_WEBHOOK_SECRET in Vercel env vars
+[ ] Create Paddle webhook endpoint:
+    - URL: https://aikagan.com/api/webhooks/paddle
+    - Events: transaction.completed
 
 [ ] Verify: npm run build (should pass)
 [ ] Verify: vercel --prod (deploy to aikagan.com)
@@ -29,7 +30,7 @@
 
 ## PHASE 1: IMMEDIATE REVENUE (Days 1-7)
 
-**Goal:** $500-$3,600 first week revenue. Deploy existing assets, get first Stripe sale.
+**Goal:** $500-$3,600 first week revenue. Deploy existing assets, get first Paddle sale.
 
 ### Day 1: Deploy + First Sale
 ```
@@ -37,7 +38,7 @@ AM:
   □ Set all Vercel env vars (from Phase 0)
   □ Deploy: vercel --prod
   □ Test full checkout flow:
-     - Visit aikagan.com → Click "Buy Starter" → Stripe Checkout → Pay with test card
+     - Visit aikagan.com → Click "Buy Starter" → Paddle Checkout → complete payment
      → Redirect to /checkout-success → Download token → ZIP delivered
   □ Fix any deployment issues (max 2h)
 
@@ -46,7 +47,7 @@ PM:
      - r/Entrepreneur: "I built a business ops engine that costs $29 once instead of $147/mo"
      - r/SideProject: "Sharing my 7-day sale system — free download inside"
      - r/digital_marketing: "Golden Delivery Starter Kit — free for r/digital_marketing"
-  □ Set Make.com WhatsApp alert for new Stripe payments
+  □ Set Make.com WhatsApp alert for new Paddle payments
   □ Monitor: No sales yet? Fine. Setup day.
 ```
 
@@ -68,7 +69,7 @@ PM:
   □ If LinkedIn performed: Comment on 10 relevant posts with link
   □ If Twitter performed: 5 more threads
 
-  □ Check Stripe Dashboard: Any abandoned checkouts?
+  □ Check Paddle Dashboard: Any abandoned checkouts?
   □ Install live chat or prompt for feedback: "What stopped you from buying?"
 ```
 
@@ -101,7 +102,7 @@ PM:
      - Top channel: ___
   □ Double spend on top channel (more posts, more engagement)
   □ Fix any checkout friction:
-     - Time from click to Stripe page
+     - Time from click to Paddle page
      - Mobile responsiveness
      - Loading speed
 ```
@@ -146,7 +147,7 @@ Day 11-14:
   □ Deploy app.aikagan.com to Fly.io:
      - npm run build (ops engine)
      - fly deploy (or railway CLI)
-     - Verify: Stripe checkout works on app.aikagan.com
+     - Verify: Paddle checkout works on app.aikagan.com
   □ Activate AI Business Commander:
      - Set API keys in Fly.io env vars
      - Run: python ai_business_commander.py (background)
@@ -160,7 +161,7 @@ WEEK 2 SCORECARD:
 ```
   □ Wire Make.com to unified_ai_income:
      - Revenue dashboard webhook → daily revenue report
-     - WhatsApp alert → every new Stripe sale
+     - WhatsApp alert → every new Paddle sale
      - Failed payment → automated retry email
   □ Set up daily content pipeline:
      - AI agent writes 2 posts/day
@@ -225,7 +226,7 @@ Weeks 7-8 (Days 45-60):
      - Consider: "AutonomaX for [niche]" verticalized products
      - Niche candidates: eCommerce, Coaching, SaaS
   □ Begin global expansion:
-     - Stripe multi-currency for EU/UK/Asia
+     - Paddle multi-currency for EU/UK/Asia
      - Translate lead magnet to Turkish, Spanish, German
 ```
 
@@ -272,7 +273,7 @@ MONTH 3 REVIEW:
 
 | Milestone | Target Day | Actual | Notes |
 |-----------|-----------|--------|-------|
-| First Stripe sale | Day 1 | ___ | |
+| First Paddle sale | Day 1 | ___ | |
 | $1,000 total revenue | Day 14 | ___ | |
 | $10,000/month | Day 45 | ___ | |
 | 100 total customers | Day 60 | ___ | |
@@ -285,7 +286,7 @@ MONTH 3 REVIEW:
 
 ```
 Morning (30 min):
-  □ Check Stripe Dashboard: new sales?
+  □ Check Paddle Dashboard: new sales?
   □ Check email: customer questions?
   □ Respond to social media comments
   □ Check analytics: traffic sources
@@ -317,10 +318,10 @@ Weekly (2 hours Sunday):
 3. DM 20 people who downloaded free lead magnet with personal offer
 4. Post to 5 more subreddits with direct link
 
-### If Stripe Issues:
-1. Check Stripe Dashboard for declined payments
+### If Paddle Issues:
+1. Check Paddle Dashboard for declined payments
 2. Enable more payment methods (Link, Apple Pay)
-3. Contact Stripe support (they respond fast)
+3. Contact Paddle support (they respond fast)
 
 ### If Low Traffic:
 1. Increase Google Ads to $20/day

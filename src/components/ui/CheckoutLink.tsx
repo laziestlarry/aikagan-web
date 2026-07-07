@@ -62,13 +62,21 @@ export default function CheckoutLink({
       return;
     }
 
-    // Paddle flow: create checkout session via our API
+    // Multi-provider flow: router picks Paddle → LemonSqueezy → Gumroad
     setLoading(true);
     try {
-      const res = await fetch("/api/paddle-checkout", {
+      // Build attribution payload from sessionStorage
+      const attrs = (window as any).__attrs__ ?? {};
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: productSlug }),
+        body: JSON.stringify({
+          slug: productSlug,
+          ref: attrs.ref ?? null,
+          utm_source: attrs.utm_source ?? null,
+          utm_medium: attrs.utm_medium ?? null,
+          utm_campaign: attrs.utm_campaign ?? null,
+        }),
       });
 
       if (!res.ok) {
@@ -79,8 +87,17 @@ export default function CheckoutLink({
         return;
       }
 
-      const { url } = await res.json();
+      const { url, provider } = await res.json();
       if (url) {
+        // Fire InitiateCheckout pixel event
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag("event", "begin_checkout", {
+            currency: "USD",
+            value: price,
+            items: [{ item_id: productSlug, item_name: productName, price, quantity: 1 }],
+            provider,
+          });
+        }
         window.location.href = url;
       } else {
         window.location.href = `/products/${productSlug}`;
