@@ -67,6 +67,14 @@ export default function CheckoutLink({
     try {
       // Build attribution payload from sessionStorage
       const attrs = (window as any).__attrs__ ?? {};
+
+      // Read coupon from URL query param (e.g. ?coupon=TESTXXX)
+      let coupon: string | null = null;
+      if (typeof window !== "undefined") {
+        const sp = new URLSearchParams(window.location.search);
+        coupon = sp.get("coupon");
+      }
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,6 +84,7 @@ export default function CheckoutLink({
           utm_source: attrs.utm_source ?? null,
           utm_medium: attrs.utm_medium ?? null,
           utm_campaign: attrs.utm_campaign ?? null,
+          coupon,
         }),
       });
 
