@@ -21,7 +21,9 @@
 
 import { createHash } from "node:crypto";
 
-const PIXEL_ID = process.env.META_PIXEL_ID || "";
+// CRITICAL: env vars read at module load — this file is legacy/dead code.
+// All active CAPI calls use lib/capi-fire.ts which reads env per-invocation.
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID || "";
 const ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || "";
 const TEST_EVENT_CODE = process.env.META_PIXEL_TEST_EVENT_CODE || "";
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v20.0";
