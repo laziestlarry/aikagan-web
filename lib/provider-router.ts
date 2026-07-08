@@ -63,11 +63,16 @@ export function getProviderStatus(): Record<Provider, ProviderStatus> {
         : "GUMROAD_ACCESS_TOKEN not set",
     },
     shopier: {
-      provider: "shopier" as Provider,
+      provider: "shopier",
       available: Boolean(process.env.SHOPIER_API_KEY),
       reason: process.env.SHOPIER_API_KEY
         ? undefined
         : "SHOPIER_API_KEY not set",
+    },
+    manual: {
+      provider: "manual",
+      available: true,
+      reason: undefined,
     },
   };
 }
