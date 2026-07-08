@@ -20,7 +20,7 @@ export default function TermsPage() {
               Upon successful checkout via Paddle, you will receive an email confirmation
               and download link. Delivery is instant and automated. If you do not receive your
               download within 30 minutes of purchase, contact{" "}
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>.
+              <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a>.
             </p>
           </div>
 
@@ -98,7 +98,7 @@ are determined by your country of residence. You are responsible for any additio
             <h2 className="text-lg font-semibold text-white mb-3">6. Support</h2>
             <p>
               Customer support is available at{" "}
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>.
+              <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a>.
               We aim to respond within 2 business days. Support covers delivery issues, file access,
               and general product guidance. It does not include personal business coaching or custom
               implementation work (see Services for that).
@@ -126,7 +126,7 @@ are determined by your country of residence. You are responsible for any additio
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Contact</h2>
             <p>
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>
+              <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a>
             </p>
           </div>
 

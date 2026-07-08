@@ -18,7 +18,7 @@ export default function PrivacyPage() {
             <p>
               AutonomaX is an AI-powered digital product business operating at aikagan.com.
               For privacy inquiries contact:{" "}
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>
+              <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a>
             </p>
           </div>
 
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
             <p>
               Depending on your location you may have the right to access, correct, or delete
               personal data we hold about you. Contact{" "}
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>{" "}
+              <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a>{" "}
               to exercise these rights.
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Contact</h2>
             <p>
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>
+              <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a>
             </p>
           </div>
 

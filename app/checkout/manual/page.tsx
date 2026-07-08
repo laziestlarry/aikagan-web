@@ -1,73 +1,77 @@
 /**
  * /checkout/manual
  *
- * Fallback page when no payment provider is reachable. Captures the buyer's
- * email + intent id so:
- *   1. The lead is in the income ledger.
- *   2. A human can reconcile the order offline and issue a download token.
- *   3. The funnel never dead-ends.
- *
- * Also shows alternative payment rails (Gumroad, Squarespace, Shopier, etc.)
- * so the buyer has more options than just waiting 24 hours.
- *
- * If a valid ?coupon= is present, the price shown reflects the $1 test price.
+ * Fallback checkout page when the automated router falls through.
+ * Shows live payment provider status with direct checkout links,
+ * plus a manual form as last resort.
  */
 
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Section from "@/components/ui/Section";
 import Badge from "@/components/ui/Badge";
 import { getProduct } from "@/lib/products";
 
-/* ── Types ───────────────────────────────────────────────────────────────── */
+/* ── Provider status card ───────────────────────────────────────────────── */
 
-interface Rail {
+interface ProviderInfo {
   id: string;
   name: string;
   description: string;
-  status: string;
+  status: "active" | "available" | "manual";
   isMoR: boolean;
   methods: string[];
-  hasCheckoutLink: boolean;
-  needsSetup: boolean;
+  checkoutUrl: string | null;
+  accentColor: string;
 }
 
-interface RailsResponse {
-  rails: Rail[];
-  adminCoupon: { configured: boolean; code: string | null; testPrice: string };
-}
-
-/* ── Default rails when API is unreachable ──────────────────────────────── */
-
-const FALLBACK_RAILS: Rail[] = [
-  { id: "paddle", name: "Paddle", description: "Card + PayPal + Apple/Google Pay", status: "onboarding", isMoR: true, methods: ["Visa","MC","PayPal"], hasCheckoutLink: false, needsSetup: true },
-  { id: "lemonsqueezy", name: "LemonSqueezy", description: "Card + PayPal + Apple Pay", status: "onboarding", isMoR: true, methods: ["Visa","MC","PayPal"], hasCheckoutLink: false, needsSetup: true },
-  { id: "gumroad", name: "Gumroad", description: "Card + PayPal + Apple/Google Pay", status: "needs_setup", isMoR: true, methods: ["Visa","MC","Amex","PayPal"], hasCheckoutLink: false, needsSetup: true },
-  { id: "squarespace", name: "Squarespace", description: "Full e‑commerce storefront", status: "needs_setup", isMoR: false, methods: ["Card","PayPal"], hasCheckoutLink: false, needsSetup: true },
-  { id: "shopier", name: "Shopier", description: "Turkish gateway (iyzico)", status: "needs_setup", isMoR: false, methods: ["Card","TR bank"], hasCheckoutLink: false, needsSetup: true },
-  { id: "binance", name: "Binance Pay", description: "Crypto — no chargebacks", status: "needs_setup", isMoR: false, methods: ["USDT","BTC"], hasCheckoutLink: false, needsSetup: true },
-  { id: "manual", name: "Manual Checkout", description: "Human processes in 24h", status: "manual", isMoR: false, methods: ["Any"], hasCheckoutLink: true, needsSetup: false },
+const LIVE_PROVIDERS: ProviderInfo[] = [
+  {
+    id: "paddle",
+    name: "Paddle",
+    description: "Card, PayPal, Apple Pay, Google Pay — global MoR",
+    status: "active",
+    isMoR: true,
+    methods: ["Visa", "MC", "Amex", "PayPal", "Apple Pay"],
+    checkoutUrl: null, // set dynamically
+    accentColor: "text-amber-300",
+  },
+  {
+    id: "lemonsqueezy",
+    name: "LemonSqueezy",
+    description: "Card + PayPal — global MoR",
+    status: "available",
+    isMoR: true,
+    methods: ["Visa", "MC", "PayPal"],
+    checkoutUrl: null,
+    accentColor: "text-purple-400",
+  },
+  {
+    id: "gumroad",
+    name: "Gumroad",
+    description: "Card, PayPal, Apple/Google Pay — global MoR",
+    status: "available",
+    isMoR: true,
+    methods: ["Visa", "MC", "Amex", "PayPal", "Google Pay"],
+    checkoutUrl: null,
+    accentColor: "text-green-400",
+  },
+  {
+    id: "manual",
+    name: "Manual Checkout",
+    description: "Human-processed within 24 hours",
+    status: "manual",
+    isMoR: false,
+    methods: ["Any"],
+    checkoutUrl: null,
+    accentColor: "text-blue-400",
+  },
 ];
 
-/* ── Helpers ─────────────────────────────────────────────────────────────── */
-
-const STATUS_LABELS: Record<string, string> = {
-  active: "Active",
-  onboarding: "Coming Soon",
-  needs_setup: "Setup Needed",
-  manual: "Available Now",
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  active: "bg-green-500/10 text-green-400 border-green-500/30",
-  onboarding: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-  needs_setup: "bg-gray-500/10 text-gray-400 border-gray-500/30",
-  manual: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-};
-
-/* ── Component ───────────────────────────────────────────────────────────── */
+/* ── Component ──────────────────────────────────────────────────────────── */
 
 function ManualCheckoutInner() {
   const params = useSearchParams();
@@ -77,28 +81,52 @@ function ManualCheckoutInner() {
 
   const product = slug ? getProduct(slug) : undefined;
   const effectivePrice = urlCoupon ? "$1.00" : product ? `$${product.price}` : "—";
-
+  const [providerUrls, setProviderUrls] = useState<Record<string, string>>({});
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingUrls, setLoadingUrls] = useState(true);
 
-  const [rails, setRails] = useState<Rail[]>(FALLBACK_RAILS);
-  const [isCouponValid, setIsCouponValid] = useState(false);
-
+  // Fetch checkout URLs for each provider
   useEffect(() => {
-    fetch("/api/rails")
-      .then((r) => r.json())
-      .then((data: RailsResponse) => {
-        setRails(data.rails);
-        if (urlCoupon && data.adminCoupon.code) {
-          setIsCouponValid(urlCoupon === data.adminCoupon.code);
+    if (!slug) return;
+    const providers = ["paddle", "lemonsqueezy", "gumroad"];
+    Promise.all(
+      providers.map(async (provider) => {
+        try {
+          const endpoint =
+            provider === "paddle"
+              ? "/api/paddle-checkout"
+              : provider === "lemonsqueezy"
+                ? "/api/lemonsqueezy-checkout"
+                : "/api/gumroad-checkout";
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, coupon: urlCoupon || undefined }),
+          });
+          const data = await res.json();
+          return { provider, url: data.url || null };
+        } catch {
+          return { provider, url: null };
         }
-      })
-      .catch(() => { /* use fallback */ });
-  }, [urlCoupon]);
+      }),
+    ).then((results) => {
+      const urls: Record<string, string> = {};
+      results.forEach((r) => {
+        if (r.url) urls[r.provider] = r.url;
+      });
+      setProviderUrls(urls);
+      setLoadingUrls(false);
+    });
+  }, [slug, urlCoupon]);
+
+  function getCheckoutUrl(providerId: string): string | null {
+    return providerUrls[providerId] || null;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -147,140 +175,203 @@ function ManualCheckoutInner() {
             </p>
           )}
           <p className="text-xs text-kagan-muted mt-6">
-            Reference: <code className="font-mono">{intentId}</code>
+            Reference: <code className="font-mono">{intentId || slug}</code>
           </p>
+          <Link
+            href="/products"
+            className="mt-8 inline-block rounded-xl bg-kagan-gold px-6 py-3 text-sm font-semibold text-black hover:bg-kagan-gold-light"
+          >
+            Back to products
+          </Link>
         </div>
       </Section>
     );
   }
 
-  /* ── Main Form + Alternatives ────────────────────────────────────── */
+  /* ── Main Form + Live Providers ──────────────────────────────────── */
   return (
     <Section variant="hero">
       <div className="max-w-4xl mx-auto">
         {/* ── Header ──────────────────────────────────────────────── */}
         <Badge variant="amber" className="mb-4">
-          {isCouponValid ? "Test Purchase" : "Manual Checkout"}
+          {urlCoupon ? "Test Purchase" : "Complete Your Purchase"}
         </Badge>
         <h1 className="text-3xl font-extrabold text-kagan-white mb-2">
-          {product?.name ?? slug}
+          {product?.name ?? (slug || "Checkout")}
         </h1>
-        <p className="text-kagan-light mb-1">
-          <span className="text-kagan-gold font-bold">{effectivePrice}</span>
-          {isCouponValid && (
-            <span className="ml-2 text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full">
+        <p className="text-kagan-light mb-6">
+          <span className="text-kagan-gold font-bold text-2xl">{effectivePrice}</span>
+          {product?.originalPrice && product.originalPrice > product.price && (
+            <span className="ml-2 text-sm text-kagan-muted line-through">
+              ${product.originalPrice}
+            </span>
+          )}
+          {urlCoupon && (
+            <span className="ml-3 text-xs text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full">
               TEST — $1 coupon active
             </span>
           )}
         </p>
-        {urlCoupon && !isCouponValid && (
-          <p className="text-xs text-red-400 mb-3">Coupon code not recognized.</p>
-        )}
 
-        <div className="grid md:grid-cols-2 gap-8 mt-8">
-          {/* ── LEFT: Manual form ──────────────────────────────────── */}
-          <div>
-            <h2 className="text-lg font-semibold text-kagan-white mb-3">
-              Leave your details
-            </h2>
-            <p className="text-sm text-kagan-muted mb-4">
-              All payment systems are being set up. Leave your email and we will
-              send a secure payment link within 24 hours.
-            </p>
+        {slug && (
+          <div className="grid md:grid-cols-5 gap-8 mt-8">
+            {/* ── LEFT: Live checkout options (3/5) ──────────────── */}
+            <div className="md:col-span-3">
+              <h2 className="text-lg font-semibold text-kagan-white mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                Checkout is available
+              </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm text-kagan-muted mb-1">Your name</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Doe"
-                  className="w-full rounded-xl border border-kagan-border bg-kagan-black/60 px-4 py-2.5 text-sm text-kagan-white placeholder:text-kagan-muted focus:outline-none focus:ring-1 focus:ring-kagan-gold"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-kagan-muted mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@domain.com"
-                  className="w-full rounded-xl border border-kagan-border bg-kagan-black/60 px-4 py-2.5 text-sm text-kagan-white placeholder:text-kagan-muted focus:outline-none focus:ring-1 focus:ring-kagan-gold"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-kagan-muted mb-1">Anything we should know? (optional)</label>
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  rows={3}
-                  className="w-full rounded-xl border border-kagan-border bg-kagan-black/60 px-4 py-2.5 text-sm text-kagan-white placeholder:text-kagan-muted focus:outline-none focus:ring-1 focus:ring-kagan-gold"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-xl bg-kagan-gold px-6 py-3 text-sm font-semibold text-black hover:bg-kagan-gold-light disabled:opacity-50 transition-colors"
-              >
-                {submitting ? "Submitting…" : "Submit"}
-              </button>
-              {error && <p className="text-xs text-red-400">{error}</p>}
-            </form>
-          </div>
-
-          {/* ── RIGHT: Alternative rails ───────────────────────────── */}
-          <div>
-            <h2 className="text-lg font-semibold text-kagan-white mb-3">
-              Pay another way
-            </h2>
-            <p className="text-sm text-kagan-muted mb-4">
-              More payment options are being activated. Here&apos;s the full status:
-            </p>
-
-            <div className="space-y-2">
-              {rails.map((rail) => (
-                <div
-                  key={rail.id}
-                  className="rounded-xl border border-kagan-border bg-kagan-black/40 px-4 py-3"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-kagan-white">
-                      {rail.name}
-                    </span>
-                    <span
-                      className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
-                        STATUS_COLORS[rail.status] ?? "text-gray-400 border-gray-600"
-                      }`}
-                    >
-                      {STATUS_LABELS[rail.status] ?? rail.status}
-                    </span>
-                  </div>
-                  <p className="text-xs text-kagan-muted">{rail.description}</p>
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {rail.methods.map((m) => (
-                      <span
-                        key={m}
-                        className="text-[10px] px-1.5 py-0.5 rounded bg-kagan-black/60 text-kagan-muted"
-                      >
-                        {m}
-                      </span>
-                    ))}
-                  </div>
+              {loadingUrls ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="rounded-xl border border-kagan-border bg-kagan-black/40 p-5 animate-pulse">
+                      <div className="h-4 bg-kagan-border/30 rounded w-24 mb-2" />
+                      <div className="h-3 bg-kagan-border/20 rounded w-48" />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                <div className="space-y-3">
+                  {LIVE_PROVIDERS.filter((p) => p.status !== "manual").map((provider) => {
+                    const url = providerUrls[provider.id] || null;
+                    return (
+                      <div
+                        key={provider.id}
+                        className={`rounded-xl border transition-all ${
+                          url
+                            ? "border-green-500/20 bg-green-500/[0.03] hover:border-green-500/40"
+                            : "border-kagan-border bg-kagan-black/40 opacity-60"
+                        }`}
+                      >
+                        <div className="p-5">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-kagan-white">
+                                {provider.name}
+                              </span>
+                              {url ? (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/30">
+                                  Pay now
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                  Unavailable
+                                </span>
+                              )}
+                            </div>
+                            {provider.isMoR && (
+                              <span className="text-[10px] text-kagan-muted">MoR</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-kagan-muted">{provider.description}</p>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {provider.methods.map((m) => (
+                              <span
+                                key={m}
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-kagan-black/60 text-kagan-muted"
+                              >
+                                {m}
+                              </span>
+                            ))}
+                          </div>
+                          {url && (
+                            <a
+                              href={url}
+                              className={`mt-3 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
+                                provider.id === "paddle"
+                                  ? "bg-amber-300 text-black hover:bg-amber-200"
+                                  : provider.id === "lemonsqueezy"
+                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30"
+                                    : "bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30"
+                              }`}
+                            >
+                              Pay with {provider.name} →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            <p className="text-xs text-kagan-muted mt-4">
-              <span className="text-kagan-gold">Paddle</span> and{" "}
-              <span className="text-kagan-gold">LemonSqueezy</span> are being
-              approved. <span className="text-kagan-gold">Gumroad</span> can be
-              activated fastest — reach out if you want to use it.
-            </p>
+            {/* ── RIGHT: Manual fallback form (2/5) ───────────────── */}
+            <div className="md:col-span-2">
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.03] p-5">
+                <h2 className="text-sm font-semibold text-kagan-white mb-1">
+                  Still need help?
+                </h2>
+                <p className="text-xs text-kagan-muted mb-4">
+                  Leave your details and we&apos;ll reach out with a manual payment link within 24 hours.
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <div>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Your name"
+                      className="w-full rounded-xl border border-kagan-border bg-kagan-black/60 px-4 py-2.5 text-sm text-kagan-white placeholder:text-kagan-muted focus:outline-none focus:ring-1 focus:ring-kagan-gold"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@domain.com"
+                      className="w-full rounded-xl border border-kagan-border bg-kagan-black/60 px-4 py-2.5 text-sm text-kagan-white placeholder:text-kagan-muted focus:outline-none focus:ring-1 focus:ring-kagan-gold"
+                    />
+                  </div>
+                  <div>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      rows={2}
+                      placeholder="Anything we should know? (optional)"
+                      className="w-full rounded-xl border border-kagan-border bg-kagan-black/60 px-4 py-2.5 text-sm text-kagan-white placeholder:text-kagan-muted focus:outline-none focus:ring-1 focus:ring-kagan-gold"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full rounded-xl bg-amber-500/20 border border-amber-500/30 px-4 py-2.5 text-sm font-semibold text-amber-300 hover:bg-amber-500/30 disabled:opacity-50 transition-colors"
+                  >
+                    {submitting ? "Submitting..." : "Request manual payment"}
+                  </button>
+                  {error && <p className="text-xs text-red-400">{error}</p>}
+                </form>
+              </div>
+
+              <div className="mt-4 text-center">
+                <Link
+                  href="/products"
+                  className="text-xs text-kagan-muted hover:text-kagan-gold transition-colors"
+                >
+                  ← Browse all products
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* ── No slug ──────────────────────────────────────────── */}
+        {!slug && (
+          <div className="text-center py-12">
+            <p className="text-kagan-light mb-4">No product selected.</p>
+            <Link
+              href="/products"
+              className="inline-block rounded-xl bg-kagan-gold px-6 py-3 text-sm font-semibold text-black hover:bg-kagan-gold-light"
+            >
+              Browse products
+            </Link>
+          </div>
+        )}
       </div>
     </Section>
   );

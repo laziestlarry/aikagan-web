@@ -34,7 +34,7 @@ const CONTACT_OPTIONS = [
 ];
 
 const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID;
-const SUPPORT_EMAIL = "kagan@aikagan.com";
+const SUPPORT_EMAIL = "affiliates@autonomax.ai";
 
 export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");

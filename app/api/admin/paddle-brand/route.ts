@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
       const bizPayload = {
         name: BRAND.name,
         about: BRAND.tagline,
-        support_email: "support@aikagan.com",
+        support_email: "affiliates@autonomax.ai",
         support_phone: null,
       };
 
