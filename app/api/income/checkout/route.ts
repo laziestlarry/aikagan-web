@@ -23,6 +23,7 @@ import { recordIntent, type IntentRecord } from "@/lib/income-ledger";
 import { getPaddleClient } from "@/lib/paddle-client";
 import { tokenStore } from "@/lib/token-store";
 import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
+import { resolveCouponPrice } from "@/lib/coupons";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,6 +39,7 @@ interface CheckoutBody {
   country?: string | null;
   email?: string | null;
   sessionId?: string | null;
+  coupon?: string | null;
 }
 
 function newSessionId(): string {
@@ -58,13 +60,15 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
   const product = getProduct(body.slug);
   if (!product || !product.price) return null;
   try {
-    const unitAmount = String(product.price * 100);
+    const priceInfo = resolveCouponPrice(body.slug, body.coupon);
+    const unitAmount = String(priceInfo.effectivePriceCents);
     const customData: Record<string, string> = {
       product_slug: body.slug,
       ref_code: body.ref ?? "",
       utm_source: body.utm_source ?? "",
       utm_medium: body.utm_medium ?? "",
       utm_campaign: body.utm_campaign ?? "",
+      ...(priceInfo.applied ? { coupon: body.coupon ?? "", test_price: "1" } : {}),
     };
     const tx = await paddle.transactions.create({
       items: [

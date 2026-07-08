@@ -27,6 +27,8 @@ export interface CheckoutRequest {
   utm_content?: string | null;
   /** ISO country code, e.g. "TR", "US" — for future geo-routing */
   country?: string | null;
+  /** Coupon/discount code (admin test coupon overrides price to $1) */
+  coupon?: string | null;
 }
 
 export interface ProviderStatus {
@@ -114,6 +116,7 @@ export function validateCheckoutRequest(
       utm_term: typeof b.utm_term === "string" ? b.utm_term : null,
       utm_content: typeof b.utm_content === "string" ? b.utm_content : null,
       country: typeof b.country === "string" ? b.country : null,
+      coupon: typeof b.coupon === "string" ? b.coupon : null,
     },
   };
 }

@@ -13,10 +13,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPaddleClient } from "@/lib/paddle-client";
 import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
+import { resolveCouponPrice } from "@/lib/coupons";
 
 export async function POST(req: NextRequest) {
   try {
-    const { slug } = await req.json();
+    const { slug, coupon } = await req.json();
     if (!slug || typeof slug !== "string") {
       return NextResponse.json({ error: "Missing or invalid slug" }, { status: 400 });
     }
@@ -36,7 +37,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Payment provider not configured" }, { status: 500 });
     }
 
-    const unitAmount = String(product.price * 100); // Paddle uses cents (smallest unit)
+    // Apply coupon (admin test coupon overrides price to $1)
+    const priceInfo = resolveCouponPrice(slug, coupon);
+    const unitAmount = String(priceInfo.effectivePriceCents); // Paddle uses cents
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
 
     const transaction = await paddle.transactions.create({
@@ -45,13 +48,17 @@ export async function POST(req: NextRequest) {
           quantity: 1,
           price: {
             description: product.description,
-            name: `${product.tier} — ${product.name}`,
+            name: priceInfo.applied
+              ? `${product.tier} — ${product.name} (TEST $1)`
+              : `${product.tier} — ${product.name}`,
             unitPrice: {
               amount: unitAmount,
               currencyCode: "USD",
             },
             product: {
-              name: `${product.tier} — ${product.name}`,
+              name: priceInfo.applied
+                ? `${product.tier} — ${product.name} (TEST $1)`
+                : `${product.tier} — ${product.name}`,
               taxCategory: "digital-goods",
               description: product.description,
             },
@@ -60,6 +67,7 @@ export async function POST(req: NextRequest) {
       ],
       customData: {
         product_slug: slug,
+        ...(priceInfo.applied ? { coupon: coupon ?? "", test_price: "1" } : {}),
       },
     });
 

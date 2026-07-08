@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
 
   // Try providers in priority order
   const providers = [
-    { name: "paddle" as const, endpoint: "/api/paddle-checkout", body: { slug: checkoutReq.slug, customData } },
-    { name: "lemonsqueezy" as const, endpoint: "/api/lemonsqueezy-checkout", body: { slug: checkoutReq.slug, customData } },
+    { name: "paddle" as const, endpoint: "/api/paddle-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
+    { name: "lemonsqueezy" as const, endpoint: "/api/lemonsqueezy-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
   ];
 
   for (const p of providers) {
