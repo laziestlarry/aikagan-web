@@ -18,21 +18,21 @@ export interface GumroadProduct {
 
 export const GUMROAD_PRODUCTS: Record<string, GumroadProduct> = {
   "masterclass-starter": {
-    id: "j2AeTGQzQmP_EdDZol67ew==",
-    permalink: "autonomax-starter",
-    url: "https://nomadauto.gumroad.com/l/autonomax-starter",
+    id: "J59rJByCCyKKEfDouQjTDw==",
+    permalink: "autonomax-starter-29",
+    url: "https://nomadauto.gumroad.com/l/autonomax-starter-29",
     priceCents: 2900,
   },
   "masterclass-pro": {
-    id: "UPyeETqpyq67poBsH7oh5g==",
-    permalink: "autonomax-pro",
-    url: "https://nomadauto.gumroad.com/l/autonomax-pro",
+    id: "1BzBT7MJ_yBSJ1d9W9OrjA==",
+    permalink: "autonomax-pro-79",
+    url: "https://nomadauto.gumroad.com/l/autonomax-pro-79",
     priceCents: 7900,
   },
   "masterclass-commander": {
-    id: "70evF5Id9e03Ly7FNsK-Uw==",
-    permalink: "autonomax-commander",
-    url: "https://nomadauto.gumroad.com/l/autonomax-commander",
+    id: "H7uOVVl-CaUQJRp8e_73WQ==",
+    permalink: "autonomax-commander-149",
+    url: "https://nomadauto.gumroad.com/l/autonomax-commander-149",
     priceCents: 14900,
   },
 };

@@ -10,10 +10,21 @@ interface Props {
   className?: string;
 }
 
+declare global {
+  interface Window {
+    Paddle?: {
+      Checkout: {
+        open: (config: { transactionId: string }) => Promise<void>;
+      };
+    };
+  }
+}
+
 /**
  * Paddle Checkout Button.
  *
- * Calls POST /api/paddle-checkout and redirects to Paddle.
+ * Uses Paddle.js overlay checkout (loaded in root layout).
+ * Falls back to redirect-to-checkout if Paddle.js isn't available.
  */
 export default function CheckoutButton({ href, slug, children, className }: Props) {
   const [loading, setLoading] = useState(false);
@@ -40,8 +51,25 @@ export default function CheckoutButton({ href, slug, children, className }: Prop
         return;
       }
 
-      const { url } = await res.json();
-      window.location.href = url ?? `/products/${slug}`;
+      const { transactionId: txnId, url } = await res.json();
+
+      // Use Paddle.js overlay if available, otherwise redirect
+      if (window.Paddle?.Checkout) {
+        // Open the checkout overlay
+        window.Paddle.Checkout.open({ transactionId: txnId });
+        setLoading(false);
+        
+        // Listen for completion — Paddle fires 'checkout.completed' on window
+        const onComplete = () => {
+          window.removeEventListener('checkout.completed', onComplete);
+          window.location.href = `/checkout-success?transaction_id=${txnId}`;
+        };
+        window.addEventListener('checkout.completed', onComplete);
+      } else {
+        // No Paddle.js — redirect to checkout URL
+        setLoading(false);
+        window.location.href = url ?? `/products/${slug}`;
+      }
     } catch {
       window.location.href = `/products/${slug}`;
     } finally {

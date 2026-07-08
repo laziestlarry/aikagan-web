@@ -20,10 +20,14 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** Map Gumroad permalink to aikagan product slug */
+/** Full permalinks match Gumroad product URLs (e.g. autonomax-starter-29) */
 const PERMALINK_TO_SLUG: Record<string, string> = {
   "autonomax-starter": "masterclass-starter",
+  "autonomax-starter-29": "masterclass-starter",
   "autonomax-pro": "masterclass-pro",
+  "autonomax-pro-79": "masterclass-pro",
   "autonomax-commander": "masterclass-commander",
+  "autonomax-commander-149": "masterclass-commander",
 };
 
 export async function POST(req: NextRequest) {

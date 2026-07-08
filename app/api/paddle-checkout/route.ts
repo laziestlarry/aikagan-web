@@ -1,12 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/paddle-checkout
 //
-// Creates a Paddle Billing transaction with an inline (non-catalog) price and
-// returns the hosted Checkout URL for the client to redirect to.
-//
-// Request:  { slug: string }
-// Success:  { url: string, transactionId: string }
-// Error:    { error: string }
+// Creates a Paddle Billing transaction using catalog prices and returns the
+// hosted Checkout URL. Uses catalog price IDs for reliable checkout rendering.
+// Falls back to inline pricing for coupon/test scenarios.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
@@ -14,6 +11,13 @@ import { getPaddleClient } from "@/lib/paddle-client";
 import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
 import { resolveCouponPrice } from "@/lib/coupons";
+
+// Price IDs created in Paddle Catalog (via POST /api/admin/paddle-create-products)
+const CATALOG_PRICE_IDS: Record<string, string> = {
+  "masterclass-starter": "pri_01kx0rg4hmnpbdpsnx3d7j8h5q",
+  "masterclass-pro": "pri_01kx0rg4q1ed110tw5cc4xqfs3",
+  "masterclass-commander": "pri_01kx0rg4w962z7vmn53c8pq7n3",
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,37 +43,40 @@ export async function POST(req: NextRequest) {
 
     // Apply coupon (admin test coupon overrides price to $1)
     const priceInfo = resolveCouponPrice(slug, coupon);
-    const unitAmount = String(priceInfo.effectivePriceCents); // Paddle uses cents
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
+    const priceId = CATALOG_PRICE_IDS[slug];
 
-    const transaction = await paddle.transactions.create({
-      items: [
-        {
+    // Use catalog price ID for standard checkout (no coupon)
+    // Fall back to inline pricing for coupon/test scenarios
+    let transaction;
+    if (priceInfo.applied || !priceId) {
+      transaction = await paddle.transactions.create({
+        items: [{
           quantity: 1,
           price: {
             description: product.description,
-            name: priceInfo.applied
-              ? `${product.tier} — ${product.name} (TEST $1)`
-              : `${product.tier} — ${product.name}`,
+            name: `${product.tier} — ${product.name}${priceInfo.applied ? ' (TEST $1)' : ''}`,
             unitPrice: {
-              amount: unitAmount,
+              amount: String(priceInfo.effectivePriceCents),
               currencyCode: "USD",
             },
             product: {
-              name: priceInfo.applied
-                ? `${product.tier} — ${product.name} (TEST $1)`
-                : `${product.tier} — ${product.name}`,
-              taxCategory: "digital-goods",
+              name: `${product.tier} — ${product.name}${priceInfo.applied ? ' (TEST $1)' : ''}`,
+              taxCategory: "saas",
               description: product.description,
             },
           },
+        }],
+        customData: {
+          product_slug: slug,
+          ...(priceInfo.applied ? { coupon: coupon ?? "", test_price: "1" } : {}),
         },
-      ],
-      customData: {
-        product_slug: slug,
-        ...(priceInfo.applied ? { coupon: coupon ?? "", test_price: "1" } : {}),
-      },
-    });
+      });
+    } else {
+      transaction = await paddle.transactions.create({
+        items: [{ quantity: 1, priceId }],
+        customData: { product_slug: slug },
+      });
+    }
 
     // Pre‑register the transaction so the session-token endpoint can find it
     // before the webhook fires.
@@ -91,11 +98,10 @@ export async function POST(req: NextRequest) {
       transactionId: transaction.id,
     });
   } catch (err: any) {
-    const detail = err.errors?.[0]?.detail ?? err.message;
+    const detail = err.errors?.[0]?.detail ?? err.message ?? String(err);
     console.error("❌ Paddle checkout error:", detail);
 
-    const message = "Failed to create checkout session";
-
-    return NextResponse.json({ error: message }, { status: 500 });
+    // Return the actual error for debugging
+    return NextResponse.json({ error: "Failed to create checkout session", detail }, { status: 500 });
   }
 }

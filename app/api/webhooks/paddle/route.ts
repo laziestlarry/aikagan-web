@@ -24,7 +24,7 @@ import { generateDownloadToken } from "@/lib/download-token";
 import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
 import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
-import { getPaddleClient } from "@/lib/paddle-client";
+import { getPaddleClient, getPaddleEnvironment } from "@/lib/paddle-client";
 import { markEventIfNew } from "@/lib/webhook-idempotency";
 import { recordWebhookCommission } from "@/lib/commissions";
 import { recordTransaction, getCommissionRate } from "@/lib/income-ledger";
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
 
   // ── 6. Handle transaction.completed ──────────────────────────────────
   const paddle = getPaddleClient();
-  const isSandbox = paddle ? false : true; // crude: no client = sandbox
+  const isSandbox = getPaddleEnvironment() !== "production";
 
   if (eventType === "transaction.completed") {
     const data = event.data ?? {};

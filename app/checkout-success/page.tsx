@@ -29,18 +29,41 @@ const STEPS = [
 function useSessionToken(): { token: string | null; slug: string | null; loading: boolean; error: string | null } {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transaction_id");
+  const ptxn = searchParams.get("_ptxn");
   const [token, setToken] = useState<string | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
-  const [loading, setLoading] = useState(!!transactionId);
+  const [loading, setLoading] = useState(!!transactionId || !!ptxn);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Open Paddle checkout overlay when _ptxn is detected
+  useEffect(() => {
+    if (!ptxn) return;
+    // Wait for Paddle.js to be ready
+    const checkPaddle = setInterval(() => {
+      if (window.Paddle?.Checkout) {
+        clearInterval(checkPaddle);
+        window.Paddle.Checkout.open({ transactionId: ptxn });
+        // On completion, redirect uses the same _ptxn as transaction_id
+        const onComplete = () => {
+          window.removeEventListener("checkout.completed", onComplete);
+          window.location.href = `/checkout-success?transaction_id=${ptxn}`;
+        };
+        window.addEventListener("checkout.completed", onComplete);
+      }
+    }, 200);
+    setTimeout(() => clearInterval(checkPaddle), 10000);
+  }, [ptxn]);
+
   useEffect(() => {
     // If no transaction_id, nothing to poll
-    if (!transactionId) {
+    if (!transactionId && !ptxn) {
       setLoading(false);
       return;
     }
+
+    // If we have _ptxn but no transaction_id yet, wait
+    if (!transactionId) return;
 
     // Poll /api/session-token every 2s until ready
     let attempts = 0;
@@ -112,6 +135,8 @@ function OrderBump({ currentSlug }: { currentSlug: string }) {
     </div>
   );
 }
+
+
 
 function CheckoutSuccessContent() {
   const { token, slug, loading, error } = useSessionToken();

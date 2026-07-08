@@ -69,8 +69,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ref = typeof body?.ref === "string" ? body.ref : null;
     const customData = (body?.customData ?? {}) as Record<string, string>;
+    // ref_code from customData (passed by checkout router) or directly from body.ref
+    const ref = customData.ref_code || body?.ref || null;
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
 
     // Create checkout
@@ -91,17 +92,16 @@ export async function POST(req: NextRequest) {
               logo: true,
             },
             checkout_data: {
-              email: null,
               custom: {
                 product_slug: slug,
-                ref_code: ref ?? "",
-                utm_source: customData.utm_source ?? "",
-                utm_medium: customData.utm_medium ?? "",
-                utm_campaign: customData.utm_campaign ?? "",
+                ...(ref ? { ref_code: ref } : {}),
+                ...(customData.utm_source ? { utm_source: customData.utm_source } : {}),
+                ...(customData.utm_medium ? { utm_medium: customData.utm_medium } : {}),
+                ...(customData.utm_campaign ? { utm_campaign: customData.utm_campaign } : {}),
               },
             },
             product_options: {
-              redirect_url: `${siteUrl}/checkout-success?provider=lemonsqueezy&ref=${encodeURIComponent(ref ?? "")}`,
+              redirect_url: `${siteUrl}/checkout-success?provider=lemonsqueezy${ref ? `&ref=${encodeURIComponent(ref)}` : ""}`,
               receipt_button_text: "Download your files",
               receipt_thank_you_note: "Thank you — your digital toolkit is ready.",
             },

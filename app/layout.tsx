@@ -54,6 +54,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" sizes="any" />
         {/* ── Meta Domain Verification ── */}
         <meta name="facebook-domain-verification" content="xz1psq5ml5n8je8ljwl7k689or7wkp" />
+        {/* ── Paddle.js (client-side checkout overlay) ── */}
+        <Script
+          src="https://cdn.paddle.com/paddle/v2/paddle.js"
+          strategy="afterInteractive"
+          data-token={process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? ""}
+          data-env="production"
+        />
       </head>
       <body className="min-h-screen flex flex-col">
         {/* ── Google Tag Manager (noscript) ── */}

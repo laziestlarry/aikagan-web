@@ -96,17 +96,22 @@ export default function CheckoutLink({
         return;
       }
 
-      const { url, provider } = await res.json();
+      const { url, provider, transactionId } = await res.json();
+
+      // Fire InitiateCheckout pixel event
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag("event", "begin_checkout", {
+          currency: "USD",
+          value: price,
+          items: [{ item_id: productSlug, item_name: productName, price, quantity: 1 }],
+          provider,
+        });
+      }
+
+      // Paddle: redirect to checkout URL (has _ptxn param)
+      // Paddle.js detects _ptxn and opens overlay on checkout-success page
       if (url) {
-        // Fire InitiateCheckout pixel event
-        if (typeof window !== "undefined" && (window as any).gtag) {
-          (window as any).gtag("event", "begin_checkout", {
-            currency: "USD",
-            value: price,
-            items: [{ item_id: productSlug, item_name: productName, price, quantity: 1 }],
-            provider,
-          });
-        }
+        // Fallback: redirect to checkout URL (LS, Gumroad, manual)
         window.location.href = url;
       } else {
         window.location.href = `/products/${productSlug}`;
