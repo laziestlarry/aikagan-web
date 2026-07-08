@@ -174,6 +174,5 @@ export async function GET(req: NextRequest) {
     wrapperProbes,
     directProbes,
     singleEndpointProbe,
-    directCapiFire,
   });
 }
