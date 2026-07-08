@@ -83,13 +83,18 @@ export async function POST(req: NextRequest) {
       transactionId: transaction.id,
     });
   } catch (err: any) {
-    console.error("❌ Paddle checkout error:", err.message, err.errors ?? "");
+    const detail = JSON.stringify(err.errors ?? err.response ?? err, null, 2);
+    console.error("❌ Paddle checkout error:", err.message, detail);
 
     // Distinguish configuration error from transient failure
-    const message = err.message?.includes("authenticate")
-      ? "Payment provider authentication failed — check PADDLE_API_KEY"
-      : "Failed to create checkout session";
+    let message = "Failed to create checkout session";
+    if (err.message?.includes("authenticate") || err.message?.includes("Authentication")) {
+      message = "Payment provider authentication failed — check PADDLE_API_KEY";
+    } else if (err.errors?.length) {
+      message = `Paddle API: ${err.errors[0]?.detail || err.message}`;
+      console.error("Paddle error detail:", JSON.stringify(err.errors));
+    }
 
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message, detail: err.message }, { status: 500 });
   }
 }
