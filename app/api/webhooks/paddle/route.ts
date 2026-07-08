@@ -28,8 +28,10 @@ import { getPaddleClient } from "@/lib/paddle-client";
 import { markEventIfNew } from "@/lib/webhook-idempotency";
 import { recordWebhookCommission } from "@/lib/commissions";
 import { recordTransaction, getCommissionRate } from "@/lib/income-ledger";
+import { fulfillPurchase } from "@/lib/fulfillment";
 
 const PADDLE_WEBHOOK_SECRET = process.env.PADDLE_WEBHOOK_SECRET ?? "";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -135,6 +137,7 @@ export async function POST(req: NextRequest) {
     const slug: string | undefined = customData.product_slug;
     const refCode: string | null = customData.ref_code || null;
     const email: string = data.customer?.email ?? "unknown@checkout";
+    const customerName: string = data.customer?.name ?? email.split("@")[0] ?? "Valued Customer";
     const value: number =
       (data.details?.line_items?.[0]?.unit_price?.amount
         ? parseInt(data.details.line_items[0].unit_price.amount) / 100
@@ -224,7 +227,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // ── 6d. Log purchase to FastAPI backend (non-blocking) ─────────────
+    // ── 6d. Fulfillment: send confirmation email + social proof (non-blocking) ─
+    fulfillPurchase({
+      orderId: transactionId,
+      provider: "paddle",
+      email,
+      name: customerName,
+      productName: product.name,
+      productSlug: slug,
+      value,
+      downloadUrl: `${SITE_URL}/checkout-success?transaction_id=${transactionId}`,
+    });
+
+    // ── 6e. Log purchase to FastAPI backend (non-blocking) ──────────────
     logPurchaseToFastAPI(transactionId, slug, email, value, refCode);
 
     return NextResponse.json({ ok: true });

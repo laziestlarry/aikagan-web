@@ -27,8 +27,10 @@ import { markEventIfNew } from "@/lib/webhook-idempotency";
 import { recordWebhookCommission } from "@/lib/commissions";
 import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
 import { recordTransaction, getCommissionRate } from "@/lib/income-ledger";
+import { fulfillPurchase } from "@/lib/fulfillment";
 
 const WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET ?? "";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -98,6 +100,7 @@ export async function POST(req: NextRequest) {
   const data = ((event as { data?: { attributes?: Record<string, unknown> } }).data?.attributes ?? {}) as Record<string, unknown>;
   const orderId = String(event?.data?.id ?? "");
   const email = String((data.user_email as unknown) ?? (data.email as unknown) ?? "");
+  const customerName = String((data.user_name as unknown) ?? email.split("@")[0] ?? "Valued Customer");
   const firstItem = (data.first_order_item ?? {}) as Record<string, unknown>;
   const productName = String(firstItem.product_name ?? "");
   const variantName = String(firstItem.variant_name ?? "");
@@ -122,6 +125,19 @@ export async function POST(req: NextRequest) {
       provider: "lemonsqueezy",
     });
   }
+
+  // ── Fulfillment: send confirmation email + social proof (non-blocking) ──
+  const downloadUrl = `${SITE_URL}/checkout-success?transaction_id=${orderId}`;
+  fulfillPurchase({
+    orderId,
+    provider: "lemonsqueezy",
+    email,
+    name: customerName,
+    productName: product?.name ?? slug,
+    productSlug: slug,
+    value: amount,
+    downloadUrl,
+  });
 
   // Fire CAPI Purchase event (non-blocking) — now also returns success
   const capiRes = await fireCapiEvent(

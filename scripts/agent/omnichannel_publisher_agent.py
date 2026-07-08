@@ -64,20 +64,20 @@ def load_environment() -> None:
 load_environment()
 
 # ---------------------------------------------------------------------------
-# Gemini wiring (real google-generativeai SDK — the `google.antigravity`
-# package referenced in v1 does not exist on PyPI).
+# Gemini wiring (google-genai SDK)
 # ---------------------------------------------------------------------------
 try:
-    import google.generativeai as genai
+    from google import genai
 except ImportError as exc:  # pragma: no cover
     raise SystemExit(
-        "Missing dependency. Run: pip install -r scripts/agent/requirements.txt"
+        "Missing dependency. Run: pip install google-genai"
     ) from exc
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+genai_client: genai.Client | None = None
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+    genai_client = genai.Client(api_key=GEMINI_API_KEY)
 
 MAKE_WEBHOOK_URL = os.getenv("MAKE_OMNICHANNEL_WEBHOOK_URL", "")
 CAMPAIGN_NAME = os.getenv("CAMPAIGN_NAME", "chimera-genesis")
@@ -312,29 +312,98 @@ def generate_payload(
 ) -> dict[str, Any]:
     if not GEMINI_API_KEY:
         raise SystemExit("Missing GEMINI_API_KEY — populate .env.fulfillment first.")
-    model = genai.GenerativeModel(
-        model_name=GEMINI_MODEL,
-        system_instruction=SYSTEM_INSTRUCTION,
-        generation_config={
+    prompt = _build_prompt(
+        audience_signal=audience_signal,
+        wave=wave,
+        channels=channels,
+        cta_table=cta_table,
+        offer_name=offer_name,
+        offer_url=offer_url,
+        lead_magnet_url=lead_magnet_url,
+        discount_code=discount_code,
+    )
+    resp = genai_client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=prompt,
+        config={
+            "system_instruction": SYSTEM_INSTRUCTION,
             "response_mime_type": "application/json",
             "temperature": 0.85,
             "max_output_tokens": 8192,
         },
     )
-    resp = model.generate_content(
-        _build_prompt(
-            audience_signal=audience_signal,
-            wave=wave,
-            channels=channels,
-            cta_table=cta_table,
-            offer_name=offer_name,
-            offer_url=offer_url,
-            lead_magnet_url=lead_magnet_url,
-            discount_code=discount_code,
-        )
-    )
     data = _safe_parse_json(resp.text)
-    # Validate against schema — this raises if the model drifted.
+    # Normalize field names to match Pydantic model
+    data.setdefault("buyer_persona", data.pop("buyer_persona_summary", data.pop("target_audience", "")))
+    data.setdefault("pain_point_summary", data.pop("pain_points", data.pop("pain_points_summary", "")))
+    data.setdefault("launch_thesis", data.pop("thesis", data.pop("strategy", "")))
+    data.setdefault("offer_name", os.getenv("AIKAGAN_OFFER_NAME", "AutonomaX Masterclass Starter"))
+    data.setdefault("offer_url", os.getenv("AIKAGAN_OFFER_URL", "https://aikagan.com/products/masterclass-starter/"))
+    data.setdefault("lead_magnet_url", os.getenv("AIKAGAN_LEAD_MAGNET_URL", "https://aikagan.com/free/golden-delivery-sample/"))
+    data.setdefault("discount_code", os.getenv("AIKAGAN_DISCOUNT_CODE", "KAGANATE"))
+    data.setdefault("priority_channels", channels)
+    # Normalize launch_posts
+    raw_lp = data.get("launch_posts") or data.get("posts") or []
+    norm_lp = []
+    for p in raw_lp:
+        if isinstance(p, str):
+            norm_lp.append({"channel": "general", "audience": "followers", "why_this_channel": "reach", "announcement_copy": p, "follow_up_comment": "", "call_to_action": "Check the link", "offer_tier": "starter", "cta_url": "https://aikagan.com"})
+        elif isinstance(p, dict):
+            p.setdefault("channel", "x")
+            p.setdefault("audience", "followers")
+            p.setdefault("why_this_channel", "direct reach")
+            p.setdefault("announcement_copy", p.get("post_copy", p.get("content", "")))
+            p.setdefault("follow_up_comment", "")
+            p.setdefault("call_to_action", p.get("cta", "Learn more"))
+            # Map offer_tier field names
+            if "offer_tier" not in p and "tier" in p:
+                p["offer_tier"] = p.pop("tier")
+            p.setdefault("offer_tier", "starter")
+            p.setdefault("cta_url", p.get("url", "https://aikagan.com"))
+            norm_lp.append(p)
+    data["launch_posts"] = norm_lp
+    # Normalize execution_waves
+    raw_waves = data.get("execution_waves") or data.get("waves") or []
+    norm_waves = []
+    for w in raw_waves:
+        if isinstance(w, dict):
+            if "wave_number" in w and "name" not in w:
+                w["name"] = str(w.pop("wave_number"))
+            w.setdefault("name", "wave")
+            w.setdefault("timing", "immediate")
+            w.setdefault("goal", "launch")
+            w.setdefault("channels", channels)
+            norm_waves.append(w)
+        elif isinstance(w, str):
+            norm_waves.append({"name": w, "timing": "immediate", "goal": "launch", "channels": channels})
+    data["execution_waves"] = norm_waves if norm_waves else [{"name": "wave1", "timing": "day1-2", "goal": "announce", "channels": channels}]
+    # Normalize customer_service_posts (might be str list from Gemini)
+    raw_cs = data.get("customer_service_posts") or data.get("support_posts") or []
+    norm_cs = []
+    for p in raw_cs:
+        if isinstance(p, str):
+            norm_cs.append({"channel": "general", "scenario": "question", "copy": p})
+        elif isinstance(p, dict):
+            p.setdefault("channel", "reddit")
+            if "question" in p and "scenario" not in p:
+                p["scenario"] = p.pop("question")
+            p.setdefault("scenario", "general")
+            p.setdefault("copy", str(p.get("answer", p.get("reply", ""))))
+            norm_cs.append(p)
+    data["customer_service_posts"] = norm_cs if norm_cs else [{"channel": "general", "scenario": "welcome", "copy": "Welcome! Let us know how we can help."}]
+    # Normalize objection_replies
+    raw_obj = data.get("objection_replies") or data.get("objections") or []
+    norm_obj = []
+    for r in raw_obj:
+        if isinstance(r, str):
+            norm_obj.append({"objection": "general concern", "short_reply": r})
+        elif isinstance(r, dict):
+            if "objection_type" in r and "objection" not in r:
+                r["objection"] = r.pop("objection_type")
+            r.setdefault("short_reply", r.pop("answer", r.pop("reply", "")))
+            norm_obj.append(r)
+    data["objection_replies"] = norm_obj if norm_obj else [{"objection": "general concern", "short_reply": "Happy to discuss in DMs."}]
+    # Validate against schema — raises if still wrong
     LaunchDirectorPayload(**data)
     return data
 

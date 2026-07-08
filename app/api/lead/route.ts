@@ -22,6 +22,7 @@ import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
 import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
 import { fetchWithTimeout } from "@/lib/proxy-utils";
 import { recordLead } from "@/lib/income-ledger";
+import { fulfillLeadMagnet } from "@/lib/fulfillment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -171,6 +172,16 @@ export async function POST(req: NextRequest) {
     // Pageview is recorded separately; not on the lead form
   } catch (err) {
     console.error("[lead] ledger write failed:", err);
+  }
+
+  // ── 3c. Fulfillment: send lead magnet delivery email (non-blocking) ─────
+  if (product) {
+    fulfillLeadMagnet({
+      email,
+      slug: slug ?? "",
+      productName: product.name,
+      assetPath: product.leadMagnetPath ?? "",
+    });
   }
 
   // Log for evidence trail

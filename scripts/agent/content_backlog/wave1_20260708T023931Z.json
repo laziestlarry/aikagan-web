@@ -1,0 +1,145 @@
+{
+  "campaign": "chimera-genesis",
+  "wave": 1,
+  "launch_day": 1,
+  "generated_at_utc": "2026-07-08T02:39:31.710105+00:00",
+  "site_url": "https://aikagan.com",
+  "cta_table": {
+    "x": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "linkedin": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "substack": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    }
+  },
+  "source_signal": "Subreddit: fallback\nTitle: I need my first paying customer without burning cash on ads\nBody: Builders want practical scripts, a clear offer, and a launch sequence they can run today.",
+  "requested_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_wave_id": "1/3",
+  "chosen_channels": [
+    {
+      "channel_name": "x",
+      "launch_copy": {
+        "announcement_copy": "Struggling to land that first paying customer? Builders aren't looking for vague advice. They need a proven sequence to launch, pitch, and close. We ship specific scripts + a 3-step launch framework so you can convert initial interest into revenue *today*, without ads. No fluff, just concrete action.",
+        "follow_up_comment": "What's the #1 hurdle you're facing getting that initial traction? Share below.",
+        "call_to_action": "Get the AutonomaX Masterclass Pro for a complete launch sequence: Pro \u2014 $79."
+      },
+      "offer_tier": "pro",
+      "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    {
+      "channel_name": "linkedin",
+      "launch_copy": {
+        "announcement_copy": "Many founders hit a wall: you've built something great, but getting that first paying customer feels like an uphill battle, often leading to wasted ad spend. The real challenge isn't product, it's a repeatable launch process. We've drafted, tested, and shipped a 3-step framework designed to help you acquire your first customer with clarity and confidence. This isn't about theory; it's about practical scripts, offer construction, and a launch sequence you can run this week. We focus on converting attention into revenue, not just traffic. If you're ready to close your first deals without burning cash on unproven campaigns, this toolkit lays out the precise steps.",
+        "follow_up_comment": "What's the biggest misconception you've encountered about acquiring early customers?",
+        "call_to_action": "Access the full AutonomaX Masterclass Pro toolkit and start closing deals: Pro \u2014 $79."
+      },
+      "offer_tier": "pro",
+      "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    {
+      "channel_name": "substack",
+      "launch_copy": {
+        "announcement_copy": "**From Idea to First Dollar: A Direct Path for Builders**\n\nThe journey from launching a product to securing your first paying customer often feels like navigating a maze. Many builders fall into the trap of spending heavily on ads or endlessly tweaking their product, when the actual bottleneck is a clear, repeatable customer acquisition process.\n\nWe've seen it firsthand: what's missing isn't a better product, but a precise sequence to articulate your offer, pitch it effectively, and close those initial sales. This isn't about abstract marketing strategies. It's about delivering practical assets you can deploy *today*.\n\nOur new AutonomaX Masterclass Pro toolkit provides exactly that. We've distilled years of direct-response experience into a 3-step launch framework:\n1.  **Offer Definition**: Crafting an irresistible offer using battle-tested frameworks.\n2.  **Pitch & Outreach Scripts**: Exact word-for-word scripts to land conversations and present your value.\n3.  **First Customer Sequence**: A step-by-step process to move from initial contact to a closed deal, without relying on paid advertising.\n\nThis toolkit ships with practical templates, specific examples, and a clear roadmap. It's built for builders who want to stop guessing and start acquiring customers, demonstrating product-market fit with real revenue. If you\u2019re ready to shift from 'building' to 'selling' with confidence, without burning cash on ads, this is your next step.",
+        "follow_up_comment": "",
+        "call_to_action": "Grab the AutonomaX Masterclass Pro toolkit and launch your first customer sequence: Pro \u2014 $79."
+      },
+      "offer_tier": "pro",
+      "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    }
+  ],
+  "customer_service_posts": [
+    {
+      "post_type": "Subscription Status",
+      "content": "The AutonomaX Masterclass Pro is a one-time purchase. No recurring fees, just a single payment for lifetime access to the toolkit and any future updates for this version.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    },
+    {
+      "post_type": "Content Overview",
+      "content": "The Pro toolkit includes a 3-step launch framework, practical scripts for offer definition and outreach, and a step-by-step sequence to land your first paying customer. It's designed for immediate implementation.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    },
+    {
+      "post_type": "Access & Delivery",
+      "content": "Upon purchase, you'll receive immediate access to the entire AutonomaX Masterclass Pro toolkit via a secure download link sent to your email. Everything is digital and ready for use.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    },
+    {
+      "post_type": "Target Audience",
+      "content": "This toolkit is for builders, founders, and indie hackers who are ready to acquire their first paying customers without relying on complex ad campaigns. If you have a product and need a clear path to revenue, it's for you.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    }
+  ],
+  "objection_replies": [
+    {
+      "objection": "Price",
+      "short_reply": "Consider the cost of *not* getting your first customer quickly, or the expense of failed ad campaigns. The Pro toolkit is a one-time $79 investment for a proven framework that aims to generate your first revenue much faster, often paying for itself with a single client."
+    },
+    {
+      "objection": "Legitimacy/Credibility",
+      "short_reply": "We operate on proven direct-response principles, tested across multiple launches. This isn't theory; it's a distillation of what actually works to close initial deals. Our focus is on concrete steps and measurable outcomes, not hype."
+    },
+    {
+      "objection": "Effort/Time Investment",
+      "short_reply": "The toolkit is designed for immediate action. We provide specific scripts and a clear 3-step sequence. While it requires you to draft and send, the heavy lifting of *what* to do is handled. You can typically run the first steps within a day."
+    },
+    {
+      "objection": "Post-Purchase Support",
+      "short_reply": "The AutonomaX Masterclass Pro is a digital toolkit. While it's self-serve, we ensure all materials are clear and actionable. For any technical issues with access, our team is available via email support."
+    }
+  ],
+  "buyer_persona": "",
+  "pain_point_summary": "",
+  "launch_thesis": "",
+  "offer_name": "AutonomaX Masterclass Starter",
+  "offer_url": "https://aikagan.com/products/masterclass-starter/",
+  "lead_magnet_url": "https://aikagan.com/free/golden-delivery-sample/",
+  "discount_code": "KAGANATE",
+  "priority_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_posts": [],
+  "execution_waves": [
+    {
+      "name": "wave1",
+      "timing": "day1-2",
+      "goal": "announce",
+      "channels": [
+        "x",
+        "linkedin",
+        "substack"
+      ]
+    }
+  ]
+}
