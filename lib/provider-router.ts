@@ -15,7 +15,7 @@
 
 import { getProduct } from "./products";
 
-export type Provider = "paddle" | "lemonsqueezy" | "gumroad";
+export type Provider = "paddle" | "lemonsqueezy" | "gumroad" | "shopier" | "manual";
 
 export interface CheckoutRequest {
   slug: string;
@@ -61,6 +61,13 @@ export function getProviderStatus(): Record<Provider, ProviderStatus> {
       reason: process.env.GUMROAD_ACCESS_TOKEN
         ? undefined
         : "GUMROAD_ACCESS_TOKEN not set",
+    },
+    shopier: {
+      provider: "shopier" as Provider,
+      available: Boolean(process.env.SHOPIER_API_KEY),
+      reason: process.env.SHOPIER_API_KEY
+        ? undefined
+        : "SHOPIER_API_KEY not set",
     },
   };
 }

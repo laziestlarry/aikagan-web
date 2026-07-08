@@ -54,9 +54,11 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
 
   // Try providers in priority order
+  //   Paddle → LemonSqueezy → Gumroad → manual fallback
   const providers = [
     { name: "paddle" as const, endpoint: "/api/paddle-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
     { name: "lemonsqueezy" as const, endpoint: "/api/lemonsqueezy-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
+    { name: "gumroad" as const, endpoint: "/api/gumroad-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
   ];
 
   for (const p of providers) {
