@@ -137,3 +137,4 @@ Push to deploy: `git push origin main` → auto-deploys via Vercel
 ---
 
 *Generated: 2026-07-08T13:00:00Z*
+
