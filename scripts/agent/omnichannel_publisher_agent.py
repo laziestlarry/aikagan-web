@@ -147,38 +147,58 @@ class LaunchDirectorPayload(pydantic.BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Profit Radar — Reddit pain-point scrape with engagement ranking + fallback
+# Profit Radar — multi-source audience signal (Reddit OAuth, HN, fallback)
 # ---------------------------------------------------------------------------
-@retry(stop=stop_after_attempt(3), wait=wait_exponential_jitter(initial=1, max=8))
-def _fetch_subreddit(subreddit: str) -> list[dict[str, Any]]:
-    headers = {"User-Agent": "AIKAGAN-MarketingCommander/2.0 (+https://aikagan.com)"}
-    url = f"https://www.reddit.com/r/{subreddit}/top.json?t=week&limit=5"
-    with httpx.Client(timeout=12.0, headers=headers) as client:
-        r = client.get(url)
+
+# --- Reddit OAuth (preferred — set REDDIT_CLIENT_ID + REDDIT_CLIENT_SECRET) ---
+def _reddit_oauth_token() -> str | None:
+    cid = os.getenv("REDDIT_CLIENT_ID", "")
+    secret = os.getenv("REDDIT_CLIENT_SECRET", "")
+    if not cid or not secret:
+        return None
+    try:
+        r = httpx.post(
+            "https://www.reddit.com/api/v1/access_token",
+            auth=(cid, secret),
+            data={"grant_type": "client_credentials"},
+            headers={"User-Agent": "AIKAGAN-MarketingCommander/2.0 by kagan"},
+            timeout=10.0,
+        )
         r.raise_for_status()
-        return [c.get("data", {}) for c in r.json().get("data", {}).get("children", [])]
+        return r.json().get("access_token", "")
+    except Exception as exc:
+        print(f"[radar] Reddit OAuth failed: {exc}")
+        return None
 
 
-def fetch_reddit_signal(subreddits: tuple[str, ...] = SUBREDDIT_TARGETS) -> str:
-    """Returns the highest-engagement post across the configured subreddits."""
+def _fetch_subreddit_oauth(subreddit: str, token: str) -> list[dict[str, Any]]:
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "User-Agent": "AIKAGAN-MarketingCommander/2.0 by kagan",
+    }
+    r = httpx.get(
+        f"https://oauth.reddit.com/r/{subreddit}/top?t=week&limit=5",
+        headers=headers, timeout=12.0,
+    )
+    r.raise_for_status()
+    return [c.get("data", {}) for c in r.json().get("data", {}).get("children", [])]
+
+
+def _fetch_reddit_signal(subreddits: tuple[str, ...]) -> str | None:
+    token = _reddit_oauth_token()
+    if not token:
+        return None
     ranked: list[tuple[int, str, dict[str, Any]]] = []
     for subreddit in subreddits:
         try:
-            for post in _fetch_subreddit(subreddit):
+            for post in _fetch_subreddit_oauth(subreddit, token):
                 score = int(post.get("score", 0)) + int(post.get("num_comments", 0)) * 2
                 ranked.append((score, subreddit, post))
-        except Exception as exc:  # noqa: BLE001
-            print(f"[radar] r/{subreddit} failed: {exc}")
+        except Exception as exc:
+            print(f"[radar] r/{subreddit} failed (OAuth): {exc}")
             continue
-
     if not ranked:
-        return (
-            "Subreddit: fallback\n"
-            "Title: I need my first paying customer without burning cash on ads\n"
-            "Body: Builders want practical scripts, a clear offer, and a launch "
-            "sequence they can run today."
-        )
-
+        return None
     ranked.sort(reverse=True, key=lambda t: t[0])
     score, subreddit, top = ranked[0]
     title = (top.get("title") or "").strip()
@@ -190,6 +210,63 @@ def fetch_reddit_signal(subreddits: tuple[str, ...] = SUBREDDIT_TARGETS) -> str:
         f"Body: {body}\n"
         f"Source: https://reddit.com{permalink}"
     )
+
+
+# --- Hacker News fallback (free, no auth) ---
+def _fetch_hn_signal() -> str | None:
+    try:
+        r = httpx.get(
+            "https://hacker-news.firebaseio.com/v0/topstories.json",
+            timeout=10.0,
+        )
+        r.raise_for_status()
+        story_ids = r.json()[:10]
+        entries: list[tuple[int, str]] = []
+        for sid in story_ids:
+            s = httpx.get(
+                f"https://hacker-news.firebaseio.com/v0/item/{sid}.json",
+                timeout=10.0,
+            ).json()
+            title = (s.get("title") or "").strip()
+            score = int(s.get("score", 0))
+            if title and score > 5:
+                entries.append((score, title))
+        if not entries:
+            return None
+        entries.sort(reverse=True, key=lambda t: t[0])
+        top_title = entries[0][1]
+        return (
+            f"Source: Hacker News (top stories)\n"
+            f"Title: {top_title}\n"
+            f"Body: Trending discussion in the builder/startup community.\n"
+        )
+    except Exception as exc:
+        print(f"[radar] Hacker News failed: {exc}")
+        return None
+
+
+# --- Fallback signal (always works) ---
+_FALLBACK_SIGNAL = (
+    "Source: fallback\n"
+    "Title: I need my first paying customer without burning cash on ads\n"
+    "Body: Builders want practical scripts, a clear offer, and a launch "
+    "sequence they can run today."
+)
+
+
+def fetch_audience_signal(subreddits: tuple[str, ...] = SUBREDDIT_TARGETS) -> str:
+    """Try Reddit OAuth → Hacker News → fallback."""
+    print(f"[radar] Scanning signal sources...")
+    signal = _fetch_reddit_signal(subreddits)
+    if signal:
+        print("[radar] Using Reddit OAuth signal")
+        return signal
+    signal = _fetch_hn_signal()
+    if signal:
+        print("[radar] Using Hacker News signal")
+        return signal
+    print("[radar] Using fallback signal")
+    return _FALLBACK_SIGNAL
 
 
 # ---------------------------------------------------------------------------
@@ -442,7 +519,7 @@ async def main_async(args: argparse.Namespace) -> int:
     print(f"[commander] Active channels: {', '.join(channels)}")
 
     print(f"[radar] Scanning subreddits: {', '.join(SUBREDDIT_TARGETS)}")
-    audience_signal = fetch_reddit_signal()
+    audience_signal = fetch_audience_signal()
     print(f"[radar] Selected signal:\n{audience_signal}\n")
 
     cta_table = {
