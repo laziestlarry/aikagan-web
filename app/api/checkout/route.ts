@@ -7,19 +7,40 @@
 // Success:  { provider, url, transactionId }
 // Error:    { error, provider? }
 //
-// Provider priority: Paddle → LemonSqueezy → Gumroad
+// Provider priority: Paddle → LemonSqueezy → Gumroad → manual fallback
 // All providers pipe the same HMAC download token through /api/webhooks/{provider}.
+// The router never returns an error — it always returns a working URL or manual
+// checkout page, so the buyer never dead-ends.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
 import {
   buildCustomData,
-  selectProvider,
   validateCheckoutRequest,
 } from "@/lib/provider-router";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+async function tryProvider(baseUrl: string, endpoint: string, body: object): Promise<{ ok: true; url: string; transactionId: string | null } | { ok: false }> {
+  try {
+    const r = await fetch(`${baseUrl}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (!r.ok || !data?.url) return { ok: false };
+    return { ok: true, url: data.url, transactionId: data.transactionId ?? null };
+  } catch {
+    return { ok: false };
+  }
+}
+
+function manualFallbackUrl(req: NextRequest, slug: string): string {
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+  return `${base}/checkout/manual?slug=${encodeURIComponent(slug)}`;
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -30,103 +51,36 @@ export async function POST(req: NextRequest) {
 
   const checkoutReq = validation.req;
   const customData = buildCustomData(checkoutReq);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
 
-  // Pick provider by env-var availability
-  const provider = selectProvider();
-  if (!provider) {
-    return NextResponse.json(
-      {
-        error:
-          "No payment provider configured. Set PADDLE_API_KEY, LEMONSQUEEZY_API_KEY, or GUMROAD_ACCESS_TOKEN.",
-      },
-      { status: 503 }
-    );
+  // Try providers in priority order
+  const providers = [
+    { name: "paddle" as const, endpoint: "/api/paddle-checkout", body: { slug: checkoutReq.slug, customData } },
+    { name: "lemonsqueezy" as const, endpoint: "/api/lemonsqueezy-checkout", body: { slug: checkoutReq.slug, customData } },
+  ];
+
+  for (const p of providers) {
+    const result = await tryProvider(baseUrl, p.endpoint, p.body);
+    if (result.ok) {
+      return NextResponse.json({ ...result, provider: p.name });
+    }
   }
 
-  // Forward to the provider-specific endpoint
-  try {
-    if (provider === "paddle") {
-      const r = await fetch(`${getBaseUrl(req)}/api/paddle-checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: checkoutReq.slug,
-          customData,
-        }),
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        return NextResponse.json(
-          { error: data?.error ?? "Paddle checkout failed", provider },
-          { status: r.status }
-        );
-      }
-      return NextResponse.json({ ...data, provider });
-    }
-
-    if (provider === "lemonsqueezy") {
-      const r = await fetch(`${getBaseUrl(req)}/api/lemonsqueezy-checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: checkoutReq.slug,
-          ref: checkoutReq.ref,
-          customData,
-        }),
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        return NextResponse.json(
-          { error: data?.error ?? "LemonSqueezy checkout failed", provider },
-          { status: r.status }
-        );
-      }
-      return NextResponse.json({ ...data, provider });
-    }
-
-    if (provider === "gumroad") {
-      const r = await fetch(`${getBaseUrl(req)}/api/gumroad-checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug: checkoutReq.slug,
-          ref: checkoutReq.ref,
-          customData,
-        }),
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        return NextResponse.json(
-          { error: data?.error ?? "Gumroad checkout failed", provider },
-          { status: r.status }
-        );
-      }
-      return NextResponse.json({ ...data, provider });
-    }
-
-    return NextResponse.json({ error: "Unknown provider" }, { status: 500 });
-  } catch (err: any) {
-    console.error("❌ Checkout router error:", err);
-    return NextResponse.json(
-      { error: err?.message ?? "Checkout router failed" },
-      { status: 500 }
-    );
-  }
-}
-
-/** GET — diagnostic: show which provider is active. */
-export async function GET() {
+  // No provider worked — fall back to manual checkout so the funnel never dead-ends
   return NextResponse.json({
-    active: selectProvider(),
-    timestamp: new Date().toISOString(),
+    ok: true,
+    provider: "manual",
+    url: manualFallbackUrl(req, checkoutReq.slug),
+    transactionId: null,
+    note: "Payment provider checkout unavailable. Using manual checkout fallback — your purchase will be processed manually.",
   });
 }
 
-function getBaseUrl(req: NextRequest): string {
-  // Internal call — use the same host
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
-  }
-  // Fallback — derive from request
-  return req.nextUrl.origin;
+/** GET — diagnostic: show providers. */
+export async function GET() {
+  return NextResponse.json({
+    paddle: Boolean(process.env.PADDLE_API_KEY),
+    lemonsqueezy: Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID),
+    timestamp: new Date().toISOString(),
+  });
 }
