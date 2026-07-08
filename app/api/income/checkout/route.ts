@@ -54,6 +54,13 @@ function manualFallbackUrl(req: NextRequest, slug: string, intentId: string): st
   return u.toString();
 }
 
+// Price IDs created in Paddle Catalog
+const CATALOG_PRICE_IDS: Record<string, string> = {
+  "masterclass-starter": "pri_01kx0rg4hmnpbdpsnx3d7j8h5q",
+  "masterclass-pro": "pri_01kx0rg4q1ed110tw5cc4xqfs3",
+  "masterclass-commander": "pri_01kx0rg4w962z7vmn53c8pq7n3",
+};
+
 async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRecord) {
   const paddle = getPaddleClient();
   if (!paddle) return null;
@@ -61,7 +68,6 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
   if (!product || !product.price) return null;
   try {
     const priceInfo = resolveCouponPrice(body.slug, body.coupon);
-    const unitAmount = String(priceInfo.effectivePriceCents);
     const customData: Record<string, string> = {
       product_slug: body.slug,
       ref_code: body.ref ?? "",
@@ -70,24 +76,31 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
       utm_campaign: body.utm_campaign ?? "",
       ...(priceInfo.applied ? { coupon: body.coupon ?? "", test_price: "1" } : {}),
     };
-    const tx = await paddle.transactions.create({
-      items: [
-        {
+    const priceId = CATALOG_PRICE_IDS[body.slug];
+    let tx;
+    if (priceInfo.applied || !priceId) {
+      tx = await paddle.transactions.create({
+        items: [{
           quantity: 1,
           price: {
             description: product.description,
-            name: `${product.tier} — ${product.name}`,
-            unitPrice: { amount: unitAmount, currencyCode: "USD" },
+            name: `${product.tier} — ${product.name}${priceInfo.applied ? ' (TEST $1)' : ''}`,
+            unitPrice: { amount: String(priceInfo.effectivePriceCents), currencyCode: "USD" },
             product: {
-              name: `${product.tier} — ${product.name}`,
-              taxCategory: "digital-goods",
+              name: `${product.tier} — ${product.name}${priceInfo.applied ? ' (TEST $1)' : ''}`,
+              taxCategory: "saas",
               description: product.description,
             },
           },
-        },
-      ],
-      customData,
-    });
+        }],
+        customData,
+      });
+    } else {
+      tx = await paddle.transactions.create({
+        items: [{ quantity: 1, priceId }],
+        customData,
+      });
+    }
     if (tx.id) {
       await tokenStore.set(tx.id, {
         token: null,
