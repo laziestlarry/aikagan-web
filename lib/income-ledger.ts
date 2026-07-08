@@ -413,7 +413,10 @@ export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promis
   }));
 
   const kvAvailable = (await getKv()) !== null;
-  const capiConfigured = Boolean(process.env.META_PIXEL_ID && process.env.META_CAPI_ACCESS_TOKEN);
+  const capiConfigured = Boolean(
+    (process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID) &&
+    process.env.META_CAPI_ACCESS_TOKEN,
+  );
   const paddleConfigured = Boolean(process.env.PADDLE_API_KEY);
 
   // Sanity ratio

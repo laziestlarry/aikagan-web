@@ -152,12 +152,18 @@ export async function GET(req: NextRequest) {
     envPresent: {
       KV_REST_API_URL: Boolean(process.env.KV_REST_API_URL),
       KV_REST_API_TOKEN: Boolean(process.env.KV_REST_API_TOKEN),
+      NEXT_PUBLIC_META_PIXEL_ID: Boolean(process.env.NEXT_PUBLIC_META_PIXEL_ID),
+      META_CAPI_ACCESS_TOKEN: Boolean(process.env.META_CAPI_ACCESS_TOKEN),
     },
     envValues: {
-      KV_REST_API_URL: process.env.KV_REST_API_URL ?? "(empty)",
+      KV_REST_API_URL: (process.env.KV_REST_API_URL ?? "").slice(0, 50),
       KV_REST_API_TOKEN_length: (process.env.KV_REST_API_TOKEN ?? "").length,
       KV_REST_API_TOKEN_prefix: (process.env.KV_REST_API_TOKEN ?? "").slice(0, 12),
       KV_REST_API_TOKEN_suffix: (process.env.KV_REST_API_TOKEN ?? "").slice(-4),
+      NEXT_PUBLIC_META_PIXEL_ID: (process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "").slice(0, 30),
+      META_CAPI_ACCESS_TOKEN_length: (process.env.META_CAPI_ACCESS_TOKEN ?? "").length,
+      META_CAPI_ACCESS_TOKEN_prefix: (process.env.META_CAPI_ACCESS_TOKEN ?? "").slice(0, 12),
+      META_CAPI_ACCESS_TOKEN_suffix: (process.env.META_CAPI_ACCESS_TOKEN ?? "").slice(-4),
     },
     directPing,
     writeThenRead,
@@ -168,5 +174,6 @@ export async function GET(req: NextRequest) {
     wrapperProbes,
     directProbes,
     singleEndpointProbe,
+    directCapiFire,
   });
 }

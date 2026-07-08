@@ -60,16 +60,24 @@ export interface CapiResult {
   event_id: string;
 }
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID || "";
-const ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN || "";
-const TEST_EVENT_CODE = process.env.META_PIXEL_TEST_EVENT_CODE || "";
-const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v22.0";
+// CRITICAL: env vars are read inside the function call, not at module load.
+// If we capture them at module load, a stale function instance will keep
+// using old values even after env is updated and a new deploy happens.
+function getEnv() {
+  return {
+    PIXEL_ID: process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID || "",
+    ACCESS_TOKEN: process.env.META_CAPI_ACCESS_TOKEN || "",
+    TEST_EVENT_CODE: process.env.META_PIXEL_TEST_EVENT_CODE || "",
+    GRAPH_VERSION: process.env.META_GRAPH_VERSION || "v22.0",
+  };
+}
 
 function sha256(s: string): string {
   return createHash("sha256").update(String(s).trim().toLowerCase()).digest("hex");
 }
 
 function isConfigured(): boolean {
+  const { PIXEL_ID, ACCESS_TOKEN } = getEnv();
   return Boolean(PIXEL_ID && ACCESS_TOKEN);
 }
 
@@ -96,6 +104,7 @@ export async function fireCapi(
 ): Promise<CapiResult> {
   const eventId = event.event_id || newEventId();
   const source = context?.source ?? "capi";
+  const { PIXEL_ID, ACCESS_TOKEN, TEST_EVENT_CODE, GRAPH_VERSION } = getEnv();
 
   if (!isConfigured()) {
     const result: CapiResult = {
