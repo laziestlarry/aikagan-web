@@ -80,13 +80,13 @@ function useSessionToken(): { token: string | null; slug: string | null; loading
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         } else if (attempts >= maxAttempts) {
-          setError("Token generation is taking longer than expected. Please check your email for the download link, or contact affiliates@autonomax.ai.");
+          setError("Token generation is taking longer than expected. Please check your email for the download link, or contact support@aikagan.com.");
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         }
       } catch {
         if (attempts >= maxAttempts) {
-          setError("Could not retrieve your download token. Please email affiliates@autonomax.ai with your order number.");
+          setError("Could not retrieve your download token. Please email support@aikagan.com with your order number.");
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         }
@@ -316,8 +316,8 @@ function CheckoutSuccessContent() {
                       Within ~60 seconds you&apos;ll receive a confirmation email with your secure
                       download link (valid 48 hours). If it doesn&apos;t arrive, check your spam
                       folder, or email{" "}
-                      <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">
-                        affiliates@autonomax.ai
+                      <a href="mailto:support@aikagan.com" className="text-amber-300 underline">
+                        support@aikagan.com
                       </a>{" "}
                       with your order number and we&apos;ll re-send it manually within an hour.
                     </p>
@@ -355,7 +355,7 @@ function CheckoutSuccessContent() {
                 { icon: Download, text: 'Download and unzip the pack.' },
                 { icon: FileText, text: <><strong>Open START_HERE.pdf</strong> first — it maps the exact execution sequence.</> },
                 { icon: CheckCircle, text: 'Complete the 24-Hour Quick Win Checklist.' },
-                { icon: Mail, text: <>Questions? Email <a href="mailto:affiliates@autonomax.ai" className="text-amber-300 underline">affiliates@autonomax.ai</a></> },
+                { icon: Mail, text: <>Questions? Email <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a></> },
               ].map(({ icon: ItemIcon, text }, i) => (
                 <li key={i} className="flex gap-3 items-start">
                   <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-300/10 border border-amber-300/20 flex-shrink-0 mt-0.5">

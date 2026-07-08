@@ -305,8 +305,8 @@ export default function AffiliateDashboard() {
       <div className="text-center">
         <p className="text-sm text-kagan-light mb-4">
           Questions about the program?{" "}
-          <a href="mailto:affiliates@autonomax.ai" className="text-kagan-gold hover:underline">
-            affiliates@autonomax.ai
+          <a href="mailto:affiliates@aikagan.com" className="text-kagan-gold hover:underline">
+            affiliates@aikagan.com
           </a>
         </p>
       </div>

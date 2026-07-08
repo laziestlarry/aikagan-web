@@ -78,7 +78,7 @@ export default function LiveChat() {
       const botMsg: ChatMessage = { role: "assistant", content: data.response };
       setMessages((prev) => [...prev, botMsg]);
     } catch {
-      setError("Could not reach the assistant right now. Please try again or email support@autonomax.ai.");
+      setError("Could not reach the assistant right now. Please try again or email support@aikagan.com.");
       /* Remove the optimistic user message on error */
       setMessages((prev) => prev.slice(0, -1));
     } finally {
@@ -179,8 +179,8 @@ export default function LiveChat() {
             </div>
             <p className="mt-1.5 text-[10px] text-kagan-muted text-center">
               Responses are AI-generated. For urgent issues, email{" "}
-              <a href="mailto:support@autonomax.ai" className="text-kagan-gold hover:underline">
-                support@autonomax.ai
+              <a href="mailto:support@aikagan.com" className="text-kagan-gold hover:underline">
+                support@aikagan.com
               </a>
             </p>
           </div>

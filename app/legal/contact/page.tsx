@@ -41,9 +41,9 @@ export default function ContactPage() {
             <p className="text-neutral-400 text-sm mb-3">
               Didn&apos;t receive your download? Wrong files? Email us with your order ID.
             </p>
-            <a href="mailto:affiliates@autonomax.ai"
+            <a href="mailto:support@aikagan.com"
               className="text-amber-300 underline text-sm hover:text-amber-200">
-              affiliates@autonomax.ai
+              support@aikagan.com
             </a>
           </div>
 
@@ -64,9 +64,9 @@ export default function ContactPage() {
             <p className="text-neutral-400 text-sm mb-3">
               Interested in the Commander white-label, custom advisory, or a partnership arrangement.
             </p>
-            <a href="mailto:affiliates@autonomax.ai"
+            <a href="mailto:support@aikagan.com"
               className="text-amber-300 underline text-sm hover:text-amber-200">
-              affiliates@autonomax.ai
+              support@aikagan.com
             </a>
           </div>
 
@@ -80,7 +80,7 @@ export default function ContactPage() {
         </div>
 
         <p className="text-sm text-neutral-600 text-center">
-          affiliates@autonomax.ai · aikagan.com
+          support@aikagan.com · aikagan.com
         </p>
       </section>
     </main>
