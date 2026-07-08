@@ -100,7 +100,7 @@ function useSessionToken(): { token: string | null; slug: string | null; loading
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [transactionId]);
+  }, [transactionId, ptxn]);
 
   return { token, slug, loading, error };
 }
