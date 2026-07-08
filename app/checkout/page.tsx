@@ -85,7 +85,7 @@ function CheckoutContent() {
             Back to products
           </Link>
           <p className="mt-4 text-xs text-neutral-500">
-            Or email support@aikagan.com with your order details.
+            Or email hello@aikagan.com with your order details.
           </p>
         </div>
       )}

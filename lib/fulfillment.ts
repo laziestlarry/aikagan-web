@@ -131,7 +131,7 @@ function buildCSPurchasePayload(job: PurchaseFulfillment): Record<string, unknow
     type: "purchase_confirmation",
     to: job.email,
     reply_email_address: job.email,
-    reply_from: "support@aikagan.com",
+    reply_from: "hello@aikagan.com",
     subject: `Your ${job.productName} download is ready — AutonomaX`,
     ai_generated_reply: [
       `Hi ${job.name || "there"},`,
@@ -143,7 +143,7 @@ function buildCSPurchasePayload(job: PurchaseFulfillment): Record<string, unknow
       `Your secure download link (valid 48 hours):`,
       `${job.downloadUrl}`,
       ``,
-      `Questions? Reply to this email or contact support@aikagan.com`,
+      `Questions? Reply to this email or contact hello@aikagan.com`,
       ``,
       `— AutonomaX Team`,
     ].join("\n"),
@@ -157,7 +157,7 @@ function buildCSLeadPayload(job: LeadMagnetFulfillment, assetUrl: string): Recor
     type: "lead_magnet_delivery",
     to: job.email,
     reply_email_address: job.email,
-    reply_from: "support@aikagan.com",
+    reply_from: "hello@aikagan.com",
     subject: `Your free ${job.productName} is ready — AutonomaX`,
     ai_generated_reply: [
       `Here is your free ${job.productName}!`,

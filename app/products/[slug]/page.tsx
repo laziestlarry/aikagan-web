@@ -96,7 +96,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 "Checkout completes via Paddle — you're redirected back to aikagan.com where your download link appears instantly.",
                 "Open the ZIP and read START_HERE.pdf first — it maps every file in the pack.",
                 "Follow the included execution checklist and use the scripts and templates directly.",
-                "Need help? Email support@aikagan.com within 30 days.",
+                "Need help? Email hello@aikagan.com within 30 days.",
               ].map((step, i) => (
                 <li key={i} className="flex gap-3">
                   <span className="text-amber-300 font-bold flex-shrink-0">{i + 1}.</span>
@@ -142,7 +142,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </table>
             </div>
             <p className="mt-4 text-xs text-neutral-500">
-              Not sure which tier fits? <a href="mailto:support@aikagan.com" className="text-amber-300 underline">Email us</a> — we'll help you choose.
+              Not sure which tier fits? <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">Email us</a> — we'll help you choose.
             </p>
           </div>
 
@@ -276,7 +276,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="rounded-3xl border border-white/5 bg-[#0d1119]/30 p-6">
             <p className="text-xs text-neutral-500 mb-3 uppercase tracking-widest font-semibold">Need help deciding?</p>
             <a
-              href="mailto:support@aikagan.com?subject=Help%20choosing%20a%20plan"
+              href="mailto:hello@aikagan.com?subject=Help%20choosing%20a%20plan"
               className="flex items-center gap-2 text-sm text-amber-300 hover:text-amber-200 transition"
             >
               <TrendingUp className="h-4 w-4" />

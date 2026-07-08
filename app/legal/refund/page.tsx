@@ -17,7 +17,7 @@ export default function RefundPage() {
             <h2 className="text-lg font-semibold text-white mb-3">30-Day Satisfaction Window</h2>
             <p>
               If you are not satisfied with your purchase, email us at{" "}
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>{" "}
+              <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>{" "}
               within 30 days of your original purchase date. We will review your request and process
               eligible refunds within 5 business days.
             </p>
@@ -41,7 +41,7 @@ export default function RefundPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">How to Request a Refund</h2>
             <p>
-              Email <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>{" "}
+              Email <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>{" "}
               with the subject line <strong className="text-white">Refund Request — [Order ID]</strong> and include
               your order confirmation number, the product you purchased, and a brief description of your
               concern. We respond within 2 business days.
@@ -70,7 +70,7 @@ export default function RefundPage() {
             <h2 className="text-lg font-semibold text-white mb-3">Contact</h2>
             <p>
               Questions about this policy?{" "}
-              <a href="mailto:support@aikagan.com" className="text-amber-300 underline">support@aikagan.com</a>
+              <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>
             </p>
           </div>
 
