@@ -15,20 +15,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProduct } from "@/lib/products";
 import { fulfillPurchase } from "@/lib/fulfillment";
-import { getGumroadProduct } from "@/lib/gumroad-products";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** Map Gumroad permalink to aikagan product slug */
-function permalinkToSlug(permalink: string): string | null {
-  const map: Record<string, string> = {
-    "autonomax-starter": "masterclass-starter",
-    "autonomax-pro": "masterclass-pro",
-    "autonomax-commander": "masterclass-commander",
-  };
-  return map[permalink] ?? null;
-}
+const PERMALINK_TO_SLUG: Record<string, string> = {
+  "autonomax-starter": "masterclass-starter",
+  "autonomax-pro": "masterclass-pro",
+  "autonomax-commander": "masterclass-commander",
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -46,7 +42,6 @@ export async function POST(req: NextRequest) {
     const price = parseFloat((formData.get("price") as string) ?? "0");
     const currency = (formData.get("currency") as string) ?? "usd";
     const licenseKey = (formData.get("license_key") as string) ?? "";
-    const ipCountry = (formData.get("ip_country") as string) ?? "";
 
     console.log("📥 Gumroad webhook received:", {
       saleId,
@@ -58,9 +53,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Map to our product system
-    const slug = permalinkToSlug(productPermalink);
+    const slug = PERMALINK_TO_SLUG[productPermalink];
     if (!slug) {
-      // Unknown product — still log but don't fulfill
       console.warn("⚠️ Gumroad unknown product permalink:", productPermalink);
       return NextResponse.json({ ok: true, note: "unknown product" });
     }
@@ -71,28 +65,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, note: "unknown slug" });
     }
 
-    // Fulfill: send purchase email with download link
+    // Build download URL using Gumroad license key as token reference
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
+    const downloadUrl = product.zipFilename
+      ? `${siteUrl}/api/download/${licenseKey}`
+      : siteUrl;
+
+    // Fulfill: send purchase confirmation email with download link
     const buyerName = fullName || email.split("@")[0] || "Valued Customer";
-    const fulfillResult = await fulfillPurchase({
+    await fulfillPurchase({
       email,
       name: buyerName,
-      slug,
+      productName: product.name,
+      productSlug: slug,
       orderId: `gr-${saleId}`,
-      amount: price,
-      currency,
-      downloadUrl: product.zipFilename
-        ? `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com"}/api/download/${licenseKey}`
-        : undefined,
+      value: price,
+      provider: "gumroad",
+      downloadUrl,
     });
 
-    console.log("✅ Gumroad fulfillment result:", fulfillResult);
+    console.log("✅ Gumroad fulfillment complete:", { saleId, slug });
 
-    return NextResponse.json({
-      ok: true,
-      saleId,
-      slug,
-      fulfilled: fulfillResult,
-    });
+    return NextResponse.json({ ok: true, saleId, slug });
   } catch (err: any) {
     console.error("❌ Gumroad webhook error:", err);
     // Always return 200 to Gumroad so they don't retry indefinitely
