@@ -19,6 +19,8 @@ export const metadata: Metadata = buildMetadata({});
 // GTM container; GA4 + Meta Pixel are loaded inside GTM (configured in GTM UI).
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-NZW2CP6H';
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || '';
+const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || '';
+const PADDLE_ENV = process.env.NEXT_PUBLIC_PADDLE_ENV || 'production';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -58,8 +60,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script
           src="https://cdn.paddle.com/paddle/v2/paddle.js"
           strategy="afterInteractive"
-          data-token={process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? ""}
-          data-env="production"
+        />
+        <Script
+          id="paddle-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function initPaddle(){
+                var token = ${JSON.stringify(PADDLE_CLIENT_TOKEN)};
+                var env = ${JSON.stringify(PADDLE_ENV)};
+                if (!token) return;
+                var initialized = false;
+                function apply() {
+                  if (initialized || !window.Paddle) return;
+                  try {
+                    if (env === 'sandbox' && window.Paddle.Environment && typeof window.Paddle.Environment.set === 'function') {
+                      window.Paddle.Environment.set('sandbox');
+                    }
+                    if (typeof window.Paddle.Initialize === 'function') {
+                      window.Paddle.Initialize({ token: token });
+                      initialized = true;
+                    }
+                  } catch (err) {
+                    console.error('[paddle-init] failed', err);
+                  }
+                }
+                apply();
+                var t = setInterval(function () {
+                  apply();
+                  if (initialized) clearInterval(t);
+                }, 200);
+                setTimeout(function () { clearInterval(t); }, 10000);
+              })();
+            `,
+          }}
         />
       </head>
       <body className="min-h-screen flex flex-col">

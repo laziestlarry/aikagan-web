@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
-import Script from "next/script";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -58,12 +57,6 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-[#08080a] flex items-center justify-center">
-      <Script
-        src="https://cdn.paddle.com/paddle/v2/paddle.js"
-        strategy="afterInteractive"
-        data-token={process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? ""}
-      />
-      
       {status === "loading" && (
         <div className="text-center">
           <div className="animate-spin h-10 w-10 border-2 border-amber-300 border-t-transparent rounded-full mx-auto mb-4" />
