@@ -155,19 +155,24 @@ function ManualCheckoutInner() {
     }
   }
 
-  /* ── Success ─────────────────────────────────────────────────────── */
+  /* ── Acknowledgement (NOT a sale confirmation) ─────────────────── */
   if (submitted) {
     return (
       <Section variant="hero">
         <div className="max-w-2xl mx-auto text-center py-20">
-          <Badge variant="green" className="mb-4">Received</Badge>
+          <Badge variant="amber" className="mb-4">Request received — not yet paid</Badge>
           <h1 className="text-4xl font-extrabold text-kagan-white mb-4">
-            We got it.
+            We&apos;ll be in touch.
           </h1>
           <p className="text-kagan-light">
             Your interest in the <strong>{product?.name ?? slug}</strong> toolkit is recorded.
             The team will reach out personally with a secure payment link and your
             download within 24 hours.
+          </p>
+          <p className="mt-4 text-sm text-amber-300/80">
+            This is <strong>not</strong> an order confirmation. No payment has been
+            processed. The standard checkout via Paddle was unavailable when you
+            tried to buy.
           </p>
           {urlCoupon && (
             <p className="text-sm text-kagan-gold mt-4">
@@ -192,6 +197,16 @@ function ManualCheckoutInner() {
   return (
     <Section variant="hero">
       <div className="max-w-4xl mx-auto">
+        {/* ── Fallback banner ──────────────────────────────────── */}
+        <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/[0.04] px-5 py-3 text-sm text-amber-200">
+          <strong className="font-semibold">Fallback checkout.</strong> The standard
+          Paddle payment flow is unavailable. Leave your details and we&apos;ll send a
+          secure payment link within 24 hours.{" "}
+          <Link href={`/products/${slug}`} className="underline hover:text-amber-100">
+            Try the standard checkout →
+          </Link>
+        </div>
+
         {/* ── Header ──────────────────────────────────────────────── */}
         <Badge variant="amber" className="mb-4">
           {urlCoupon ? "Test Purchase" : "Complete Your Purchase"}
@@ -219,7 +234,7 @@ function ManualCheckoutInner() {
             <div className="md:col-span-3">
               <h2 className="text-lg font-semibold text-kagan-white mb-4 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                Checkout is available
+                Other payment options
               </h2>
 
               {loadingUrls ? (

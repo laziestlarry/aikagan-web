@@ -93,13 +93,18 @@ export async function POST(req: NextRequest) {
       price: product.price,
     });
 
-    const hostedCheckoutUrl = transaction.id
-      ? `https://checkout-service.paddle.com/create/checkout/${transaction.id}`
+    // NOTE: `checkout-service.paddle.com/create/checkout/{id}` is an internal
+    // path only reachable after Paddle's own pay.paddle.com session redirect —
+    // hitting it directly returns Paddle's generic error page. Route through
+    // our own `/checkout?_ptxn=` page instead, which opens the Paddle.js
+    // overlay (Paddle.Checkout.open) — the officially supported integration.
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+    const overlayUrl = transaction.id
+      ? new URL(`/checkout?_ptxn=${encodeURIComponent(transaction.id)}`, base).toString()
       : null;
-    const shouldForceHosted = !process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
 
     return NextResponse.json({
-      url: (shouldForceHosted ? hostedCheckoutUrl : transaction.checkout?.url ?? hostedCheckoutUrl) ?? null,
+      url: overlayUrl,
       transactionId: transaction.id,
     });
   } catch (err: any) {

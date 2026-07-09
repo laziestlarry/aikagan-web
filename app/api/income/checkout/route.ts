@@ -110,21 +110,24 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
         exp: Date.now() + 48 * 60 * 60 * 1000,
       });
     }
-    // `tx.checkout.url` can be an in-app `_ptxn` handoff URL that requires
-    // Paddle.js client token initialization. For resilience, always provide a
-    // direct hosted checkout URL fallback derived from transaction id.
-    const hostedCheckoutUrl = tx.id
-      ? `https://checkout-service.paddle.com/create/checkout/${tx.id}`
+    // NOTE: manually constructing a "hosted checkout" URL such as
+    // `checkout-service.paddle.com/create/checkout/{id}` is NOT a supported
+    // public entry point — Paddle only serves that path after an internal
+    // session redirect from pay.paddle.com, and hitting it directly returns
+    // Paddle's generic `buy.paddle.com/checkout/error` page. The supported
+    // integration is the Paddle.js overlay (`Paddle.Checkout.open`), which
+    // our own `/checkout` route already implements correctly. Route every
+    // buy button through that same-origin page so the overlay opens once
+    // Paddle.js + Paddle.Initialize (loaded globally in the root layout)
+    // are ready.
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+    const overlayUrl = tx.id
+      ? new URL(`/checkout?_ptxn=${encodeURIComponent(tx.id)}`, base).toString()
       : null;
-    const shouldForceHosted = !process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
 
     return {
       provider: "paddle" as const,
-      url:
-        (shouldForceHosted
-          ? hostedCheckoutUrl
-          : tx.checkout?.url ?? hostedCheckoutUrl) ??
-        manualFallbackUrl(req, body.slug, intent.capturedAt.toString()),
+      url: overlayUrl ?? manualFallbackUrl(req, body.slug, intent.capturedAt.toString()),
       transactionId: tx.id,
     };
   } catch (err) {

@@ -46,7 +46,12 @@ function decorate(raw: string, slug: string): string {
  */
 export default function CheckoutButton({ href, slug, price, children, className }: Props) {
   const isRealHref = typeof href === "string" && href.startsWith("http");
-  const finalHref = isRealHref ? decorate(href!, slug) : `/checkout/manual?slug=${encodeURIComponent(slug)}`;
+  // Default href is a non-navigating sentinel; the click handler is the only
+  // path that resolves a real checkout URL. This prevents the page from
+  // accidentally navigating to /checkout/manual if JS is slow to hydrate.
+  const finalHref = isRealHref
+    ? decorate(href!, slug)
+    : (typeof href === "string" && href.length > 0 ? href : "#");
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
     // Always fire the browser pixel event
@@ -72,7 +77,10 @@ export default function CheckoutButton({ href, slug, price, children, className 
     if (isRealHref) return;
 
     // Otherwise — call our self-healing checkout endpoint and navigate to the
-    // returned URL (Paddle hosted page, LS overlay, or /checkout/manual).
+    // returned URL (Paddle hosted page or LS overlay). If the server reports
+    // `checkout_unavailable`, we surface a real error instead of routing to
+    // /checkout/manual — manual checkout is reserved for environments where
+    // no payment provider is configured.
     e.preventDefault();
     const attrs = getAttribution();
     fetch("/api/income/checkout", {
@@ -89,18 +97,40 @@ export default function CheckoutButton({ href, slug, price, children, className 
       }),
       keepalive: true,
     })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.url) {
+      .then(async (r) => {
+        const data = await r.json().catch(() => null);
+        if (r.ok && data?.url) {
           window.location.href = data.url;
-        } else {
-          // Defensive: never dead-end the buyer
-          window.location.href = `/checkout/manual?slug=${encodeURIComponent(slug)}`;
+          return;
         }
+        // Real provider error — show inline error, do NOT silently route to /checkout/manual
+        if (data?.error === "checkout_unavailable") {
+          showCheckoutError(data.detail ?? "Payment is temporarily unavailable. Please try again.");
+          return;
+        }
+        // Defensive fallback (no real URL) — only if no provider is configured
+        if (data?.provider === "manual" && data?.url) {
+          window.location.href = data.url;
+          return;
+        }
+        showCheckoutError("Could not start checkout. Please refresh and try again.");
       })
       .catch(() => {
-        window.location.href = `/checkout/manual?slug=${encodeURIComponent(slug)}`;
+        showCheckoutError("Network error starting checkout. Please check your connection and try again.");
       });
+  }
+
+  function showCheckoutError(message: string) {
+    if (typeof window === "undefined") return;
+    // Use the existing page's error surface if present; otherwise an alert.
+    const banner = document.getElementById("checkout-error-banner");
+    if (banner) {
+      banner.textContent = message;
+      banner.classList.remove("hidden");
+      return;
+    }
+    // Last resort: surface to the user without dead-ending
+    window.alert(message);
   }
 
   return (

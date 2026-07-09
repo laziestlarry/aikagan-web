@@ -141,6 +141,15 @@ function OrderBump({ currentSlug }: { currentSlug: string }) {
 function CheckoutSuccessContent() {
   const { token, slug, loading, error } = useSessionToken();
   const [activeStep, setActiveStep] = useState(0);
+  const [hasTransaction, setHasTransaction] = useState(false);
+
+  // Detect whether the user actually arrived with a transaction_id.
+  // If not, the page must not pretend an order was confirmed.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    setHasTransaction(Boolean(sp.get("transaction_id") || sp.get("_ptxn")));
+  }, []);
 
   // Resolve which product to show
   const product =
@@ -159,9 +168,9 @@ function CheckoutSuccessContent() {
     return () => clearInterval(id);
   }, []);
 
-  // Fire Meta Pixel Purchase event
+  // Fire Meta Pixel Purchase event — only when the download token is real.
   useEffect(() => {
-    if (!product || product.priceModel !== "one_time") return;
+    if (!token || !product || product.priceModel !== "one_time") return;
     window.fbq?.("track", "Purchase", {
       value: product.price,
       currency: "USD",
@@ -169,17 +178,15 @@ function CheckoutSuccessContent() {
       content_type: "product",
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product?.slug]);
+  }, [token, product?.slug]);
 
-  const downloadHref = token
-    ? `/api/download/${token}`
-    : product?.zipFilename
-    ? `/api/download/demo-${product.slug}` // dev fallback
-    : null;
+  // Only show a real download button when we have a verified token.
+  // Dev fallback (`/api/download/demo-...`) is removed — it allowed the
+  // page to look "confirmed" without an actual payment.
+  const downloadHref = token ? `/api/download/${token}` : null;
 
   return (
     <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white relative overflow-hidden">
-      {/* Confetti particles (CSS) */}
       <style>{`
         @keyframes float-up {
           0% { transform: translateY(0) rotate(0deg); opacity: 1; }
@@ -195,7 +202,7 @@ function CheckoutSuccessContent() {
           z-index: 0;
         }
       `}</style>
-      {Array.from({ length: 20 }).map((_, i) => (
+      {token && Array.from({ length: 20 }).map((_, i) => (
         <div
           key={i}
           className="confetti-piece"
@@ -216,14 +223,52 @@ function CheckoutSuccessContent() {
         {/* Header */}
         <div className="flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-amber-300">
           <Sparkles className="h-4 w-4" />
-          Order confirmed
+          {token ? "Order confirmed" : loading ? "Verifying" : error ? "Verification failed" : hasTransaction ? "Verifying" : "Checkout"}
         </div>
+
+        {/* No transaction guard — show only if user lands here without a transaction id */}
+        {!hasTransaction && !loading && !error && (
+          <div className="mt-10 rounded-3xl border border-white/10 bg-[#111827] p-8">
+            <h1 className="text-3xl font-bold leading-tight md:text-4xl">
+              Where&apos;s my download?
+            </h1>
+            <p className="mt-3 text-neutral-300">
+              This page appears after a successful Paddle payment. If you just
+              completed a purchase, please return to the email we sent — your
+              secure download link is there.
+            </p>
+            <p className="mt-3 text-sm text-neutral-500">
+              If you haven&apos;t paid yet and want to start a purchase, head to
+              the products page.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 rounded-2xl bg-amber-300 px-6 py-3 font-semibold text-black hover:bg-amber-200"
+              >
+                Browse products →
+              </Link>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-6 py-3 font-semibold text-white hover:bg-white/5"
+              >
+                ← Home
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {hasTransaction && (<>
         <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
-          Your {product?.name ?? "AutonomaX"} pack is ready.
+          {loading
+            ? "Finalizing your order…"
+            : error
+              ? "We couldn&apos;t confirm your order"
+              : `Your ${product?.name ?? "AutonomaX"} pack is ready.`}
         </h1>
         <p className="mt-4 text-lg text-neutral-400">
           {loading
-            ? "Confirming your payment and preparing your download..."
+            ? "Confirming your payment with the provider and preparing your secure download…"
             : error
             ? error
             : "Follow the steps below to claim your download and start day one."}
@@ -234,7 +279,10 @@ function CheckoutSuccessContent() {
           <div className="mt-10 rounded-3xl border border-amber-300/20 bg-[#111827] p-8 text-center">
             <div className="animate-spin h-8 w-8 border-2 border-amber-300 border-t-transparent rounded-full mx-auto mb-4" />
             <p className="text-amber-200 text-sm">
-              Your payment is confirmed! We&apos;re generating your secure download link...
+              Confirming your payment with the provider and generating your secure download link...
+            </p>
+            <p className="mt-2 text-xs text-neutral-500">
+              This usually takes a few seconds. Please don&apos;t close this page.
             </p>
           </div>
         )}
@@ -409,6 +457,7 @@ function CheckoutSuccessContent() {
         <Link href="/" className="mt-10 inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to AutonomaX
         </Link>
+        </>)}
       </section>
     </main>
   );
