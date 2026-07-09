@@ -112,3 +112,83 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(results);
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/admin/gumroad-status?action=sync-descriptions
+//
+// Fixes a live mismatch: the published, revenue-generating listings
+// (autonomax-{starter,pro,commander}-{price}) were created with placeholder
+// "SaaS automation platform" copy, while a second, correctly-worded
+// "AutonomaX Masterclass" description sits on unpublished duplicate listings.
+// This copies the correct name + description onto the live listings.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function POST(req: NextRequest) {
+  const adminSecret = req.headers.get("x-admin-secret") || req.nextUrl.searchParams.get("secret");
+  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const action = req.nextUrl.searchParams.get("action");
+  const token = process.env.GUMROAD_ACCESS_TOKEN;
+  if (!token) {
+    return NextResponse.json({ error: "GUMROAD_ACCESS_TOKEN not set" }, { status: 400 });
+  }
+
+  if (action !== "sync-descriptions") {
+    return NextResponse.json({ error: "Unknown action. Use ?action=sync-descriptions" }, { status: 400 });
+  }
+
+  const base = "https://api.gumroad.com/v2";
+
+  // Maps the live (published, linked) product ID -> the correctly-worded
+  // draft twin's permalink to source the fix copy from.
+  const FIX_PAIRS: Record<string, { correctPermalink: string; correctName: string }> = {
+    "J59rJByCCyKKEfDouQjTDw==": { correctPermalink: "autonomax-starter", correctName: "AutonomaX Masterclass — Starter" },
+    "1BzBT7MJ_yBSJ1d9W9OrjA==": { correctPermalink: "autonomax-pro", correctName: "AutonomaX Masterclass — Pro" },
+    "H7uOVVl-CaUQJRp8e_73WQ==": { correctPermalink: "autonomax-commander", correctName: "AutonomaX Masterclass — Commander" },
+  };
+
+  const results: Record<string, any> = { actions: [] };
+
+  try {
+    // Fetch all products once to source correct descriptions + IDs
+    const listResp = await fetch(`${base}/products?access_token=${encodeURIComponent(token)}`);
+    const listData = await listResp.json();
+    const products = Array.isArray(listData?.products) ? listData.products : [];
+
+    for (const [liveId, fix] of Object.entries(FIX_PAIRS)) {
+      const correctProduct = products.find(
+        (p: any) => (p.custom_permalink || p.permalink) === fix.correctPermalink
+      );
+      if (!correctProduct) {
+        results.actions.push({ liveId, ok: false, error: "correct draft product not found" });
+        continue;
+      }
+
+      const putResp = await fetch(
+        `${base}/products/${encodeURIComponent(liveId)}?access_token=${encodeURIComponent(token)}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            name: fix.correctName,
+            description: correctProduct.description || "",
+          }),
+        }
+      );
+      const putData = await putResp.json();
+      results.actions.push({
+        liveId,
+        sourcedFrom: fix.correctPermalink,
+        status: putResp.status,
+        success: putData?.success ?? false,
+        newName: putData?.product?.name,
+        error: putData?.message,
+      });
+    }
+  } catch (err: any) {
+    results.error = err?.message;
+  }
+
+  return NextResponse.json(results);
+}
