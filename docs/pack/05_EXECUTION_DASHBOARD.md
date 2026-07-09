@@ -11,14 +11,17 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     PIPELINE STATUS — PHASE 1                       │
 ├─────────────────────────────────────────────────────────────────────┤
-│ 🟡 Paddle Checkout     — Code done, awaiting PADDLE_API_KEY         │
+│ 🟡 Paddle Checkout     — Configured; finalize dashboard defaults     │
+│ 🟢 LemonSqueezy        — LIVE (all 3 product pages return HTTP 200) │
+│ 🟢 Gumroad Checkout    — LIVE (all 3 checkout URLs return HTTP 200) │
 │ 🟢 Shopier Store       — LIVE (19 products, autonomax.shopier.com)  │
 │ 🟢 aikagan.com         — DEPLOYED (Vercel, build passes)            │
 │ 🔲 Email Capture       — Not configured (needs Formspree ID)        │
-│ 🔲 Make.com Webhooks   — 4 configured but not wired                 │
-│ 🔲 Organic Social      — Not started                                │
+│ 🟢 Make.com Webhooks   — provisioned + verified (HTTP 200)          │
+│ 🟢 AI Commanders       — GitHub Actions schedule configured          │
+│ 🟡 Organic Social      — Wave automation active, manual scale needed │
 │ 🔲 Google Ads          — Not started                                │
-│ 🔲 Affiliate Program   — Not started                                │
+│ 🟡 Affiliate Program   — Routing live, partner ops scaling pending   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -28,7 +31,7 @@
 
 | Metric | Today | Week Target | Month Target | Status |
 |--------|-------|-------------|--------------|--------|
-| **Revenue (daily)** | $0 | $50 | $50 | 🟡 Paddle blocked |
+| **Revenue (daily)** | $0 | $50 | $50 | 🟡 Traffic execution in progress |
 | **Orders (daily)** | 0 | 1-2 | 1-2 | 🟡 |
 | **AOV** | — | $58+ | $58+ | ⚪ No data |
 | **Gross margin** | — | >90% | >93% | ⚪ No data |

@@ -137,11 +137,33 @@ def check_gemini(quick: bool) -> None:
             generation_config={"max_output_tokens": 16},
         )
         resp = model.generate_content("Reply with the word OK only.")
-        text = (resp.text or "").strip()
+        text = ""
+        try:
+            text = (resp.text or "").strip()
+        except Exception:  # noqa: BLE001
+            # Some Gemini responses omit a direct text part; fall back to candidates.
+            text = ""
+
+        if not text:
+            candidates = getattr(resp, "candidates", []) or []
+            for candidate in candidates:
+                content = getattr(candidate, "content", None)
+                parts = getattr(content, "parts", None) or []
+                fragments: list[str] = []
+                for part in parts:
+                    fragment = getattr(part, "text", None)
+                    if fragment:
+                        fragments.append(fragment)
+                if fragments:
+                    text = " ".join(fragments).strip()
+                    break
+
         if "OK" in text.upper():
             record("gemini ping", "PASS", f"replied '{text[:32]}'")
-        else:
+        elif text:
             record("gemini ping", "WARN", f"unexpected reply '{text[:48]}'")
+        else:
+            record("gemini ping", "WARN", "no text returned (model reachable)")
     except Exception as exc:  # noqa: BLE001
         record("gemini ping", "FAIL", str(exc)[:120])
 

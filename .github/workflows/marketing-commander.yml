@@ -72,7 +72,7 @@ jobs:
       - name: Run Marketing Commander
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL || vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
           MAKE_OMNICHANNEL_WEBHOOK_URL: ${{ secrets.MAKE_OMNICHANNEL_WEBHOOK_URL }}
           AIKAGAN_BASE_URL: ${{ vars.AIKAGAN_BASE_URL || 'https://aikagan.com' }}
           LEMONSQUEEZY_STORE_URL: ${{ vars.LEMONSQUEEZY_STORE_URL || 'https://autonomax.lemonsqueezy.com' }}
@@ -126,7 +126,7 @@ jobs:
       - name: Drain inbox + auto-reply
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL || vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
           MAKE_CUSTOMER_SERVICE_WEBHOOK_URL: ${{ secrets.MAKE_CUSTOMER_SERVICE_WEBHOOK_URL }}
           MAKE_CUSTOMER_SERVICE_POLL_URL: ${{ secrets.MAKE_CUSTOMER_SERVICE_POLL_URL }}
           AIKAGAN_BASE_URL: ${{ vars.AIKAGAN_BASE_URL || 'https://aikagan.com' }}
@@ -159,7 +159,7 @@ jobs:
       - name: Refresh playbook
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL || vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
           MAKE_CUSTOMER_SERVICE_WEBHOOK_URL: ${{ secrets.MAKE_CUSTOMER_SERVICE_WEBHOOK_URL }}
           AIKAGAN_BASE_URL: ${{ vars.AIKAGAN_BASE_URL || 'https://aikagan.com' }}
           AIKAGAN_OFFER_NAME: ${{ vars.AIKAGAN_OFFER_NAME }}

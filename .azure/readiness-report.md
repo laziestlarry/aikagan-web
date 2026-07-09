@@ -1,12 +1,20 @@
 # AutonomaX — Zero-Gap Readiness Report
 
+## Latest Runtime Snapshot (2026-07-09)
+
+- Bootstrap + verifier executed from `scripts/agent/bootstrap.sh` and `scripts/agent/verify_handoff.py`.
+- Make.com scenarios are provisioned and activated (omnichannel + customer-success).
+- Live webhook probes return `HTTP 200` for both commander webhooks.
+- LemonSqueezy product pages return `HTTP 200` for Starter/Pro/Commander.
+- Gumroad checkout URLs return `HTTP 200` for Starter/Pro/Commander.
+
 ## Payment Provider Status
 
 | Provider | Status | Detail |
 |----------|--------|--------|
-| **Paddle** | ⚠️ Configured, needs Dashboard setup | API key present; needs Default Payment Link in Paddle Dashboard → Checkout Settings |
-| **LemonSqueezy** | ✅ LIVE | All 3 tiers returning working checkout URLs with card/PayPal |
-| **Gumroad** | ✅ LIVE | All 3 products published with branded covers/thumbs/files |
+| **Paddle** | ⚠️ Configured, pending dashboard finalization | API key and webhook secret are present; keep Paddle primary once dashboard checkout defaults are confirmed |
+| **LemonSqueezy** | ✅ LIVE | Starter/Pro/Commander product pages returning `HTTP 200` |
+| **Gumroad** | ✅ LIVE | Starter/Pro/Commander checkout URLs returning `HTTP 200` |
 
 ## Checkout Router Priority
 1. Paddle → fails (Dashboard setup needed), silently falls through
@@ -36,6 +44,14 @@
 | AutonomaX - Starter | `J59rJByCCyKKEfDouQjTDw==` | $29 | ✅ Published |
 | AutonomaX - Pro | `1BzBT7MJ_yBSJ1d9W9OrjA==` | $79 | ✅ Published |
 | AutonomaX - Commander | `H7uOVVl-CaUQJRp8e_73WQ==` | $149 | ✅ Published |
+
+### Gumroad Checkout Reachability
+
+| Checkout URL | Status |
+|--------------|--------|
+| `https://nomadauto.gumroad.com/l/autonomax-starter-29` | ✅ `HTTP 200` |
+| `https://nomadauto.gumroad.com/l/autonomax-pro-79` | ✅ `HTTP 200` |
+| `https://nomadauto.gumroad.com/l/autonomax-commander-149` | ✅ `HTTP 200` |
 
 ### Draft products (cleanup suggested)
 - `SzeFnOHIyVuz9FlP6xUP` — Test ($1)

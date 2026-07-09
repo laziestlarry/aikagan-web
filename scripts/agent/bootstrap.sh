@@ -18,6 +18,14 @@ cd "$ROOT_DIR"
 
 echo "==> AIKAGAN bootstrap from $ROOT_DIR"
 
+# Load fulfillment env automatically so CLI runs behave like CI/workflows.
+if [ -f ".env.fulfillment" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env.fulfillment
+  set +a
+fi
+
 # ---------------------------------------------------------------------------
 # 1) Python + venv
 # ---------------------------------------------------------------------------
@@ -63,6 +71,14 @@ else
   echo "    Import the blueprints manually instead:"
   echo "      scripts/agent/make_blueprints/omnichannel-router.blueprint.json"
   echo "      scripts/agent/make_blueprints/customer-success-router.blueprint.json"
+fi
+
+# If provision_make rotated webhook URLs, refresh exported env before later checks.
+if [ -f ".env.fulfillment" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env.fulfillment
+  set +a
 fi
 
 # ---------------------------------------------------------------------------
