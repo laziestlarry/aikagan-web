@@ -262,8 +262,11 @@ def _normalize_playbook_payload(data: dict[str, Any]) -> dict[str, Any]:
 def _gemini(system: str, temperature: float = 0.5, max_tokens: int = 2048):
     if not GEMINI_API_KEY:
         raise SystemExit("Missing GEMINI_API_KEY — populate .env.fulfillment first.")
+    model_name = GEMINI_MODEL.strip() or "gemini-1.5-flash"
+    if not model_name.startswith("models/"):
+        model_name = f"models/{model_name}"
     return genai.GenerativeModel(
-        model_name=GEMINI_MODEL,
+        model_name=model_name,
         system_instruction=system,
         generation_config={
             "response_mime_type": "application/json",
