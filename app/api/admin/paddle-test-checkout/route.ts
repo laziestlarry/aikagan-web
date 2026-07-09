@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Paddle not configured" }, { status: 503 });
   }
 
+  const category = req.nextUrl.searchParams.get("category") || "saas";
+
   try {
     // Use $1.00 to meet minimum payment amount ($0.70 USD)
     const transaction = await paddle.transactions.create({
@@ -33,7 +35,7 @@ export async function GET(req: NextRequest) {
           unitPrice: { amount: "100", currencyCode: "USD" },
           product: {
             name: "Diagnostic Product",
-            taxCategory: "saas",
+            taxCategory: category as any,
             description: "Diagnostic test for checkout URL inspection",
           },
         },
@@ -46,6 +48,35 @@ export async function GET(req: NextRequest) {
       status: transaction.status,
       checkout_url: transaction.checkout?.url ?? null,
       checkout: transaction.checkout,
+      tax_category_tested: category,
+      // Replicate the browser's transaction-checkout call server-side so we
+      // can validate the tax category / checkout eligibility without a
+      // browser round-trip.
+      checkout_probe: await (async () => {
+        const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+        if (!clientToken) return { skipped: "no client token" };
+        try {
+          const r = await fetch("https://checkout-service.paddle.com/transaction-checkout", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "paddle-clienttoken": clientToken,
+              origin: "https://aikagan.com",
+              referer: "https://aikagan.com/checkout",
+            },
+            body: JSON.stringify({
+              data: {
+                transaction_id: transaction.id,
+                settings: { locale: "en" },
+              },
+            }),
+          });
+          const text = await r.text();
+          return { status: r.status, body: text.slice(0, 2000) };
+        } catch (probeErr) {
+          return { probe_error: String(probeErr) };
+        }
+      })(),
       full: JSON.parse(JSON.stringify(transaction)),
     });
   } catch (e: any) {

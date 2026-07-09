@@ -11,6 +11,7 @@ import { getPaddleClient } from "@/lib/paddle-client";
 import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
 import { resolveCouponPrice } from "@/lib/coupons";
+import { getGumroadProduct } from "@/lib/gumroad-products";
 
 // Price IDs created in Paddle Catalog (via POST /api/admin/paddle-create-products)
 const CATALOG_PRICE_IDS: Record<string, string> = {
@@ -33,6 +34,17 @@ export async function POST(req: NextRequest) {
 
     if (!product.price || product.priceModel === "free") {
       return NextResponse.json({ error: "Free products do not need checkout" }, { status: 400 });
+    }
+
+    // Kill-switch: while the Paddle account/domain is pending re-approval,
+    // route straight to a Gumroad checkout instead of a broken Paddle one.
+    if (process.env.PADDLE_CHECKOUT_DISABLED === "true") {
+      const gumroadProduct = getGumroadProduct(slug);
+      if (gumroadProduct) {
+        let url = gumroadProduct.url;
+        if (coupon) url += `?coupon=${encodeURIComponent(coupon)}`;
+        return NextResponse.json({ url, transactionId: gumroadProduct.id, provider: "gumroad" });
+      }
     }
 
     const paddle = getPaddleClient();

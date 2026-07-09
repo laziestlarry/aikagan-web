@@ -25,6 +25,7 @@ import { getPaddleClient } from "@/lib/paddle-client";
 import { tokenStore } from "@/lib/token-store";
 import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
 import { resolveCouponPrice } from "@/lib/coupons";
+import { getGumroadProduct } from "@/lib/gumroad-products";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,6 +64,11 @@ const CATALOG_PRICE_IDS: Record<string, string> = {
 };
 
 async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRecord) {
+  // Kill-switch: set PADDLE_CHECKOUT_DISABLED=true in Vercel env to force
+  // fallback to LemonSqueezy/Gumroad — used while the Paddle account/domain
+  // is pending re-approval (checkout-open calls return 403 "blocked for
+  // this vendor" even though transaction creation itself still succeeds).
+  if (process.env.PADDLE_CHECKOUT_DISABLED === "true") return null;
   const paddle = getPaddleClient();
   if (!paddle) return null;
   const product = getProduct(body.slug);
@@ -203,6 +209,25 @@ async function tryLemonSqueezy(req: NextRequest, body: CheckoutBody, intent: Int
   }
 }
 
+function tryGumroad(body: CheckoutBody, intent: IntentRecord) {
+  const gumroadProduct = getGumroadProduct(body.slug);
+  if (!gumroadProduct) return null;
+  // Gumroad checkout pages are pre-created hosted permalinks — no API call
+  // (and no GUMROAD_ACCESS_TOKEN, which is only needed for webhook/license
+  // verification) is required to send a buyer to a working checkout.
+  let url = gumroadProduct.url;
+  const params = new URLSearchParams();
+  if (body.ref) params.set("ref", body.ref);
+  if (body.coupon) params.set("coupon", body.coupon);
+  const qs = params.toString();
+  if (qs) url += `?${qs}`;
+  return {
+    provider: "gumroad" as const,
+    url,
+    transactionId: gumroadProduct.id,
+  };
+}
+
 export async function POST(req: NextRequest) {
   const limit = rateLimit({ key: clientKey(req, "income-checkout"), max: 30, windowMs: 60_000 });
   if (!limit.allowed) return rateLimitResponse(limit);
@@ -239,8 +264,9 @@ export async function POST(req: NextRequest) {
   await recordIntent(intent, sessionId);
 
   // Try real providers in priority order
-  let result: { provider: "paddle" | "lemonsqueezy"; url: string; transactionId: string | null } | null = await tryPaddle(req, body, intent);
+  let result: { provider: "paddle" | "lemonsqueezy" | "gumroad"; url: string; transactionId: string | null } | null = await tryPaddle(req, body, intent);
   if (!result) result = await tryLemonSqueezy(req, body, intent);
+  if (!result) result = tryGumroad(body, intent);
 
   if (result) {
     return NextResponse.json({
@@ -254,7 +280,8 @@ export async function POST(req: NextRequest) {
   // No provider succeeded. If Paddle is configured, this is a real outage
   // — return a 502 so the client surfaces a genuine error state instead of
   // silently routing the buyer to the manual fallback page.
-  const paddleConfigured = Boolean(process.env.PADDLE_API_KEY);
+  const paddleConfigured =
+    Boolean(process.env.PADDLE_API_KEY) && process.env.PADDLE_CHECKOUT_DISABLED !== "true";
   if (paddleConfigured) {
     console.error("[income-checkout] Paddle configured but transaction creation failed", {
       slug: body.slug,
