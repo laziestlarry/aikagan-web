@@ -185,6 +185,80 @@ def _parse_json(raw: str) -> dict[str, Any]:
     return json.loads(s)
 
 
+def _normalize_playbook_payload(data: dict[str, Any]) -> dict[str, Any]:
+    # Gemini occasionally returns object-shaped sections instead of list-shaped schema fields.
+    normalized = dict(data)
+
+    normalized.setdefault(
+        "support_thesis",
+        "Deliver concise, credible support that removes friction and guides the next best step.",
+    )
+    principles = normalized.get("response_principles")
+    if not isinstance(principles, list):
+        normalized["response_principles"] = [
+            "Acknowledge the buyer concern clearly.",
+            "Answer with specific, realistic expectations.",
+            "Offer one concrete next step with a relevant CTA.",
+        ]
+
+    faq_updates = normalized.get("faq_updates", [])
+    if isinstance(faq_updates, dict):
+        mapped: list[dict[str, str]] = []
+        for key, value in faq_updates.items():
+            if isinstance(value, dict):
+                mapped.append(
+                    {
+                        "question": str(value.get("question") or key).strip(),
+                        "answer": str(value.get("answer") or value.get("response") or "").strip(),
+                    }
+                )
+        normalized["faq_updates"] = [row for row in mapped if row["question"] and row["answer"]]
+
+    reply_macros = normalized.get("reply_macros", [])
+    if isinstance(reply_macros, dict):
+        mapped = []
+        for key, value in reply_macros.items():
+            if isinstance(value, dict):
+                mapped.append(
+                    {
+                        "situation": str(value.get("situation") or key).strip(),
+                        "subject_line": str(value.get("subject_line") or value.get("subject") or key).strip(),
+                        "response": str(value.get("response") or value.get("body") or "").strip(),
+                    }
+                )
+        normalized["reply_macros"] = [row for row in mapped if row["situation"] and row["response"]]
+
+    support_posts = normalized.get("support_posts", [])
+    if isinstance(support_posts, dict):
+        mapped = []
+        for key, value in support_posts.items():
+            if isinstance(value, dict):
+                mapped.append(
+                    {
+                        "channel": str(value.get("channel") or key).strip(),
+                        "purpose": str(value.get("purpose") or value.get("title") or "support").strip(),
+                        "copy": str(value.get("copy") or value.get("template") or "").strip(),
+                    }
+                )
+        normalized["support_posts"] = [row for row in mapped if row["channel"] and row["copy"]]
+
+    escalation_rules = normalized.get("escalation_rules", [])
+    if isinstance(escalation_rules, dict):
+        mapped = []
+        rules = escalation_rules.get("rules")
+        if isinstance(rules, list):
+            for rule in rules:
+                if isinstance(rule, str) and rule.strip():
+                    mapped.append({"trigger": rule.strip(), "action": "Escalate to human support."})
+        if not mapped:
+            for key, value in escalation_rules.items():
+                if isinstance(value, str) and value.strip():
+                    mapped.append({"trigger": key, "action": value.strip()})
+        normalized["escalation_rules"] = mapped
+
+    return normalized
+
+
 def _gemini(system: str, temperature: float = 0.5, max_tokens: int = 2048):
     if not GEMINI_API_KEY:
         raise SystemExit("Missing GEMINI_API_KEY — populate .env.fulfillment first.")
@@ -262,9 +336,27 @@ DELIVERABLES (return JSON matching CustomerSuccessPayload):
 
 Stay compliance-clean: digital toolkit, not hosted software, not guaranteed income.
 """
-    raw = model.generate_content(prompt).text
-    data = _parse_json(raw)
-    CustomerSuccessPayload(**data)  # raises if drifted
+    last_error: Exception | None = None
+    data: dict[str, Any] | None = None
+    for attempt in range(1, 4):
+        try:
+            raw = model.generate_content(prompt).text
+            candidate = _parse_json(raw)
+            candidate = _normalize_playbook_payload(candidate)
+            CustomerSuccessPayload(**candidate)  # raises if drifted
+            data = candidate
+            break
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            prompt = (
+                "Return valid JSON only. Do not include markdown fences, comments, "
+                "or trailing commas.\n\n" + prompt
+            )
+            continue
+
+    if data is None:
+        raise RuntimeError(f"Failed to generate valid playbook payload: {last_error}")
+
     data["offer_name"] = offer_name
     data["offer_url"] = offer_url
     data["support_email"] = support_email
