@@ -8,13 +8,14 @@
  *   3. Tries the configured provider in priority order:
  *        a) Paddle (Merchant of Record)  — uses paddle-node-sdk
  *        b) LemonSqueezy                  — uses REST API
- *        c) Manual / instructions        — never reached if Paddle is set
- *   4. If every real provider is down, returns a self-hosted checkout URL
- *      (`/checkout/manual?slug=...&intent=...`) that captures the buyer's
- *      email and can be reconciled manually. We never want a "button doesn't
- *      work" failure on a live funnel.
+ *   4. If Paddle is configured but the transaction fails, returns a 502
+ *      with a clear `error: "checkout_unavailable"` and `provider: "paddle"`
+ *      so the client can show a real error state — NOT silently redirect
+ *      to /checkout/manual. The manual page is a true last-resort fallback
+ *      used only when no payment provider is configured at all.
  *
  * Response: { ok, provider, url, transactionId, intentId, intent: { recorded, ... } }
+ * Error:    { error: "checkout_unavailable", provider, detail }
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -109,9 +110,21 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
         exp: Date.now() + 48 * 60 * 60 * 1000,
       });
     }
+    // `tx.checkout.url` can be an in-app `_ptxn` handoff URL that requires
+    // Paddle.js client token initialization. For resilience, always provide a
+    // direct hosted checkout URL fallback derived from transaction id.
+    const hostedCheckoutUrl = tx.id
+      ? `https://checkout-service.paddle.com/create/checkout/${tx.id}`
+      : null;
+    const shouldForceHosted = !process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+
     return {
       provider: "paddle" as const,
-      url: tx.checkout?.url ?? manualFallbackUrl(req, body.slug, intent.capturedAt.toString()),
+      url:
+        (shouldForceHosted
+          ? hostedCheckoutUrl
+          : tx.checkout?.url ?? hostedCheckoutUrl) ??
+        manualFallbackUrl(req, body.slug, intent.capturedAt.toString()),
       transactionId: tx.id,
     };
   } catch (err) {
@@ -235,7 +248,31 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // No provider — fall back to manual checkout page so the funnel never dead-ends
+  // No provider succeeded. If Paddle is configured, this is a real outage
+  // — return a 502 so the client surfaces a genuine error state instead of
+  // silently routing the buyer to the manual fallback page.
+  const paddleConfigured = Boolean(process.env.PADDLE_API_KEY);
+  if (paddleConfigured) {
+    console.error("[income-checkout] Paddle configured but transaction creation failed", {
+      slug: body.slug,
+      intentId: sessionId,
+    });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "checkout_unavailable",
+        provider: "paddle",
+        detail: "Payment provider is temporarily unavailable. Please try again in a moment.",
+        intentId: sessionId,
+        intent: { recorded: true, at: new Date(intent.capturedAt).toISOString() },
+      },
+      { status: 502 },
+    );
+  }
+
+  // No payment provider configured at all — last-resort manual fallback so
+  // the funnel never dead-ends. This path is hit only in environments where
+  // Paddle (and LemonSqueezy) keys are unset.
   return NextResponse.json({
     ok: true,
     provider: "manual",

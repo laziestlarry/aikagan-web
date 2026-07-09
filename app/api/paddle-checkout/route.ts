@@ -93,8 +93,13 @@ export async function POST(req: NextRequest) {
       price: product.price,
     });
 
+    const hostedCheckoutUrl = transaction.id
+      ? `https://checkout-service.paddle.com/create/checkout/${transaction.id}`
+      : null;
+    const shouldForceHosted = !process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+
     return NextResponse.json({
-      url: transaction.checkout?.url ?? null,
+      url: (shouldForceHosted ? hostedCheckoutUrl : transaction.checkout?.url ?? hostedCheckoutUrl) ?? null,
       transactionId: transaction.id,
     });
   } catch (err: any) {
