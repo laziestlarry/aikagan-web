@@ -9,3 +9,4 @@ out/
 .venv/
 __pycache__/
 scripts/agent/__pycache__/
+opencode.jsonc
