@@ -1,88 +1,67 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/checkout
-//
-// Public multi-provider checkout router.
-//
-// Request:  { slug, ref?, utm_*, country? }
-// Success:  { provider, url, transactionId }
-// Error:    { error, provider? }
-//
-// Provider priority: Paddle → LemonSqueezy → Gumroad → manual fallback
-// All providers pipe the same HMAC download token through /api/webhooks/{provider}.
-// The router never returns an error — it always returns a working URL or manual
-// checkout page, so the buyer never dead-ends.
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * POST /api/checkout
+ *
+ * Backward-compatible alias for /api/income/checkout.
+ * Existing clients that still call /api/checkout are forwarded to the live
+ * income checkout router so Paddle remains the primary provider in production.
+ */
 
 import { NextRequest, NextResponse } from "next/server";
-import {
-  buildCustomData,
-  validateCheckoutRequest,
-} from "@/lib/provider-router";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-async function tryProvider(baseUrl: string, endpoint: string, body: object): Promise<{ ok: true; url: string; transactionId: string | null } | { ok: false }> {
-  try {
-    const r = await fetch(`${baseUrl}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await r.json();
-    if (!r.ok || !data?.url) return { ok: false };
-    return { ok: true, url: data.url, transactionId: data.transactionId ?? null };
-  } catch {
-    return { ok: false };
-  }
-}
-
-function manualFallbackUrl(req: NextRequest, slug: string): string {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
-  return `${base}/checkout/manual?slug=${encodeURIComponent(slug)}`;
+function buildForwardUrl(req: NextRequest, pathname: string): string {
+  const u = new URL(req.url);
+  u.pathname = pathname;
+  u.search = "";
+  return u.toString();
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null);
-  const validation = validateCheckoutRequest(body);
-  if (validation.ok === false) {
-    return NextResponse.json({ error: validation.error }, { status: 400 });
+  const body = await req.text();
+  const forwardUrl = buildForwardUrl(req, "/api/income/checkout");
+
+  try {
+    const upstream = await fetch(forwardUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      cache: "no-store",
+    });
+
+    const payload = await upstream.text();
+    return new NextResponse(payload, {
+      status: upstream.status,
+      headers: { "Content-Type": upstream.headers.get("content-type") || "application/json" },
+    });
+  } catch (err) {
+    console.error("[checkout-alias] forward failed:", err);
+    return NextResponse.json(
+      { error: "checkout_unavailable", detail: "Checkout service is temporarily unavailable." },
+      { status: 502 },
+    );
   }
-
-  const checkoutReq = validation.req;
-  const customData = buildCustomData(checkoutReq);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
-
-  // Try providers in priority order
-  //   Paddle → LemonSqueezy → Gumroad → manual fallback
-  const providers = [
-    { name: "paddle" as const, endpoint: "/api/paddle-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
-    { name: "lemonsqueezy" as const, endpoint: "/api/lemonsqueezy-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
-    { name: "gumroad" as const, endpoint: "/api/gumroad-checkout", body: { slug: checkoutReq.slug, coupon: checkoutReq.coupon, customData } },
-  ];
-
-  for (const p of providers) {
-    const result = await tryProvider(baseUrl, p.endpoint, p.body);
-    if (result.ok) {
-      return NextResponse.json({ ...result, provider: p.name });
-    }
-  }
-
-  // No provider worked — fall back to manual checkout so the funnel never dead-ends
-  return NextResponse.json({
-    ok: true,
-    provider: "manual",
-    url: manualFallbackUrl(req, checkoutReq.slug),
-    transactionId: null,
-    note: "Payment provider checkout unavailable. Using manual checkout fallback — your purchase will be processed manually.",
-  });
 }
 
-/** GET — diagnostic: show providers. */
-export async function GET() {
-  return NextResponse.json({
-    paddle: Boolean(process.env.PADDLE_API_KEY),
-    lemonsqueezy: Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID),
-    timestamp: new Date().toISOString(),
-  });
+export async function GET(req: NextRequest) {
+  const forwardUrl = buildForwardUrl(req, "/api/income/checkout");
+
+  try {
+    const upstream = await fetch(forwardUrl, { method: "GET", cache: "no-store" });
+    const payload = await upstream.text();
+    return new NextResponse(payload, {
+      status: upstream.status,
+      headers: { "Content-Type": upstream.headers.get("content-type") || "application/json" },
+    });
+  } catch (err) {
+    console.error("[checkout-alias] health forward failed:", err);
+    return NextResponse.json(
+      {
+        ok: false,
+        providers: { paddle: false, lemonsqueezy: false },
+      },
+      { status: 503 },
+    );
+  }
 }
