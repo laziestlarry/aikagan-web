@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Build download URL using Gumroad license key as token reference
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
     const downloadUrl = product.zipFilename
       ? `${siteUrl}/api/download/${licenseKey}`
       : siteUrl;

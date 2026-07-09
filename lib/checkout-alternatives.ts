@@ -166,7 +166,7 @@ export function manualCheckoutUrl(
   intentId?: string,
   coupon?: string | null
 ): string {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
   const params = new URLSearchParams({ slug });
   if (intentId) params.set("intent", intentId);
   if (coupon) params.set("coupon", coupon);

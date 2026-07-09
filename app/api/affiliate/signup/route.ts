@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       name.trim(),
       email.trim()
     );
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
     const referralLink = buildReferralLink(profile.code, baseUrl);
     return NextResponse.json({
       ok: true,

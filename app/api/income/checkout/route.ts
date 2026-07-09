@@ -48,7 +48,7 @@ function newSessionId(): string {
 }
 
 function manualFallbackUrl(req: NextRequest, slug: string, intentId: string): string {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+  const base = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
   const u = new URL("/checkout/manual", base);
   u.searchParams.set("slug", slug);
   u.searchParams.set("intent", intentId);
@@ -120,7 +120,7 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
     // buy button through that same-origin page so the overlay opens once
     // Paddle.js + Paddle.Initialize (loaded globally in the root layout)
     // are ready.
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+    const base = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
     const overlayUrl = tx.id
       ? new URL(`/checkout?_ptxn=${encodeURIComponent(tx.id)}`, base).toString()
       : null;
@@ -146,7 +146,7 @@ async function tryLemonSqueezy(req: NextRequest, body: CheckoutBody, intent: Int
     ];
   if (!variantId) return null;
   try {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
     const r = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {

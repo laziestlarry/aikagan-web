@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     const customData = (body?.customData ?? {}) as Record<string, string>;
     // ref_code from customData (passed by checkout router) or directly from body.ref
     const ref = customData.ref_code || body?.ref || null;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aikagan.com";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
 
     // Create checkout
     const checkoutRes = await fetch(`${API_BASE}/checkouts`, {
