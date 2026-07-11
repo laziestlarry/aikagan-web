@@ -67,16 +67,18 @@ load_environment()
 # Gemini wiring (real SDK)
 # ---------------------------------------------------------------------------
 try:
-    import google.generativeai as genai
+    from google import genai
+    from google.genai import types
 except ImportError as exc:  # pragma: no cover
     raise SystemExit(
-        "Missing dependency. Run: pip install -r scripts/agent/requirements.txt"
+        "Missing dependency. Run: pip install google-genai"
     ) from exc
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+genai_client: genai.Client | None = None
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+    genai_client = genai.Client(api_key=GEMINI_API_KEY)
 
 MAKE_CS_WEBHOOK = os.getenv("MAKE_CUSTOMER_SERVICE_WEBHOOK_URL", "")
 MAKE_CS_POLL_URL = os.getenv("MAKE_CUSTOMER_SERVICE_POLL_URL", "")
@@ -262,18 +264,26 @@ def _normalize_playbook_payload(data: dict[str, Any]) -> dict[str, Any]:
 def _gemini(system: str, temperature: float = 0.5, max_tokens: int = 2048):
     if not GEMINI_API_KEY:
         raise SystemExit("Missing GEMINI_API_KEY — populate .env.fulfillment first.")
-    model_name = GEMINI_MODEL.strip() or "gemini-1.5-flash"
-    if not model_name.startswith("models/"):
-        model_name = f"models/{model_name}"
-    return genai.GenerativeModel(
-        model_name=model_name,
-        system_instruction=system,
-        generation_config={
-            "response_mime_type": "application/json",
-            "temperature": temperature,
-            "max_output_tokens": max_tokens,
-        },
-    )
+    model_name = GEMINI_MODEL.strip() or "gemini-2.5-flash"
+    if model_name.startswith("models/"):
+        model_name = model_name[7:]
+
+    class ModelWrapper:
+        def generate_content(self, prompt: str):
+            if genai_client is None:
+                raise SystemExit("genai_client is not initialized")
+            return genai_client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system,
+                    response_mime_type="application/json",
+                    temperature=temperature,
+                    max_output_tokens=max_tokens,
+                )
+            )
+
+    return ModelWrapper()
 
 
 @retry(stop=stop_after_attempt(4), wait=wait_exponential_jitter(initial=2, max=30))
