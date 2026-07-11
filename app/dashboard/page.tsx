@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { TrendingUp, DollarSign, Activity, Target, BarChart3, Brain, RefreshCw, ChevronRight } from 'lucide-react';
+import { TrendingUp, DollarSign, Activity, Target, BarChart3, Brain, RefreshCw, ChevronRight, Compass } from 'lucide-react';
 import Section from '@/components/ui/Section';
 import Badge from '@/components/ui/Badge';
 
@@ -31,6 +31,14 @@ const DASHBOARD_CARDS = [
     icon: DollarSign,
     badge: 'Live · Evidence',
     badgeVariant: 'green' as const,
+  },
+  {
+    title: 'Venture Infrastructure',
+    description: 'BizOp Navigator checklists, Genesis Blueprint compiler, Alexandria KB, and active Commander controls.',
+    href: '/dashboard/venture-infrastructure',
+    icon: Compass,
+    badge: 'Live · Ecosystem',
+    badgeVariant: 'gold' as const,
   },
   {
     title: 'Profit Intelligence',

@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_AUTONOMAX_API_URL ??
-  "https://autonomax-revenue-ops-backend.fly.dev";
+  "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
 const API_KEY = process.env.AUTONOMAX_API_KEY ?? "";
 
 async function handler(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {

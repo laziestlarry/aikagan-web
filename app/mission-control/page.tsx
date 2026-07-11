@@ -9,6 +9,7 @@ import LiveKPIs from '@/components/shared/LiveKPIs';
 import CTA from '@/components/ui/CTA';
 import Badge from '@/components/ui/Badge';
 import CRMPipeline from '@/components/shared/CRMPipeline';
+import AIOrganization from '@/components/shared/AIOrganization';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Mission Control',
@@ -107,6 +108,11 @@ export default function MissionControlPage() {
 
         {/* ── CRM pipeline (FastAPI backend) ──────────────────────────────── */}
         <CRMPipeline />
+
+        {/* ── AI Command Architecture & Organization ──────────────────────── */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <AIOrganization />
+        </div>
 
         {/* ── 6-stage delivery process ────────────────────────────────────── */}
         <div className="max-w-3xl mx-auto">
