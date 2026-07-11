@@ -65,7 +65,7 @@ export async function recordCapiAttempt(rec: CapiAttemptRecord): Promise<void> {
   await kvIncrBy(`capi:${day}:count:${rec.event_name}`, 1, CAPI_TTL_S);
 }
 
-export type Provider = "paddle" | "lemonsqueezy" | "gumroad" | "manual";
+export type Provider = "paddle" | "lemonsqueezy" | "gumroad" | "shopier" | "manual";
 
 export interface TransactionRecord {
   /** Provider order/transaction id. */

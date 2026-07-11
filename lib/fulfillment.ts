@@ -18,7 +18,7 @@ import { kvSet, kvGet, kvDel, kvExpire, kvScan } from "./kv";
 export interface PurchaseFulfillment {
   type: "purchase_confirmation";
   orderId: string;
-  provider: "paddle" | "lemonsqueezy" | "gumroad" | "manual";
+  provider: "paddle" | "lemonsqueezy" | "gumroad" | "shopier" | "manual";
   email: string;
   name: string;
   productName: string;

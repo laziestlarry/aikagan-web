@@ -64,10 +64,11 @@ export function getProviderStatus(): Record<Provider, ProviderStatus> {
     },
     shopier: {
       provider: "shopier",
-      available: Boolean(process.env.SHOPIER_API_KEY),
-      reason: process.env.SHOPIER_API_KEY
-        ? undefined
-        : "SHOPIER_API_KEY not set",
+      available: Boolean(process.env.SHOPIER_API_KEY && process.env.SHOPIER_API_SECRET),
+      reason:
+        process.env.SHOPIER_API_KEY && process.env.SHOPIER_API_SECRET
+          ? undefined
+          : "SHOPIER_API_KEY or SHOPIER_API_SECRET not set",
     },
     manual: {
       provider: "manual",
@@ -83,6 +84,7 @@ export function selectProvider(): Provider | null {
   if (status.paddle.available) return "paddle";
   if (status.lemonsqueezy.available) return "lemonsqueezy";
   if (status.gumroad.available) return "gumroad";
+  if (status.shopier.available) return "shopier";
   return null;
 }
 

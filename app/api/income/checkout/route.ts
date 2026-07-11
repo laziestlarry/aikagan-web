@@ -33,6 +33,7 @@ export const dynamic = "force-dynamic";
 interface CheckoutBody {
   slug: string;
   ref?: string | null;
+  provider?: string | null;
   utm_source?: string | null;
   utm_medium?: string | null;
   utm_campaign?: string | null;
@@ -126,7 +127,7 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
     // buy button through that same-origin page so the overlay opens once
     // Paddle.js + Paddle.Initialize (loaded globally in the root layout)
     // are ready.
-    const base = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+    const base = "https://app.aikagan.com";
     const overlayUrl = tx.id
       ? new URL(`/checkout?_ptxn=${encodeURIComponent(tx.id)}`, base).toString()
       : null;
@@ -188,7 +189,10 @@ async function tryLemonSqueezy(req: NextRequest, body: CheckoutBody, intent: Int
       }),
     });
     const out = await r.json();
-    if (!r.ok) return null;
+    if (!r.ok) {
+      console.error("[income-checkout] lemonsqueezy API error response:", out);
+      return null;
+    }
     const id = out?.data?.id;
     if (id) {
       await tokenStore.set(`ls:${id}`, {
@@ -228,6 +232,21 @@ function tryGumroad(body: CheckoutBody, intent: IntentRecord) {
   };
 }
 
+function tryShopier(req: NextRequest, body: CheckoutBody, intent: IntentRecord) {
+  const osbUser = process.env.SHOPIER_OSB_USERNAME;
+  const osbPass = process.env.SHOPIER_OSB_PASSWORD;
+  if (!osbUser || !osbPass) return null;
+
+  const variantUrl = process.env[`SHOPIER_PRODUCT_URL_${body.slug.replace(/-/g, "_").toUpperCase()}`];
+  const url = variantUrl || "https://autonomax.shopier.com";
+
+  return {
+    provider: "shopier" as const,
+    url,
+    transactionId: `sp-intent-${intent.capturedAt}`,
+  };
+}
+
 export async function POST(req: NextRequest) {
   const limit = rateLimit({ key: clientKey(req, "income-checkout"), max: 30, windowMs: 60_000 });
   if (!limit.allowed) return rateLimitResponse(limit);
@@ -264,9 +283,16 @@ export async function POST(req: NextRequest) {
   await recordIntent(intent, sessionId);
 
   // Try real providers in priority order
-  let result: { provider: "paddle" | "lemonsqueezy" | "gumroad"; url: string; transactionId: string | null } | null = await tryPaddle(req, body, intent);
-  if (!result) result = await tryLemonSqueezy(req, body, intent);
-  if (!result) result = tryGumroad(body, intent);
+  let result: { provider: "paddle" | "lemonsqueezy" | "gumroad" | "shopier"; url: string; transactionId: string | null } | null = null;
+
+  if (body.provider === "shopier") {
+    result = tryShopier(req, body, intent);
+  } else {
+    result = await tryPaddle(req, body, intent);
+    if (!result) result = await tryLemonSqueezy(req, body, intent);
+    if (!result) result = tryGumroad(body, intent);
+    if (!result) result = tryShopier(req, body, intent);
+  }
 
   if (result) {
     return NextResponse.json({
@@ -320,6 +346,7 @@ export async function GET(req: NextRequest) {
     providers: {
       paddle: Boolean(process.env.PADDLE_API_KEY),
       lemonsqueezy: Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID),
+      shopier: Boolean(process.env.SHOPIER_API_KEY && process.env.SHOPIER_API_SECRET),
     },
   });
 }
