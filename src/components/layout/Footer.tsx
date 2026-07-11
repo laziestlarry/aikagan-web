@@ -139,9 +139,13 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-kagan-border/60 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-kagan-muted">
-            © {SITE.year} {SITE.name}. All rights reserved. Built for operators.
-          </p>
+          <div className="text-xs text-kagan-muted space-y-1 text-center sm:text-left">
+            <p>© {SITE.year} {SITE.name}. All rights reserved. Built for operators.</p>
+            <p className="opacity-80">
+              AIKAGAN / ProPulse Group. Payments are securely processed by Paddle, our Merchant of Record. 
+              Support contact: <a href="mailto:hello@aikagan.com" className="text-kagan-gold hover:underline">hello@aikagan.com</a>.
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             <Link href="/legal/privacy/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
               Privacy Policy

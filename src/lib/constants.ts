@@ -1,22 +1,17 @@
 export const SITE = {
-  name: 'AutonomaX Profit OS',
-  tagline: 'Instant-Download Digital Toolkits — Checkout, Delivery & Growth',
+  name: 'AutonomaX Templates',
+  tagline: 'Instant-Download Digital Toolkits — System Checklists & SOP Templates',
   description:
-    'AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.',
+    'AutonomaX provides download-ready standard operating procedure (SOP) templates, system engineering boilerplates, and developer UI kits for tech operators and teams.',
   url: 'https://aikagan.com',
   appUrl: 'https://app.aikagan.com',
-  author: 'AutonomaX / ProPulse Group',
+  author: 'AutonomaX',
   year: 2026,
 } as const;
 
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Products', href: '/products/' },
-  { label: 'Marketing', href: '/marketing/' },
-  { label: 'Affiliates', href: '/affiliates/' },
-  { label: 'Dashboard', href: '/dashboard/' },
-  { label: 'Mission Control', href: '/mission-control/' },
-  { label: 'About', href: '/about/' },
   { label: 'Contact', href: '/contact/' },
 ] as const;
 
