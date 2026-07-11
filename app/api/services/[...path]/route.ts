@@ -17,7 +17,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_FASTAPI_URL ??
+  process.env.NEXT_PUBLIC_FASTAPI_URL ||
   "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
 
 async function handler(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
