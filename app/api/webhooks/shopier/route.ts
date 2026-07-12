@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getProduct } from "@/lib/products";
 import { fulfillPurchase } from "@/lib/fulfillment";
 import { verifyOsb, parseOsbPayload } from "@nopeion/shopier/osb";
+import { generateDownloadToken } from "@/lib/download-token";
+import { tokenStore } from "@/lib/token-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -68,8 +70,19 @@ export async function POST(req: NextRequest) {
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
+    const orderId = `sp-${payload.orderId}`;
+    
+    // Generate secure download token and store it
+    const token = generateDownloadToken(slug, orderId, buyerEmail);
+    await tokenStore.set(orderId, {
+      token,
+      slug,
+      email: buyerEmail,
+      exp: Date.now() + 48 * 60 * 60 * 1000,
+    });
+
     const downloadUrl = product.zipFilename
-      ? `${siteUrl}/api/download/sp-${payload.orderId}`
+      ? `${siteUrl}/checkout-success?transaction_id=${orderId}`
       : siteUrl;
 
     const buyerName = payload.buyerName || buyerEmail.split("@")[0] || "Valued Customer";
@@ -80,14 +93,14 @@ export async function POST(req: NextRequest) {
       name: buyerName,
       productName: product.name,
       productSlug: slug,
-      orderId: `sp-${payload.orderId}`,
+      orderId,
       value: priceVal,
       provider: "shopier",
       downloadUrl,
     });
 
-    console.log("✅ Shopier OSB fulfillment successful:", { orderId: payload.orderId, slug });
-    return NextResponse.json({ ok: true, orderId: payload.orderId, slug });
+    console.log("✅ Shopier OSB fulfillment successful:", { orderId, slug });
+    return NextResponse.json({ ok: true, orderId, slug });
   } catch (err: any) {
     console.error("❌ Shopier OSB webhook processing failed:", err);
     return NextResponse.json({ error: err?.message ?? "unknown" }, { status: 500 });
