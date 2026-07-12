@@ -68,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `
               (function initPaddle(){
                 var token = ${JSON.stringify(PADDLE_CLIENT_TOKEN)};
-                var env = ${JSON.stringify(PADDLE_ENV)};
+                var env = token.startsWith('test_') ? 'sandbox' : 'production';
                 if (!token) return;
                 var initialized = false;
                 function apply() {

@@ -6,19 +6,22 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 function CheckoutContent() {
-  const searchParams = useSearchParams();
-  const ptxn = searchParams.get("_ptxn");
+  const [ptxn, setPtxn] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error" | "completed">("loading");
   const [seconds, setSeconds] = useState(0);
   const [email, setEmail] = useState("");
   const [emailState, setEmailState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   useEffect(() => {
-    if (!ptxn) {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("_ptxn");
+    if (!token) {
       // No _ptxn parameter — redirect to products
       window.location.href = "/products";
       return;
     }
+    setPtxn(token);
 
     let mounted = true;
     const start = Date.now();
@@ -35,14 +38,14 @@ function CheckoutContent() {
         // Open the checkout
         try {
           (window as any).Paddle.Checkout.open({
-            transactionId: ptxn,
+            transactionId: token,
           });
 
           // Listen for completion
           const onComplete = () => {
             window.removeEventListener("checkout.completed", onComplete);
             setStatus("completed");
-            window.location.href = `/checkout-success?transaction_id=${ptxn}`;
+            window.location.href = `/checkout-success?transaction_id=${token}`;
           };
           window.addEventListener("checkout.completed", onComplete);
         } catch (e) {
@@ -64,7 +67,7 @@ function CheckoutContent() {
       clearInterval(checkPaddle);
       clearTimeout(timeout);
     };
-  }, [ptxn]);
+  }, []);
 
   if (!ptxn) return null;
 
