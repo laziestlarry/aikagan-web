@@ -18,10 +18,10 @@ export async function POST(req: NextRequest) {
 
     console.log("📥 Shopier OSB webhook received POST data:", { res: resVal, hash: hashVal });
 
-    const username = process.env.SHOPIER_OSB_USERNAME;
-    const password = process.env.SHOPIER_OSB_PASSWORD;
+    const username = process.env.SHOPIER_OSB_USERNAME || process.env.AUTONOMAX_SHOPIER_OSB_USERNAME;
+    const password = process.env.SHOPIER_OSB_PASSWORD || process.env.AUTONOMAX_SHOPIER_OSB_KEY || process.env.AUTONOMAX_SHOPIER_OSB_PASSWORD;
     if (!username || !password) {
-      console.error("❌ Shopier OSB credentials (username/password) not configured");
+      console.error("❌ Shopier OSB credentials (username/password) not configured in env");
       return NextResponse.json({ error: "OSB credentials not configured" }, { status: 500 });
     }
 

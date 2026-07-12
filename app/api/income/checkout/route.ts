@@ -26,6 +26,7 @@ import { tokenStore } from "@/lib/token-store";
 import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
 import { resolveCouponPrice } from "@/lib/coupons";
 import { getGumroadProduct } from "@/lib/gumroad-products";
+import { ShopierPaymentFlow } from "@nopeion/shopier";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -232,12 +233,47 @@ function tryGumroad(body: CheckoutBody, intent: IntentRecord) {
   };
 }
 
-function tryShopier(req: NextRequest, body: CheckoutBody, intent: IntentRecord) {
-  const osbUser = process.env.SHOPIER_OSB_USERNAME;
-  const osbPass = process.env.SHOPIER_OSB_PASSWORD;
-  if (!osbUser || !osbPass) return null;
+async function tryShopier(req: NextRequest, body: CheckoutBody, intent: IntentRecord) {
+  const pat = process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT;
+  if (pat) {
+    try {
+      const paymentFlow = new ShopierPaymentFlow({ api: { pat } });
+      const product = getProduct(body.slug);
+      if (product && product.price) {
+        // Build the unique order/intent ID
+        const platformOrderId = `sp_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+        
+        // Save checkout intent details to tokenStore
+        await tokenStore.set(platformOrderId, {
+          token: null,
+          slug: body.slug,
+          email: body.email ?? null,
+          exp: Date.now() + 48 * 60 * 60 * 1000,
+        });
 
-  const variantUrl = process.env[`SHOPIER_PRODUCT_URL_${body.slug.replace(/-/g, "_").toUpperCase()}`];
+        const result = await paymentFlow.create({
+          title: product.name,
+          amount: product.price,
+          currency: "USD",
+          orderId: platformOrderId,
+        });
+
+        if (result && result.paymentUrl) {
+          return {
+            provider: "shopier" as const,
+            url: result.paymentUrl,
+            transactionId: result.productId || platformOrderId,
+          };
+        }
+      }
+    } catch (err) {
+      console.error("[income-checkout] shopier API creation failed:", String(err));
+    }
+  }
+
+  // Fallback to storefront redirect if PAT not configured/fails
+  const suffix = body.slug.replace(/-/g, "_").toUpperCase();
+  const variantUrl = process.env[`SHOPIER_PRODUCT_URL_${suffix}`] || process.env[`AUTONOMAX_SHOPIER_PRODUCT_URL_${suffix}`];
   const url = variantUrl || "https://autonomax.shopier.com";
 
   return {
@@ -286,12 +322,12 @@ export async function POST(req: NextRequest) {
   let result: { provider: "paddle" | "lemonsqueezy" | "gumroad" | "shopier"; url: string; transactionId: string | null } | null = null;
 
   if (body.provider === "shopier") {
-    result = tryShopier(req, body, intent);
+    result = await tryShopier(req, body, intent);
   } else {
     result = await tryPaddle(req, body, intent);
     if (!result) result = await tryLemonSqueezy(req, body, intent);
     if (!result) result = tryGumroad(body, intent);
-    if (!result) result = tryShopier(req, body, intent);
+    if (!result) result = await tryShopier(req, body, intent);
   }
 
   if (result) {

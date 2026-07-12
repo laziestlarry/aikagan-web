@@ -64,11 +64,14 @@ export function getProviderStatus(): Record<Provider, ProviderStatus> {
     },
     shopier: {
       provider: "shopier",
-      available: Boolean(process.env.SHOPIER_API_KEY && process.env.SHOPIER_API_SECRET),
+      available: Boolean(
+        (process.env.SHOPIER_OSB_USERNAME || process.env.AUTONOMAX_SHOPIER_OSB_USERNAME) &&
+        (process.env.SHOPIER_OSB_PASSWORD || process.env.AUTONOMAX_SHOPIER_OSB_KEY || process.env.AUTONOMAX_SHOPIER_OSB_PASSWORD)
+      ) || Boolean(process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT),
       reason:
-        process.env.SHOPIER_API_KEY && process.env.SHOPIER_API_SECRET
+        (process.env.SHOPIER_OSB_USERNAME || process.env.AUTONOMAX_SHOPIER_OSB_USERNAME) || (process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT)
           ? undefined
-          : "SHOPIER_API_KEY or SHOPIER_API_SECRET not set",
+          : "SHOPIER_OSB or SHOPIER_PAT not set",
     },
     manual: {
       provider: "manual",

@@ -10,3 +10,4 @@ out/
 __pycache__/
 scripts/agent/__pycache__/
 opencode.jsonc
+.env.temp
