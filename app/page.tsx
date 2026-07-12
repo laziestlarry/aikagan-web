@@ -1248,7 +1248,7 @@ export default function HomePage() {
       {/* Exit-intent overlay — captures abandoning visitors */}
       <ExitIntentModal
         discountCode="KAGANATE"
-        productName="AutonomaX Masterclass Starter"
+        productName="AutonomaX Profit OS"
         productSlug="masterclass-starter"
         price={29}
         fallbackHref="/free/golden-delivery-sample/"

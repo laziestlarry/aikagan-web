@@ -12,6 +12,7 @@ import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
 import { resolveCouponPrice } from "@/lib/coupons";
 import { getGumroadProduct } from "@/lib/gumroad-products";
+import { ShopierPaymentFlow } from "@nopeion/shopier";
 
 // Price IDs created in Paddle Catalog (via POST /api/admin/paddle-create-products)
 const CATALOG_PRICE_IDS: Record<string, string> = {
@@ -37,8 +38,37 @@ export async function POST(req: NextRequest) {
     }
 
     // Kill-switch: while the Paddle account/domain is pending re-approval,
-    // route straight to a Gumroad checkout instead of a broken Paddle one.
+    // route straight to a Shopier or Gumroad checkout instead of a broken Paddle one.
     if (process.env.PADDLE_CHECKOUT_DISABLED === "true") {
+      // 1. Try Shopier first if configured
+      const pat = process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT;
+      if (pat) {
+        try {
+          const paymentFlow = new ShopierPaymentFlow({ api: { pat } });
+          if (product && product.price) {
+            const platformOrderId = `sp_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+            const result = await paymentFlow.create({
+              title: product.name,
+              amount: product.price,
+              currency: "USD",
+              orderId: platformOrderId,
+            });
+            if (result && result.paymentUrl) {
+              return NextResponse.json({ url: result.paymentUrl, transactionId: result.productId || platformOrderId, provider: "shopier" });
+            }
+          }
+        } catch (err) {
+          console.error("❌ Shopier checkout fallback error:", err);
+        }
+      }
+      // 2. Or fallback to generic shopier link if set
+      const suffix = slug.replace(/-/g, "_").toUpperCase();
+      const variantUrl = process.env[`SHOPIER_PRODUCT_URL_${suffix}`] || process.env[`AUTONOMAX_SHOPIER_PRODUCT_URL_${suffix}`];
+      if (variantUrl) {
+         return NextResponse.json({ url: variantUrl, transactionId: `sp-intent-${Date.now()}`, provider: "shopier" });
+      }
+
+      // 3. Fallback to Gumroad
       const gumroadProduct = getGumroadProduct(slug);
       if (gumroadProduct) {
         let url = gumroadProduct.url;
