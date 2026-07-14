@@ -44,6 +44,13 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const slug = req.nextUrl.searchParams.get("slug");
+
+  if (slug) {
+    const forwardUrl = buildForwardUrl(req, "/api/income/checkout");
+    return NextResponse.redirect(forwardUrl, 303);
+  }
+
   const forwardUrl = buildForwardUrl(req, "/api/income/checkout");
 
   try {
