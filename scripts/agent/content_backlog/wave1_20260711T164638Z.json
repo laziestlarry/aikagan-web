@@ -1,0 +1,133 @@
+{
+  "campaign": "chimera-genesis",
+  "wave": 1,
+  "launch_day": 1,
+  "generated_at_utc": "2026-07-11T16:46:38.563678+00:00",
+  "site_url": "https://aikagan.com",
+  "cta_table": {
+    "x": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "linkedin": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "substack": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    }
+  },
+  "source_signal": "Source: Hacker News (top stories)\nTitle: Apple sues OpenAI, accuses ex-employees of stealing trade secrets\nBody: Trending discussion in the builder/startup community.\n",
+  "requested_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_waves": [
+    {
+      "wave_name": "launch",
+      "channels": [
+        {
+          "channel_name": "x",
+          "announcement_copy": "Apple's suit against OpenAI underscores a core truth for builders: shipping great work isn't enough. You also need robust systems to protect it and scale. Our team has shipped 100+ projects over 15 years. We've seen what works to establish clear operating procedures and secure your build process. This isn't a \"game-changer\"; it's a set of concrete steps to fortify your operations.",
+          "follow_up_comment": "Many founders stumble not on invention, but on repeatable execution and IP defense. This toolkit distills our operational frameworks into actionable steps you can implement this week. No theoretical fluff, just practical blueprints.",
+          "call_to_action": "Get the AutonomaX Masterclass Pro toolkit and fortify your operational stack today.",
+          "offer_tier": "pro",
+          "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+        },
+        {
+          "channel_name": "linkedin",
+          "announcement_copy": "The ongoing Apple vs. OpenAI discussion on IP theft highlights a critical vulnerability in many growing companies: a lack of robust operational frameworks. Beyond legal battles, the real defense lies in clear processes, documented decision-making, and disciplined execution. At AIKAGAN, we've developed frameworks refined across dozens of product launches and business expansions. This isn't about abstract theory; it's about shipping with certainty and building defensible assets. We focus on specific, repeatable steps.",
+          "follow_up_comment": "This isn't 'done-for-you' software. It's a digital toolkit providing the blueprints we use to structure projects, define deliverables, and safeguard our operational knowledge. Think of it as a playbook for operational mastery, designed for founders and operators who ship and want to protect their work.",
+          "call_to_action": "Establish your operational edge and protect your innovations with the AutonomaX Masterclass Pro toolkit.",
+          "offer_tier": "pro",
+          "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-2bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+        },
+        {
+          "channel_name": "substack",
+          "announcement_copy": "The Apple-OpenAI dispute, now a top story, brings a familiar tension into sharp focus: the challenges of innovation, collaboration, and protecting intellectual property. For builders and founders, this isn't just a headline; it's a reminder that shipping a product is only half the battle. The other half involves establishing the operational rigor to sustain, scale, and secure your efforts. We've spent 15 years refining operational blueprints across 100+ projects, from early-stage startups to scaling businesses. We've observed that the most resilient companies aren't just innovative; they're operationally disciplined. They possess clear systems for project delivery, team coordination, and knowledge capture. The AutonomaX Masterclass Pro toolkit distills these lessons into a practical, step-by-step guide. It's designed to help you build out your own robust operating system, ensuring your work is not just launched, but also protected and scalable. No \"secret\" formula, just a methodical approach.",
+          "follow_up_comment": "This isn't a silver bullet. It's a collection of proven templates, checklists, and frameworks to implement for your own business. We focus on specific actions: how to document processes, how to define roles, how to manage project flow, and how to create a knowledge base that acts as your operational fortress. We don't guarantee income; we provide tools for better execution.",
+          "call_to_action": "Ready to build your operational fortress? Get the AutonomaX Masterclass Pro toolkit today.",
+          "offer_tier": "pro",
+          "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-b9ce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+        }
+      ]
+    }
+  ],
+  "customer_service_posts": [
+    {
+      "query_type": "general_inquiry",
+      "reply_copy": "Thanks for asking! The AutonomaX Masterclass Pro is a digital toolkit. It provides frameworks, templates, and guides you can adapt to your business operations. It is not done-for-you software or a consulting service. You get immediate access to all materials upon purchase.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    },
+    {
+      "query_type": "content_details",
+      "reply_copy": "The Pro toolkit includes 7 core modules, 20+ templates for documentation and project management, and a step-by-step guide to implement an operational system for your projects. We cover everything from defining scope to post-launch review, focusing on repeatable processes.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    }
+  ],
+  "objection_replies": [
+    {
+      "reply_copy": "The $79 price for the Pro toolkit reflects the 15+ years of operational experience distilled into these frameworks. Consider it an investment in reducing operational debt and mitigating risks, which can cost significantly more down the line through missed deadlines or IP challenges. It's a fraction of what a single operational mistake could cost your project or business.",
+      "objection": "price",
+      "short_reply": ""
+    },
+    {
+      "reply_copy": "We're operators who have shipped 100+ projects across various industries. This toolkit isn't based on abstract theory, but on the concrete systems we've built and refined. Our focus is on practical, implementable steps. You're getting the blueprints we actually use, not 'guru' advice.",
+      "objection": "legitimacy",
+      "short_reply": ""
+    },
+    {
+      "reply_copy": "Implementing any new system requires effort, and we're upfront about that. The AutonomaX Masterclass Pro toolkit provides the structure and guidance to make that effort efficient. It saves you the time of building these systems from scratch and helps you avoid common pitfalls. It's a guide to working smarter, not a magic button.",
+      "objection": "effort",
+      "short_reply": ""
+    },
+    {
+      "reply_copy": "Upon purchase, you gain lifetime access to all digital materials in the AutonomaX Masterclass Pro toolkit, including any future updates. This is a self-study toolkit; it does not include 1:1 coaching or direct implementation support. For specific questions, you can reach out via our website, and we'll do our best to point you to relevant resources within the toolkit.",
+      "objection": "post_purchase_support",
+      "short_reply": ""
+    }
+  ],
+  "buyer_persona": "",
+  "pain_point_summary": "",
+  "launch_thesis": "",
+  "offer_name": "AutonomaX Masterclass Starter",
+  "offer_url": "https://aikagan.com/products/masterclass-starter/",
+  "lead_magnet_url": "https://aikagan.com/free/golden-delivery-sample/",
+  "discount_code": "KAGANATE",
+  "priority_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_posts": [],
+  "execution_waves": [
+    {
+      "name": "wave1",
+      "timing": "day1-2",
+      "goal": "announce",
+      "channels": [
+        "x",
+        "linkedin",
+        "substack"
+      ]
+    }
+  ]
+}

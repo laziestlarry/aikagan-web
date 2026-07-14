@@ -23,6 +23,12 @@ const G = {
 const packCfg: Record<string, {
   border: string; hdr: string; cta: string; ctaFg: string; ctaBorder?: string;
 }> = {
+  "ai-venture-launch-blueprint": {
+    border: "rgba(56,189,248,0.42)",
+    hdr: "#38bdf8",
+    cta: "#38bdf8",
+    ctaFg: "#041018",
+  },
   // Free row — emerald accent
   "weekly-operating-map": {
     border:    "rgba(52,211,153,0.32)",
@@ -90,8 +96,8 @@ const packCfg: Record<string, {
 // Slugs shown on the home grid in display order
 const FREE_ROW_SLUGS  = ["weekly-operating-map", "builder-starter-checklist", "golden-delivery-sample"];
 const PAID_ROW_SLUGS  = ["masterclass-starter", "masterclass-pro", "masterclass-commander"];
-const HERO_STARTER_PRODUCT =
-  products.find((product) => product.slug === "masterclass-starter")
+const FLAGSHIP_PRODUCT =
+  products.find((product) => product.slug === "ai-venture-launch-blueprint")
   ?? products.find((product) => product.priceModel === "one_time")
   ?? products[0];
 
@@ -184,10 +190,10 @@ export default function HomePage() {
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "32px" }}>
                 <CheckoutLink
-                  href={HERO_STARTER_PRODUCT.checkoutUrl}
-                  productSlug={HERO_STARTER_PRODUCT.slug}
-                  productName={HERO_STARTER_PRODUCT.name}
-                  price={HERO_STARTER_PRODUCT.price}
+                  href={FLAGSHIP_PRODUCT.checkoutUrl}
+                  productSlug={FLAGSHIP_PRODUCT.slug}
+                  productName={FLAGSHIP_PRODUCT.name}
+                  price={FLAGSHIP_PRODUCT.price}
                   style={{
                     display: "inline-flex", alignItems: "center",
                     background: G.gold, color: "#09070a",
@@ -195,7 +201,7 @@ export default function HomePage() {
                     padding: "14px 30px", borderRadius: "6px",
                     textTransform: "uppercase", textDecoration: "none", cursor: "pointer",
                   }}>
-                  START AT $29 →
+                  GET BLUEPRINT — $99 →
                 </CheckoutLink>
                 <Link href="#packs" style={{
                   display: "inline-flex", alignItems: "center",
@@ -205,7 +211,7 @@ export default function HomePage() {
                   textTransform: "uppercase", textDecoration: "none",
                   background: G.goldFaint,
                 }}>
-                  SEE ALL THREE PACKS
+                  SEE ALL OFFERS
                 </Link>
               </div>
 
@@ -246,7 +252,7 @@ export default function HomePage() {
 
               {/* trust strip */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "20px" }}>
-                {[["↓","INSTANT DOWNLOAD"],["◈","WHITE-LABEL (COMMANDER)"],["$","KEEP 100% PROFITS"]].map(([icon, label]) => (
+                {[["→","FOUNDER INTAKE"],["↓","INSTANT PACKS"],["$","PADDLE-FIRST CHECKOUT"]].map(([icon, label]) => (
                   <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px",
                     fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", color: G.muted }}>
                     <span style={{ color: G.gold }}>{icon}</span>{label}
@@ -254,7 +260,7 @@ export default function HomePage() {
                 ))}
               </div>
               <p style={{ marginTop: "12px", fontSize: "10px", color: G.mutedLo, maxWidth: "380px", lineHeight: 1.6 }}>
-                <strong style={{ color: G.text }}>What you actually get:</strong> a digital toolkit — branded PDFs, fillable templates, ready-to-send scripts, and a step-by-step checklist. <strong style={{ color: G.text }}>Not</strong> an automated AI software, hosted SaaS, or done-for-you service. Results depend on individual effort and implementation.
+                <strong style={{ color: G.text }}>What you actually get:</strong> either a delivered AI Venture Launch Blueprint or a digital toolkit with branded PDFs, fillable templates, ready-to-send scripts, and checklists. <strong style={{ color: G.text }}>Not</strong> guaranteed income or irreversible account automation.
               </p>
             </div>
 
@@ -573,6 +579,78 @@ export default function HomePage() {
 
           {/* ── ROW 2 — 3 paid Masterclass products ─────────────────────── */}
           <div style={{ marginTop: "72px" }}>
+            <OrnHeader label="FLAGSHIP OFFER — AI VENTURE LAUNCH BLUEPRINT" sub="IDEA INTAKE · MARKET MAP · MONETIZATION ROADMAP" />
+          </div>
+
+          {(() => {
+            const product = products.find((p) => p.slug === "ai-venture-launch-blueprint");
+            if (!product) return null;
+            const cfg = packCfg[product.slug];
+            return (
+              <article style={{
+                maxWidth: "880px",
+                margin: "0 auto 72px",
+                background: "linear-gradient(135deg,rgba(56,189,248,0.10),rgba(212,175,55,0.05))",
+                border: `1px solid ${cfg.border}`,
+                borderRadius: "8px",
+                padding: "30px",
+                display: "grid",
+                gap: "24px",
+              }}>
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "18px" }}>
+                  <div>
+                    <div style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.16em", color: cfg.hdr, textTransform: "uppercase", marginBottom: "8px" }}>
+                      {product.tier}
+                    </div>
+                    <h2 style={{ color: "#fff", fontSize: "clamp(24px,4vw,40px)", lineHeight: 1.1, fontWeight: 900, margin: 0 }}>
+                      {product.name}
+                    </h2>
+                    <p style={{ color: G.text, lineHeight: 1.7, fontSize: "14px", maxWidth: "620px", marginTop: "12px" }}>
+                      {product.description}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ color: cfg.hdr, fontSize: "38px", fontWeight: 900 }}>${product.price}</div>
+                    {product.originalPrice && (
+                      <div style={{ color: G.mutedLo, fontSize: "13px", textDecoration: "line-through" }}>${product.originalPrice}</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  {product.bullets.slice(0, 6).map((item) => (
+                    <div key={item} style={{ display: "flex", gap: "9px", color: "#b8c7d8", fontSize: "12px", lineHeight: 1.45 }}>
+                      <span style={{ color: cfg.hdr, flexShrink: 0 }}>✓</span>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "center" }}>
+                  <CheckoutLink
+                    href={product.checkoutUrl}
+                    productSlug={product.slug}
+                    productName={product.name}
+                    price={product.price}
+                    style={{
+                      display: "inline-flex", alignItems: "center",
+                      background: cfg.cta, color: cfg.ctaFg,
+                      fontWeight: 900, fontSize: "12px", letterSpacing: "0.1em",
+                      padding: "13px 24px", borderRadius: "6px",
+                      textTransform: "uppercase", textDecoration: "none",
+                    }}>
+                    BUY BLUEPRINT — ${product.price} →
+                  </CheckoutLink>
+                  <Link href={`/products/${product.slug}`} style={{ color: cfg.hdr, fontSize: "12px", fontWeight: 800, letterSpacing: "0.08em", textDecoration: "none" }}>
+                    View full delivery scope →
+                  </Link>
+                  <span style={{ color: G.muted, fontSize: "11px" }}>{product.fulfillmentWindow}</span>
+                </div>
+              </article>
+            );
+          })()}
+
+          <div style={{ marginTop: "0" }}>
             <OrnHeader label="MASTERCLASS — PICK YOUR LEVEL" sub="EVERYTHING YOU NEED TO WIN ONLINE" />
           </div>
 

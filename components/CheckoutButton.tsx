@@ -137,7 +137,7 @@ export default function CheckoutButton({ href, slug, price, children, className 
     <a
       href={finalHref}
       onClick={handleClick}
-      className={`lemonsqueezy-button${className ? ` ${className}` : ""}`}
+      className={className || undefined}
       data-product-slug={slug}
     >
       {children}

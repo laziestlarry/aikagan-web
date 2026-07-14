@@ -44,6 +44,14 @@ export interface Product {
   accentColor?: string;
   /** For lead magnets: public asset path to deliver on opt-in */
   leadMagnetPath?: string;
+  /** How fulfillment is handled after purchase */
+  deliveryMode?: "download" | "service" | "hybrid";
+  /** Product-specific checkout-success and detail-page steps */
+  deliverySteps?: string[];
+  /** Short positioning line for featured sales surfaces */
+  positioning?: string;
+  /** Fulfillment SLA shown on product detail pages */
+  fulfillmentWindow?: string;
 }
 
 // ── Paddle (Merchant of Record) ───────────────────────────────────────────
@@ -126,7 +134,44 @@ export const products: Product[] = [
     accentColor: "#34d399",
   },
   // ───────────────────────────────────────────────────────
-  // TIER 2 — AutonomaX Masterclass (paid via Stripe)
+  // TIER 2 — Flagship conversion offer
+  // ───────────────────────────────────────────────────────
+  {
+    slug: "ai-venture-launch-blueprint",
+    name: "AI Venture Launch Blueprint",
+    tier: "AutonomaX ProfitOS",
+    ladderTier: "core",
+    price: 99,
+    originalPrice: 299,
+    priceModel: "one_time",
+    description: "Submit an idea, niche, or dormant project and receive a practical venture launch blueprint: market opportunity, monetization path, business model, execution roadmap, investor memo, and automation opportunities.",
+    bullets: [
+      "Executive summary and market opportunity snapshot",
+      "Competitor and positioning analysis",
+      "Monetization strategy and business model map",
+      "Launch roadmap with 14-day and 30-day execution phases",
+      "Investor memo and operational risk notes",
+      "Automation opportunities for Make.com, APIs, and AI workflows",
+      "Upgrade path into ProfitOS implementation or Commander operations",
+    ],
+    checkoutUrl: CHECKOUT_SENTINEL,
+    zipFilename: null,
+    nextSlug: "masterclass-pro",
+    badge: "Best first revenue offer",
+    guarantee: "30-day delivery-confidence guarantee",
+    accentColor: "#38bdf8",
+    deliveryMode: "service",
+    fulfillmentWindow: "Delivered within 3 business days after intake",
+    positioning: "Highest-priority offer for converting founder intent into a paid operating plan.",
+    deliverySteps: [
+      "Checkout completes through the active payment rail.",
+      "Submit your idea, niche, and project context on the post-purchase intake form.",
+      "AutonomaX prepares the venture blueprint, monetization map, and launch roadmap.",
+      "Delivery arrives by email with the next recommended implementation or upgrade action.",
+    ],
+  },
+  // ───────────────────────────────────────────────────────
+  // TIER 3 — AutonomaX Masterclass
   // Each tier bundles its matching Golden Delivery ZIP as a bonus.
   // ───────────────────────────────────────────────────────
   {
@@ -152,6 +197,7 @@ export const products: Product[] = [
     badge: "Best for beginners",
     guarantee: "30-day money-back guarantee",
     accentColor: "#f59e0b",
+    deliveryMode: "download",
   },
   {
     slug: "masterclass-pro",
@@ -177,6 +223,7 @@ export const products: Product[] = [
     badge: "Most popular",
     guarantee: "30-day money-back guarantee",
     accentColor: "#D4AF37",
+    deliveryMode: "download",
   },
   {
     slug: "masterclass-commander",
@@ -202,6 +249,7 @@ export const products: Product[] = [
     badge: "Maximum value",
     guarantee: "30-day money-back guarantee",
     accentColor: "#a78bfa",
+    deliveryMode: "download",
   },
 ];
 

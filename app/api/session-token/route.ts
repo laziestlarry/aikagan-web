@@ -74,6 +74,22 @@ export async function GET(req: NextRequest) {
     // Extract email
     const email: string = transaction.customer?.email ?? "unknown@checkout";
 
+    if (product.deliveryMode === "service" || !product.zipFilename) {
+      await tokenStore.set(transactionId, {
+        token: null,
+        slug,
+        email,
+        exp: Date.now() + 48 * 60 * 60 * 1000,
+      });
+
+      return NextResponse.json({
+        token: null,
+        slug,
+        service: true,
+        email: email.replace(/(.{2}).*(@.*)/, "$1***$2"),
+      });
+    }
+
     // Transaction is completed/paid — generate token on-the-fly
     const token = generateDownloadToken(slug, transactionId, email);
 

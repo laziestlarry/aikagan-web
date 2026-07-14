@@ -19,6 +19,8 @@ const CATALOG_PRICE_IDS: Record<string, string> = {
   "masterclass-starter": "pri_01kx0rg4hmnpbdpsnx3d7j8h5q",
   "masterclass-pro": "pri_01kx0rg4q1ed110tw5cc4xqfs3",
   "masterclass-commander": "pri_01kx0rg4w962z7vmn53c8pq7n3",
+  // "ai-venture-launch-blueprint" uses inline pricing until the Paddle
+  // catalog price is created and approved.
 };
 
 export async function POST(req: NextRequest) {
@@ -140,7 +142,10 @@ export async function POST(req: NextRequest) {
     // hitting it directly returns Paddle's generic error page. Route through
     // our own `/checkout?_ptxn=` page instead, which opens the Paddle.js
     // overlay (Paddle.Checkout.open) — the officially supported integration.
-    const base = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+    const base =
+      process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      req.nextUrl.origin;
     const overlayUrl = transaction.id
       ? new URL(`/checkout?_ptxn=${encodeURIComponent(transaction.id)}`, base).toString()
       : null;

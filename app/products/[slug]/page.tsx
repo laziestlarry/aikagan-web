@@ -41,6 +41,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const discountPct = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
+  const isMasterclass = product.slug.startsWith("masterclass-");
+  const deliverySteps = product.deliverySteps ?? [
+    "Checkout completes through the active payment rail and you return to the delivery page.",
+    "Open the ZIP and read START_HERE.pdf first — it maps every file in the pack.",
+    "Follow the included execution checklist and use the scripts and templates directly.",
+    "Need help? Email hello@aikagan.com within 30 days.",
+  ];
 
   return (
     <main className="min-h-screen bg-[#08080a] px-6 py-16 text-white">
@@ -92,21 +99,22 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="mt-8 rounded-3xl border border-white/10 bg-black/40 p-8">
             <h2 className="text-2xl font-semibold">What happens after purchase</h2>
             <ol className="mt-5 space-y-3 text-neutral-300">
-              {[
-                "Checkout completes via Paddle — you're redirected back to aikagan.com where your download link appears instantly.",
-                "Open the ZIP and read START_HERE.pdf first — it maps every file in the pack.",
-                "Follow the included execution checklist and use the scripts and templates directly.",
-                "Need help? Email hello@aikagan.com within 30 days.",
-              ].map((step, i) => (
+              {deliverySteps.map((step, i) => (
                 <li key={i} className="flex gap-3">
                   <span className="text-amber-300 font-bold flex-shrink-0">{i + 1}.</span>
                   <span>{step}</span>
                 </li>
               ))}
             </ol>
+            {product.fulfillmentWindow && (
+              <p className="mt-5 rounded-2xl border border-sky-300/20 bg-sky-300/5 px-4 py-3 text-sm text-sky-100">
+                Fulfillment: {product.fulfillmentWindow}.
+              </p>
+            )}
           </div>
 
           {/* Quick comparison vs other tiers */}
+          {isMasterclass && (
           <div className="mt-8 rounded-3xl border border-amber-300/10 bg-black/40 p-8">
             <h2 className="text-2xl font-semibold">Compare plans</h2>
             <div className="mt-5 overflow-x-auto">
@@ -145,8 +153,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               Not sure which tier fits? <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">Email us</a> — we'll help you choose.
             </p>
           </div>
+          )}
 
           {/* License rights table */}
+          {isMasterclass && (
           <div className="mt-8 rounded-3xl border border-amber-300/10 bg-black/40 p-8">
             <h2 className="text-2xl font-semibold">License rights</h2>
             <div className="mt-5 overflow-x-auto">
@@ -182,6 +192,29 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               Full terms at <a href="/legal/terms/" className="text-amber-300 underline">aikagan.com/legal/terms</a>.
             </p>
           </div>
+          )}
+
+          {!isMasterclass && (
+            <div className="mt-8 rounded-3xl border border-sky-300/10 bg-black/40 p-8">
+              <h2 className="text-2xl font-semibold">Best-fit use cases</h2>
+              <ul className="mt-5 grid gap-3 text-neutral-300 md:grid-cols-2">
+                {[
+                  "You have an idea but no clear business model.",
+                  "You have dormant assets and need a practical launch path.",
+                  "You want a paid offer, funnel, and execution sequence before building software.",
+                  "You need an investor-ready summary before deeper implementation.",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="text-sky-300">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-5 text-sm text-neutral-500">
+                This is a planning and execution-delivery product. Platform registration, paid ads, tax filings, and irreversible account actions stay behind explicit approval checkpoints.
+              </p>
+            </div>
+          )}
         </div>
 
         <aside className="sticky top-8 space-y-6">
@@ -209,7 +242,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <p className="mt-4 text-neutral-300">
-              One-time purchase. Instant access. Built for execution.
+              One-time purchase. {product.deliveryMode === "service" ? "Structured intake and delivery." : "Instant access."} Built for execution.
             </p>
 
             {/* Social proof banner */}
@@ -238,13 +271,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </Link>
 
             <div className="mt-6 border-t border-white/10 pt-6 text-sm text-neutral-400 space-y-2">
-              <p className="flex items-center gap-2"><Zap className="h-4 w-4 text-amber-400" /> Instant download after checkout</p>
+              <p className="flex items-center gap-2"><Zap className="h-4 w-4 text-amber-400" /> {product.deliveryMode === "service" ? "Post-purchase intake and tracked delivery" : "Instant download after checkout"}</p>
               <p className="flex items-center gap-2"><Shield className="h-4 w-4 text-green-400" /> One-time payment, no subscription</p>
-              <p className="flex items-center gap-2"><Star className="h-4 w-4 text-purple-400" /> Secure checkout via Paddle or LemonSqueezy</p>
+              <p className="flex items-center gap-2"><Star className="h-4 w-4 text-purple-400" /> Secure checkout via Paddle, with Shopier/Gumroad fallbacks where configured</p>
             </div>
           </div>
 
           {/* Tier comparison card */}
+          {isMasterclass && (
           <div className="rounded-3xl border border-white/10 bg-[#0d1119]/60 p-6">
             <p className="text-xs text-neutral-500 mb-4 uppercase tracking-widest font-semibold">Compare tiers</p>
             <div className="space-y-3">
@@ -271,6 +305,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               ))}
             </div>
           </div>
+          )}
 
           {/* Support card */}
           <div className="rounded-3xl border border-white/5 bg-[#0d1119]/30 p-6">

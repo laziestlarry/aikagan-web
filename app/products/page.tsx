@@ -10,15 +10,17 @@ import { products } from '@/lib/products';
 export const metadata: Metadata = buildMetadata({
   title: 'Products',
   description:
-    'Three Masterclass tiers — Starter $29, Pro $79, Commander $149 — each bundling the matching Golden Delivery pack. Plus three free gifts on email opt-in.',
+    'AI Venture Launch Blueprint plus three Masterclass tiers — Starter $29, Pro $79, Commander $149 — each bundling the matching Golden Delivery pack. Plus three free gifts on email opt-in.',
   path: '/products/',
 });
 
 const FREE_SLUGS = ['weekly-operating-map', 'builder-starter-checklist', 'golden-delivery-sample'];
+const FLAGSHIP_SLUG = 'ai-venture-launch-blueprint';
 const PAID_SLUGS = ['masterclass-starter', 'masterclass-pro', 'masterclass-commander'];
 
 export default function ProductsPage() {
   const freeProducts = FREE_SLUGS.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+  const flagshipProduct = products.find(p => p.slug === FLAGSHIP_SLUG);
   const paidProducts = PAID_SLUGS.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
 
   return (
@@ -29,8 +31,8 @@ export default function ProductsPage() {
             Products & <span className="text-gradient">Offers</span>
           </h1>
           <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Three Masterclass tiers — each bundles the matching Golden Delivery pack as a bonus.
-            Three free gifts up top — email entry, instant download.
+            Start with the AI Venture Launch Blueprint when you need a concrete business plan from an idea.
+            Use the Masterclass packs when you want instant execution assets.
           </p>
         </div>
 
@@ -64,6 +66,29 @@ export default function ProductsPage() {
             </Link>
           ))}
         </div>
+
+        {/* ── Flagship Blueprint ─────────────────────────────────── */}
+        {flagshipProduct && (
+          <div className="mb-16">
+            <h2 className="text-xs font-bold tracking-[0.25em] text-sky-300 text-center mb-6 uppercase">
+              ⚜ Highest-Priority Offer — Founder Intake To Launch Plan ⚜
+            </h2>
+            <div className="mx-auto max-w-3xl">
+              <ProductCard
+                slug={flagshipProduct.slug}
+                name={flagshipProduct.name}
+                category={flagshipProduct.tier}
+                price={`$${flagshipProduct.price}`}
+                originalPrice={String(flagshipProduct.originalPrice)}
+                description={flagshipProduct.description}
+                includes={flagshipProduct.bullets}
+                badge={flagshipProduct.badge ?? 'Featured'}
+                checkoutUrl={flagshipProduct.checkoutUrl ?? undefined}
+                featured
+              />
+            </div>
+          </div>
+        )}
 
         {/* ── Paid Masterclass ────────────────────────────────── */}
         <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">

@@ -63,6 +63,8 @@ const CATALOG_PRICE_IDS: Record<string, string> = {
   "masterclass-starter": "pri_01kx0rg4hmnpbdpsnx3d7j8h5q",
   "masterclass-pro": "pri_01kx0rg4q1ed110tw5cc4xqfs3",
   "masterclass-commander": "pri_01kx0rg4w962z7vmn53c8pq7n3",
+  // "ai-venture-launch-blueprint" intentionally falls back to inline pricing
+  // until the Paddle catalog price is created and approved.
 };
 
 async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRecord) {
@@ -128,7 +130,10 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
     // buy button through that same-origin page so the overlay opens once
     // Paddle.js + Paddle.Initialize (loaded globally in the root layout)
     // are ready.
-    const base = "https://app.aikagan.com";
+    const base =
+      process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      req.nextUrl.origin;
     const overlayUrl = tx.id
       ? new URL(`/checkout?_ptxn=${encodeURIComponent(tx.id)}`, base).toString()
       : null;
@@ -382,7 +387,12 @@ export async function GET(req: NextRequest) {
     providers: {
       paddle: Boolean(process.env.PADDLE_API_KEY),
       lemonsqueezy: Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID),
-      shopier: Boolean(process.env.SHOPIER_API_KEY && process.env.SHOPIER_API_SECRET),
+      gumroad: true,
+      shopier: Boolean(
+        process.env.SHOPIER_PAT ||
+        process.env.AUTONOMAX_SHOPIER_PAT ||
+        process.env.AUTONOMAX_SHOPIER_STORE_URL
+      ),
     },
   });
 }

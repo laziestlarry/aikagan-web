@@ -1,0 +1,84 @@
+{
+  "faq_updates": [
+    {
+      "question": "Is AIKAGAN legitimate? Can I trust this product?",
+      "answer": "AIKAGAN provides practical toolkits for founders and operators. The AutonomaX Masterclass Pro is a structured system designed from operational experience. We stand by our products with a 30-day refund, no questions."
+    },
+    {
+      "question": "How is the product delivered?",
+      "answer": "The AutonomaX Masterclass Pro is a digital product. Upon purchase, you will receive immediate access to all materials, including PDFs, templates, and scripts, via a secure download link sent to your email."
+    },
+    {
+      "question": "What is your refund policy?",
+      "answer": "We offer a 30-day refund, no questions. If the Masterclass Pro doesn't meet your expectations within 30 days of purchase, simply email support@aikagan.com for a full refund."
+    },
+    {
+      "question": "How much effort is required to see results?",
+      "answer": "Results depend on your implementation. This toolkit provides the framework; your consistent application of the strategies and templates will determine your outcomes. It requires active engagement with the materials and integration into your workflow."
+    },
+    {
+      "question": "Can I white-label or resell the content?",
+      "answer": "No. The AutonomaX Masterclass Pro is licensed for individual use only. It is not permitted to white-label, resell, or redistribute the content."
+    }
+  ],
+  "reply_macros": [
+    {
+      "situation": "pre_sales_email",
+      "subject_line": "Re: Your question about AutonomaX Masterclass Pro",
+      "response": "Thank you for your interest in the AutonomaX Masterclass Pro.\n\nThis is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. It provides a structured process for integrating sales and delivery, helping you establish repeatable systems for your business.\n\nResults depend on your implementation. We offer a 30-day refund, no questions, so you can evaluate the materials without risk.\n\nIf you're ready to implement a proven system, you can get started here: {{cta_table.substack.hard_cta}}\n\nBest,\nAIKAGAN Customer Success"
+    },
+    {
+      "situation": "social_comment",
+      "subject_line": "social_comment",
+      "response": "The AutonomaX Masterclass Pro is a digital toolkit \u2014 PDFs, templates, scripts \u2014 for building repeatable sales and delivery systems. Results depend on your implementation. 30-day refund, no questions. Details here: {{cta_table.x.url}}"
+    },
+    {
+      "situation": "refund_request",
+      "subject_line": "Re: Refund Request - AutonomaX Masterclass Pro",
+      "response": "Understood. We're processing your refund for the AutonomaX Masterclass Pro as per our 30-day refund policy. You should see the credit reflected in your account within 5-7 business days.\n\nIf you have any further questions, please reply to this email.\n\nBest,\nAIKAGAN Customer Success"
+    },
+    {
+      "situation": "missing_download",
+      "subject_line": "Re: Missing Download - AutonomaX Masterclass Pro",
+      "response": "Apologies for the inconvenience. Your download link for the AutonomaX Masterclass Pro was sent to the email address used at purchase. Please check your spam or junk folder.\n\nIf you still cannot locate it, please reply to this email, and we will resend the access link directly.\n\nBest,\nAIKAGAN Customer Success"
+    },
+    {
+      "situation": "is_this_software_question",
+      "subject_line": "is_this_software_question",
+      "response": "No, this is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. It provides a structured framework and actionable resources to build your own systems for sales and delivery. Results depend on your implementation. 30-day refund, no questions. More info: {{cta_table.x.url}}"
+    }
+  ],
+  "support_posts": [],
+  "escalation_rules": [
+    {
+      "trigger": "Chargeback threat or initiation",
+      "action": "Immediately escalate to finance and legal. Do not engage further with the customer directly on the chargeback issue."
+    },
+    {
+      "trigger": "Legal questions or threats",
+      "action": "Immediately escalate to legal counsel. Do not provide any legal advice or interpretations."
+    },
+    {
+      "trigger": "Accessibility requests (e.g., specific format for disabilities)",
+      "action": "Escalate to product development/operations to assess feasibility and provide compliant alternatives."
+    },
+    {
+      "trigger": "Requests for custom enterprise solutions or partnerships",
+      "action": "Escalate to the business development team for evaluation and follow-up."
+    },
+    {
+      "trigger": "Persistent negative public reviews/comments after resolution attempts",
+      "action": "Escalate to marketing and PR for strategic response planning."
+    }
+  ],
+  "support_thesis": "Deliver concise, credible support that removes friction and guides the next best step.",
+  "response_principles": [
+    "Acknowledge the buyer concern clearly.",
+    "Answer with specific, realistic expectations.",
+    "Offer one concrete next step with a relevant CTA."
+  ],
+  "offer_name": "AutonomaX Masterclass Starter",
+  "offer_url": "https://aikagan.com/products/masterclass-starter/",
+  "support_email": "support@aikagan.com",
+  "generated_at_utc": "2026-07-11T16:13:02.916643+00:00"
+}

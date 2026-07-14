@@ -21,17 +21,26 @@ const STEPS = [
   { icon: Mail, label: "Support always available" },
 ];
 
+const SERVICE_STEPS = [
+  { icon: CheckCircle, label: "Payment confirmed" },
+  { icon: FileText, label: "Submit venture intake" },
+  { icon: Zap, label: "Blueprint production starts" },
+  { icon: Mail, label: "Delivery by email" },
+  { icon: Shield, label: "Support and next action" },
+];
+
 /**
  * Polls /api/session-token until the token is ready.
  * Paddle appends ?transaction_id=txn_... to the success URL configured
  * in the Paddle Dashboard (Checkout → Return URL After Transaction).
  */
-function useSessionToken(): { token: string | null; slug: string | null; loading: boolean; error: string | null } {
+function useSessionToken(): { token: string | null; slug: string | null; service: boolean; loading: boolean; error: string | null } {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transaction_id");
   const ptxn = searchParams.get("_ptxn");
   const [token, setToken] = useState<string | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
+  const [service, setService] = useState(false);
   const [loading, setLoading] = useState(!!transactionId || !!ptxn);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -75,8 +84,9 @@ function useSessionToken(): { token: string | null; slug: string | null; loading
         const res = await fetch(`/api/session-token?transaction_id=${encodeURIComponent(transactionId)}`);
         if (res.status === 200) {
           const data = await res.json();
-          setToken(data.token);
+          setToken(data.token ?? null);
           setSlug(data.slug);
+          setService(Boolean(data.service));
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         } else if (attempts >= maxAttempts) {
@@ -102,7 +112,7 @@ function useSessionToken(): { token: string | null; slug: string | null; loading
     };
   }, [transactionId, ptxn]);
 
-  return { token, slug, loading, error };
+  return { token, slug, service, loading, error };
 }
 
 function OrderBump({ currentSlug }: { currentSlug: string }) {
@@ -139,7 +149,7 @@ function OrderBump({ currentSlug }: { currentSlug: string }) {
 
 
 function CheckoutSuccessContent() {
-  const { token, slug, loading, error } = useSessionToken();
+  const { token, slug, service, loading, error } = useSessionToken();
   const [activeStep, setActiveStep] = useState(0);
   const [hasTransaction, setHasTransaction] = useState(false);
 
@@ -156,6 +166,9 @@ function CheckoutSuccessContent() {
     (slug ? getProduct(slug) : undefined) ||
     products.find((p) => p.ladderTier !== "lead_magnet" && p.priceModel === "one_time") ||
     products[0];
+  const isService = service || product?.deliveryMode === "service";
+  const confirmed = Boolean(token) || (isService && Boolean(slug));
+  const steps = isService ? SERVICE_STEPS : STEPS;
 
   // Animate steps in on mount
   useEffect(() => {
@@ -168,9 +181,9 @@ function CheckoutSuccessContent() {
     return () => clearInterval(id);
   }, []);
 
-  // Fire Meta Pixel Purchase event — only when the download token is real.
+  // Fire Meta Pixel Purchase event — only when payment confirmation is real.
   useEffect(() => {
-    if (!token || !product || product.priceModel !== "one_time") return;
+    if (!confirmed || !product || product.priceModel !== "one_time") return;
     window.fbq?.("track", "Purchase", {
       value: product.price,
       currency: "USD",
@@ -178,7 +191,7 @@ function CheckoutSuccessContent() {
       content_type: "product",
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, product?.slug]);
+  }, [confirmed, product?.slug]);
 
   // Only show a real download button when we have a verified token.
   // Dev fallback (`/api/download/demo-...`) is removed — it allowed the
@@ -202,7 +215,7 @@ function CheckoutSuccessContent() {
           z-index: 0;
         }
       `}</style>
-      {token && Array.from({ length: 20 }).map((_, i) => (
+      {confirmed && Array.from({ length: 20 }).map((_, i) => (
         <div
           key={i}
           className="confetti-piece"
@@ -223,7 +236,7 @@ function CheckoutSuccessContent() {
         {/* Header */}
         <div className="flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-amber-300">
           <Sparkles className="h-4 w-4" />
-          {token ? "Order confirmed" : loading ? "Verifying" : error ? "Verification failed" : hasTransaction ? "Verifying" : "Checkout"}
+          {confirmed ? "Order confirmed" : loading ? "Verifying" : error ? "Verification failed" : hasTransaction ? "Verifying" : "Checkout"}
         </div>
 
         {/* No transaction guard — show only if user lands here without a transaction id */}
@@ -264,14 +277,18 @@ function CheckoutSuccessContent() {
             ? "Finalizing your order…"
             : error
               ? "We couldn&apos;t confirm your order"
-              : `Your ${product?.name ?? "AutonomaX"} pack is ready.`}
+              : isService
+                ? `Your ${product?.name ?? "AutonomaX"} intake is ready.`
+                : `Your ${product?.name ?? "AutonomaX"} pack is ready.`}
         </h1>
         <p className="mt-4 text-lg text-neutral-400">
           {loading
             ? "Confirming your payment with the provider and preparing your secure download…"
             : error
             ? error
-            : "Follow the steps below to claim your download and start day one."}
+            : isService
+              ? "Complete the intake so AutonomaX can prepare your venture blueprint and launch roadmap."
+              : "Follow the steps below to claim your download and start day one."}
         </p>
 
         {/* Loading state while waiting for token */}
@@ -290,7 +307,7 @@ function CheckoutSuccessContent() {
         {/* Progress steps (hidden while loading) */}
         {!loading && (
           <ol className="mt-10 space-y-3">
-            {STEPS.map(({ icon: StepIcon, label }, i) => (
+            {steps.map(({ icon: StepIcon, label }, i) => (
               <li
                 key={label}
                 className={`flex items-center gap-4 rounded-2xl border px-6 py-4 transition-all duration-500 ${
@@ -334,8 +351,14 @@ function CheckoutSuccessContent() {
                     />
                   ) : (
                     <div className="text-center">
-                      <Download className="h-10 w-10 text-amber-300/40 mx-auto" />
-                      <p className="text-[10px] text-amber-300/30 mt-1 uppercase tracking-wider">Digital Pack</p>
+                      {isService ? (
+                        <FileText className="h-10 w-10 text-amber-300/40 mx-auto" />
+                      ) : (
+                        <Download className="h-10 w-10 text-amber-300/40 mx-auto" />
+                      )}
+                      <p className="text-[10px] text-amber-300/30 mt-1 uppercase tracking-wider">
+                        {isService ? "Intake" : "Digital Pack"}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -347,7 +370,14 @@ function CheckoutSuccessContent() {
                 <h2 className="mt-2 text-3xl font-semibold">{product?.name ?? "Your pack"}</h2>
                 <p className="mt-2 text-neutral-300">{product?.description}</p>
 
-                {downloadHref ? (
+                {isService ? (
+                  <Link
+                    href={`/intake/venture-blueprint?product=${encodeURIComponent(product?.slug ?? "")}`}
+                    className="mt-5 inline-flex items-center gap-3 rounded-2xl bg-amber-300 px-7 py-4 font-semibold text-black hover:bg-amber-200 transition-all hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]"
+                  >
+                    <FileText className="h-5 w-5" /> Complete Blueprint Intake
+                  </Link>
+                ) : downloadHref ? (
                   <a
                     href={downloadHref}
                     download
@@ -380,10 +410,10 @@ function CheckoutSuccessContent() {
                 <Shield className="h-3.5 w-3.5 text-emerald-400/60" /> Secure Payment
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Download className="h-3.5 w-3.5 text-amber-400/60" /> Instant Download
+                <Download className="h-3.5 w-3.5 text-amber-400/60" /> {isService ? "Tracked Intake" : "Instant Download"}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <FileText className="h-3.5 w-3.5 text-purple-400/60" /> 48h Link Validity
+                <FileText className="h-3.5 w-3.5 text-purple-400/60" /> {isService ? "3 Business Day Delivery" : "48h Link Validity"}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-blue-400/60" /> Email Backup
@@ -400,9 +430,17 @@ function CheckoutSuccessContent() {
             </h2>
             <ol className="mt-5 space-y-4 text-neutral-300">
               {[
-                { icon: Download, text: 'Download and unzip the pack.' },
-                { icon: FileText, text: <><strong>Open START_HERE.pdf</strong> first — it maps the exact execution sequence.</> },
-                { icon: CheckCircle, text: 'Complete the 24-Hour Quick Win Checklist.' },
+                ...(isService
+                  ? [
+                      { icon: FileText, text: 'Complete the venture intake with your idea, niche, and constraints.' },
+                      { icon: CheckCircle, text: 'Watch your email for confirmation and any clarifying questions.' },
+                      { icon: Zap, text: 'Blueprint production starts after the intake is received.' },
+                    ]
+                  : [
+                      { icon: Download, text: 'Download and unzip the pack.' },
+                      { icon: FileText, text: <><strong>Open START_HERE.pdf</strong> first — it maps the exact execution sequence.</> },
+                      { icon: CheckCircle, text: 'Complete the 24-Hour Quick Win Checklist.' },
+                    ]),
                 { icon: Mail, text: <>Questions? Email <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a></> },
               ].map(({ icon: ItemIcon, text }, i) => (
                 <li key={i} className="flex gap-3 items-start">
