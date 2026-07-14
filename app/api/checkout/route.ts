@@ -14,7 +14,6 @@ export const dynamic = "force-dynamic";
 function buildForwardUrl(req: NextRequest, pathname: string): string {
   const u = new URL(req.url);
   u.pathname = pathname;
-  u.search = "";
   return u.toString();
 }
 

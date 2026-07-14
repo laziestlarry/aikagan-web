@@ -15,6 +15,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProduct } from "@/lib/products";
 import { fulfillPurchase } from "@/lib/fulfillment";
+import { generateDownloadToken } from "@/lib/download-token";
+import { tokenStore } from "@/lib/token-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -69,11 +71,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, note: "unknown slug" });
     }
 
-    // Build download URL using Gumroad license key as token reference
+    // Build download URL using a real, signed HMAC token
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
-    const downloadUrl = product.zipFilename
-      ? `${siteUrl}/api/download/${licenseKey}`
-      : siteUrl;
+    let downloadUrl = siteUrl;
+    if (product.zipFilename) {
+      const hmacToken = generateDownloadToken(slug, `gr-${saleId}`, email);
+      downloadUrl = `${siteUrl}/api/download/${hmacToken}`;
+
+      // Cache the token in the tokenStore under the Gumroad transaction ID
+      await tokenStore.set(`gr-${saleId}`, {
+        token: hmacToken,
+        slug,
+        email,
+        exp: Date.now() + 48 * 60 * 60 * 1000,
+      });
+      console.log(`[gumroad-webhook] Cached Gumroad token in store for gr-${saleId}`);
+    }
 
     // Fulfill: send purchase confirmation email with download link
     const buyerName = fullName || email.split("@")[0] || "Valued Customer";

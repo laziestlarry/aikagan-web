@@ -45,7 +45,14 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // 2. Fallback: verify directly with Paddle API
+  // 2. Fallback: verify directly with Paddle API (only for Paddle transaction IDs)
+  const isPaddleTxn = transactionId.startsWith("txn_");
+  if (!isPaddleTxn) {
+    // Non-Paddle purchase (e.g. Gumroad gr-... or LS ls:...) — return processing
+    // and wait for the webhook to register the token in KV.
+    return NextResponse.json({ status: "processing" }, { status: 202 });
+  }
+
   const paddle = getPaddleClient();
   if (!paddle) {
     // No Paddle key configured — return "processing" so the client keeps polling

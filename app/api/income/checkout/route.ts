@@ -288,20 +288,16 @@ async function tryShopier(req: NextRequest, body: CheckoutBody, intent: IntentRe
   };
 }
 
-export async function POST(req: NextRequest) {
-  const limit = rateLimit({ key: clientKey(req, "income-checkout"), max: 30, windowMs: 60_000 });
-  if (!limit.allowed) return rateLimitResponse(limit);
-
-  const body = (await req.json().catch(() => null)) as CheckoutBody | null;
-  if (!body || !body.slug) {
-    return NextResponse.json({ error: "slug required" }, { status: 400 });
-  }
+async function createCheckoutSession(
+  req: NextRequest,
+  body: CheckoutBody
+): Promise<{ status: number; data: any }> {
   const product = getProduct(body.slug);
   if (!product) {
-    return NextResponse.json({ error: `Unknown product: ${body.slug}` }, { status: 404 });
+    return { status: 404, data: { error: `Unknown product: ${body.slug}` } };
   }
   if (!product.price || product.priceModel === "free") {
-    return NextResponse.json({ error: "Free products do not need checkout" }, { status: 400 });
+    return { status: 400, data: { error: "Free products do not need checkout" } };
   }
 
   // Record the intent BEFORE creating the checkout so we have evidence even
@@ -326,27 +322,40 @@ export async function POST(req: NextRequest) {
   // Try real providers in priority order
   let result: { provider: "paddle" | "lemonsqueezy" | "gumroad" | "shopier"; url: string; transactionId: string | null } | null = null;
 
+  const host = req.headers.get("host") || "";
+  const isAppSubdomain = host.includes("app.aikagan.com");
+
   if (body.provider === "shopier") {
     result = await tryShopier(req, body, intent);
-  } else {
+  } else if (body.provider === "paddle") {
     result = await tryPaddle(req, body, intent);
+  } else if (body.provider === "gumroad") {
+    result = tryGumroad(body, intent);
+  } else {
+    // If request originates from app.aikagan.com (approved subdomain), prioritize Paddle.
+    // Otherwise, bypass Paddle (due to pending domain approval errors on aikagan.com)
+    if (isAppSubdomain) {
+      result = await tryPaddle(req, body, intent);
+    }
     if (!result) result = await tryLemonSqueezy(req, body, intent);
     if (!result) result = tryGumroad(body, intent);
     if (!result) result = await tryShopier(req, body, intent);
   }
 
   if (result) {
-    return NextResponse.json({
-      ok: true,
-      ...result,
-      intentId: sessionId,
-      intent: { recorded: true, at: new Date(intent.capturedAt).toISOString() },
-    });
+    return {
+      status: 200,
+      data: {
+        ok: true,
+        ...result,
+        intentId: sessionId,
+        intent: { recorded: true, at: new Date(intent.capturedAt).toISOString() },
+      },
+    };
   }
 
   // No provider succeeded. If Paddle is configured, this is a real outage
-  // — return a 502 so the client surfaces a genuine error state instead of
-  // silently routing the buyer to the manual fallback page.
+  // — return a 502 so the client surfaces a genuine error state.
   const paddleConfigured =
     Boolean(process.env.PADDLE_API_KEY) && process.env.PADDLE_CHECKOUT_DISABLED !== "true";
   if (paddleConfigured) {
@@ -354,8 +363,9 @@ export async function POST(req: NextRequest) {
       slug: body.slug,
       intentId: sessionId,
     });
-    return NextResponse.json(
-      {
+    return {
+      status: 502,
+      data: {
         ok: false,
         error: "checkout_unavailable",
         provider: "paddle",
@@ -363,25 +373,63 @@ export async function POST(req: NextRequest) {
         intentId: sessionId,
         intent: { recorded: true, at: new Date(intent.capturedAt).toISOString() },
       },
-      { status: 502 },
-    );
+    };
   }
 
-  // No payment provider configured at all — last-resort manual fallback so
-  // the funnel never dead-ends. This path is hit only in environments where
-  // Paddle (and LemonSqueezy) keys are unset.
-  return NextResponse.json({
-    ok: true,
-    provider: "manual",
-    url: manualFallbackUrl(req, body.slug, sessionId),
-    transactionId: null,
-    intentId: sessionId,
-    intent: { recorded: true, at: new Date(intent.capturedAt).toISOString() },
-    note: "No payment provider configured. Using manual checkout fallback.",
-  });
+  // No payment provider configured at all — last-resort manual fallback.
+  return {
+    status: 200,
+    data: {
+      ok: true,
+      provider: "manual",
+      url: manualFallbackUrl(req, body.slug, sessionId),
+      transactionId: null,
+      intentId: sessionId,
+      intent: { recorded: true, at: new Date(intent.capturedAt).toISOString() },
+      note: "No payment provider configured. Using manual checkout fallback.",
+    },
+  };
+}
+
+export async function POST(req: NextRequest) {
+  const limit = rateLimit({ key: clientKey(req, "income-checkout"), max: 30, windowMs: 60_000 });
+  if (!limit.allowed) return rateLimitResponse(limit);
+
+  const body = (await req.json().catch(() => null)) as CheckoutBody | null;
+  if (!body || !body.slug) {
+    return NextResponse.json({ error: "slug required" }, { status: 400 });
+  }
+
+  const res = await createCheckoutSession(req, body);
+  return NextResponse.json(res.data, { status: res.status });
 }
 
 export async function GET(req: NextRequest) {
+  const slug = req.nextUrl.searchParams.get("slug");
+
+  if (slug) {
+    const body: CheckoutBody = {
+      slug,
+      ref: req.nextUrl.searchParams.get("ref"),
+      provider: req.nextUrl.searchParams.get("provider"),
+      utm_source: req.nextUrl.searchParams.get("utm_source"),
+      utm_medium: req.nextUrl.searchParams.get("utm_medium"),
+      utm_campaign: req.nextUrl.searchParams.get("utm_campaign"),
+      utm_term: req.nextUrl.searchParams.get("utm_term"),
+      utm_content: req.nextUrl.searchParams.get("utm_content"),
+      country: req.nextUrl.searchParams.get("country"),
+      email: req.nextUrl.searchParams.get("email"),
+      sessionId: req.nextUrl.searchParams.get("sessionId") || req.nextUrl.searchParams.get("session_id"),
+      coupon: req.nextUrl.searchParams.get("coupon"),
+    };
+
+    const res = await createCheckoutSession(req, body);
+    if (res.data?.url) {
+      return NextResponse.redirect(res.data.url, 303);
+    }
+    return NextResponse.json(res.data, { status: res.status });
+  }
+
   return NextResponse.json({
     ok: true,
     providers: {

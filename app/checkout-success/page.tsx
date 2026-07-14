@@ -36,7 +36,9 @@ const SERVICE_STEPS = [
  */
 function useSessionToken(): { token: string | null; slug: string | null; service: boolean; loading: boolean; error: string | null } {
   const searchParams = useSearchParams();
-  const transactionId = searchParams.get("transaction_id");
+  const rawTxnId = searchParams.get("transaction_id");
+  const saleId = searchParams.get("sale_id");
+  const transactionId = rawTxnId || (saleId ? `gr-${saleId}` : null);
   const ptxn = searchParams.get("_ptxn");
   const [token, setToken] = useState<string | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
@@ -158,7 +160,7 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const sp = new URLSearchParams(window.location.search);
-    setHasTransaction(Boolean(sp.get("transaction_id") || sp.get("_ptxn")));
+    setHasTransaction(Boolean(sp.get("transaction_id") || sp.get("_ptxn") || sp.get("sale_id")));
   }, []);
 
   // Resolve which product to show

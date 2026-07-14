@@ -251,6 +251,28 @@ export const products: Product[] = [
     accentColor: "#a78bfa",
     deliveryMode: "download",
   },
+  {
+    slug: "revenue-audit-sprint",
+    name: "Revenue Audit Sprint",
+    tier: "AutonomaX Audit",
+    ladderTier: "tripwire",
+    price: 29,
+    originalPrice: 97,
+    priceModel: "one_time",
+    description: "Focused review of your current stack, conversion leaks, and high-potential niches with structured recommendations.",
+    bullets: [
+      "Technical stack and CORS compliance audit",
+      "Conversion tracking and Meta CAPI check",
+      "Ranked monetization opportunities",
+      "Bonus: full Golden Delivery — Starter Pack ZIP included",
+    ],
+    checkoutUrl: CHECKOUT_SENTINEL,
+    zipFilename: "AutonomaX_Golden_Delivery_Starter_Pack.zip",
+    nextSlug: "masterclass-pro",
+    badge: "Most popular starting point",
+    accentColor: "#f59e0b",
+    deliveryMode: "service",
+  },
 ];
 
 export function getProduct(slug: string): Product | undefined {
