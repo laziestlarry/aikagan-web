@@ -6,17 +6,29 @@ A deployment is not production-ready because it builds. It is ready only when `/
 
 ## Required production configuration
 
-Configure at least one complete payment rail:
+Configure at least one complete payment rail.
 
-### Paddle
+### Gumroad — primary public storefront rail
+
+- `GUMROAD_ACCESS_TOKEN`
+- Hosted product mapping in `lib/gumroad-products.ts`
+- `/api/cron/process-emails` scheduled reconciliation
+- Optional Gumroad Ping may post to `https://aikagan.com/api/webhooks/gumroad`; every Ping is verified against Gumroad sales data before fulfillment
+
+Gumroad's legacy resource-subscription API is not used. The production worker polls authenticated sales data, rejects refunded or disputed sales, and processes each order idempotently.
+
+### Paddle — approved surfaces only
 
 - `PADDLE_API_KEY`
 - `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`
 - `PADDLE_WEBHOOK_SECRET`
 - `PADDLE_CHECKOUT_DISABLED` must not be `true`
+- Use only on a Paddle-approved domain such as `app.aikagan.com` or `propulse-autonomax.web.app`
 
 ### Lemon Squeezy
 
+- Merchant approval
+- `LEMONSQUEEZY_CHECKOUT_ENABLED=true`
 - `LEMONSQUEEZY_API_KEY`
 - `LEMONSQUEEZY_STORE_ID`
 - `LEMONSQUEEZY_WEBHOOK_SECRET`
@@ -25,13 +37,8 @@ Configure at least one complete payment rail:
 ### Shopier
 
 - `SHOPIER_PAT` or `AUTONOMAX_SHOPIER_PAT`
-- `SHOPIER_OSB_USERNAME` or `AUTONOMAX_SHOPIER_OSB_USERNAME`
-- `SHOPIER_OSB_PASSWORD`, `AUTONOMAX_SHOPIER_OSB_KEY`, or `AUTONOMAX_SHOPIER_OSB_PASSWORD`
-
-### Gumroad
-
-- `GUMROAD_WEBHOOK_TOKEN`
-- Configure the Gumroad Ping URL as `https://aikagan.com/api/webhooks/gumroad?token=<GUMROAD_WEBHOOK_TOKEN>`
+- Product-specific dynamic checkout or product-specific hosted URLs
+- OSB credentials for webhook verification
 
 All payment rails also require:
 
@@ -39,10 +46,11 @@ All payment rails also require:
 - `MAKE_PURCHASE_WEBHOOK_URL` or `MAKE_CUSTOMER_SERVICE_WEBHOOK_URL`
 - `KV_REST_API_URL`
 - `KV_REST_API_TOKEN`
+- `CRON_SECRET`
 
 Recommended conversion telemetry:
 
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID` or `NEXT_PUBLIC_META_PIXEL_ID`
+- `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, or `NEXT_PUBLIC_META_PIXEL_ID`
 - `META_CAPI_ACCESS_TOKEN`
 - `MAKE_OMNICHANNEL_WEBHOOK_URL`
 
@@ -50,11 +58,23 @@ Recommended conversion telemetry:
 
 1. Deploy the candidate branch to Vercel preview.
 2. Open `/mission-control` and inspect every critical gate.
-3. Trigger the `Production Readiness Gate` workflow with the preview URL.
-4. Correct missing configuration until the gate passes.
-5. Execute one real low-value purchase using the active checkout rail.
-6. Confirm the payment webhook, durable order record, delivery email, and secure download access.
-7. Merge only after the evidence above is captured.
+3. Confirm hosted checkout pages and ZIP archive integrity.
+4. Merge only when checkout fails closed and all non-financial gates pass.
+5. After production deploy, verify `/api/ops/status`, `/api/health`, and the mapped checkout redirect.
+6. Execute one consented low-value purchase.
+7. Confirm the verified sale, durable ledger record, CAPI event, Make/KV handoff, delivery email, and secure download.
+
+## Reconciliation operations
+
+`/api/cron/process-emails` runs every 15 minutes. It:
+
+1. reads recent authenticated Gumroad sales,
+2. maps supported product IDs/permalinks,
+3. rejects refunded or disputed sales,
+4. deduplicates previously processed sale IDs,
+5. issues secure delivery access,
+6. writes the income ledger and CAPI event,
+7. hands the order to Make.com and the durable KV retry queue.
 
 ## Rollback rule
 
