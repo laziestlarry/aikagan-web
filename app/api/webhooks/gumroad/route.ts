@@ -1,30 +1,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/webhooks/gumroad
 //
-// Receives Gumroad sale notifications (Ping) and fires the fulfillment pipeline.
-// Gumroad Ping does not provide a general-purpose request signature, so this
-// endpoint requires a private shared token in the configured Ping URL:
-//   https://aikagan.com/api/webhooks/gumroad?token=<GUMROAD_WEBHOOK_TOKEN>
+// Receives Gumroad sale notifications (Ping), verifies the sale against the
+// authenticated Gumroad API, then records and fulfills the order exactly once.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getProduct } from "@/lib/products";
+import { GUMROAD_PRODUCTS } from "@/lib/gumroad-products";
+import { verifyGumroadSale } from "@/lib/gumroad-api";
 import { fulfillPurchase } from "@/lib/fulfillment";
 import { generateDownloadToken } from "@/lib/download-token";
 import { tokenStore } from "@/lib/token-store";
+import { markEventIfNew } from "@/lib/webhook-idempotency";
+import { recordTransaction } from "@/lib/income-ledger";
+import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const PERMALINK_TO_SLUG: Record<string, string> = {
-  "autonomax-starter": "masterclass-starter",
-  "autonomax-starter-29": "masterclass-starter",
-  "autonomax-pro": "masterclass-pro",
-  "autonomax-pro-79": "masterclass-pro",
-  "autonomax-commander": "masterclass-commander",
-  "autonomax-commander-149": "masterclass-commander",
-};
 
 function safeEqual(left: string, right: string): boolean {
   const a = Buffer.from(left);
@@ -32,96 +26,161 @@ function safeEqual(left: string, right: string): boolean {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+function slugFromEvidence(permalink: string, productId: string): string | null {
+  const match = Object.entries(GUMROAD_PRODUCTS).find(([, product]) =>
+    product.id === productId || product.permalink === permalink,
+  );
+  return match?.[0] ?? null;
+}
+
+function normalizedEmail(value: unknown): string {
+  return String(value ?? "").trim().toLowerCase();
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const expectedToken = process.env.GUMROAD_WEBHOOK_TOKEN ?? "";
-    const suppliedToken =
-      req.nextUrl.searchParams.get("token") ??
-      req.headers.get("x-gumroad-webhook-token") ??
-      "";
-
-    if (!expectedToken) {
-      console.error("[gumroad-webhook] GUMROAD_WEBHOOK_TOKEN is not configured");
-      return NextResponse.json(
-        { error: "Webhook authentication is not configured" },
-        { status: 503 },
-      );
-    }
-
-    if (!suppliedToken || !safeEqual(expectedToken, suppliedToken)) {
-      console.warn("[gumroad-webhook] Invalid shared token");
-      return NextResponse.json({ error: "Invalid webhook token" }, { status: 401 });
-    }
-
     const formData = await req.formData().catch(() => null);
     if (!formData) {
       return NextResponse.json({ error: "Invalid form data" }, { status: 400 });
     }
 
-    const saleId = String(formData.get("sale_id") ?? "");
-    const productName = String(formData.get("product_name") ?? "");
-    const productPermalink = String(formData.get("permalink") ?? "");
-    const email = String(formData.get("email") ?? "");
-    const fullName = String(formData.get("full_name") ?? "");
-    const price = parseFloat(String(formData.get("price") ?? "0"));
-    const currency = String(formData.get("currency") ?? "usd");
+    const saleId = String(formData.get("sale_id") ?? "").trim();
+    const pingEmail = normalizedEmail(formData.get("email"));
+    const pingPermalink = String(
+      formData.get("product_permalink") ?? formData.get("permalink") ?? "",
+    ).trim();
+    const pingProductId = String(formData.get("product_id") ?? "").trim();
 
-    if (!saleId || !productPermalink || !email) {
-      return NextResponse.json(
-        { error: "Missing sale_id, permalink, or email" },
-        { status: 400 },
-      );
+    if (!saleId) {
+      return NextResponse.json({ error: "Missing sale_id" }, { status: 400 });
     }
 
-    console.log("[gumroad-webhook] Sale received", {
-      saleId,
-      productName,
-      productPermalink,
-      email: email.replace(/(.{2}).*(@.*)/, "$1***$2"),
-      price,
-      currency,
-    });
+    // Optional defense-in-depth shared token. When configured, reject requests
+    // that do not carry it. API sale verification remains mandatory either way.
+    const expectedToken = process.env.GUMROAD_WEBHOOK_TOKEN?.trim() ?? "";
+    if (expectedToken) {
+      const suppliedToken =
+        req.nextUrl.searchParams.get("token") ??
+        req.headers.get("x-gumroad-webhook-token") ??
+        "";
+      if (!suppliedToken || !safeEqual(expectedToken, suppliedToken)) {
+        return NextResponse.json({ error: "Invalid webhook token" }, { status: 401 });
+      }
+    }
 
-    const slug = PERMALINK_TO_SLUG[productPermalink];
+    const verification = await verifyGumroadSale(saleId);
+    if (!verification.verified || !verification.sale) {
+      console.warn("[gumroad-webhook] Sale verification failed", {
+        saleId,
+        detail: verification.detail,
+      });
+      return NextResponse.json({ error: "Sale verification failed" }, { status: 401 });
+    }
+
+    const sale = verification.sale;
+    const verifiedEmail = normalizedEmail(sale.email ?? sale.purchaser_email);
+    const verifiedPermalink = String(sale.product_permalink ?? sale.permalink ?? pingPermalink).trim();
+    const verifiedProductId = String(sale.product_id ?? pingProductId).trim();
+
+    if (!verifiedEmail) {
+      return NextResponse.json({ error: "Verified sale has no buyer email" }, { status: 400 });
+    }
+    if (pingEmail && pingEmail !== verifiedEmail) {
+      return NextResponse.json({ error: "Buyer email mismatch" }, { status: 401 });
+    }
+
+    const slug = slugFromEvidence(verifiedPermalink, verifiedProductId);
     if (!slug) {
-      console.warn("[gumroad-webhook] Unknown product permalink", productPermalink);
-      return NextResponse.json({ ok: true, note: "unknown product" });
+      console.warn("[gumroad-webhook] Sale does not map to a catalog product", {
+        saleId,
+        verifiedPermalink,
+        verifiedProductId,
+      });
+      return NextResponse.json({ ok: true, ignored: true, reason: "unmapped product" });
     }
 
     const product = getProduct(slug);
-    if (!product) {
+    const gumroadProduct = GUMROAD_PRODUCTS[slug];
+    if (!product || !gumroadProduct) {
       return NextResponse.json({ error: "Product not in catalog" }, { status: 404 });
     }
 
+    const isNew = await markEventIfNew("gumroad", saleId);
+    if (!isNew) {
+      return NextResponse.json({ ok: true, dedup: true, saleId });
+    }
+
+    const orderId = `gr-${saleId}`;
+    const value = gumroadProduct.priceCents / 100;
+    const currency = String(sale.currency ?? formData.get("currency") ?? "USD").toUpperCase();
+    const name = String(
+      sale.full_name ?? sale.purchaser_name ?? formData.get("full_name") ?? verifiedEmail.split("@")[0],
+    );
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
+
     let downloadUrl = siteUrl;
     if (product.zipFilename) {
-      const orderId = `gr-${saleId}`;
-      const hmacToken = generateDownloadToken(slug, orderId, email);
+      const hmacToken = generateDownloadToken(slug, orderId, verifiedEmail);
       downloadUrl = `${siteUrl}/api/download/${hmacToken}`;
       await tokenStore.set(orderId, {
         token: hmacToken,
         slug,
-        email,
+        email: verifiedEmail,
         exp: Date.now() + 48 * 60 * 60 * 1000,
       });
     }
 
+    const capiResult = await fireCapiEvent(
+      {
+        event_name: "Purchase",
+        event_id: orderId,
+        email: verifiedEmail,
+        value,
+        currency,
+        content_ids: [slug],
+        content_name: product.name,
+        utm: { product_slug: slug, provider: "gumroad" },
+      },
+      { req: { headers: req.headers }, source: "gumroad_webhook" },
+    );
+
+    await recordTransaction({
+      orderId,
+      provider: "gumroad",
+      slug,
+      email: verifiedEmail,
+      value,
+      currency,
+      refCode: null,
+      utm: { product_slug: slug },
+      capturedAt: Date.now(),
+      eventId: saleId,
+      commission: 0,
+      capiFired: capiResult.ok || capiResult.attempted,
+    });
+
     await fulfillPurchase({
-      email,
-      name: fullName || email.split("@")[0] || "Valued Customer",
+      email: verifiedEmail,
+      name: name || "Valued Customer",
       productName: product.name,
       productSlug: slug,
-      orderId: `gr-${saleId}`,
-      value: Number.isFinite(price) ? price : 0,
+      orderId,
+      value,
       provider: "gumroad",
       downloadUrl,
     });
 
-    console.log("[gumroad-webhook] Fulfillment complete", { saleId, slug });
-    return NextResponse.json({ ok: true, saleId, slug });
-  } catch (err) {
-    console.error("[gumroad-webhook] Processing failed", err);
+    console.log(JSON.stringify({
+      event: "gumroad_fulfillment_complete",
+      saleId,
+      orderId,
+      slug,
+      email: verifiedEmail.replace(/(.{2}).*(@.*)/, "$1***$2"),
+    }));
+
+    return NextResponse.json({ ok: true, saleId, orderId, slug });
+  } catch (error) {
+    console.error("[gumroad-webhook] Processing failed", error);
     return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 }
