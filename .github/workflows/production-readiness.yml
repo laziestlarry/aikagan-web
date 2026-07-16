@@ -1,0 +1,37 @@
+name: Production Readiness Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      production_url:
+        description: Production or preview URL to verify
+        required: true
+        type: string
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Resolve target URL
+        id: target
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "url=${{ inputs.production_url }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=${{ github.event.deployment_status.target_url }}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Verify live commerce gates
+        env:
+          PRODUCTION_URL: ${{ steps.target.outputs.url }}
+        run: node scripts/verify-production-readiness.mjs
