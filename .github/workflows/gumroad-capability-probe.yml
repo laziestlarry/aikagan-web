@@ -1,0 +1,30 @@
+name: Gumroad Capability Probe
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/probe-gumroad-api.mjs"
+      - ".github/workflows/gumroad-capability-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VERCEL_ORG_ID: team_67a8OdMpiLhKbsLZ7HVcDsfh
+      VERCEL_PROJECT_ID: prj_ZBuPJBcchGEU62MAkHWJRTBQqwig
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull production environment values
+        run: vercel env pull .env.production.local --environment=production --yes --token=${{ secrets.VERCEL_TOKEN }} --scope=${VERCEL_ORG_ID}
+      - name: Probe Gumroad read-only API capabilities
+        run: node scripts/probe-gumroad-api.mjs .env.production.local
