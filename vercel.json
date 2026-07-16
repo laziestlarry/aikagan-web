@@ -37,7 +37,7 @@
     },
     {
       "path": "/api/cron/process-emails",
-      "schedule": "0 3 * * *"
+      "schedule": "*/15 * * * *"
     }
   ]
 }
