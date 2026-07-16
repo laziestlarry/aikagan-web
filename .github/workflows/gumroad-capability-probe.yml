@@ -27,4 +27,11 @@ jobs:
       - name: Pull production environment values
         run: vercel env pull .env.production.local --environment=production --yes --token=${{ secrets.VERCEL_TOKEN }} --scope=${VERCEL_ORG_ID}
       - name: Probe Gumroad read-only API capabilities
-        run: node scripts/probe-gumroad-api.mjs .env.production.local
+        run: node scripts/probe-gumroad-api.mjs .env.production.local gumroad-capability.jsonl
+      - name: Upload redacted capability evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gumroad-capability-evidence
+          path: gumroad-capability.jsonl
+          retention-days: 3
