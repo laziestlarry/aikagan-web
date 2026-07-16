@@ -21,15 +21,7 @@ export async function GET() {
     kv: configured("KV_REST_API_URL") && configured("KV_REST_API_TOKEN"),
   };
 
-  const critical = [
-    checks.deployment,
-    checks.catalog,
-    checks.paddleApi,
-    checks.paddleClient,
-    checks.paddleWebhook,
-    checks.fulfillmentSecret,
-  ];
-
+  const critical = [checks.deployment, checks.catalog, checks.paddleApi, checks.paddleClient, checks.paddleWebhook, checks.fulfillmentSecret];
   const ready = critical.every(Boolean);
 
   return NextResponse.json({
@@ -38,13 +30,8 @@ export async function GET() {
     ready,
     simulated: false,
     checkedAt: new Date().toISOString(),
-    products: {
-      paid: paidProducts.length,
-      slugs: paidProducts.map((product) => product.slug),
-    },
+    products: { paid: paidProducts.length, slugs: paidProducts.map((product) => product.slug) },
     checks,
-    blockers: Object.entries(checks)
-      .filter(([, ok]) => !ok)
-      .map(([name]) => name),
+    blockers: Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name),
   }, { status: ready ? 200 : 503 });
 }
