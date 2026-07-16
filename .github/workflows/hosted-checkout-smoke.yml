@@ -1,0 +1,24 @@
+name: Hosted Checkout Smoke
+
+on:
+  pull_request:
+    paths:
+      - "lib/gumroad-products.ts"
+      - "scripts/verify-hosted-checkouts.mjs"
+      - ".github/workflows/hosted-checkout-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-gumroad-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Resolve hosted product pages
+        run: node scripts/verify-hosted-checkouts.mjs
