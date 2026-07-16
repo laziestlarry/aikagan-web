@@ -6,7 +6,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type Status = "set" | "missing";
-
 interface EnvEntry {
   key: string;
   required: boolean;
@@ -20,11 +19,9 @@ function configured(key: string): boolean {
   const value = process.env[key];
   return Boolean(value && value.trim() && !/^(replace|your_|changeme|placeholder)/i.test(value.trim()));
 }
-
 function status(key: string): Status {
   return configured(key) ? "set" : "missing";
 }
-
 function any(...keys: string[]): boolean {
   return keys.some(configured);
 }
@@ -36,6 +33,18 @@ export async function GET() {
   );
 
   const providers = {
+    gumroad: {
+      ready: configured("GUMROAD_ACCESS_TOKEN"),
+      mappedProducts: Object.keys(GUMROAD_PRODUCTS),
+      note: "The access token is used to confirm the sale subscription and verify every Ping before fulfillment.",
+    },
+    shopier: {
+      ready:
+        any("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
+        any("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
+        any("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
+      note: "PAT is required for product-specific dynamic checkout. Generic storefront redirects are not considered ready.",
+    },
     paddle: {
       ready:
         process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
@@ -43,27 +52,16 @@ export async function GET() {
         configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
         configured("PADDLE_WEBHOOK_SECRET"),
       approvedSurface: "app.aikagan.com or propulse-autonomax.web.app",
-      note: "Paddle approved the app and Firebase surfaces, not aikagan.com. Do not force Paddle on the main storefront.",
+      note: "Paddle is not treated as the default rail on aikagan.com.",
     },
     lemonsqueezy: {
       ready:
+        process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" &&
         configured("LEMONSQUEEZY_API_KEY") &&
         configured("LEMONSQUEEZY_STORE_ID") &&
         configured("LEMONSQUEEZY_WEBHOOK_SECRET") &&
         hasLemonVariant,
-      note: "Keep disabled unless the merchant store is approved and at least one live variant is configured.",
-    },
-    gumroad: {
-      ready: configured("GUMROAD_WEBHOOK_TOKEN"),
-      mappedProducts: Object.keys(GUMROAD_PRODUCTS),
-      note: "Starter, Pro, Commander, and Revenue Audit have hosted product mappings. Configure the Ping URL with the shared token before treating fulfillment as live.",
-    },
-    shopier: {
-      ready:
-        any("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
-        any("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
-        any("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
-      note: "The merchant account has historical paid-order evidence. PAT and OSB credentials must be available in this Vercel environment.",
+      note: "Explicit enablement is required after merchant approval.",
     },
   };
 
@@ -76,18 +74,11 @@ export async function GET() {
       how: "Generate with `openssl rand -hex 32` and apply to production and preview.",
     },
     {
-      key: "KV_REST_API_URL",
+      key: "KV_REST_API_URL + KV_REST_API_TOKEN",
       required: true,
-      status: status("KV_REST_API_URL"),
+      status: configured("KV_REST_API_URL") && configured("KV_REST_API_TOKEN") ? "set" : "missing",
       where: "Vercel → aikagan-web → Settings → Environment Variables",
-      how: "Copy the Upstash Redis REST URL.",
-    },
-    {
-      key: "KV_REST_API_TOKEN",
-      required: true,
-      status: status("KV_REST_API_TOKEN"),
-      where: "Vercel → aikagan-web → Settings → Environment Variables",
-      how: "Copy the matching Upstash Redis REST token.",
+      how: "Use the matching Upstash Redis REST URL and token.",
     },
     {
       key: "MAKE_PURCHASE_WEBHOOK_URL or MAKE_CUSTOMER_SERVICE_WEBHOOK_URL",
@@ -95,14 +86,14 @@ export async function GET() {
       status: any("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL") ? "set" : "missing",
       where: "Vercel → aikagan-web → Settings → Environment Variables",
       how: "Use the active Make Purchase Delivery Router or Customer Success Router webhook URL.",
-      notes: "This is the delivery-email handoff. KV preserves the job but does not send the customer email by itself.",
+      notes: "This is the delivery-email handoff. KV preserves the job but does not send customer email by itself.",
     },
     {
       key: "At least one complete checkout provider",
       required: true,
       status: Object.values(providers).some((provider) => provider.ready) ? "set" : "missing",
-      where: "Paddle, Gumroad, Shopier, or Lemon Squeezy plus Vercel environment variables",
-      how: "For the main storefront, prioritize secured Gumroad Ping or Shopier OSB. Use Paddle only on an approved surface.",
+      where: "Gumroad, Shopier, Paddle, or Lemon Squeezy plus Vercel variables",
+      how: "For aikagan.com, use API-verified Gumroad or product-specific Shopier. Paddle is restricted to approved surfaces.",
     },
     {
       key: "NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_GA_MEASUREMENT_ID",
@@ -114,7 +105,7 @@ export async function GET() {
     {
       key: "NEXT_PUBLIC_META_PIXEL_ID + META_CAPI_ACCESS_TOKEN",
       required: false,
-      status: configured("NEXT_PUBLIC_META_PIXEL_ID") && configured("META_CAPI_ACCESS_TOKEN") ? "set" : "missing",
+      status: any("NEXT_PUBLIC_META_PIXEL_ID", "META_PIXEL_ID") && configured("META_CAPI_ACCESS_TOKEN") ? "set" : "missing",
       where: "Vercel → aikagan-web → Settings → Environment Variables",
       how: "Copy the Pixel ID and long-lived CAPI token from Meta Events Manager.",
     },
@@ -137,8 +128,8 @@ export async function GET() {
       required_now: missingRequired,
       all: entries,
       next_step: ready
-        ? "Configuration gates pass. Execute one low-value real purchase and verify the provider event, ledger entry, email handoff, and secure download before merging."
-        : "Set the missing required configuration, redeploy, and re-check /api/ops/status. Do not claim live fulfillment while this endpoint is blocked.",
+        ? "Open /api/ops/status to confirm the Gumroad sale subscription, then execute one low-value real purchase and verify provider event, ledger, email, and secure download."
+        : "Set the missing required configuration, redeploy, and re-check /api/ops/status. Do not claim live fulfillment while blocked.",
     },
     { status: ready ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0" } },
   );
