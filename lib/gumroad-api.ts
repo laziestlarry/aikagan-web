@@ -103,6 +103,18 @@ export async function verifyGumroadSalesAccess(): Promise<{ ready: boolean; deta
   return { ready: true };
 }
 
+// Compatibility for callers created before Gumroad removed resource subscriptions.
+// "ready" now means authenticated sales-list access, which supports direct
+// reconciliation and API verification of any optional Ping event.
+export async function ensureGumroadSaleSubscription(_postUrl: string): Promise<{
+  ready: boolean;
+  created: boolean;
+  detail?: string;
+}> {
+  const access = await verifyGumroadSalesAccess();
+  return { ready: access.ready, created: false, detail: access.detail };
+}
+
 export async function verifyGumroadSale(saleId: string): Promise<{ verified: boolean; sale: GumroadSale | null; detail?: string }> {
   if (!saleId) return { verified: false, sale: null, detail: "Missing sale ID" };
 
