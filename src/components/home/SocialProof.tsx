@@ -1,79 +1,60 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { CheckCircle2, Database, ShieldCheck } from "lucide-react";
 
-interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
-  avatar?: string;
-}
-
-const TESTIMONIALS: Testimonial[] = [
+const EVIDENCE = [
   {
-    quote: "Closed my first $500 deal on Day 5. The DM scripts are insane.",
-    name: "Marcus",
-    role: "Indie Hacker, devmarcus_builds",
+    icon: ShieldCheck,
+    title: "Verified checkout routing",
+    body: "Paid calls to action are routed through the first payment rail that passes the live production configuration gate.",
   },
   {
-    quote: "Bought Starter, upgraded to Commander the same day. ROI in week one.",
-    name: "Sophia",
-    role: "Founder, soph.automates",
+    icon: Database,
+    title: "Durable order evidence",
+    body: "Successful provider webhooks issue expiring access and write the order into the shared revenue ledger and fulfillment queue.",
   },
   {
-    quote: "The Automation Setup was worth every dollar. They aligned our checkout, webhooks, and delivery in 48 hours. Hands-off transformation.",
-    name: "Alex Chen",
-    role: "CTO, SaaSGrid",
+    icon: CheckCircle2,
+    title: "Defined delivery promise",
+    body: "Each product page states exactly what is delivered, how access is issued, and which refund and support terms apply.",
   },
 ];
 
 export default function SocialProof() {
   return (
-    <section className="py-16 px-4">
-      <div className="max-w-5xl mx-auto text-center">
-        <p className="text-xs uppercase tracking-[0.3em] text-amber-300/70 mb-3">
-          What operators say
+    <section className="px-4 py-16">
+      <div className="mx-auto max-w-5xl text-center">
+        <p className="mb-3 text-xs uppercase tracking-[0.3em] text-amber-300/70">
+          Operational evidence
         </p>
-        <h2 className="text-3xl md:text-4xl font-black text-white mb-12">
-          Real results from real builders
+        <h2 className="mb-4 text-3xl font-black text-white md:text-4xl">
+          Trust the verified delivery path, not invented numbers
         </h2>
+        <p className="mx-auto mb-12 max-w-2xl text-sm leading-7 text-neutral-400">
+          Customer counts, ratings, and revenue outcomes are published only after they exist in the live ledger. Until then, the storefront shows the controls that protect checkout and fulfillment.
+        </p>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((t) => (
+        <div className="grid gap-6 md:grid-cols-3">
+          {EVIDENCE.map(({ icon: Icon, title, body }) => (
             <div
-              key={t.name}
-              className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 text-left hover:border-amber-300/30 transition-all"
+              key={title}
+              className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-left transition-all hover:border-amber-300/30"
             >
-              {/* Stars */}
-              <div className="flex gap-0.5 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-300 text-amber-300" />
-                ))}
-              </div>
-
-              <p className="text-neutral-200 text-sm leading-relaxed mb-4 italic">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-
-              <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/10">
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-white">{t.name}</p>
-                  <p className="text-xs text-neutral-500">{t.role}</p>
-                </div>
-              </div>
+              <Icon className="mb-5 h-6 w-6 text-amber-300" />
+              <h3 className="text-base font-semibold text-white">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-neutral-400">{body}</p>
             </div>
           ))}
         </div>
 
-        {/* Trust bar */}
-        <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-neutral-500">
-          <span>256-bit Encrypted Checkout</span>
+        <div className="mt-12 flex flex-wrap justify-center gap-4 text-xs text-neutral-500">
+          <span>Expiring download tokens</span>
           <span>·</span>
-          <span>Instant Digital Delivery</span>
+          <span>Webhook signature validation</span>
           <span>·</span>
-          <span>30-Day Money-Back Guarantee</span>
+          <span>Durable KV fulfillment queue</span>
           <span>·</span>
-          <span>Paddle Merchant of Record</span>
+          <span>Published refund terms</span>
         </div>
       </div>
     </section>
