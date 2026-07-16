@@ -9,8 +9,11 @@ type OpsStatus = {
   simulated: false;
   checkedAt: string;
   products: { paid: number; slugs: string[] };
+  providers: Record<string, boolean>;
   checks: Record<string, boolean>;
+  warnings: Record<string, boolean>;
   blockers: string[];
+  advisories: string[];
 };
 
 export default function LiveReadinessPanel() {
@@ -34,6 +37,10 @@ export default function LiveReadinessPanel() {
     return () => window.clearInterval(timer);
   }, []);
 
+  const activeProviders = status
+    ? Object.values(status.providers).filter(Boolean).length
+    : 0;
+
   return (
     <div className="mb-16 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.03] p-5 md:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -50,22 +57,43 @@ export default function LiveReadinessPanel() {
       <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Metric label="Release mode" value={status?.mode ?? "checking"} good={status?.ready} />
         <Metric label="Paid offers" value={String(status?.products.paid ?? 0)} good={(status?.products.paid ?? 0) > 0} />
-        <Metric label="Simulation" value={status?.simulated === false ? "disabled" : "unknown"} good={status?.simulated === false} />
+        <Metric label="Active rails" value={String(activeProviders)} good={activeProviders > 0} />
         <Metric label="Decision" value={status?.ready ? "proceed" : "blocked"} good={status?.ready} />
       </div>
 
       {status && (
-        <div className="mt-5 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-          {Object.entries(status.checks).map(([name, ok]) => (
-            <div key={name} className={`flex items-center justify-between rounded-lg border px-3 py-2 text-xs ${ok ? "border-emerald-400/30 bg-emerald-500/5" : "border-red-400/30 bg-red-500/5"}`}>
-              <span className="capitalize text-kagan-light">{name.replace(/([A-Z])/g, " $1")}</span>
-              <span className={ok ? "font-bold text-emerald-300" : "font-bold text-red-300"}>{ok ? "VERIFIED" : "BLOCKED"}</span>
+        <>
+          <div className="mt-5 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+            {Object.entries(status.checks).map(([name, ok]) => (
+              <Gate key={name} name={name} ok={ok} />
+            ))}
+          </div>
+
+          <div className="mt-5">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/40">Payment rails</p>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(status.providers).map(([name, ok]) => (
+                <span key={name} className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${ok ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-300" : "border-white/10 bg-white/[0.02] text-white/35"}`}>
+                  {name}: {ok ? "ready" : "off"}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        </>
       )}
 
       <p className="mt-5 text-xs text-kagan-light">{status?.blockers.length ? `Blocking gates: ${status.blockers.join(", ")}` : status ? "All critical gates passed." : "Collecting production evidence…"}</p>
+      {status?.advisories.length ? <p className="mt-2 text-xs text-amber-200/80">Advisories: {status.advisories.join(", ")}</p> : null}
+      {status?.checkedAt ? <p className="mt-3 font-mono text-[10px] text-white/30">Evidence checked {new Date(status.checkedAt).toLocaleString()}</p> : null}
+    </div>
+  );
+}
+
+function Gate({ name, ok }: { name: string; ok: boolean }) {
+  return (
+    <div className={`flex items-center justify-between rounded-lg border px-3 py-2 text-xs ${ok ? "border-emerald-400/30 bg-emerald-500/5" : "border-red-400/30 bg-red-500/5"}`}>
+      <span className="capitalize text-kagan-light">{name.replace(/([A-Z])/g, " $1")}</span>
+      <span className={ok ? "font-bold text-emerald-300" : "font-bold text-red-300"}>{ok ? "VERIFIED" : "BLOCKED"}</span>
     </div>
   );
 }
