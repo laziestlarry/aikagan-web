@@ -6,7 +6,8 @@ import SocialProof from "@/components/home/SocialProof";
 import { products } from "@/lib/products";
 
 const flagship =
-  products.find((product) => product.slug === "ai-venture-launch-blueprint") ??
+  products.find((product) => product.slug === "masterclass-pro") ??
+  products.find((product) => product.slug === "masterclass-starter") ??
   products.find((product) => product.priceModel === "one_time") ??
   products[0];
 
@@ -70,7 +71,7 @@ export default function HomePage() {
                 price={flagship.price}
                 className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black uppercase tracking-wider text-black transition hover:bg-amber-200"
               >
-                Get the blueprint — ${flagship.price}
+                Get Pro — ${flagship.price}
                 <ArrowRight className="h-4 w-4" />
               </CheckoutLink>
               <Link
@@ -100,7 +101,7 @@ export default function HomePage() {
             <div className="absolute inset-0 rounded-full bg-amber-300/20 blur-[90px]" />
             <div className="relative rounded-[32px] border border-amber-300/35 bg-[linear-gradient(145deg,#151005,#090909)] p-4 shadow-[0_0_80px_rgba(212,175,55,0.15)]">
               <div className="rounded-[24px] border border-amber-300/20 bg-black/40 p-8 sm:p-10">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300/70">Flagship structured service</p>
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300/70">Flagship ProfitOS pack</p>
                 <h2 className="mt-5 text-4xl font-black text-amber-300">{flagship.name}</h2>
                 <p className="mt-4 text-sm leading-7 text-neutral-300">{flagship.description}</p>
                 <ul className="mt-7 space-y-3">
@@ -213,7 +214,7 @@ export default function HomePage() {
         <div className="grid gap-6 md:grid-cols-3">
           {[
             { icon: Workflow, title: "1. Checkout intent", body: "The storefront records product, source, campaign, and session evidence before requesting a provider URL." },
-            { icon: ShieldCheck, title: "2. Payment confirmation", body: "Signed provider webhooks validate the event, reject duplicates, record the order, and create delivery access." },
+            { icon: ShieldCheck, title: "2. Payment confirmation", body: "Provider evidence is verified, duplicate events are rejected, and the order is written to the ledger." },
             { icon: Download, title: "3. Golden Delivery", body: "Make.com receives the purchase job while the KV queue preserves a retryable copy for fulfillment continuity." },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
@@ -232,7 +233,7 @@ export default function HomePage() {
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300">Production visibility</p>
           <h2 className="mt-4 text-4xl font-black">See the live release gates before relying on the system</h2>
           <p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-400">
-            Mission Control reports the active payment rails, download-token configuration, fulfillment webhook, durable queue, and advisory telemetry status.
+            Mission Control reports active payment rails, download-token configuration, fulfillment webhook, durable queue, and advisory telemetry status.
           </p>
           <Link href="/mission-control" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black uppercase tracking-wider text-black hover:bg-amber-200">
             Open Mission Control <ArrowRight className="h-4 w-4" />
