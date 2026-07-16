@@ -60,9 +60,11 @@ export async function GET() {
   };
 
   const warnings = {
-    analytics:
-      configured("NEXT_PUBLIC_GA_MEASUREMENT_ID") ||
-      configured("NEXT_PUBLIC_META_PIXEL_ID"),
+    analytics: configuredAny(
+      "NEXT_PUBLIC_GA_ID",
+      "NEXT_PUBLIC_GA_MEASUREMENT_ID",
+      "NEXT_PUBLIC_META_PIXEL_ID",
+    ),
     capi:
       configured("META_CAPI_ACCESS_TOKEN") &&
       configured("NEXT_PUBLIC_META_PIXEL_ID"),
