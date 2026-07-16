@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getKv } from "@/lib/kv";
 import { getPaidProducts } from "@/lib/products";
+import { isGumroadApiConfigured } from "@/lib/gumroad-api";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,30 +16,18 @@ const START_TIME = Date.now();
 
 function configured(name: string): boolean {
   const value = process.env[name];
-  return Boolean(
-    value &&
-      value.trim() &&
-      !/^(replace|your_|changeme|placeholder)/i.test(value.trim()),
-  );
+  return Boolean(value && value.trim() && !/^(replace|your_|changeme|placeholder)/i.test(value.trim()));
 }
-
 function configuredAny(...names: string[]): boolean {
   return names.some(configured);
 }
-
 function configCheck(ok: boolean, detail: string): CheckResult {
-  return ok
-    ? { status: "ok", latency_ms: 0 }
-    : { status: "degraded", latency_ms: 0, detail };
+  return ok ? { status: "ok", latency_ms: 0 } : { status: "degraded", latency_ms: 0, detail };
 }
-
 async function checkUrl(url: string, timeout = 5000): Promise<CheckResult> {
   const start = performance.now();
   try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(timeout),
-      cache: "no-store",
-    });
+    const response = await fetch(url, { signal: AbortSignal.timeout(timeout), cache: "no-store" });
     const latency = Math.round(performance.now() - start);
     return response.ok
       ? { status: "ok", latency_ms: latency }
@@ -60,36 +49,27 @@ export async function GET() {
   );
 
   const providers = {
+    gumroad: isGumroadApiConfigured(),
+    shopier:
+      configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
+      configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
+      configuredAny("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
     paddle:
       process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
       configured("PADDLE_API_KEY") &&
       configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
       configured("PADDLE_WEBHOOK_SECRET"),
     lemonsqueezy:
+      process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" &&
       configured("LEMONSQUEEZY_API_KEY") &&
       configured("LEMONSQUEEZY_STORE_ID") &&
       configured("LEMONSQUEEZY_WEBHOOK_SECRET") &&
       hasLemonVariant,
-    shopier:
-      configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
-      configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
-      configuredAny(
-        "SHOPIER_OSB_PASSWORD",
-        "AUTONOMAX_SHOPIER_OSB_KEY",
-        "AUTONOMAX_SHOPIER_OSB_PASSWORD",
-      ),
-    gumroad: configured("GUMROAD_WEBHOOK_TOKEN"),
   };
 
   checks.catalog = configCheck(paidProducts.length > 0, "No paid products are registered");
-  checks.checkout_provider = configCheck(
-    Object.values(providers).some(Boolean),
-    "No complete payment provider configuration is available",
-  );
-  checks.download_token_config = configCheck(
-    configured("DOWNLOAD_TOKEN_SECRET"),
-    "DOWNLOAD_TOKEN_SECRET not set",
-  );
+  checks.checkout_provider = configCheck(Object.values(providers).some(Boolean), "No complete payment provider configuration is available");
+  checks.download_token_config = configCheck(configured("DOWNLOAD_TOKEN_SECRET"), "DOWNLOAD_TOKEN_SECRET not set");
   checks.fulfillment_webhook = configCheck(
     configuredAny("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL"),
     "MAKE_PURCHASE_WEBHOOK_URL or MAKE_CUSTOMER_SERVICE_WEBHOOK_URL not set",
@@ -100,9 +80,7 @@ export async function GET() {
   if (kv) {
     const pingStart = performance.now();
     try {
-      if (kv.type === "upstash") {
-        await (kv as unknown as { ping: () => Promise<boolean> }).ping();
-      }
+      if (kv.type === "upstash") await (kv as unknown as { ping: () => Promise<boolean> }).ping();
       kvConnected = true;
       checks.durable_queue = {
         status: "ok",
@@ -117,19 +95,12 @@ export async function GET() {
       };
     }
   } else {
-    checks.durable_queue = {
-      status: "degraded",
-      latency_ms: 0,
-      detail: "KV_REST_API_URL / KV_REST_API_TOKEN not set",
-    };
+    checks.durable_queue = { status: "degraded", latency_ms: 0, detail: "KV_REST_API_URL / KV_REST_API_TOKEN not set" };
   }
 
   const pixelId = configuredAny("NEXT_PUBLIC_META_PIXEL_ID", "META_PIXEL_ID");
   const capiToken = configured("META_CAPI_ACCESS_TOKEN");
-  checks.meta_capi_config = configCheck(
-    pixelId && capiToken,
-    "Meta Pixel ID or META_CAPI_ACCESS_TOKEN not set",
-  );
+  checks.meta_capi_config = configCheck(pixelId && capiToken, "Meta Pixel ID or META_CAPI_ACCESS_TOKEN not set");
   checks.analytics_config = configCheck(
     configuredAny("NEXT_PUBLIC_GA_ID", "NEXT_PUBLIC_GA_MEASUREMENT_ID", "NEXT_PUBLIC_META_PIXEL_ID"),
     "No GA4 or Meta browser analytics identifier is configured",
@@ -141,23 +112,14 @@ export async function GET() {
   checks.revenue_ops_backend = revenueOpsUrl
     ? await checkUrl(`${revenueOpsUrl.replace(/\/+$/, "")}/api/dashboard`)
     : { status: "degraded", latency_ms: 0, detail: "NEXT_PUBLIC_AUTONOMAX_API_URL not set" };
-
   const fastApiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL ?? "";
   checks.fastapi_backend = fastApiUrl
     ? await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`)
     : { status: "degraded", latency_ms: 0, detail: "NEXT_PUBLIC_FASTAPI_URL not set" };
 
-  const criticalNames = [
-    "catalog",
-    "checkout_provider",
-    "download_token_config",
-    "fulfillment_webhook",
-    "durable_queue",
-  ];
+  const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue"];
   const criticalDegraded = criticalNames.filter((name) => checks[name]?.status !== "ok");
-  const degraded = Object.entries(checks)
-    .filter(([, result]) => result.status !== "ok")
-    .map(([name]) => name);
+  const degraded = Object.entries(checks).filter(([, result]) => result.status !== "ok").map(([name]) => name);
   const ok = criticalDegraded.length === 0;
 
   return NextResponse.json(
@@ -179,6 +141,7 @@ export async function GET() {
       },
       audit_endpoints: {
         readiness: "/api/ops/status",
+        setup: "/api/income/setup",
         reality: "/api/income/reality",
         funnel: "/api/income/funnel",
         transactions: "/api/income/transactions",
