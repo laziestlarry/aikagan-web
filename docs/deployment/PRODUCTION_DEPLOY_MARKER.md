@@ -1,5 +1,7 @@
 # Production deployment marker
 
-Requested after commit `548cef0e088048d954eec6039a307905fe29f978` to force a fresh Git push event for Vercel production deployment.
+Deployment requested for `main` commit `f36bc107d8213244f7221dd921b84aee08633b1a`, which contains the ProfitOS control plane, Gumroad sales reconciliation hotfix, and current production runbook.
+
+Trigger method: GitHub contents API commit directly on `main`.
 
 Runtime scope: no application behavior change.
