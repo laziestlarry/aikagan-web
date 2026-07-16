@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import Link from "next/link";
 import { appendAttribution, trackCheckoutIntent } from "@/src/lib/attribution";
+import { hasGumroadProduct } from "@/lib/gumroad-products";
 
 interface CheckoutLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
   /** Product slug — used to call POST /api/income/checkout */
@@ -21,8 +22,9 @@ declare global {
 /**
  * Checkout Link — production checkout path.
  *
- * For paid products this calls POST /api/income/checkout, which is the
- * live checkout router wired to Paddle + income ledger intent tracking.
+ * The public storefront only opens the managed checkout router when the product
+ * has a concrete hosted provider mapping. Unmapped services are routed to an
+ * availability request instead of producing a checkout error.
  */
 export default function CheckoutLink({
   href,
@@ -36,13 +38,13 @@ export default function CheckoutLink({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const isPaddle = href === "paddle";
+  const isManagedCheckout = href === "paddle";
+  const hasVerifiedHostedCheckout = hasGumroadProduct(productSlug);
 
-  const handleClick = useCallback(async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
+  const handleClick = useCallback(async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
     setErrorMessage(null);
 
-    // Push GTM begin_checkout event
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer ?? [];
       window.dataLayer.push({
@@ -56,26 +58,18 @@ export default function CheckoutLink({
       trackCheckoutIntent(productSlug);
     }
 
-    if (!isPaddle) {
-      // If not a Paddle product (e.g. legacy link), navigate directly
+    if (!isManagedCheckout) {
       if (href) window.location.href = href;
       return;
     }
 
-    // Multi-provider flow: router picks Paddle → LemonSqueezy → Gumroad
     setLoading(true);
     try {
-      // Build attribution payload from sessionStorage
-      const attrs = (window as any).__attrs__ ?? {};
+      const attrs = (window as typeof window & { __attrs__?: Record<string, string> }).__attrs__ ?? {};
+      const searchParams = new URLSearchParams(window.location.search);
+      const coupon = searchParams.get("coupon");
 
-      // Read coupon from URL query param (e.g. ?coupon=TESTXXX)
-      let coupon: string | null = null;
-      if (typeof window !== "undefined") {
-        const sp = new URLSearchParams(window.location.search);
-        coupon = sp.get("coupon");
-      }
-
-      const res = await fetch("/api/income/checkout", {
+      const response = await fetch("/api/income/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -88,25 +82,21 @@ export default function CheckoutLink({
         }),
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Unknown error" }));
-        console.error("❌ Checkout error:", err.error);
-        // 502 = real provider outage (Paddle configured but failed) — surface
-        // a clear error, do NOT silently route to /checkout/manual.
-        if (res.status === 502 || err?.error === "checkout_unavailable") {
-          showCheckoutError(err?.detail ?? "Payment is temporarily unavailable. Please try again in a moment.");
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("Checkout error:", error.error);
+        if (response.status === 502 || error?.error === "checkout_unavailable") {
+          showCheckoutError(error?.detail ?? "Payment is temporarily unavailable. Please try again in a moment.");
           return;
         }
-        // Other failure: show actionable error (don't silently bounce).
         showCheckoutError("Could not start checkout. Please refresh and try again.");
         return;
       }
 
-      const { url, provider } = await res.json();
+      const { url, provider } = await response.json();
 
-      // Fire InitiateCheckout pixel event
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag("event", "begin_checkout", {
+      if (typeof window !== "undefined" && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
+        (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag("event", "begin_checkout", {
           currency: "USD",
           value: price,
           items: [{ item_id: productSlug, item_name: productName, price, quantity: 1 }],
@@ -114,29 +104,20 @@ export default function CheckoutLink({
         });
       }
 
-      // Paddle: redirect to checkout URL (has _ptxn param)
-      // Paddle.js detects _ptxn and opens overlay on checkout-success page
       if (url) {
-        // Only follow manual fallback if the server explicitly returned it
-        // (i.e. no payment provider configured at all).
-        if (provider === "manual") {
-          window.location.href = url;
-          return;
-        }
-        // Fallback: redirect to checkout URL (LS, Gumroad)
         window.location.href = url;
       } else {
         showCheckoutError("Checkout URL was not returned. Please try again.");
       }
-    } catch (err) {
-      console.error("❌ Checkout network error:", err);
+    } catch (error) {
+      console.error("Checkout network error:", error);
       showCheckoutError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
 
-    onClick?.(e);
-  }, [href, isPaddle, productSlug, productName, price, onClick]);
+    onClick?.(event);
+  }, [href, isManagedCheckout, onClick, price, productName, productSlug]);
 
   function showCheckoutError(message: string) {
     if (typeof window === "undefined") return;
@@ -144,16 +125,25 @@ export default function CheckoutLink({
     if (banner) {
       banner.textContent = message;
       banner.classList.remove("hidden");
-      setLoading(false);
-      setErrorMessage(message);
-      return;
     }
     setErrorMessage(message);
     setLoading(false);
   }
 
-  // For free/lead-magnet products, pass through normally
-  if (!isPaddle && href) {
+  if (isManagedCheckout && !hasVerifiedHostedCheckout) {
+    return (
+      <Link
+        href={`/contact?product=${encodeURIComponent(productSlug)}`}
+        className={rest.className}
+        style={rest.style}
+        data-product-slug={productSlug}
+      >
+        Request availability
+      </Link>
+    );
+  }
+
+  if (!isManagedCheckout && href) {
     const finalHref = appendAttribution(href);
     return (
       <a {...rest} href={finalHref} onClick={onClick}>
@@ -162,14 +152,9 @@ export default function CheckoutLink({
     );
   }
 
-  // If no checkout available, redirect to /products
   if (!href) {
     return (
-      <Link
-        href="/products"
-        className={rest.className}
-        style={rest.style}
-      >
+      <Link href="/products" className={rest.className} style={rest.style}>
         {children}
       </Link>
     );
@@ -186,11 +171,11 @@ export default function CheckoutLink({
       >
         {loading ? "Opening checkout..." : children}
       </a>
-      {errorMessage && (
+      {errorMessage ? (
         <span className="mt-2 block text-xs text-red-300" role="alert">
           {errorMessage}
         </span>
-      )}
+      ) : null}
     </>
   );
 }
