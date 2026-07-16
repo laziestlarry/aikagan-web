@@ -1,146 +1,86 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ExternalLink as ExtIcon } from 'lucide-react';
-import { buildMetadata } from '@/lib/metadata';
-import { SITE } from '@/lib/constants';
-import Section from '@/components/ui/Section';
-import ProcessStages from '@/components/shared/ProcessStages';
-import LiveKPIs from '@/components/shared/LiveKPIs';
-import CTA from '@/components/ui/CTA';
-import Badge from '@/components/ui/Badge';
-import CRMPipeline from '@/components/shared/CRMPipeline';
-import AIOrganization from '@/components/shared/AIOrganization';
+"use client";
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Mission Control',
-  description:
-    'Where you are in the AutonomaX customer journey — discover, try, buy, execute, support. Plus live operational KPIs and our 6-stage delivery process.',
-  path: '/mission-control/',
-});
+import { useEffect, useState } from "react";
 
-const JOURNEY = [
-  { n: '1', label: 'Discover',  body: 'Land on the site. Read the offer. Decide if the toolkit fits.',                   href: '/',                                         linkLabel: 'Home →' },
-  { n: '2', label: 'Try free',  body: 'Grab one of the 3 free gifts — instant email-gated download, no card.',             href: '/free/golden-delivery-sample',              linkLabel: 'Grab a gift →' },
-  { n: '3', label: 'Buy',       body: 'Upgrade to a Masterclass tier (Starter $29 · Pro $79 · Commander $149).',           href: '/products/masterclass-starter',             linkLabel: 'See the offer →' },
-  { n: '4', label: 'Execute',   body: 'Open START_HERE inside the ZIP. Follow the day-by-day blueprint. Ship.',            href: '/products/masterclass-starter',             linkLabel: 'Sample plan →' },
-  { n: '5', label: 'Support',   body: 'Stuck? Email us. We answer within 24 hours. Refund window stays open 30 days.',     href: '/contact',                                  linkLabel: 'Contact →' },
-  { n: '6', label: 'Upgrade',   body: 'Ready for the full system? The Autonoma-X Platform runs 24/7 AI operations for your business.', href: 'https://app.aikagan.com', linkLabel: 'Open Platform →', external: true },
-];
+type OpsStatus = {
+  service: string;
+  mode: "live" | "blocked";
+  ready: boolean;
+  simulated: false;
+  checkedAt: string;
+  products: { paid: number; slugs: string[] };
+  checks: Record<string, boolean>;
+  blockers: string[];
+};
 
 export default function MissionControlPage() {
+  const [status, setStatus] = useState<OpsStatus | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function refresh() {
+    try {
+      const response = await fetch("/api/ops/status", { cache: "no-store" });
+      const payload = (await response.json()) as OpsStatus;
+      setStatus(payload);
+      setError(null);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Status request failed");
+    }
+  }
+
+  useEffect(() => {
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
-    <>
-      <Section variant="hero">
-        <div className="text-center mb-10">
-          <Badge variant="green" className="mb-4">Operational · Transparent</Badge>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
-            Mission <span className="text-gradient">Control</span>
-          </h1>
-          <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Where you are in the AutonomaX customer journey — and what we are doing in the background to support you.
-          </p>
-        </div>
-
-        {/* ── Customer journey breadcrumb ─────────────────────────────────── */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
-            ⚜ Customer Journey ⚜
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
-            {JOURNEY.map((s, i) => {
-              const isExternal = 'external' in s && s.external;
-              const content = (
-                <>
-                  {i < JOURNEY.length - 1 && (
-                    <span className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-kagan-gold/40 text-lg">→</span>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full border border-kagan-gold/40 text-xs font-bold text-kagan-gold">
-                      {s.n}
-                    </span>
-                    <span className="text-sm font-bold uppercase tracking-wider text-kagan-white">
-                      {s.label}
-                    </span>
-                  </div>
-                  <p className="text-xs text-kagan-light leading-relaxed">{s.body}</p>
-                  <span className="mt-auto inline-flex items-center gap-1 text-xs text-kagan-gold/80 group-hover:text-kagan-gold">
-                    {s.linkLabel}
-                    {isExternal && <ExtIcon className="h-3 w-3" />}
-                  </span>
-                </>
-              );
-              if (isExternal) {
-                return (
-                  <a
-                    key={s.n}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-amber/30 bg-kagan-amber/[0.06] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
-                  >
-                    {content}
-                  </a>
-                );
-              }
-              return (
-                <Link
-                  key={s.n}
-                  href={s.href}
-                  className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
-                >
-                  {content}
-                </Link>
-              );
-            })}
+    <main className="min-h-screen bg-[#09070a] px-6 py-12 text-white">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-10 flex flex-col gap-4 border-b border-amber-300/20 pb-8 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300">AIKAGAN · AutonomaX</p>
+            <h1 className="mt-3 text-4xl font-black uppercase tracking-tight">ProfitOS Mission Control</h1>
+            <p className="mt-3 max-w-2xl text-sm text-white/60">Production truth only. A gate is green only when its required live configuration exists.</p>
           </div>
+          <button onClick={() => void refresh()} className="rounded border border-amber-300/40 px-4 py-2 text-xs font-bold uppercase tracking-widest text-amber-300">Refresh evidence</button>
         </div>
 
-        {/* ── Live operational KPIs (revenue-ops backend) ─────────────────── */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-2 uppercase">
-            ⚜ Live KPIs — Operational Transparency ⚜
-          </h2>
-          <p className="text-center text-xs text-kagan-light mb-6 max-w-xl mx-auto">
-            Updated every 30 seconds from our revenue-ops backend. We publish these so you can see the operation is real and accountable before you spend a dollar.
-          </p>
-          <LiveKPIs />
-        </div>
+        {error && <div className="mb-6 border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200">{error}</div>}
 
-        {/* ── CRM pipeline (FastAPI backend) ──────────────────────────────── */}
-        <CRMPipeline />
+        <section className="grid gap-4 md:grid-cols-3">
+          <Metric label="Operating mode" value={status?.mode ?? "checking"} good={status?.ready} />
+          <Metric label="Paid products" value={String(status?.products.paid ?? 0)} good={(status?.products.paid ?? 0) > 0} />
+          <Metric label="Simulation" value={status?.simulated === false ? "disabled" : "unknown"} good={status?.simulated === false} />
+        </section>
 
-        {/* ── AI Command Architecture & Organization ──────────────────────── */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <AIOrganization />
-        </div>
+        <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {status && Object.entries(status.checks).map(([name, ok]) => (
+            <div key={name} className={`border p-5 ${ok ? "border-emerald-400/30 bg-emerald-500/5" : "border-red-400/30 bg-red-500/5"}`}>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold capitalize">{name.replace(/([A-Z])/g, " $1")}</span>
+                <span className={`text-xs font-black uppercase tracking-widest ${ok ? "text-emerald-300" : "text-red-300"}`}>{ok ? "verified" : "blocked"}</span>
+              </div>
+            </div>
+          ))}
+        </section>
 
-        {/* ── 6-stage delivery process ────────────────────────────────────── */}
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
-            ⚜ How We Ship — 6-Stage Delivery Process ⚜
-          </h2>
-          <ProcessStages />
-        </div>
-      </Section>
+        <section className="mt-8 border border-white/10 bg-white/[0.02] p-6">
+          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-amber-300">Release decision</h2>
+          <p className="mt-3 text-lg font-bold">{status?.ready ? "LIVE SALES PATH MAY PROCEED" : "DO NOT CLAIM PRODUCTION READINESS"}</p>
+          <p className="mt-2 text-sm text-white/60">{status?.blockers.length ? `Blocking gates: ${status.blockers.join(", ")}` : "All critical gates passed."}</p>
+          {status?.checkedAt && <p className="mt-4 font-mono text-xs text-white/35">Evidence checked: {new Date(status.checkedAt).toLocaleString()}</p>}
+        </section>
+      </div>
+    </main>
+  );
+}
 
-      <Section variant="alt">
-        <CTA
-          title="Initiate a Mission"
-          subtitle="Three paths: grab a free gift to test-drive the system, jump to the Masterclass toolkits, or open the full platform for autonomous operations."
-          primaryLabel="Start with Starter — $29"
-          primaryHref="/products/masterclass-starter/"
-          secondaryLabel="Open Platform"
-          secondaryHref={SITE.appUrl}
-        />
-        <div className="text-center mt-6">
-          <Link
-            href="/free/golden-delivery-sample/"
-            className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors"
-          >
-            Or grab a free gift first →
-          </Link>
-        </div>
-      </Section>
-    </>
+function Metric({ label, value, good }: { label: string; value: string; good?: boolean }) {
+  return (
+    <div className="border border-white/10 bg-white/[0.02] p-6">
+      <p className="text-xs uppercase tracking-[0.2em] text-white/40">{label}</p>
+      <p className={`mt-3 text-2xl font-black uppercase ${good ? "text-emerald-300" : "text-amber-300"}`}>{value}</p>
+    </div>
   );
 }
