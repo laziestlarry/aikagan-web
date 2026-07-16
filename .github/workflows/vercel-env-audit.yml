@@ -1,0 +1,52 @@
+name: Vercel Environment Audit
+
+on:
+  pull_request:
+    paths:
+      - "scripts/audit-vercel-env.mjs"
+      - ".github/workflows/vercel-env-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-env-names:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      VERCEL_ORG_ID: team_67a8OdMpiLhKbsLZ7HVcDsfh
+      VERCEL_PROJECT_ID: prj_ZBuPJBcchGEU62MAkHWJRTBQqwig
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull preview environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }} --scope=${VERCEL_ORG_ID}
+      - name: Audit preview key presence only
+        run: node scripts/audit-vercel-env.mjs .vercel/.env.preview.local | tee preview-env-audit.jsonl
+      - name: Pull production environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=${VERCEL_ORG_ID}
+      - name: Audit production key presence only
+        run: node scripts/audit-vercel-env.mjs .vercel/.env.production.local | tee production-env-audit.jsonl
+      - name: Inventory Vercel variable names and targets
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}/env?teamId=${VERCEL_ORG_ID}" \
+          | jq '{envs: [.envs[] | {key, target, type, gitBranch}]}' \
+          > vercel-env-inventory.json
+      - name: Upload redacted environment audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-env-key-presence
+          path: |
+            preview-env-audit.jsonl
+            production-env-audit.jsonl
+            vercel-env-inventory.json
+          retention-days: 3

@@ -10,6 +10,7 @@ import CTA from '@/components/ui/CTA';
 import Badge from '@/components/ui/Badge';
 import CRMPipeline from '@/components/shared/CRMPipeline';
 import AIOrganization from '@/components/shared/AIOrganization';
+import LiveReadinessPanel from '@/components/shared/LiveReadinessPanel';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Mission Control',
@@ -41,7 +42,6 @@ export default function MissionControlPage() {
           </p>
         </div>
 
-        {/* ── Customer journey breadcrumb ─────────────────────────────────── */}
         <div className="max-w-4xl mx-auto mb-16">
           <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
             ⚜ Customer Journey ⚜
@@ -55,12 +55,8 @@ export default function MissionControlPage() {
                     <span className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 text-kagan-gold/40 text-lg">→</span>
                   )}
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full border border-kagan-gold/40 text-xs font-bold text-kagan-gold">
-                      {s.n}
-                    </span>
-                    <span className="text-sm font-bold uppercase tracking-wider text-kagan-white">
-                      {s.label}
-                    </span>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full border border-kagan-gold/40 text-xs font-bold text-kagan-gold">{s.n}</span>
+                    <span className="text-sm font-bold uppercase tracking-wider text-kagan-white">{s.label}</span>
                   </div>
                   <p className="text-xs text-kagan-light leading-relaxed">{s.body}</p>
                   <span className="mt-auto inline-flex items-center gap-1 text-xs text-kagan-gold/80 group-hover:text-kagan-gold">
@@ -71,23 +67,13 @@ export default function MissionControlPage() {
               );
               if (isExternal) {
                 return (
-                  <a
-                    key={s.n}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-amber/30 bg-kagan-amber/[0.06] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
-                  >
+                  <a key={s.n} href={s.href} target="_blank" rel="noopener noreferrer" className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-amber/30 bg-kagan-amber/[0.06] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group">
                     {content}
                   </a>
                 );
               }
               return (
-                <Link
-                  key={s.n}
-                  href={s.href}
-                  className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group"
-                >
+                <Link key={s.n} href={s.href} className="relative flex flex-col items-start gap-2 rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 hover:border-kagan-gold/60 hover:bg-kagan-gold/[0.08] transition-colors group">
                   {content}
                 </Link>
               );
@@ -95,7 +81,10 @@ export default function MissionControlPage() {
           </div>
         </div>
 
-        {/* ── Live operational KPIs (revenue-ops backend) ─────────────────── */}
+        <div className="max-w-4xl mx-auto">
+          <LiveReadinessPanel />
+        </div>
+
         <div className="max-w-4xl mx-auto mb-16">
           <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-2 uppercase">
             ⚜ Live KPIs — Operational Transparency ⚜
@@ -106,15 +95,12 @@ export default function MissionControlPage() {
           <LiveKPIs />
         </div>
 
-        {/* ── CRM pipeline (FastAPI backend) ──────────────────────────────── */}
         <CRMPipeline />
 
-        {/* ── AI Command Architecture & Organization ──────────────────────── */}
         <div className="max-w-4xl mx-auto mb-16">
           <AIOrganization />
         </div>
 
-        {/* ── 6-stage delivery process ────────────────────────────────────── */}
         <div className="max-w-3xl mx-auto">
           <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
             ⚜ How We Ship — 6-Stage Delivery Process ⚜
@@ -133,10 +119,7 @@ export default function MissionControlPage() {
           secondaryHref={SITE.appUrl}
         />
         <div className="text-center mt-6">
-          <Link
-            href="/free/golden-delivery-sample/"
-            className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors"
-          >
+          <Link href="/free/golden-delivery-sample/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors">
             Or grab a free gift first →
           </Link>
         </div>

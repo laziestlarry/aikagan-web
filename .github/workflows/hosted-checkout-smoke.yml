@@ -1,0 +1,30 @@
+name: Hosted Checkout Smoke
+
+on:
+  pull_request:
+    paths:
+      - "lib/gumroad-products.ts"
+      - "private/downloads/**"
+      - "scripts/verify-hosted-checkouts.mjs"
+      - ".github/workflows/hosted-checkout-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-commercial-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Resolve hosted Gumroad product pages
+        run: node scripts/verify-hosted-checkouts.mjs
+      - name: Verify paid ZIP archive integrity
+        run: |
+          unzip -t private/downloads/AutonomaX_Masterclass_Starter_Pack_v2.zip
+          unzip -t private/downloads/AutonomaX_Masterclass_Pro_Pack_v2.zip
+          unzip -t private/downloads/AutonomaX_Masterclass_Commander_Pack_v2.zip
