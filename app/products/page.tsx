@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ShoppingCart, Lock, Download, Sparkles, Shield, Zap, FileText } from 'lucide-react';
+import { Download, FileText, Lock, Shield, ShoppingCart, Sparkles, Zap } from 'lucide-react';
 import { buildMetadata } from '@/lib/metadata';
 import Section from '@/components/ui/Section';
 import ProductCard from '@/components/shared/ProductCard';
@@ -10,54 +10,55 @@ import { products } from '@/lib/products';
 export const metadata: Metadata = buildMetadata({
   title: 'Products',
   description:
-    'AI Venture Launch Blueprint plus three Masterclass tiers — Starter $29, Pro $79, Commander $149 — each bundling the matching Golden Delivery pack. Plus three free gifts on email opt-in.',
+    'AutonomaX Masterclass Starter, Pro, and Commander packs with verified hosted checkout and Golden Delivery. Custom venture blueprint work is available by request.',
   path: '/products/',
 });
 
 const FREE_SLUGS = ['weekly-operating-map', 'builder-starter-checklist', 'golden-delivery-sample'];
-const FLAGSHIP_SLUG = 'ai-venture-launch-blueprint';
-const PAID_SLUGS = ['masterclass-starter', 'masterclass-pro', 'masterclass-commander'];
+const FEATURED_SLUG = 'masterclass-pro';
+const OTHER_PAID_SLUGS = ['masterclass-starter', 'masterclass-commander'];
+const CUSTOM_SERVICE_SLUG = 'ai-venture-launch-blueprint';
 
 export default function ProductsPage() {
-  const freeProducts = FREE_SLUGS.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
-  const flagshipProduct = products.find(p => p.slug === FLAGSHIP_SLUG);
-  const paidProducts = PAID_SLUGS.map(s => products.find(p => p.slug === s)).filter(Boolean) as typeof products;
+  const freeProducts = FREE_SLUGS.map((slug) => products.find((product) => product.slug === slug)).filter(Boolean) as typeof products;
+  const featuredProduct = products.find((product) => product.slug === FEATURED_SLUG);
+  const paidProducts = OTHER_PAID_SLUGS.map((slug) => products.find((product) => product.slug === slug)).filter(Boolean) as typeof products;
+  const customService = products.find((product) => product.slug === CUSTOM_SERVICE_SLUG);
 
   return (
     <>
       <Section variant="hero">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
+        <div className="mb-10 text-center">
+          <h1 className="mb-4 text-4xl font-extrabold text-kagan-white md:text-5xl">
             Products & <span className="text-gradient">Offers</span>
           </h1>
-          <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Start with the AI Venture Launch Blueprint when you need a concrete business plan from an idea.
-            Use the Masterclass packs when you want instant execution assets.
+          <p className="mx-auto max-w-2xl text-lg text-kagan-light">
+            Start with Pro for the complete revenue-operations toolkit, choose Starter for a focused first-sale system,
+            or Commander for the full licensing and scale architecture.
           </p>
         </div>
 
-        {/* ── Free Gifts ─────────────────────────────────────── */}
-        <h2 className="text-xs font-bold tracking-[0.25em] text-emerald-400 text-center mb-6 uppercase">
+        <h2 className="mb-6 text-center text-xs font-bold uppercase tracking-[0.25em] text-emerald-400">
           ⚜ Free Gifts — Instant Download ⚜
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-3">
           {freeProducts.map((product) => (
             <Link
               key={product.slug}
               href={`/free/${product.slug}`}
-              className="block rounded-2xl border border-emerald-400/30 bg-emerald-400/[0.04] p-7 hover:border-emerald-400/60 hover:bg-emerald-400/[0.07] transition-colors"
+              className="block rounded-2xl border border-emerald-400/30 bg-emerald-400/[0.04] p-7 transition-colors hover:border-emerald-400/60 hover:bg-emerald-400/[0.07]"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-300">
                   {product.tier}
                 </span>
-                <span className="text-emerald-300 font-extrabold">FREE</span>
+                <span className="font-extrabold text-emerald-300">FREE</span>
               </div>
-              <h3 className="text-xl font-bold text-kagan-white mb-2">{product.name}</h3>
-              <p className="text-sm text-kagan-light mb-4">{product.description}</p>
-              <ul className="space-y-1.5 text-sm text-kagan-light mb-5">
-                {(product.bullets ?? []).slice(0, 4).map((b) => (
-                  <li key={b} className="flex gap-2"><span className="text-emerald-300">✓</span>{b}</li>
+              <h3 className="mb-2 text-xl font-bold text-kagan-white">{product.name}</h3>
+              <p className="mb-4 text-sm text-kagan-light">{product.description}</p>
+              <ul className="mb-5 space-y-1.5 text-sm text-kagan-light">
+                {(product.bullets ?? []).slice(0, 4).map((bullet) => (
+                  <li key={bullet} className="flex gap-2"><span className="text-emerald-300">✓</span>{bullet}</li>
                 ))}
               </ul>
               <span className="inline-block text-[11px] font-bold uppercase tracking-[0.1em] text-emerald-300">
@@ -67,34 +68,32 @@ export default function ProductsPage() {
           ))}
         </div>
 
-        {/* ── Flagship Blueprint ─────────────────────────────────── */}
-        {flagshipProduct && (
+        {featuredProduct ? (
           <div className="mb-16">
-            <h2 className="text-xs font-bold tracking-[0.25em] text-sky-300 text-center mb-6 uppercase">
-              ⚜ Highest-Priority Offer — Founder Intake To Launch Plan ⚜
+            <h2 className="mb-6 text-center text-xs font-bold uppercase tracking-[0.25em] text-kagan-gold">
+              ⚜ Recommended ProfitOS Pack — Verified Checkout ⚜
             </h2>
             <div className="mx-auto max-w-3xl">
               <ProductCard
-                slug={flagshipProduct.slug}
-                name={flagshipProduct.name}
-                category={flagshipProduct.tier}
-                price={`$${flagshipProduct.price}`}
-                originalPrice={String(flagshipProduct.originalPrice)}
-                description={flagshipProduct.description}
-                includes={flagshipProduct.bullets}
-                badge={flagshipProduct.badge ?? 'Featured'}
-                checkoutUrl={flagshipProduct.checkoutUrl ?? undefined}
+                slug={featuredProduct.slug}
+                name={featuredProduct.name}
+                category={featuredProduct.tier}
+                price={`$${featuredProduct.price}`}
+                originalPrice={String(featuredProduct.originalPrice)}
+                description={featuredProduct.description}
+                includes={featuredProduct.bullets}
+                badge={featuredProduct.badge ?? 'Recommended'}
+                checkoutUrl={featuredProduct.checkoutUrl ?? undefined}
                 featured
               />
             </div>
           </div>
-        )}
+        ) : null}
 
-        {/* ── Paid Masterclass ────────────────────────────────── */}
-        <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-6 uppercase">
-          ⚜ AutonomaX Masterclass — Pick Your Level ⚜
+        <h2 className="mb-6 text-center text-xs font-bold uppercase tracking-[0.25em] text-kagan-gold">
+          ⚜ Other Masterclass Levels ⚜
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {paidProducts.map((product) => (
             <ProductCard
               key={product.slug}
@@ -105,97 +104,86 @@ export default function ProductsPage() {
               originalPrice={String(product.originalPrice)}
               description={product.description}
               includes={product.bullets}
-              badge={product.badge}
-              checkoutUrl={product.checkoutUrl}
-              featured={product.slug === 'masterclass-pro'}
+              badge={product.badge ?? 'Available'}
+              checkoutUrl={product.checkoutUrl ?? undefined}
             />
           ))}
         </div>
+
+        {customService ? (
+          <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-sky-300/25 bg-sky-300/[0.04] p-7">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-300">Custom service — availability by request</p>
+                <h2 className="mt-2 text-2xl font-bold text-kagan-white">{customService.name}</h2>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-kagan-light">
+                  {customService.description} This service is not presented as an instant checkout until it receives its own verified provider product and intake workflow.
+                </p>
+              </div>
+              <Link
+                href={`/products/${customService.slug}`}
+                className="shrink-0 rounded-lg border border-sky-300/40 px-5 py-3 text-center text-sm font-semibold text-sky-200 transition hover:bg-sky-300/10"
+              >
+                View service details
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </Section>
 
       <Section variant="alt">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-kagan-white mb-2">How It Works</h2>
-            <p className="text-sm text-kagan-light">From zero to operational in three steps</p>
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-10 text-center">
+            <h2 className="mb-2 text-2xl font-bold text-kagan-white">How It Works</h2>
+            <p className="text-sm text-kagan-light">From offer selection to verified delivery</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
               {
                 icon: ShoppingCart,
                 title: 'Choose Your Offer',
-                body: 'Select the pack, audit, or bundle that matches where you are. Need guidance? Book a call.',
+                body: 'Select Starter, Pro, or Commander according to the operating depth and license rights you need.',
                 accent: 'text-amber-300',
-                bgGlow: 'from-amber-300/5',
-                borderGlow: 'border-amber-300/20 hover:border-amber-300/40',
+                border: 'border-amber-300/20',
               },
               {
                 icon: Lock,
                 title: 'Complete Checkout',
-                body: 'Secure one-time payment via Paddle. Instant access. No subscriptions, no upsell traps.',
+                body: 'The site records checkout intent and redirects only to a product-specific payment page verified by the production gate.',
                 accent: 'text-emerald-300',
-                bgGlow: 'from-emerald-300/5',
-                borderGlow: 'border-emerald-300/20 hover:border-emerald-300/40',
+                border: 'border-emerald-300/20',
               },
               {
                 icon: Download,
                 title: 'Receive Delivery',
-                body: 'Digital packs download instantly. Audits and bundles delivered on a defined timeline with weekly updates.',
+                body: 'Provider-confirmed purchases enter the ledger, fulfillment queue, email handoff, and secure Golden Delivery process.',
                 accent: 'text-purple-300',
-                bgGlow: 'from-purple-300/5',
-                borderGlow: 'border-purple-300/20 hover:border-purple-300/40',
+                border: 'border-purple-300/20',
               },
-            ].map(({ icon: Icon, title, body, accent, bgGlow, borderGlow }) => (
-              <div
-                key={title}
-                className={`group relative rounded-2xl border ${borderGlow} bg-gradient-to-b ${bgGlow} to-transparent p-6 transition-all duration-200 hover:-translate-y-0.5`}
-              >
-                {/* Glow effect on hover */}
-                <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-b ${bgGlow} blur-xl pointer-events-none`} />
-                <div className="relative">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl border ${borderGlow.replace('hover:', '')} bg-black/40 ${accent}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs uppercase tracking-[0.15em] text-kagan-light/60 font-medium">
-                      Step {['Choose', 'Complete', 'Receive'].indexOf(title.split(' ')[0]) + 1}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-kagan-white mb-2">{title}</h3>
-                  <p className="text-sm text-kagan-light leading-relaxed">{body}</p>
-                </div>
-                {/* Subtle corner decoration */}
-                <div className="absolute top-0 right-0 w-16 h-16 overflow-hidden opacity-20">
-                  <div className="absolute top-0 right-0 w-8 h-8 rounded-bl-2xl border-b border-l border-current opacity-40" />
-                </div>
+            ].map(({ icon: Icon, title, body, accent, border }) => (
+              <div key={title} className={`rounded-2xl border ${border} bg-black/20 p-6`}>
+                <Icon className={`h-6 w-6 ${accent}`} />
+                <h3 className="mt-4 text-lg font-bold text-kagan-white">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-kagan-light">{body}</p>
               </div>
             ))}
           </div>
 
-          {/* Trust strip under steps */}
           <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs text-kagan-light/50">
-            <span className="inline-flex items-center gap-1.5">
-              <Shield className="h-3.5 w-3.5 text-emerald-400/60" /> 30-Day Guarantee
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Zap className="h-3.5 w-3.5 text-amber-400/60" /> Instant Digital Delivery
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <FileText className="h-3.5 w-3.5 text-purple-400/60" /> Download Links Valid 48h
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400/60" /> No Subscription Required
-            </span>
+            <span className="inline-flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-emerald-400/60" /> Published refund terms</span>
+            <span className="inline-flex items-center gap-1.5"><Zap className="h-3.5 w-3.5 text-amber-400/60" /> Verified hosted checkout</span>
+            <span className="inline-flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-purple-400/60" /> Signed delivery access</span>
+            <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-amber-400/60" /> No subscription required</span>
           </div>
         </div>
       </Section>
 
       <Section>
         <CTA
-          title="Ready to Purchase?"
-          subtitle="All purchases are instant downloads via in-domain checkout. You'll receive your files immediately."
-          primaryLabel="Start with Starter — $29"
-          primaryHref="/products/masterclass-starter/"
+          title="Ready to Start?"
+          subtitle="Choose a mapped Masterclass pack and continue through the verified hosted checkout path."
+          primaryLabel="Start with Pro — $79"
+          primaryHref="/products/masterclass-pro/"
           secondaryLabel="Or grab a free gift"
           secondaryHref="/free/golden-delivery-sample/"
         />
