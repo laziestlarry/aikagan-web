@@ -25,7 +25,7 @@ const JOURNEY = [
   { n: '3', label: 'Buy',       body: 'Upgrade to a Masterclass tier (Starter $29 · Pro $79 · Commander $149).',           href: '/products/masterclass-starter',             linkLabel: 'See the offer →' },
   { n: '4', label: 'Execute',   body: 'Open START_HERE inside the ZIP. Follow the day-by-day blueprint. Ship.',            href: '/products/masterclass-starter',             linkLabel: 'Sample plan →' },
   { n: '5', label: 'Support',   body: 'Stuck? Email us. We answer within 24 hours. Refund window stays open 30 days.',     href: '/contact',                                  linkLabel: 'Contact →' },
-  { n: '6', label: 'Upgrade',   body: 'Ready for the full system? The Autonoma-X Platform runs 24/7 AI operations for your business.', href: 'https://app.aikagan.com', linkLabel: 'Open Platform →', external: true },
+  { n: '6', label: 'Operate',   body: 'Use the live AutonomaX control plane to inspect capability gates, queue ProductBriefs, and follow the governed product-to-revenue pipeline.', href: '/autonomax', linkLabel: 'Open Control Plane →' },
 ];
 
 export default function MissionControlPage() {
