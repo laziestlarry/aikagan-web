@@ -14,6 +14,27 @@ import { resolveCouponPrice } from "@/lib/coupons";
 import { getGumroadProduct } from "@/lib/gumroad-products";
 import { ShopierPaymentFlow } from "@nopeion/shopier";
 
+async function getUsdToTryRate(): Promise<number> {
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    if (res.ok) {
+      const data = await res.json();
+      const rate = data.rates?.TRY;
+      if (typeof rate === "number" && rate > 0) return rate;
+    }
+  } catch (e) {
+    console.error("[currency-converter] Failed to fetch USD/TRY exchange rate", e);
+  }
+  return 34.2;
+}
+
+function getProductImageUrl(slug: string): string {
+  if (slug.includes("starter")) return "https://aikagan.com/thumb-starter.png";
+  if (slug.includes("pro")) return "https://aikagan.com/thumb-pro.png";
+  if (slug.includes("commander")) return "https://aikagan.com/thumb-commander.png";
+  return "https://aikagan.com/og.png";
+}
+
 // Price IDs created in Paddle Catalog (via POST /api/admin/paddle-create-products)
 const CATALOG_PRICE_IDS: Record<string, string> = {
   "masterclass-starter": "pri_01kx0rg4hmnpbdpsnx3d7j8h5q",
@@ -49,13 +70,22 @@ export async function POST(req: NextRequest) {
           const paymentFlow = new ShopierPaymentFlow({ api: { pat } });
           if (product && product.price) {
             const platformOrderId = `sp_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+            const usdRate = await getUsdToTryRate();
+            const tryPrice = Math.round(product.price * usdRate);
             const result = await paymentFlow.create({
               title: product.name,
-              amount: product.price,
-              currency: "USD",
+              amount: tryPrice,
+              currency: "TRY",
               orderId: platformOrderId,
+              imageUrl: getProductImageUrl(slug),
             });
             if (result && result.paymentUrl) {
+              await tokenStore.set(platformOrderId, {
+                token: null,
+                slug,
+                email: null,
+                exp: Date.now() + 48 * 60 * 60 * 1000,
+              });
               return NextResponse.json({ url: result.paymentUrl, transactionId: result.productId || platformOrderId, provider: "shopier" });
             }
           }
@@ -67,7 +97,14 @@ export async function POST(req: NextRequest) {
       const suffix = slug.replace(/-/g, "_").toUpperCase();
       const variantUrl = process.env[`SHOPIER_PRODUCT_URL_${suffix}`] || process.env[`AUTONOMAX_SHOPIER_PRODUCT_URL_${suffix}`];
       if (variantUrl) {
-         return NextResponse.json({ url: variantUrl, transactionId: `sp-intent-${Date.now()}`, provider: "shopier" });
+         const intentId = `sp-intent-${Date.now()}`;
+         await tokenStore.set(intentId, {
+           token: null,
+           slug,
+           email: null,
+           exp: Date.now() + 48 * 60 * 60 * 1000,
+         });
+         return NextResponse.json({ url: variantUrl, transactionId: intentId, provider: "shopier" });
       }
 
       // 3. Fallback to Gumroad

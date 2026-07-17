@@ -51,10 +51,13 @@ export default function CheckoutButton({ href, slug, children, className }: Prop
         return;
       }
 
-      const { transactionId: txnId, url } = await res.json();
+      const { transactionId: txnId, url, provider } = await res.json();
 
-      // Use Paddle.js overlay if available, otherwise redirect
-      if (window.Paddle?.Checkout) {
+      // Use Paddle.js overlay if available AND this is actually a Paddle checkout
+      const isPaddleProvider = !provider || provider === "paddle";
+      const isPaddleTxn = typeof txnId === "string" && txnId.startsWith("txn_");
+
+      if (isPaddleProvider && isPaddleTxn && window.Paddle?.Checkout) {
         // Open the checkout overlay
         window.Paddle.Checkout.open({ transactionId: txnId });
         setLoading(false);
@@ -66,7 +69,7 @@ export default function CheckoutButton({ href, slug, children, className }: Prop
         };
         window.addEventListener('checkout.completed', onComplete);
       } else {
-        // No Paddle.js — redirect to checkout URL
+        // Fallback or non-Paddle provider — redirect to checkout URL
         setLoading(false);
         window.location.href = url ?? `/products/${slug}`;
       }

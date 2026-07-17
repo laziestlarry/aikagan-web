@@ -17,7 +17,13 @@ function configuredAny(...names: string[]): boolean {
 export async function GET(req: NextRequest) {
   const paidProducts = getPaidProducts();
   const host = req.headers.get("host") || "";
-  const approvedPaddleSurface = host.includes("app.aikagan.com") || host.includes("propulse-autonomax.web.app");
+  const hostname = host.split(":")[0].toLowerCase();
+  const approvedPaddleSurface =
+    hostname === "app.aikagan.com" ||
+    hostname === "propulse-autonomax.web.app" ||
+    hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
 
   const gumroadSubscription = isGumroadApiConfigured()

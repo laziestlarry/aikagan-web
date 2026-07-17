@@ -201,6 +201,27 @@ async function tryGumroad(req: NextRequest, body: CheckoutBody): Promise<Checkou
   };
 }
 
+async function getUsdToTryRate(): Promise<number> {
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    if (res.ok) {
+      const data = await res.json();
+      const rate = data.rates?.TRY;
+      if (typeof rate === "number" && rate > 0) return rate;
+    }
+  } catch (e) {
+    console.error("[currency-converter] Failed to fetch USD/TRY exchange rate", e);
+  }
+  return 34.2;
+}
+
+function getProductImageUrl(slug: string): string {
+  if (slug.includes("starter")) return "https://aikagan.com/thumb-starter.png";
+  if (slug.includes("pro")) return "https://aikagan.com/thumb-pro.png";
+  if (slug.includes("commander")) return "https://aikagan.com/thumb-commander.png";
+  return "https://aikagan.com/og.png";
+}
+
 async function tryShopier(body: CheckoutBody): Promise<CheckoutResult | null> {
   const pat = process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT;
   const product = getProduct(body.slug);
@@ -214,11 +235,15 @@ async function tryShopier(body: CheckoutBody): Promise<CheckoutResult | null> {
         email: body.email ?? null,
         exp: Date.now() + 48 * 60 * 60 * 1000,
       });
+      const usdRate = await getUsdToTryRate();
+      const tryPrice = Math.round(product.price * usdRate);
+
       const result = await new ShopierPaymentFlow({ api: { pat } }).create({
         title: product.name,
-        amount: product.price,
-        currency: "USD",
+        amount: tryPrice,
+        currency: "TRY",
         orderId: platformOrderId,
+        imageUrl: getProductImageUrl(body.slug),
       });
       if (result?.paymentUrl) {
         return {
@@ -265,7 +290,13 @@ async function createCheckoutSession(req: NextRequest, body: CheckoutBody): Prom
 
   let result: CheckoutResult | null = null;
   const host = req.headers.get("host") || "";
-  const isApprovedPaddleSurface = host.includes("app.aikagan.com") || host.includes("propulse-autonomax.web.app");
+  const hostname = host.split(":")[0].toLowerCase();
+  const isApprovedPaddleSurface =
+    hostname === "app.aikagan.com" ||
+    hostname === "propulse-autonomax.web.app" ||
+    hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1";
 
   if (body.provider === "paddle") result = isApprovedPaddleSurface ? await tryPaddle(req, body, intent) : null;
   else if (body.provider === "gumroad") result = await tryGumroad(req, body);
@@ -273,9 +304,17 @@ async function createCheckoutSession(req: NextRequest, body: CheckoutBody): Prom
   else if (body.provider === "lemonsqueezy") result = await tryLemonSqueezy(req, body, intent);
   else {
     if (isApprovedPaddleSurface) result = await tryPaddle(req, body, intent);
-    if (!result) result = await tryGumroad(req, body);
-    if (!result) result = await tryShopier(body);
-    if (!result) result = await tryLemonSqueezy(req, body, intent);
+    if (!result) {
+      if (hostname === "aikagan.com") {
+        result = await tryGumroad(req, body);
+        if (!result) result = await tryLemonSqueezy(req, body, intent);
+        if (!result) result = await tryShopier(body);
+      } else {
+        result = await tryLemonSqueezy(req, body, intent);
+        if (!result) result = await tryGumroad(req, body);
+        if (!result) result = await tryShopier(body);
+      }
+    }
   }
 
   if (result) {

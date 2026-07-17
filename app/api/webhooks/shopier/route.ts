@@ -8,6 +8,20 @@ import { tokenStore } from "@/lib/token-store";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+async function getUsdToTryRate(): Promise<number> {
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    if (res.ok) {
+      const data = await res.json();
+      const rate = data.rates?.TRY;
+      if (typeof rate === "number" && rate > 0) return rate;
+    }
+  } catch (e) {
+    console.error("[currency-converter] Failed to fetch USD/TRY exchange rate", e);
+  }
+  return 34.2;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData().catch(() => null);
@@ -50,17 +64,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email missing" }, { status: 400 });
     }
 
-    // 3. Map price to product slug
-    // Prices: Starter ($29), Pro ($79), Commander ($149)
+    // 3. Map to product slug
+    // Try to get slug from pre-registered token store
     let slug = "masterclass-starter";
+    const rawOrderId = String(payload.orderId || "");
+    const cached = await tokenStore.get(rawOrderId);
     const priceVal = payload.price ?? 0;
-    
-    if (priceVal >= 130) {
-      slug = "masterclass-commander";
-    } else if (priceVal >= 60) {
-      slug = "masterclass-pro";
+
+    if (cached?.slug) {
+      slug = cached.slug;
+      console.log(`🎯 Shopier OSB webhook: found pre-registered slug in token store: ${slug}`);
     } else {
-      slug = "masterclass-starter";
+      // Fallback: price-based mapping (convert TRY to USD first since Shopier processes in TRY)
+      let usdPrice = priceVal;
+      if (priceVal > 200) {
+        const usdRate = await getUsdToTryRate().catch(() => 34.2);
+        usdPrice = priceVal / usdRate;
+      }
+
+      if (usdPrice >= 130) {
+        slug = "masterclass-commander";
+      } else if (usdPrice >= 60) {
+        slug = "masterclass-pro";
+      } else {
+        slug = "masterclass-starter";
+      }
+      console.log(`⚠️ Shopier OSB webhook fallback: mapped price ${priceVal} TRY (~$${usdPrice.toFixed(2)} USD) to slug: ${slug}`);
     }
 
     const product = getProduct(slug);
@@ -70,7 +99,7 @@ export async function POST(req: NextRequest) {
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
-    const orderId = `sp-${payload.orderId}`;
+    const orderId = rawOrderId.startsWith("sp") ? rawOrderId : `sp-${rawOrderId}`;
     
     // Generate secure download token and store it
     const token = generateDownloadToken(slug, orderId, buyerEmail);
