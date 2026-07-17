@@ -85,9 +85,9 @@ function BizOpTab() {
     { id: 1, text: 'Analyze market segments & target personas in Alexandria', done: true, points: 15 },
     { id: 2, text: 'Select primary and fallback payment gateway architectures', done: true, points: 20 },
     { id: 3, text: 'Configure and test live webhook endpoints (Paddle/LS)', done: true, points: 25 },
-    { id: 4, text: 'Register automated omnichannel outreach content wave', done: false, points: 15 },
+    { id: 4, text: 'Register automated omnichannel outreach content wave', done: true, points: 15 },
     { id: 5, text: 'Setup and launch Meta CAPI server-side telemetry events', done: true, points: 25 },
-    { id: 6, text: 'Verify post-purchase delivery flow (make.com blueprints)', done: false, points: 20 },
+    { id: 6, text: 'Verify post-purchase delivery flow (make.com blueprints)', done: true, points: 20 },
   ]);
 
   const toggleTask = (id: number) => {
@@ -174,6 +174,28 @@ function BizOpTab() {
               <Badge variant={progressPct >= 80 ? 'green' : 'amber'}>
                 {progressPct >= 80 ? 'Launch Ready' : 'In Dev'}
               </Badge>
+            </div>
+          </div>
+
+          <div className="border-t border-kagan-border/40 pt-4 mt-5 space-y-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-kagan-gold">AutonomaX Integration Status</p>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <span className="font-bold">✓</span> <span className="text-kagan-light">Blueprint confirmed</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-400">
+                <span className="font-bold">✓</span> <span className="text-kagan-light">Execution modules activated</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-400">
+                <span className="font-bold">✓</span> <span className="text-kagan-light">Production initialized</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-400">
+                <span className="font-bold">✓</span> <span className="text-kagan-light">Templates & scripts deployed</span>
+              </div>
+              <div className="pt-1.5 text-[11px] leading-relaxed text-kagan-muted font-mono flex items-start gap-1">
+                <span className="text-kagan-gold">📌</span>
+                <span><strong>Next:</strong> Task board deployment, onboarding pack distribution, compliance audit automation</span>
+              </div>
             </div>
           </div>
         </div>
@@ -335,6 +357,10 @@ function AlexandriaTab() {
     { title: '02_BUSINESS_MODEL_CANVAS.md', category: 'Venture Planning', lines: 180, desc: 'Lean canvas covering channels, customer relations, resources and cost structures.' },
     { title: '03_BUSINESS_PLAN.md', category: 'Fulfillment', lines: 512, desc: 'Standard business plan covering strategic operations, market trends and projections.' },
     { title: '05_EXECUTION_DASHBOARD.md', category: 'Operations', lines: 250, desc: 'Execution plan and timelines for launch sequencing and workflow checks.' },
+    { title: 'CULTURE_OPERATING_SYSTEM.md', category: 'Operations', lines: 59, desc: 'Operational playbook establishing mission, cadence, and core behaviors for the AI team.' },
+    { title: 'KPI_EXECUTION_ENGINE.md', category: 'Operations', lines: 75, desc: 'Execution loop specifying Top-Level KPIs, templates, and completion protocols.' },
+    { title: 'REVENUE_STREAMS_WORKFLOW.md', category: 'Fulfillment', lines: 62, desc: 'Detailed workflow definitions across SaaS, Digital, Consulting, and YouTube.' },
+    { title: 'PROCESS_WORKFLOWS.md', category: 'Fulfillment', lines: 48, desc: 'Standardized delivery, data pipeline, and incident management workflows.' },
   ];
 
   const filteredDocs = documents.filter(doc => 
