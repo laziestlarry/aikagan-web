@@ -24,11 +24,30 @@ export async function GET(req: NextRequest) {
     hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
     hostname === "localhost" ||
     hostname === "127.0.0.1";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+  let siteUrl = req.nextUrl.origin;
+  try {
+    const rawUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    if (rawUrl && rawUrl.trim()) {
+      let sanitized = rawUrl.trim();
+      if (!sanitized.startsWith("http://") && !sanitized.startsWith("https://")) {
+        sanitized = `https://${sanitized}`;
+      }
+      const parsedUrl = new URL(sanitized);
+      siteUrl = parsedUrl.origin;
+    }
+  } catch (e) {
+    console.error("Invalid NEXT_PUBLIC_SITE_URL configuration:", e);
+  }
 
-  const gumroadSubscription = isGumroadApiConfigured()
-    ? await ensureGumroadSaleSubscription(new URL("/api/webhooks/gumroad", siteUrl).toString())
-    : { ready: false, created: false, detail: "GUMROAD_ACCESS_TOKEN missing" };
+  let gumroadSubscription: { ready: boolean; created: boolean; detail?: string } = { ready: false, created: false, detail: "GUMROAD_ACCESS_TOKEN missing" };
+  if (isGumroadApiConfigured()) {
+    try {
+      const webhookUrl = new URL("/api/webhooks/gumroad", siteUrl).toString();
+      gumroadSubscription = await ensureGumroadSaleSubscription(webhookUrl);
+    } catch (e) {
+      gumroadSubscription = { ready: false, created: false, detail: `Failed to construct webhook URL: ${e instanceof Error ? e.message : String(e)}` };
+    }
+  }
 
   const providers = {
     gumroad: gumroadSubscription.ready,
