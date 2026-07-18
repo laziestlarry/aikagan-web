@@ -12,6 +12,7 @@ import {
   countIntentsSince,
   countLeadsSince,
   countTransactionsSince,
+  fetchProjections,
 } from "@/lib/income-ledger";
 
 export const runtime = "nodejs";
@@ -22,11 +23,12 @@ export async function GET(req: Request) {
   const days = Math.max(1, Math.min(90, Number(url.searchParams.get("days") || 7)));
   const since = Date.now() - days * 24 * 60 * 60 * 1000;
 
-  const [pv, intents, leads, purchases] = await Promise.all([
+  const [pv, intents, leads, purchases, projections] = await Promise.all([
     countPageviewsSince(since),
     countIntentsSince(since),
     countLeadsSince(since),
     countTransactionsSince(since),
+    fetchProjections(),
   ]);
 
   const safe = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 1000) / 10 : 0);
@@ -54,6 +56,7 @@ export async function GET(req: Request) {
             ? Math.round((purchases.revenueCents / purchases.count)) / 100
             : 0,
       },
+      projections: projections ?? undefined,
     },
     { headers: { "Cache-Control": "no-store, max-age=0" } },
   );

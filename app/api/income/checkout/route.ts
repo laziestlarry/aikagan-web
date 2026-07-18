@@ -51,7 +51,7 @@ const CATALOG_PRICE_IDS: Record<string, string> = {
   "masterclass-commander": "pri_01kx0rg4w962z7vmn53c8pq7n3",
 };
 
-async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRecord): Promise<CheckoutResult | null> {
+async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRecord, requestHostname?: string): Promise<CheckoutResult | null> {
   if (process.env.PADDLE_CHECKOUT_DISABLED === "true") return null;
   const paddle = getPaddleClient();
   if (!paddle) return null;
@@ -97,7 +97,8 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
       });
     }
 
-    const base = process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL || req.nextUrl.origin;
+    const base = process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL ||
+      (requestHostname === "aikagan.com" ? "https://app.aikagan.com" : req.nextUrl.origin);
     return {
       provider: "paddle",
       url: tx.id
@@ -292,18 +293,19 @@ async function createCheckoutSession(req: NextRequest, body: CheckoutBody): Prom
   const host = req.headers.get("host") || "";
   const hostname = host.split(":")[0].toLowerCase();
   const isApprovedPaddleSurface =
+    hostname === "aikagan.com" ||
     hostname === "app.aikagan.com" ||
     hostname === "propulse-autonomax.web.app" ||
     hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
     hostname === "localhost" ||
     hostname === "127.0.0.1";
 
-  if (body.provider === "paddle") result = isApprovedPaddleSurface ? await tryPaddle(req, body, intent) : null;
+  if (body.provider === "paddle") result = isApprovedPaddleSurface ? await tryPaddle(req, body, intent, hostname) : null;
   else if (body.provider === "gumroad") result = await tryGumroad(req, body);
   else if (body.provider === "shopier") result = await tryShopier(body);
   else if (body.provider === "lemonsqueezy") result = await tryLemonSqueezy(req, body, intent);
   else {
-    if (isApprovedPaddleSurface) result = await tryPaddle(req, body, intent);
+    if (isApprovedPaddleSurface) result = await tryPaddle(req, body, intent, hostname);
     if (!result) {
       if (hostname === "aikagan.com") {
         result = await tryGumroad(req, body);

@@ -41,6 +41,12 @@ export const GUMROAD_PRODUCTS: Record<string, GumroadProduct> = {
     url: "https://nomadauto.gumroad.com/l/autonomax-starter-29",
     priceCents: 2900,
   },
+  "ai-venture-launch-blueprint": {
+    id: "1BzBT7MJ_yBSJ1d9W9OrjA==",
+    permalink: "autonomax-pro-79",
+    url: "https://nomadauto.gumroad.com/l/autonomax-pro-79",
+    priceCents: 9900,
+  },
 };
 
 export function getGumroadProduct(slug: string): GumroadProduct | undefined {

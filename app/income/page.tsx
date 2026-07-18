@@ -69,6 +69,17 @@ interface IncomeReality {
     kvRecords: { transactions: number; leads: number; intents: number };
     capi?: { configured: boolean; message: string };
   };
+  projections?: {
+    activeMrrMinUsd: number;
+    activeMrrMaxUsd: number;
+    projectedAnnualMinUsd: number;
+    projectedAnnualMaxUsd: number;
+    activeStreamCount: number;
+    monthlyBurnUsd: number;
+    sustainabilityScore: number;
+    growthClassification: string;
+    revenueToBurnRatio: number;
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -379,21 +390,16 @@ export default function IncomeRealityPage() {
         </div>
       </div>
 
-      {isColdStart && (
+      {data.traffic.purchases === 0 && data.traffic.pageviews > 0 && (
         <div className="max-w-4xl mx-auto mb-10 rounded-xl border border-kagan-amber/30 bg-kagan-amber/5 p-5">
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-kagan-amber shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-bold text-kagan-white mb-1">Cold start — funnel live, no traffic yet</h3>
+              <h3 className="font-bold text-kagan-white mb-1">Traffic flowing — no purchases yet</h3>
               <p className="text-sm text-kagan-light mb-2">
-                This is the truthful first state: pipes are wired, evidence ledger is online, and the
-                funnel is ready to capture real visitors. As soon as a single pageview, lead, or
-                purchase hits the live URL, the numbers below will start moving and the audit log will
-                start filling in.
-              </p>
-              <p className="text-xs text-kagan-muted">
-                Smoke test: visit <Link href="/free/weekly-operating-map/" className="text-kagan-gold hover:underline">a free gift page</Link> and submit an email,
-                or <Link href="/products/masterclass-starter/" className="text-kagan-gold hover:underline">click a paid CTA</Link> to record a checkout intent.
+                {formatInt(data.traffic.pageviews)} pageviews and {formatInt(data.traffic.checkoutIntents)} checkout intents recorded,
+                but no completed purchases yet. The funnel is capturing real visitor data — first purchase
+                will populate the revenue ledger automatically.
               </p>
             </div>
           </div>
@@ -447,6 +453,50 @@ export default function IncomeRealityPage() {
           />
         </div>
       </div>
+
+      {/* ── Projections ─────────────────────────────────────────────── */}
+      {data.projections && (
+        <div className="max-w-5xl mx-auto mb-10">
+          <h2 className="text-xs font-bold tracking-[0.25em] text-kagan-gold text-center mb-3 uppercase">
+            ⚜ Revenue Projections ⚜
+          </h2>
+          <div className="rounded-xl border border-kagan-border bg-kagan-card/40 p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <StatCard
+                icon={TrendingUp}
+                label="Projected MRR Range"
+                value={`${formatUsd(data.projections.activeMrrMinUsd)} – ${formatUsd(data.projections.activeMrrMaxUsd)}`}
+                sub={`${data.projections.activeStreamCount} active streams`}
+                tone="positive"
+              />
+              <StatCard
+                icon={BarChart3}
+                label="Projected Annual"
+                value={`${formatUsd(data.projections.projectedAnnualMinUsd)} – ${formatUsd(data.projections.projectedAnnualMaxUsd)}`}
+                sub={data.projections.growthClassification}
+                tone="positive"
+              />
+              <StatCard
+                icon={Activity}
+                label="Monthly Burn"
+                value={formatUsd(data.projections.monthlyBurnUsd)}
+                sub={`${data.projections.revenueToBurnRatio}x coverage`}
+                tone={data.projections.revenueToBurnRatio > 3 ? "positive" : "warning"}
+              />
+              <StatCard
+                icon={Target}
+                label="Sustainability"
+                value={`${data.projections.sustainabilityScore}/100`}
+                sub={data.projections.growthClassification}
+                tone={data.projections.sustainabilityScore >= 70 ? "positive" : "warning"}
+              />
+            </div>
+            <p className="text-xs text-kagan-muted text-center">
+              Forward-looking projections based on revenue-ops analysis. Not realized income.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Funnel ──────────────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto mb-10">

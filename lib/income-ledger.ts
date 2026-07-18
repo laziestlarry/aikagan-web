@@ -364,17 +364,58 @@ export interface IncomeReality {
     paddleApi?: { ok: boolean; message: string };
     capi?: { configured: boolean; message: string };
   };
+  /** Projected financials from revenue-ops backend (forward-looking). */
+  projections?: {
+    activeMrrMinUsd: number;
+    activeMrrMaxUsd: number;
+    projectedAnnualMinUsd: number;
+    projectedAnnualMaxUsd: number;
+    activeStreamCount: number;
+    monthlyBurnUsd: number;
+    sustainabilityScore: number;
+    growthClassification: string;
+    revenueToBurnRatio: number;
+  };
 }
 
 const DEFAULT_WINDOW_DAYS = 7;
 
+export async function fetchProjections(): Promise<IncomeReality["projections"] | undefined> {
+  const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL;
+  if (!baseUrl) return undefined;
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/api/financials`, {
+      signal: AbortSignal.timeout(5000),
+      cache: "no-store",
+    });
+    if (!res.ok) return undefined;
+    const body = await res.json();
+    const s = body.summary || body;
+    if (!s.active_mrr_min_usd && !s.active_mrr_max_usd) return undefined;
+    return {
+      activeMrrMinUsd: s.active_mrr_min_usd ?? 0,
+      activeMrrMaxUsd: s.active_mrr_max_usd ?? 0,
+      projectedAnnualMinUsd: s.projected_annual_min_usd ?? 0,
+      projectedAnnualMaxUsd: s.projected_annual_max_usd ?? 0,
+      activeStreamCount: s.active_stream_count ?? 0,
+      monthlyBurnUsd: s.monthly_burn_usd ?? 0,
+      sustainabilityScore: s.sustainability_score ?? 0,
+      growthClassification: s.growth_classification ?? "unknown",
+      revenueToBurnRatio: s.revenue_to_burn_ratio ?? 0,
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promise<IncomeReality> {
   const sinceMs = Date.now() - windowDays * 24 * 60 * 60 * 1000;
-  const [pv, intents, leads, txs] = await Promise.all([
+  const [pv, intents, leads, txs, projections] = await Promise.all([
     countPageviewsSince(sinceMs),
     countIntentsSince(sinceMs),
     countLeadsSince(sinceMs),
     countTransactionsSince(sinceMs),
+    fetchProjections(),
   ]);
 
   // Build daily breakdown
@@ -465,6 +506,7 @@ export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promis
           : "CAPI not configured: META_PIXEL_ID or META_CAPI_ACCESS_TOKEN missing. Server-side events are dropped.",
       },
     },
+    projections: projections ?? undefined,
   };
 }
 

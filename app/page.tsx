@@ -6,8 +6,8 @@ import SocialProof from "@/components/home/SocialProof";
 import { products } from "@/lib/products";
 
 const flagship =
-  products.find((product) => product.slug === "masterclass-pro") ??
   products.find((product) => product.slug === "masterclass-starter") ??
+  products.find((product) => product.slug === "masterclass-pro") ??
   products.find((product) => product.priceModel === "one_time") ??
   products[0];
 
@@ -71,9 +71,15 @@ export default function HomePage() {
                 price={flagship.price}
                 className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black uppercase tracking-wider text-black transition hover:bg-amber-200"
               >
-                Get Pro — ${flagship.price}
+                Start Building — ${flagship.price}
                 <ArrowRight className="h-4 w-4" />
               </CheckoutLink>
+              <Link
+                href="/free/golden-delivery-sample"
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/[0.04] px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-400/10"
+              >
+                Start Free <ArrowRight className="h-4 w-4" />
+              </Link>
               <Link
                 href="#packs"
                 className="inline-flex items-center gap-2 rounded-xl border border-amber-300/35 bg-amber-300/[0.04] px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-amber-200 transition hover:bg-amber-300/10"
@@ -114,7 +120,7 @@ export default function HomePage() {
                 </ul>
                 <div className="mt-8 flex items-end justify-between border-t border-white/10 pt-6">
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-neutral-500">One-time</p>
+                    <p className="text-xs uppercase tracking-wider text-neutral-500">One-time · digital delivery</p>
                     <p className="mt-1 text-4xl font-black text-white">${flagship.price}</p>
                   </div>
                   <Link href={`/products/${flagship.slug}`} className="text-sm font-bold text-amber-300 hover:text-amber-200">
@@ -127,12 +133,40 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="border-y border-white/5 bg-[#0b0b0e]">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-300">Start without a card</p>
+              <h2 className="mt-4 text-4xl font-black">See the delivery quality first</h2>
+              <p className="mt-5 leading-7 text-neutral-400">
+                Test the structure, writing quality, and execution style before spending a dollar. Each free asset delivers immediately on email submit.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {freePacks.map((product) => (
+                <Link
+                  key={product.slug}
+                  href={`/free/${product.slug}`}
+                  className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.03] p-5 transition hover:border-emerald-300/45 hover:bg-emerald-400/[0.07]"
+                >
+                  <Sparkles className="h-5 w-5 text-emerald-300" />
+                  <h3 className="mt-4 font-bold text-white">{product.name}</h3>
+                  <p className="mt-2 text-xs leading-5 text-neutral-400">{product.description}</p>
+                  <span className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-emerald-300">Get free access <ArrowRight className="h-3 w-3" /></span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="packs" className="mx-auto max-w-7xl px-6 py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300">Commercial offer ladder</p>
-          <h2 className="mt-4 text-4xl font-black sm:text-5xl">Choose the operating depth you need</h2>
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-amber-300">Paid tiers</p>
+          <h2 className="mt-4 text-4xl font-black sm:text-5xl">Starter → Pro → Commander</h2>
           <p className="mt-5 text-neutral-400">
-            Start with a focused execution pack, move into revenue operations, or license the full Commander architecture.
+            Start at $29 and upgrade as your operation grows. Each tier unlocks deeper automation, more assets, and licensing rights.
           </p>
         </div>
 
@@ -179,34 +213,6 @@ export default function HomePage() {
               </article>
             );
           })}
-        </div>
-      </section>
-
-      <section className="border-y border-white/5 bg-[#0b0b0e]">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-emerald-300">Start without a card</p>
-              <h2 className="mt-4 text-4xl font-black">Inspect the delivery quality first</h2>
-              <p className="mt-5 leading-7 text-neutral-400">
-                The free assets show the structure, writing quality, and execution style used across the paid ProfitOS packs.
-              </p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {freePacks.map((product) => (
-                <Link
-                  key={product.slug}
-                  href={`/free/${product.slug}`}
-                  className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.03] p-5 transition hover:border-emerald-300/45 hover:bg-emerald-400/[0.07]"
-                >
-                  <Sparkles className="h-5 w-5 text-emerald-300" />
-                  <h3 className="mt-4 font-bold text-white">{product.name}</h3>
-                  <p className="mt-2 text-xs leading-5 text-neutral-400">{product.description}</p>
-                  <span className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-emerald-300">Get free access <ArrowRight className="h-3 w-3" /></span>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
