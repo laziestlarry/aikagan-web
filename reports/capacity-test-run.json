@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-07-18T16:38:52.542Z",
+  "score": 95,
+  "throughputOpsPerSec": 2548.4,
+  "averageLatencyMs": 0.4,
+  "errorRatePct": 0,
+  "totalOps": 153,
+  "opsSuccessCount": 153,
+  "opsFailureCount": 0,
+  "storageType": "upstash",
+  "metrics": {
+    "kvWriteLatencyMs": 3,
+    "kvReadLatencyMs": 3,
+    "kvBatchWriteLatencyMs": 3,
+    "kvBatchDeleteLatencyMs": 2
+  },
+  "integrations": {
+    "paddle": false,
+    "shopier": true,
+    "gumroad": true,
+    "metaCapi": true
+  },
+  "logs": [
+    "[SYSTEM] Starting Capacity & Performance Scoring Test.",
+    "[STORAGE] Identified storage backend: upstash",
+    "[CONFIG] Paddle configured: false",
+    "[CONFIG] Shopier configured: true",
+    "[CONFIG] Gumroad configured: true",
+    "[CONFIG] Meta CAPI configured: true",
+    "[TEST] Measuring single key write/read latency.",
+    "[TEST] Single Write: 3ms | Single Read: 3ms",
+    "[TEST] Initiating batch pipeline write of 50 mock transactions.",
+    "[TEST] Batch write completed in 3ms (16666.7 ops/sec)",
+    "[TEST] Verifying batch transaction retrieval.",
+    "[TEST] Retrieval: verified 50/50 records in 45ms",
+    "[TEST] Running batch cleanup pipeline.",
+    "[TEST] Cleaned up 51 records in 2ms",
+    "[METRICS] Total ops: 153 | Average latency: 0.4ms | Ops/sec: 2548.4",
+    "[SYSTEM] Computed Capacity Score: 95/100"
+  ]
+}

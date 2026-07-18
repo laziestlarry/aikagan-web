@@ -930,7 +930,7 @@ function ParallelSprintsTab() {
             Parallel Sprint Console
           </h3>
           <p className="text-xs text-kagan-muted mt-1">
-            Two parallel revenue + performance sprints: <strong className="text-kagan-gold">2k2hrs (2200h simulation)</strong> and <strong className="text-kagan-gold">Jim $2000</strong>. Both fire on a shared capacity-test rail.
+            Two parallel revenue + performance sprints: <strong className="text-kagan-gold">2k$2hrs (2200h simulation)</strong> and <strong className="text-kagan-gold">Jim $2000</strong>. Both fire on a shared capacity-test rail.
           </p>
         </div>
         <div className="flex gap-2">

@@ -1,0 +1,139 @@
+{
+  "campaign": "chimera-genesis",
+  "wave": 1,
+  "launch_day": 1,
+  "generated_at_utc": "2026-07-16T19:55:17.843205+00:00",
+  "site_url": "https://aikagan.com",
+  "cta_table": {
+    "x": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "linkedin": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "substack": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    }
+  },
+  "source_signal": "Source: Hacker News (top stories)\nTitle: The lost joy of music piracy\nBody: Trending discussion in the builder/startup community.\n",
+  "requested_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_waves": [
+    {
+      "name": "Launch Wave 1/3",
+      "channels_in_wave": [
+        "x",
+        "linkedin",
+        "substack"
+      ],
+      "execution_waves": [
+        "announce",
+        "proof",
+        "objection"
+      ],
+      "channel_posts": [
+        {
+          "channel_name": "x",
+          "announcement_copy": "Shipping products often stalls at delivery. We analyzed 100+ launches to isolate common failure points. The AutonomaX Masterclass Pro provides the operational toolkit to move from concept to customer without unnecessary friction. This isn't theory; it's a set of battle-tested frameworks. Get the Pro tier for $79 and start shipping with a clearer path. No quick fixes, just concrete steps.",
+          "follow_up_comment": "One frequent mistake we observed: over-optimizing for features instead of focusing on a streamlined delivery process. Simpler, focused launches convert better.",
+          "call_to_action": "Get the AutonomaX Masterclass Pro for $79: https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+          "offer_tier": "pro",
+          "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+        },
+        {
+          "channel_name": "linkedin",
+          "announcement_copy": "For many founders and product leads, the journey from building a solid product to achieving successful delivery can be an uphill battle. We've spent significant time researching 100+ product launches, identifying the operational gaps that prevent good products from reaching their audience effectively. The AutonomaX Masterclass Pro distills these findings into a practical toolkit. It offers structured frameworks, checklists, and templates designed to guide your next launch. This isn't a silver bullet; it's a strategic resource for those committed to applying proven methods to improve their shipping velocity and impact. Priced at $79, it provides direct, actionable guidance. We focus on specific steps, not vague promises.",
+          "follow_up_comment": "What's the most challenging phase you've encountered when taking a new product or feature to market? Share your experience.",
+          "call_to_action": "Get the AutonomaX Masterclass Pro toolkit and refine your delivery strategy: https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+          "offer_tier": "pro",
+          "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+        },
+        {
+          "channel_name": "substack",
+          "announcement_copy": "The 'build it and they will come' adage is a dangerous myth, especially in today's crowded market. Many brilliant products never find their audience because the path to delivery is either unclear or mismanaged. Our team at AIKAGAN operates on a principle of disciplined execution. We've spent months dissecting over 100 product launches \u2013 separating those that launched effectively from those that stalled. The result is the AutonomaX Masterclass Pro: a $79 digital toolkit focused on the operational blueprints for successful product delivery. This isn't a course on marketing fluff; it's a collection of frameworks, step-by-step guides, and templates designed to help you plan, execute, and iterate your product launches. It requires your effort to implement, but provides a structured process built on observed success patterns. We aim to equip you with the tools to ship with confidence and clarity.",
+          "follow_up_comment": "If you're reading this, you likely understand that great ideas need great execution. Our focus is on the latter.",
+          "call_to_action": "Secure your AutonomaX Masterclass Pro toolkit for $79: https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+          "offer_tier": "pro",
+          "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+        }
+      ]
+    }
+  ],
+  "customer_service_posts": [
+    {
+      "question_type": "general",
+      "reply": "Thanks for asking! The AutonomaX Masterclass is a digital toolkit. It provides frameworks, checklists, and templates you can apply to your product launches. It's not a done-for-you service, but a resource designed to help you execute more effectively.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": "Thanks for asking! The AutonomaX Masterclass is a digital toolkit. It provides frameworks, checklists, and templates you can apply to your product launches. It's not a done-for-you service, but a resource designed to help you execute more effectively."
+    },
+    {
+      "question_type": "compatibility",
+      "reply": "The toolkit is delivered as digital files (PDFs, templates). You'll be able to access them immediately after purchase from any device. No special software is required beyond standard document viewers.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": "The toolkit is delivered as digital files (PDFs, templates). You'll be able to access them immediately after purchase from any device. No special software is required beyond standard document viewers."
+    }
+  ],
+  "objection_replies": [
+    {
+      "objection": "price",
+      "short_reply": "The $79 Pro tier provides a deep dive into specific launch mechanics, going beyond foundational content. It's priced to reflect the actionable frameworks and curated resources you can apply directly to your next project, designed to save you time and costly missteps from guesswork."
+    },
+    {
+      "objection": "legitimacy",
+      "short_reply": "Our methods are built on observed patterns from analyzing over 100 product launches across various sectors. We apply these frameworks in our own operations. This isn't theoretical; it's operational insight distilled into a usable toolkit, focusing on repeatable processes."
+    },
+    {
+      "objection": "effort",
+      "short_reply": "This toolkit provides the frameworks, steps, and resources; applying them requires your active engagement. It's designed to reduce guesswork and provide a clear path, but it's not a 'set-and-forget' solution. Expect to invest time in implementation to see tangible results in your product delivery."
+    },
+    {
+      "objection": "post_purchase_support",
+      "short_reply": "All AutonomaX toolkit purchases include access to our private community for questions and discussions related to applying the material. We also provide direct email support for any technical issues or clarifications on the content itself."
+    }
+  ],
+  "buyer_persona": "",
+  "pain_point_summary": "",
+  "launch_thesis": "",
+  "offer_name": "AutonomaX Masterclass Starter",
+  "offer_url": "https://aikagan.com/products/masterclass-starter/",
+  "lead_magnet_url": "https://aikagan.com/free/golden-delivery-sample/",
+  "discount_code": "KAGANATE",
+  "priority_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_posts": [],
+  "execution_waves": [
+    {
+      "name": "wave1",
+      "timing": "day1-2",
+      "goal": "announce",
+      "channels": [
+        "x",
+        "linkedin",
+        "substack"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "campaign": "chimera-genesis",
+  "wave": 1,
+  "launch_day": 1,
+  "generated_at_utc": "2026-07-16T19:57:42.844547+00:00",
+  "site_url": "https://aikagan.com",
+  "cta_table": {
+    "x": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "linkedin": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    },
+    "substack": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "label": "Pro \u2014 $79",
+      "tier": "pro",
+      "price": 79,
+      "soft_cta": "If you want the full system: Pro \u2014 $79 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+      "hard_cta": "Grab Pro \u2014 $79 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+    }
+  },
+  "source_signal": "Source: Hacker News (top stories)\nTitle: The lost joy of music piracy\nBody: Trending discussion in the builder/startup community.\n",
+  "requested_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_plan": {
+    "wave_number": 1,
+    "wave_title": "Launch: Announce AutonomaX Masterclass Starter Pro",
+    "channels": [
+      {
+        "platform": "x",
+        "announcement_copy": "Spending too much time patching together launch strategies? We've shipped the AutonomaX Masterclass Starter Pro: a structured toolkit to help builders test, refine, and ship their next project. Stop piecing together advice; start building with a clear plan. It's $79, designed for operators who prefer specific steps over vague promises. #BuildInPublic #StartupLaunch #ProductLaunch",
+        "follow_up_comment": "It's a digital toolkit. Think blueprints for your launch, not just ideas. Helps you map out your delivery and close.",
+        "call_to_action": {
+          "text": "Get the AutonomaX Masterclass Starter Pro for $79 now.",
+          "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+          "offer_tier": "pro"
+        }
+      },
+      {
+        "platform": "linkedin",
+        "announcement_copy": "Many builders in the startup community express a similar challenge: the complexity of taking an idea from concept to successful delivery. The 'lost joy' isn't just about music; it's about the friction of launching without a proven framework. We've developed the AutonomaX Masterclass Starter Pro, a digital toolkit designed for operators to systemize their product delivery. This isn't theoretical advice; it's a step-by-step guide to help you structure your launch, test assumptions, and close early customers. Priced at $79, it's an investment in clear, actionable steps for your next project. #Startup #ProductManagement #Entrepreneurship #LaunchStrategy",
+        "follow_up_comment": "It focuses on breaking down the entire delivery process: from drafting your offer to pitching and closing those initial sales. Concrete, repeatable steps.",
+        "call_to_action": {
+          "text": "Access the AutonomaX Masterclass Starter Pro toolkit here.",
+          "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=linkedin&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+          "offer_tier": "pro"
+        }
+      },
+      {
+        "platform": "substack",
+        "announcement_copy": "Subject: Reclaim Your Launch: The AutonomaX Masterclass Starter Pro is Live.\n\nWe've all felt it: that initial spark of an idea, followed by the daunting task of actually *shipping* it. The builder community often discusses the 'lost joy' of creation\u2014sometimes, it's simply the friction of navigating a launch without a clear path.\n\nFor too long, launching a product or service has felt like piecing together a complex puzzle with missing pieces. You read a post here, watch a video there, and hope it all connects. This scattered approach leads to wasted effort, delayed launches, and missed opportunities to close.\n\nThat's precisely why we built the AutonomaX Masterclass Starter Pro. This isn't a course filled with abstract concepts. It's a digital toolkit, a set of blueprints designed for direct application. We've distilled years of launching, testing, and closing into specific, actionable steps.\n\nInside, you'll find:\n1.  **Frameworks for Offer Definition:** Draft clear, compelling value propositions that resonate.\n2.  **Launch Planning Checklists:** Ensure no critical step is missed, from pre-launch to post-delivery.\n3.  **Customer Acquisition Scripts:** Practice pitching and closing with confidence.\n4.  **Testing Protocols:** Validate your assumptions before you spend significant resources.\n\nThis toolkit helps you move from 'idea' to 'shipped' with greater predictability. It's for the operator who values concrete actions over vague promises. We're not selling you a dream; we're providing the tools to build your own.\n\nThe AutonomaX Masterclass Starter Pro is available now for $79. It's an investment in reducing launch friction and increasing your odds of a successful delivery.\n\nStop hoping your next launch will stick. Start building it with purpose.",
+        "follow_up_comment": "My aim with this toolkit was to ship something that cuts through the noise. It's about giving you the specific tactics to move from concept to 'closed deal' faster.",
+        "call_to_action": {
+          "text": "Get your AutonomaX Masterclass Starter Pro toolkit here and simplify your next launch.",
+          "url": "https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=substack&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro",
+          "offer_tier": "pro"
+        }
+      }
+    ]
+  },
+  "customer_service_posts": [
+    {
+      "query_type": "general_inquiry",
+      "reply_copy": "Thanks for your interest! For general questions about AutonomaX products or services, please visit our FAQ at aikagan.com/faq or send an email to support@aikagan.com. We'll get back to you promptly.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    },
+    {
+      "query_type": "technical_support",
+      "reply_copy": "Apologies for any technical issues you're experiencing. Please send a detailed description of the problem, along with any relevant screenshots, to support@aikagan.com. Our team will review it and help you get back on track.",
+      "channel": "reddit",
+      "scenario": "general",
+      "copy": ""
+    }
+  ],
+  "objection_replies": [
+    {
+      "reply_copy": "I understand $79 is an investment. Consider the cost of a failed launch or the time spent piecing together free advice that might not connect. This toolkit provides a coherent, step-by-step framework to help you ship with greater predictability, saving you significant time and effort in the long run. It's about getting concrete results faster.",
+      "objection": "price",
+      "short_reply": ""
+    },
+    {
+      "reply_copy": "We operate from direct experience, not theory. The AutonomaX Masterclass Starter Pro distills proven methods we've used to launch and close. This isn't a 'secret hack' or a guru's promise; it's a structured set of blueprints for operators who value specific, actionable steps over abstract concepts. You're getting our process, not just ideas.",
+      "objection": "legitimacy",
+      "short_reply": ""
+    },
+    {
+      "reply_copy": "Launching always requires effort, but the right toolkit directs that effort effectively. This Masterclass Starter Pro isn't a done-for-you solution; it's a guide that helps you channel your work into specific, high-impact actions. It clarifies *what* to do and *when*, reducing wasted time on trial-and-error and helping you focus on closing your delivery.",
+      "objection": "effort",
+      "short_reply": ""
+    },
+    {
+      "reply_copy": "Your purchase includes immediate access to all digital toolkit materials. For any questions regarding the content or accessing your files, our support team is available at support@aikagan.com. We're here to ensure you can fully utilize the resources to launch your project successfully.",
+      "objection": "post_purchase_support",
+      "short_reply": ""
+    }
+  ],
+  "buyer_persona": "",
+  "pain_point_summary": "",
+  "launch_thesis": "",
+  "offer_name": "AutonomaX Masterclass Starter",
+  "offer_url": "https://aikagan.com/products/masterclass-starter/",
+  "lead_magnet_url": "https://aikagan.com/free/golden-delivery-sample/",
+  "discount_code": "KAGANATE",
+  "priority_channels": [
+    "x",
+    "linkedin",
+    "substack"
+  ],
+  "launch_posts": [],
+  "execution_waves": [
+    {
+      "name": "wave1",
+      "timing": "day1-2",
+      "goal": "announce",
+      "channels": [
+        "x",
+        "linkedin",
+        "substack"
+      ]
+    }
+  ]
+}

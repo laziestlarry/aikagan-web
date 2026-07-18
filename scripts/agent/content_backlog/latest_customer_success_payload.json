@@ -1,80 +1,103 @@
 {
+  "support_thesis": "Reduce pre-sales friction and manage expectations by providing clear, concise, and credible information, while protecting refunds through accurate product descriptions and policy adherence.",
+  "response_principles": [
+    "Clarity over embellishment.",
+    "Direct answers to direct questions.",
+    "Set accurate expectations regarding product type and outcomes.",
+    "Adhere strictly to refund and product usage policies.",
+    "Maintain a calm, professional, and operator-level tone."
+  ],
   "faq_updates": [
     {
-      "question": "Is AIKAGAN legitimate? What assurance do I have?",
-      "answer": "AIKAGAN delivers structured digital toolkits for operators. The AutonomaX Masterclass Starter Pro is a comprehensive set of PDFs, templates, and scripts designed to provide a clear framework for product launches. We stand by our products with a 30-day refund policy, no questions asked. Our focus is on delivering actionable resources for your implementation."
+      "question": "How can I be sure the AutonomaX Masterclass Starter is legitimate and effective?",
+      "answer": "AIKAGAN operates on a foundation of practical experience in AI/ML project delivery. Our frameworks are derived from real-world launches and client engagements, designed to provide actionable guidance for builders and teams. We focus on clear steps and concrete delivery, not theoretical concepts."
     },
     {
-      "question": "How will I receive the AutonomaX Masterclass Starter Pro?",
-      "answer": "Upon purchase, you will receive immediate access to the AutonomaX Masterclass Starter Pro via a secure download link. This is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software."
+      "question": "How is the AutonomaX Masterclass Starter delivered?",
+      "answer": "Upon purchase, you receive immediate access to the AutonomaX Masterclass Starter toolkit via a secure download link. This is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. All materials are accessible through your customer portal."
     },
     {
-      "question": "What is your refund policy?",
-      "answer": "We offer a 30-day refund, no questions asked. If the AutonomaX Masterclass Starter Pro does not meet your expectations within 30 days of purchase, simply contact our support team at support@aikagan.com for a full refund."
+      "question": "What is your refund policy for the AutonomaX Masterclass Starter?",
+      "answer": "We offer a 30-day refund, no questions. If the AutonomaX Masterclass Starter does not meet your expectations within 30 days of purchase, contact support@aikagan.com for a full refund."
     },
     {
-      "question": "How much effort is required to see results from this toolkit?",
-      "answer": "The AutonomaX Masterclass Starter Pro provides a clear framework, but results depend on your implementation. It requires your active engagement to apply the strategies, customize the templates, and execute the steps outlined. This is a toolkit to guide your effort, not a passive solution."
+      "question": "What kind of effort is required to see results from the AutonomaX Masterclass Starter?",
+      "answer": "The AutonomaX Masterclass Starter provides the frameworks and tools. Results depend on your implementation. Applying the principles and customizing the templates to your specific context will require your active engagement and consistent application within your projects."
     },
     {
-      "question": "Can I white-label or resell the content from the AutonomaX Masterclass Starter Pro?",
-      "answer": "No, the AutonomaX Masterclass Starter Pro is licensed for individual use by the purchaser. It does not include white-label or reselling rights. The content is proprietary to AIKAGAN and intended to support your personal or business launch efforts directly."
+      "question": "Does the AutonomaX Masterclass Starter come with white-label or resale rights?",
+      "answer": "The AutonomaX Masterclass Starter is licensed for individual or internal team use. It does not include white-label or resale rights. The materials are intended to support your internal project delivery processes and should not be redistributed or resold."
     }
   ],
   "reply_macros": [
     {
-      "situation": "pre_sales_email",
-      "subject_line": "Re: Your Inquiry About AutonomaX Masterclass Starter Pro",
-      "response": "Thank you for your interest in the AutonomaX Masterclass Starter Pro. This is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. It's designed to provide a structured approach to product launches, helping you define offers, plan execution, and acquire early customers.\n\nResults depend on your implementation. We offer a 30-day refund, no questions asked, if it doesn't meet your needs.\n\nYou can review the details and purchase here: https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=email&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro\n\nIf you have further questions, please reply to this email."
+      "situation": "Pre-sales email inquiry about the product.",
+      "subject_line": "Re: Your Question About AutonomaX Masterclass Starter",
+      "response": "Thank you for your interest in the AutonomaX Masterclass Starter. This toolkit provides frameworks, templates, and scripts for streamlining AI/ML project delivery. It's designed to help teams establish a reliable pipeline from concept to launch. This is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. You can review the full details and curriculum at https://aikagan.com/products/masterclass-starter/. We offer a 30-day refund, no questions, if it doesn't meet your needs."
     },
     {
-      "situation": "social_comment",
-      "subject_line": "social_comment",
-      "response": "The AutonomaX Masterclass Starter Pro is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. It provides frameworks for your launch strategy. Results depend on your implementation. We offer a 30-day refund, no questions. Details here: https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+      "situation": "Social media comment asking 'What is this?' or similar.",
+      "subject_line": "",
+      "response": "The AutonomaX Masterclass Starter is a digital toolkit of frameworks and templates for AI/ML project delivery. It's not software. More details: https://aikagan.com/products/masterclass-starter/"
     },
     {
-      "situation": "refund_request",
-      "subject_line": "Re: Refund Request for AutonomaX Masterclass Starter Pro",
-      "response": "Thank you for reaching out. We confirm your request for a refund for the AutonomaX Masterclass Starter Pro. As per our policy, we offer a 30-day refund, no questions asked. Your refund will be processed within 3-5 business days. You will receive a separate confirmation once it's complete. If you have any further questions, please contact support@aikagan.com."
+      "situation": "Customer requests a refund.",
+      "subject_line": "Your Refund Request for AutonomaX Masterclass Starter",
+      "response": "Understood. We offer a 30-day refund, no questions. Your refund for the AutonomaX Masterclass Starter has been processed and should reflect in your account within 5-10 business days. We appreciate your feedback."
     },
     {
-      "situation": "missing_download",
-      "subject_line": "Re: Missing Download for AutonomaX Masterclass Starter Pro",
-      "response": "Thank you for your purchase of the AutonomaX Masterclass Starter Pro. Your download link should have been sent to your email immediately after purchase. Please check your spam or junk folder. If you still cannot locate it, please contact support@aikagan.com with your order number, and we will ensure you receive access promptly."
+      "situation": "Customer reports a missing download link or inability to access purchased product.",
+      "subject_line": "AutonomaX Masterclass Starter Download Link",
+      "response": "No problem. Your download link for the AutonomaX Masterclass Starter has been resent to your purchase email. Please check your inbox and spam folder. If you still have trouble, reply to this email, and we'll assist further."
     },
     {
-      "situation": "is_this_software",
-      "subject_line": "is_this_software",
-      "response": "The AutonomaX Masterclass Starter Pro is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. It provides structured guidance and resources for your launch, not an automated platform. Results depend on your implementation. We offer a 30-day refund, no questions. You can learn more here: https://autonomax.lemonsqueezy.com/checkout/buy/5ae79599-3cc7-4a82-9bce-b977b6a0a160?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-pro&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=x&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave1-masterclass-pro"
+      "situation": "Customer asks 'Is this software?' or 'Is this a SaaS product?'",
+      "subject_line": "Regarding AutonomaX Masterclass Starter",
+      "response": "The AutonomaX Masterclass Starter is a digital toolkit \u2014 PDFs, templates, scripts \u2014 not done-for-you software. It provides structured frameworks and actionable resources to guide your AI/ML project delivery process. It's designed for implementation by your team."
     }
   ],
-  "support_posts": [],
+  "support_posts": [
+    {
+      "channel": "reddit",
+      "purpose": "Public reply to a general product inquiry.",
+      "copy": "The AutonomaX Masterclass Starter is a digital toolkit of frameworks and templates, not software. It helps streamline AI/ML project delivery. More info: https://aikagan.com/products/masterclass-starter/"
+    },
+    {
+      "channel": "linkedin_dm",
+      "purpose": "Direct message reply to a general product inquiry.",
+      "copy": "Thanks for your question. The AutonomaX Masterclass Starter is a digital toolkit with frameworks and templates for AI/ML project delivery. It's not a software solution. Happy to elaborate if you have specific questions."
+    },
+    {
+      "channel": "instagram_comment",
+      "purpose": "Public reply to a general product inquiry.",
+      "copy": "It's a digital toolkit of frameworks & templates for AI/ML projects, not software. Check our site for details. Link in bio."
+    },
+    {
+      "channel": "x_reply",
+      "purpose": "Public reply to a general product inquiry.",
+      "copy": "The AutonomaX Masterclass Starter is a digital toolkit (PDFs, templates, scripts) for AI/ML project delivery, not software. Learn more: https://aikagan.com/products/masterclass-starter/"
+    }
+  ],
   "escalation_rules": [
     {
-      "trigger": "chargeback_threats",
-      "action": "Any communication indicating a chargeback threat or intent to dispute a transaction must be immediately escalated to a human agent and the finance department. Do not attempt to resolve directly."
+      "trigger": "Customer explicitly threatens a chargeback or initiates one.",
+      "action": "Immediately escalate to finance and legal. Do not engage further with the customer directly on the chargeback issue."
     },
     {
-      "trigger": "legal_questions",
-      "action": "Questions regarding legal terms, intellectual property, data privacy, or compliance that are not explicitly covered in standard FAQs or terms of service must be escalated to the legal team. Do not provide legal advice."
+      "trigger": "Any inquiry regarding legal terms, intellectual property, compliance, or liability.",
+      "action": "Forward to legal counsel. Provide no direct answers."
     },
     {
-      "trigger": "accessibility_requests",
-      "action": "Requests for specific accessibility accommodations (e.g., alternative formats for content, screen reader compatibility issues) must be escalated to a human agent to ensure proper support and compliance."
+      "trigger": "Customer requests alternative formats or assistance due to accessibility needs.",
+      "action": "Escalate to product development team for review and potential accommodation."
     },
     {
-      "trigger": "custom_enterprise_asks",
-      "action": "Inquiries from potential customers requesting custom solutions, enterprise-level licensing, or partnerships that go beyond the standard product offering must be escalated to the sales or business development team."
+      "trigger": "Inquiry about custom solutions, bulk licenses, partnership opportunities, or enterprise-level integration.",
+      "action": "Escalate to sales/business development team."
     }
-  ],
-  "support_thesis": "Deliver concise, credible support that removes friction and guides the next best step.",
-  "response_principles": [
-    "Acknowledge the buyer concern clearly.",
-    "Answer with specific, realistic expectations.",
-    "Offer one concrete next step with a relevant CTA."
   ],
   "offer_name": "AutonomaX Masterclass Starter",
   "offer_url": "https://aikagan.com/products/masterclass-starter/",
   "support_email": "support@aikagan.com",
-  "generated_at_utc": "2026-07-16T19:58:42.881052+00:00"
+  "generated_at_utc": "2026-07-18T20:46:59.853826+00:00"
 }

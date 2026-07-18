@@ -1,0 +1,145 @@
+{
+  "campaign": "chimera-genesis",
+  "wave": 2,
+  "launch_day": 1,
+  "generated_at_utc": "2026-07-16T22:33:46.650560+00:00",
+  "site_url": "https://aikagan.com",
+  "cta_table": {
+    "reddit": {
+      "url": "https://aikagan.com/free/golden-delivery-sample/?utm_source=reddit&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift",
+      "label": "Free 1-page guide",
+      "tier": "free",
+      "price": null,
+      "soft_cta": "Reply 'send' or grab it free \u2192 https://aikagan.com/free/golden-delivery-sample/?utm_source=reddit&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift",
+      "hard_cta": "Free download (no card): https://aikagan.com/free/golden-delivery-sample/?utm_source=reddit&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift"
+    },
+    "hackernews": {
+      "url": "https://aikagan.com/free/builder-starter-checklist/?utm_source=hackernews&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift",
+      "label": "Free 1-page guide",
+      "tier": "free",
+      "price": null,
+      "soft_cta": "Reply 'send' or grab it free \u2192 https://aikagan.com/free/builder-starter-checklist/?utm_source=hackernews&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift",
+      "hard_cta": "Free download (no card): https://aikagan.com/free/builder-starter-checklist/?utm_source=hackernews&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift"
+    },
+    "discord": {
+      "url": "https://autonomax.lemonsqueezy.com/checkout/buy/2dd8d2ad-0fc5-495f-bd42-594484e981d3?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-starter&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=discord&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-masterclass-starter",
+      "label": "Starter \u2014 $29",
+      "tier": "starter",
+      "price": 29,
+      "soft_cta": "If you want the full system: Starter \u2014 $29 \u2192 https://autonomax.lemonsqueezy.com/checkout/buy/2dd8d2ad-0fc5-495f-bd42-594484e981d3?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-starter&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=discord&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-masterclass-starter",
+      "hard_cta": "Grab Starter \u2014 $29 (30-day refund): https://autonomax.lemonsqueezy.com/checkout/buy/2dd8d2ad-0fc5-495f-bd42-594484e981d3?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-starter&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=discord&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-masterclass-starter"
+    }
+  },
+  "source_signal": "Source: Hacker News (top stories)\nTitle: Kimi K3: Open Frontier Intelligence\nBody: Trending discussion in the builder/startup community.\n",
+  "requested_channels": [
+    "reddit",
+    "hackernews",
+    "discord"
+  ],
+  "execution_waves": [
+    {
+      "name": "launch",
+      "timing": "immediate",
+      "goal": "launch",
+      "channels": [
+        "reddit",
+        "hackernews",
+        "discord"
+      ]
+    },
+    {
+      "name": "proof",
+      "timing": "immediate",
+      "goal": "launch",
+      "channels": [
+        "reddit",
+        "hackernews",
+        "discord"
+      ]
+    },
+    {
+      "name": "objection",
+      "timing": "immediate",
+      "goal": "launch",
+      "channels": [
+        "reddit",
+        "hackernews",
+        "discord"
+      ]
+    }
+  ],
+  "channels": [
+    {
+      "name": "reddit",
+      "announcement_copy": "Following the Kimi K3 discussion, many are tackling frontier intelligence. The challenge isn't just building, it's consistently shipping functional systems. We've spent cycles refining a process for getting AI/ML projects from concept to customer. It's about clear steps and concrete delivery, not theory. To help other builders, I drafted a 1-page guide on 'Golden Delivery Principles' that distills our core approach to shipping reliably. It outlines the 3 critical phases we test with every launch.",
+      "follow_up_comment": "If you DM me 'send', I'll send you the link to the Golden Delivery Principles guide. It's a single page, no fluff, just actionable steps.",
+      "call_to_action": "DM me 'send'",
+      "offer_tier": "free",
+      "cta_url": "https://aikagan.com/free/golden-delivery-sample/?utm_source=reddit&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift"
+    },
+    {
+      "name": "hackernews",
+      "announcement_copy": "Re: Kimi K3 and open frontier intelligence. The real friction point for many isn't the model or the data, it's establishing a reliable pipeline to deliver functional systems. Our team has run dozens of launches in this space. I've distilled our pre-launch process into a 'Builder Starter Checklist'. It's a tactical, one-page resource focused on the critical steps we validate before shipping. No hype, just the sequence we follow.",
+      "follow_up_comment": "If you DM me 'send', I'll share the link to the Builder Starter Checklist. It's a direct resource for anyone looking to optimize their launch readiness.",
+      "call_to_action": "DM me 'send'",
+      "offer_tier": "free",
+      "cta_url": "https://aikagan.com/free/builder-starter-checklist/?utm_source=hackernews&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-freegift"
+    },
+    {
+      "name": "discord",
+      "announcement_copy": "Hey builders, seeing a lot of discussion around Kimi K3 and scaling new tech. If you're looking to standardize how you launch and deliver AI/ML or frontier intelligence projects, we've formalized our workflow into the AutonomaX Masterclass Starter toolkit. It provides the core frameworks and templates we use to move from concept to shipping. No abstract theories, just the direct process. This is a $29 toolkit for practical application, designed to help you build and deliver faster.",
+      "follow_up_comment": "Happy to answer any questions about the toolkit and how it applies to current AI/ML challenges. Drop your questions below.",
+      "call_to_action": "Get the AutonomaX Masterclass Starter for $29 here.",
+      "offer_tier": "starter",
+      "cta_url": "https://autonomax.lemonsqueezy.com/checkout/buy/2dd8d2ad-0fc5-495f-bd42-594484e981d3?checkout%5Bcustom%5D%5Bproduct_slug%5D=masterclass-starter&checkout%5Bsuccess_url%5D=https%3A%2F%2Faikagan.com%2Fcheckout-success&utm_source=discord&utm_medium=organic&utm_campaign=chimera-genesis&utm_content=wave2-masterclass-starter"
+    }
+  ],
+  "customer_service_posts": [
+    {
+      "channel": "general",
+      "scenario": "question",
+      "copy": "Thanks for reaching out! We typically respond to all support inquiries within 24-48 hours. Can you please specify your question, and we'll connect you with the right resource?"
+    },
+    {
+      "channel": "general",
+      "scenario": "question",
+      "copy": "For specific technical questions, please check our documentation or email us directly at support@aikagan.com."
+    },
+    {
+      "channel": "general",
+      "scenario": "question",
+      "copy": "Your purchase includes lifetime access to the toolkit and any future updates to the included templates/frameworks."
+    }
+  ],
+  "objection_replies": [
+    {
+      "objection": "general concern",
+      "short_reply": "price"
+    },
+    {
+      "objection": "general concern",
+      "short_reply": "legitimacy"
+    },
+    {
+      "objection": "general concern",
+      "short_reply": "effort"
+    },
+    {
+      "objection": "general concern",
+      "short_reply": "post_purchase_support"
+    }
+  ],
+  "buyer_persona": "",
+  "pain_point_summary": "",
+  "launch_thesis": "",
+  "offer_name": "AutonomaX Masterclass Starter",
+  "offer_url": "https://aikagan.com/products/masterclass-starter/",
+  "lead_magnet_url": "https://aikagan.com/free/golden-delivery-sample/",
+  "discount_code": "KAGANATE",
+  "priority_channels": [
+    "reddit",
+    "hackernews",
+    "discord"
+  ],
+  "launch_posts": []
+}

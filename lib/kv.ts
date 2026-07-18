@@ -136,6 +136,8 @@ async function tryLoadUpstash(): Promise<UpstashClient | null> {
   // individual operations fail. This avoids false negatives from PING
   // or single-command round-trips that may be flaky on the free tier.
   try {
+    const probeAc = new AbortController();
+    const probeTimer = setTimeout(() => probeAc.abort(), 3000);
     const probeRes = await fetch(`${url.replace(/\/+$/, "")}`, {
       method: "POST",
       headers: {
@@ -144,7 +146,9 @@ async function tryLoadUpstash(): Promise<UpstashClient | null> {
       },
       body: JSON.stringify([["PING"]]),
       cache: "no-store",
+      signal: probeAc.signal,
     });
+    clearTimeout(probeTimer);
     if (!probeRes.ok && probeRes.status !== 0) {
       // Allow 0 (network) and 5xx (server) — try the client anyway;
       // ops will fall back per-call.
@@ -164,6 +168,8 @@ function makeUpstashClient(url: string, token: string): UpstashClient {
   async function call<T = unknown>(commands: unknown[][]): Promise<T[]> {
     // Upstash REST API /pipeline returns an array of { result: <value> }
     // objects — one per command. We unwrap each to the inner value.
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), 3000); // 3s timeout
     const r = await fetch(`${endpoint}/pipeline`, {
       method: "POST",
       headers: {
@@ -172,7 +178,9 @@ function makeUpstashClient(url: string, token: string): UpstashClient {
       },
       body: JSON.stringify(commands),
       cache: "no-store",
+      signal: ac.signal,
     });
+    clearTimeout(timer);
     if (!r.ok) {
       const text = await r.text().catch(() => "");
       throw new Error(`upstash ${r.status}: ${text.slice(0, 200)}`);

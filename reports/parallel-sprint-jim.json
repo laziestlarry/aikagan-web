@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-07-18T17:45:36.049Z",
+  "score": 95,
+  "throughputOpsPerSec": 3181.2,
+  "averageLatencyMs": 0.3,
+  "errorRatePct": 0,
+  "totalOps": 153,
+  "opsSuccessCount": 153,
+  "opsFailureCount": 0,
+  "storageType": "upstash",
+  "metrics": {
+    "kvWriteLatencyMs": 2,
+    "kvReadLatencyMs": 2,
+    "kvBatchWriteLatencyMs": 2,
+    "kvBatchDeleteLatencyMs": 2
+  },
+  "integrations": {
+    "paddle": false,
+    "shopier": true,
+    "gumroad": true,
+    "metaCapi": true
+  },
+  "logs": [
+    "[SPRINT] Initialized Performance Sprint: Jim $2000 Parallel Revenue Sprint",
+    "[SPRINT] Seeding parallel revenue sprint of $2000 for Jim.",
+    "[SUCCESS] Recorded revenue sprint transaction sprint_jim_1784396735945_a83e of $2000 in the ledger.",
+    "[STORAGE] Identified storage backend: upstash",
+    "[CONFIG] Paddle configured: false",
+    "[CONFIG] Shopier configured: true",
+    "[CONFIG] Gumroad configured: true",
+    "[CONFIG] Meta CAPI configured: true",
+    "[TEST] Measuring single key write/read latency.",
+    "[TEST] Single Write: 2ms | Single Read: 2ms",
+    "[TEST] Initiating batch pipeline write of 50 mock transactions.",
+    "[TEST] Batch write completed in 2ms (25000.0 ops/sec)",
+    "[TEST] Verifying batch transaction retrieval.",
+    "[TEST] Retrieval: verified 50/50 records in 38ms",
+    "[TEST] Running batch cleanup pipeline.",
+    "[TEST] Cleaned up 51 records in 2ms",
+    "[METRICS] Total ops: 153 | Average latency: 0.3ms | Ops/sec: 3181.2",
+    "[SYSTEM] Computed Capacity Score: 95/100"
+  ]
+}

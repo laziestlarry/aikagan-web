@@ -1,0 +1,3 @@
+{"name":"user","mode":"bearer","status":200,"ok":true,"keys":["success","user"]}
+{"name":"products","mode":"bearer","status":200,"ok":true,"keys":["products","success"]}
+{"name":"resource_subscriptions","mode":"bearer","status":200,"ok":true,"keys":["message","success"]}
