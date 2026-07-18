@@ -1,0 +1,57 @@
+[
+  {
+    "id": "trg_001",
+    "persona": "larry",
+    "platform": "reddit",
+    "handle": "build_with_dan",
+    "niche": "SaaS Builder",
+    "status": "contacted",
+    "last_action_date": "2026-07-18T16:26:04.165052+00:00",
+    "utm_source": "reddit_larry",
+    "details": "Posted in r/SideProject about launching a feedback tool, complaining about Stripe/SaaS delivery costs."
+  },
+  {
+    "id": "trg_002",
+    "persona": "larry",
+    "platform": "indiehackers",
+    "handle": "startup_sara",
+    "niche": "Creator",
+    "status": "converted",
+    "last_action_date": "2026-07-18T16:26:25.680525+00:00",
+    "utm_source": "indiehackers_larry",
+    "details": "Seeking one-time payment checkout tools for a course bundle launch."
+  },
+  {
+    "id": "trg_003",
+    "persona": "kagan",
+    "platform": "linkedin",
+    "handle": "john-doe-consulting",
+    "niche": "Agency Owner",
+    "status": "pending",
+    "last_action_date": null,
+    "utm_source": "linkedin_kagan",
+    "details": "Runs a 12-person digital agency. Looking for white-label customer hubs for clients."
+  },
+  {
+    "id": "trg_004",
+    "persona": "kagan",
+    "platform": "twitter",
+    "handle": "murtaza_codes",
+    "niche": "SaaS Solopreneur",
+    "status": "pending",
+    "last_action_date": null,
+    "utm_source": "twitter_kagan",
+    "details": "Asking about Paddle vs Stripe for international sales tax handling."
+  },
+  {
+    "id": "trg_005",
+    "persona": "recruiter",
+    "platform": "twitter",
+    "handle": "startup_gems",
+    "niche": "Micro-Influencer",
+    "status": "pending",
+    "last_action_date": null,
+    "utm_source": "twitter_recruiter",
+    "details": "Niche curator with 3.2k followers. Curates resources for makers and developers."
+  }
+]
