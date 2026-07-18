@@ -261,7 +261,7 @@ def _normalize_playbook_payload(data: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
-def _gemini(system: str, temperature: float = 0.5, max_tokens: int = 2048):
+def _gemini(system: str, temperature: float = 0.5, max_tokens: int = 2048, response_schema: Any = None):
     if not GEMINI_API_KEY:
         raise SystemExit("Missing GEMINI_API_KEY — populate .env.fulfillment first.")
     model_name = GEMINI_MODEL.strip() or "gemini-2.5-flash"
@@ -278,6 +278,7 @@ def _gemini(system: str, temperature: float = 0.5, max_tokens: int = 2048):
                 config=types.GenerateContentConfig(
                     system_instruction=system,
                     response_mime_type="application/json",
+                    response_schema=response_schema,
                     temperature=temperature,
                     max_output_tokens=max_tokens,
                 )
@@ -328,7 +329,7 @@ def generate_playbook() -> dict[str, Any]:
     support_email = REPLY_FROM
     launch_context = read_launch_context()
 
-    model = _gemini(PLAYBOOK_SYSTEM, temperature=0.4, max_tokens=4096)
+    model = _gemini(PLAYBOOK_SYSTEM, temperature=0.4, max_tokens=4096, response_schema=CustomerSuccessPayload)
     prompt = f"""\
 CURRENT CAMPAIGN CONTEXT:
 {launch_context[:8000]}
@@ -393,8 +394,18 @@ def run_playbook(dry_run: bool) -> None:
 # ---------------------------------------------------------------------------
 # Per-message inbound replies
 # ---------------------------------------------------------------------------
+class ClassificationReply(pydantic.BaseModel):
+    objection_category: str
+    ai_generated_reply: str
+
+
 def _classify_and_reply(message: dict[str, Any]) -> dict[str, Any]:
-    model = _gemini(REPLY_SYSTEM, temperature=0.55, max_tokens=1024)
+    model = _gemini(
+        REPLY_SYSTEM,
+        temperature=0.55,
+        max_tokens=1024,
+        response_schema=ClassificationReply,
+    )
     categories = ", ".join(OBJECTION_TIER_MAP.keys())
     prompt = f"""\
 INCOMING MESSAGE
