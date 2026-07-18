@@ -100,9 +100,11 @@ class ReplyMacro(pydantic.BaseModel):
 
 
 class SupportPost(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+
     channel: str
     purpose: str
-    copy: str
+    post_copy: str = pydantic.Field(alias="copy")
 
 
 class EscalationRule(pydantic.BaseModel):
@@ -329,7 +331,7 @@ def generate_playbook() -> dict[str, Any]:
     support_email = REPLY_FROM
     launch_context = read_launch_context()
 
-    model = _gemini(PLAYBOOK_SYSTEM, temperature=0.4, max_tokens=4096, response_schema=CustomerSuccessPayload)
+    model = _gemini(PLAYBOOK_SYSTEM, temperature=0.4, max_tokens=8192, response_schema=CustomerSuccessPayload)
     prompt = f"""\
 CURRENT CAMPAIGN CONTEXT:
 {launch_context[:8000]}
