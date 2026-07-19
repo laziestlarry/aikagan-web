@@ -376,6 +376,37 @@ export interface IncomeReality {
     growthClassification: string;
     revenueToBurnRatio: number;
   };
+  /** Traffic trajectory — last 7 days trending direction. */
+  trajectory: {
+    direction: "growing" | "stable" | "declining";
+    pageviewChangePct: number;
+    intentChangePct: number;
+    leadChangePct: number;
+  };
+  /** Projected conversion value at benchmark rates. */
+  projectedValue: {
+    ifLeadRate2Pct: number;
+    ifIntentRate5Pct: number;
+    ifPurchaseRate1Pct: number;
+    monthlyTrafficValue: number;
+  };
+  /** Top opportunities from revenue-ops backend. */
+  opportunities: Array<{
+    name: string;
+    channel: string;
+    partner: string;
+    score: number;
+    timeToTestHours: number;
+  }>;
+  /** Milestone tracking — next achievement targets. */
+  milestones: {
+    firstPurchase: boolean;
+    firstHundredVisitors: boolean;
+    firstThousandVisitors: boolean;
+    firstTenLeads: boolean;
+    firstHundredIntents: boolean;
+    nextMilestone: string;
+  };
 }
 
 const DEFAULT_WINDOW_DAYS = 7;
@@ -408,14 +439,38 @@ export async function fetchProjections(): Promise<IncomeReality["projections"] |
   }
 }
 
+async function fetchOpportunities(): Promise<IncomeReality["opportunities"]> {
+  const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL;
+  if (!baseUrl) return [];
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/api/dashboard`, {
+      signal: AbortSignal.timeout(5000),
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const body = await res.json();
+    const top = (body.top_opportunities || []).slice(0, 3);
+    return top.map((o: any) => ({
+      name: o.name || o.title || "Opportunity",
+      channel: o.channel || "direct",
+      partner: o.partner || "",
+      score: o.score || 0,
+      timeToTestHours: o.time_to_test_hours || 0,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promise<IncomeReality> {
   const sinceMs = Date.now() - windowDays * 24 * 60 * 60 * 1000;
-  const [pv, intents, leads, txs, projections] = await Promise.all([
+  const [pv, intents, leads, txs, projections, opportunities] = await Promise.all([
     countPageviewsSince(sinceMs),
     countIntentsSince(sinceMs),
     countLeadsSince(sinceMs),
     countTransactionsSince(sinceMs),
     fetchProjections(),
+    fetchOpportunities(),
   ]);
 
   // Build daily breakdown
@@ -466,6 +521,40 @@ export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promis
   const purchaseIntent = intents > 0 ? (txs.count / intents) * 100 : 0;
   const leadToPurchase = leads > 0 ? (txs.count / leads) * 100 : 0;
 
+  // Trajectory: compare first vs last 3 days (skip empty days)
+  const daysWithData = daily.filter(d => d.pageviews > 0 || d.intents > 0);
+  const recentDays = daysWithData.slice(-3);
+  const earlyDays = daysWithData.slice(0, 3);
+  const avgRecent = recentDays.length > 0 ? recentDays.reduce((s, d) => s + d.pageviews, 0) / recentDays.length : 0;
+  const avgEarly = earlyDays.length > 0 ? earlyDays.reduce((s, d) => s + d.pageviews, 0) / earlyDays.length : 1;
+  const pageviewChangePct = avgEarly > 0 ? round2(((avgRecent - avgEarly) / avgEarly) * 100) : 0;
+  const direction = pageviewChangePct > 10 ? "growing" : pageviewChangePct < -10 ? "declining" : "stable";
+
+  const avgRecentInt = recentDays.length > 0 ? recentDays.reduce((s, d) => s + d.intents, 0) / recentDays.length : 0;
+  const avgEarlyInt = earlyDays.length > 0 ? earlyDays.reduce((s, d) => s + d.intents, 0) / earlyDays.length : 1;
+  const intentChangePct = avgEarlyInt > 0 ? round2(((avgRecentInt - avgEarlyInt) / avgEarlyInt) * 100) : 0;
+
+  const avgRecentLead = recentDays.length > 0 ? recentDays.reduce((s, d) => s + d.leads, 0) / recentDays.length : 0;
+  const avgEarlyLead = earlyDays.length > 0 ? earlyDays.reduce((s, d) => s + d.leads, 0) / earlyDays.length : 1;
+  const leadChangePct = avgEarlyLead > 0 ? round2(((avgRecentLead - avgEarlyLead) / avgEarlyLead) * 100) : 0;
+
+  // Projected value — what current monthly traffic could convert to
+  const monthlyPv = pv;
+  const projectedIfLead2 = monthlyPv * 0.02 * 79; // 2% lead rate × $79 avg order
+  const projectedIfIntent5 = monthlyPv * 0.05 * 0.1 * 79; // 5% intent × 10% purchase × $79
+  const projectedIfPurchase1 = monthlyPv * 0.01 * 79; // 1% purchase rate × $79
+  const monthlyTrafficValue = Math.round(projectedIfLead2 * 3 + projectedIfPurchase1) / 4;
+
+  // Milestones
+  const milestones = {
+    firstPurchase: txs.count > 0,
+    firstHundredVisitors: pv >= 100,
+    firstThousandVisitors: pv >= 1000,
+    firstTenLeads: leads >= 10,
+    firstHundredIntents: intents >= 100,
+    nextMilestone: txs.count === 0 ? "1st purchase" : pv < 1000 ? "1,000 pageviews" : leads < 10 ? "10 leads" : intents < 100 ? "100 intents" : "first $1,000 revenue",
+  };
+
   return {
     generatedAt: new Date().toISOString(),
     sources: {
@@ -507,6 +596,20 @@ export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promis
       },
     },
     projections: projections ?? undefined,
+    trajectory: {
+      direction,
+      pageviewChangePct,
+      intentChangePct,
+      leadChangePct,
+    },
+    projectedValue: {
+      ifLeadRate2Pct: Math.round(projectedIfLead2),
+      ifIntentRate5Pct: Math.round(projectedIfIntent5),
+      ifPurchaseRate1Pct: Math.round(projectedIfPurchase1),
+      monthlyTrafficValue: Math.round(monthlyTrafficValue),
+    },
+    opportunities: [],
+    milestones,
   };
 }
 
