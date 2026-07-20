@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getIncomeReality } from "@/lib/income-ledger";
 import { getKv } from "@/lib/kv";
+import { getRecentAgentActivity } from "@/lib/agent-tracker";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,11 +18,12 @@ async function fetchJson(url: string, timeout = 5000) {
 }
 
 export async function GET(req: NextRequest) {
-  const [reality, financials, dashboard, kv] = await Promise.all([
+  const [reality, financials, dashboard, kv, activity] = await Promise.all([
     getIncomeReality(30),
     fetchJson(`${REVENUE_OPS_BACKEND}/api/financials`),
     fetchJson(`${REVENUE_OPS_BACKEND}/api/dashboard`),
     getKv(),
+    getRecentAgentActivity(10),
   ]);
 
   const finSummary = financials?.summary || financials;
@@ -109,6 +111,7 @@ export async function GET(req: NextRequest) {
     milestones: reality?.milestones || {},
     trajectory: reality?.trajectory || {},
     projections: reality?.projections || null,
+    agentActivity: activity,
   });
 }
 

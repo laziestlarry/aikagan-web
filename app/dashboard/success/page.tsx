@@ -202,6 +202,30 @@ export default function SuccessDashboardPage() {
         </div>
       </section>
 
+      {/* ── Agent Activity ── */}
+      {d.agentActivity?.length > 0 && (
+        <section>
+          <SectionHeader icon={Zap} label="Agent Activity Feed" />
+          <div className="rounded-xl border border-kagan-border bg-kagan-card/40 p-4">
+            <div className="space-y-2">
+              {d.agentActivity.map((a: any, i: number) => (
+                <div key={i} className="flex items-start gap-3 text-sm border-b border-kagan-border/30 pb-2 last:border-0">
+                  <div className={`mt-0.5 h-2 w-2 rounded-full ${a.status === "success" ? "bg-green-400" : "bg-kagan-amber"}`} />
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <span className="text-kagan-white font-semibold">{a.agentName}</span>
+                      <span className="text-kagan-muted text-xs">{a.durationMs ? `${(a.durationMs / 1000).toFixed(0)}s` : ""}</span>
+                    </div>
+                    <p className="text-kagan-light text-xs">{a.summary || a.runMode}</p>
+                    <p className="text-kagan-muted text-[10px]">{a.startedAt ? new Date(a.startedAt).toLocaleString() : ""}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── Footer ── */}
       <div className="text-center text-xs text-kagan-muted pt-6 border-t border-kagan-border/50">
         <p className="mb-1">Success Dashboard · AutonomaX Profit OS</p>

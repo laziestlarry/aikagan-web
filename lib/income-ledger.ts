@@ -262,7 +262,7 @@ export async function countLeadsSince(sinceMs: number): Promise<number> {
 
 // ─── Checkout-intent ledger ──────────────────────────────────────────────────
 
-const INTENT_TTL_S = 30 * 24 * 60 * 60;
+const INTENT_TTL_S = 180 * 24 * 60 * 60;
 
 export async function recordIntent(intent: IntentRecord, sessionId: string): Promise<void> {
   const day = dayKey(intent.capturedAt);
