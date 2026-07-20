@@ -108,11 +108,12 @@ export async function GET() {
   checks.admin_secret = configCheck(configured("ADMIN_SECRET"), "ADMIN_SECRET not set");
   checks.cron_secret = configCheck(configured("CRON_SECRET"), "CRON_SECRET not set");
 
-  const revenueOpsUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL ?? "";
+  const REVENUE_OPS_BACKEND = "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
+  const revenueOpsUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL ?? REVENUE_OPS_BACKEND;
   checks.revenue_ops_backend = revenueOpsUrl
     ? await checkUrl(`${revenueOpsUrl.replace(/\/+$/, "")}/api/dashboard`)
     : { status: "degraded", latency_ms: 0, detail: "NEXT_PUBLIC_AUTONOMAX_API_URL not set" };
-  const fastApiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL ?? "";
+  const fastApiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL ?? REVENUE_OPS_BACKEND;
   checks.fastapi_backend = fastApiUrl
     ? await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`)
     : { status: "degraded", latency_ms: 0, detail: "NEXT_PUBLIC_FASTAPI_URL not set" };

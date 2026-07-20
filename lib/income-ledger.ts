@@ -411,8 +411,10 @@ export interface IncomeReality {
 
 const DEFAULT_WINDOW_DAYS = 7;
 
-export async function fetchProjections(): Promise<IncomeReality["projections"] | undefined> {
-  const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL;
+export const REVENUE_OPS_BACKEND = "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
+
+async function fetchProjections(): Promise<IncomeReality["projections"] | undefined> {
+  const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL || REVENUE_OPS_BACKEND;
   if (!baseUrl) return undefined;
   try {
     const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/api/financials`, {
@@ -440,7 +442,7 @@ export async function fetchProjections(): Promise<IncomeReality["projections"] |
 }
 
 async function fetchOpportunities(): Promise<IncomeReality["opportunities"]> {
-  const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL || REVENUE_OPS_BACKEND;
   if (!baseUrl) return [];
   try {
     const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/api/dashboard`, {
