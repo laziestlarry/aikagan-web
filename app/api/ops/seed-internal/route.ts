@@ -54,6 +54,7 @@ export async function POST() {
         capturedAt: day.getTime() + l * 1000,
         utm: {},
         ref: null,
+        capiFired: false,
       }).catch(() => {});
     }
     // Record purchases (only last 14 days for recency)
@@ -66,10 +67,16 @@ export async function POST() {
           orderId,
           provider: "gumroad",
           slug,
+          email: `buyer+${i}@aikagan.test`,
           value: PRICES[slug],
-          capturedAt: day.getTime() + p * 1000 + 5000,
+          currency: "USD",
           refCode: null,
-          source: "self_test",
+          utm: {},
+          capturedAt: day.getTime() + p * 1000 + 5000,
+          eventId: orderId,
+          commission: 0,
+          capiFired: false,
+          note: "self_test",
         }).catch(() => {});
         txCount++;
       }
