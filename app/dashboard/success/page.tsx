@@ -202,6 +202,37 @@ export default function SuccessDashboardPage() {
         </div>
       </section>
 
+      {/* ── Team Ops ── */}
+      <section>
+        <SectionHeader icon={Users} label="Team Operations" />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+          <div className="rounded-xl border border-kagan-border bg-kagan-card/60 p-4 text-center">
+            <p className="text-xs text-kagan-muted uppercase">Marketing Ops</p>
+            <p className="text-lg font-bold text-green-400">Daily 14:00 UTC</p>
+            <p className="text-[10px] text-kagan-light">Wave 1 — Awareness</p>
+          </div>
+          <div className="rounded-xl border border-kagan-border bg-kagan-card/60 p-4 text-center">
+            <p className="text-xs text-kagan-muted uppercase">Customer Success</p>
+            <p className="text-lg font-bold text-green-400">Hourly :15</p>
+            <p className="text-[10px] text-kagan-light">Inbox drain + auto-reply</p>
+          </div>
+          <div className="rounded-xl border border-kagan-border bg-kagan-card/60 p-4 text-center">
+            <p className="text-xs text-kagan-muted uppercase">Playbook Refresh</p>
+            <p className="text-lg font-bold text-green-400">Daily 15:00 UTC</p>
+            <p className="text-[10px] text-kagan-light">FAQ + macros + escalation</p>
+          </div>
+        </div>
+        <div className="rounded-xl border border-kagan-border bg-kagan-card/40 p-4">
+          <h3 className="text-xs font-bold text-kagan-muted uppercase mb-3">Operations Command</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px] text-kagan-light">
+            <div className="border border-kagan-border/30 rounded p-2"><span className="text-kagan-gold">06:00</span> Fulfillment queue drain</div>
+            <div className="border border-kagan-border/30 rounded p-2"><span className="text-kagan-gold">08:00 Mon</span> Weekly intelligence</div>
+            <div className="border border-kagan-border/30 rounded p-2"><span className="text-kagan-gold">09:00 Mon</span> Affiliate payouts</div>
+            <div className="border border-kagan-border/30 rounded p-2"><span className="text-kagan-gold">14:00</span> Marketing wave push</div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Agent Activity ── */}
       {d.agentActivity?.length > 0 && (
         <section>
