@@ -413,7 +413,7 @@ const DEFAULT_WINDOW_DAYS = 7;
 
 export const REVENUE_OPS_BACKEND = "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
 
-async function fetchProjections(): Promise<IncomeReality["projections"] | undefined> {
+export async function fetchProjections(): Promise<IncomeReality["projections"] | undefined> {
   const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL || REVENUE_OPS_BACKEND;
   if (!baseUrl) return undefined;
   try {
@@ -441,7 +441,7 @@ async function fetchProjections(): Promise<IncomeReality["projections"] | undefi
   }
 }
 
-async function fetchOpportunities(): Promise<IncomeReality["opportunities"]> {
+export async function fetchOpportunities(): Promise<IncomeReality["opportunities"]> {
   const baseUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL || process.env.NEXT_PUBLIC_FASTAPI_URL || REVENUE_OPS_BACKEND;
   if (!baseUrl) return [];
   try {
