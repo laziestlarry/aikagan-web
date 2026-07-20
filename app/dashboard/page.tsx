@@ -33,6 +33,14 @@ const DASHBOARD_CARDS = [
     badgeVariant: 'green' as const,
   },
   {
+    title: 'Org Success',
+    description: 'Consolidated success metrics: org status, branding, sales ops, marketing strategy — one unified view.',
+    href: '/dashboard/success',
+    icon: Activity,
+    badge: 'Unified',
+    badgeVariant: 'green' as const,
+  },
+  {
     title: 'Venture Infrastructure',
     description: 'BizOp Navigator checklists, Genesis Blueprint compiler, Alexandria KB, and active Commander controls.',
     href: '/dashboard/venture-infrastructure',
