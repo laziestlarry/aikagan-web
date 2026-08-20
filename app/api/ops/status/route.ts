@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPaidProducts } from "@/lib/products";
+import { CHECKOUT_SENTINEL, getPaidProducts } from "@/lib/products";
 import { ensureGumroadSaleSubscription, isGumroadApiConfigured } from "@/lib/gumroad-api";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +16,8 @@ function configuredAny(...names: string[]): boolean {
 
 export async function GET(req: NextRequest) {
   const paidProducts = getPaidProducts();
+  const managedProducts = paidProducts.filter((product) => product.checkoutUrl === CHECKOUT_SENTINEL);
+  const scopedServices = paidProducts.filter((product) => product.checkoutUrl !== CHECKOUT_SENTINEL);
   const host = req.headers.get("host") || "";
   const hostname = host.split(":")[0].toLowerCase();
   const approvedPaddleSurface =
@@ -24,6 +26,13 @@ export async function GET(req: NextRequest) {
     hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
     hostname === "localhost" ||
     hostname === "127.0.0.1";
+  const paddleCredentialsReady =
+    process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
+    configured("PADDLE_API_KEY") &&
+    configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
+    configured("PADDLE_WEBHOOK_SECRET");
+  const lemonMerchantApproved = process.env.LEMONSQUEEZY_MERCHANT_APPROVED === "true";
+
   let siteUrl = req.nextUrl.origin;
   try {
     const rawUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -32,20 +41,27 @@ export async function GET(req: NextRequest) {
       if (!sanitized.startsWith("http://") && !sanitized.startsWith("https://")) {
         sanitized = `https://${sanitized}`;
       }
-      const parsedUrl = new URL(sanitized);
-      siteUrl = parsedUrl.origin;
+      siteUrl = new URL(sanitized).origin;
     }
   } catch (e) {
     console.error("Invalid NEXT_PUBLIC_SITE_URL configuration:", e);
   }
 
-  let gumroadSubscription: { ready: boolean; created: boolean; detail?: string } = { ready: false, created: false, detail: "GUMROAD_ACCESS_TOKEN missing" };
+  let gumroadSubscription: { ready: boolean; created: boolean; detail?: string } = {
+    ready: false,
+    created: false,
+    detail: "GUMROAD_ACCESS_TOKEN missing",
+  };
   if (isGumroadApiConfigured()) {
     try {
       const webhookUrl = new URL("/api/webhooks/gumroad", siteUrl).toString();
       gumroadSubscription = await ensureGumroadSaleSubscription(webhookUrl);
     } catch (e) {
-      gumroadSubscription = { ready: false, created: false, detail: `Failed to construct webhook URL: ${e instanceof Error ? e.message : String(e)}` };
+      gumroadSubscription = {
+        ready: false,
+        created: false,
+        detail: `Failed to construct webhook URL: ${e instanceof Error ? e.message : String(e)}`,
+      };
     }
   }
 
@@ -55,13 +71,9 @@ export async function GET(req: NextRequest) {
       configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
       configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
       configuredAny("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
-    paddle:
-      approvedPaddleSurface &&
-      process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
-      configured("PADDLE_API_KEY") &&
-      configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
-      configured("PADDLE_WEBHOOK_SECRET"),
+    paddle: approvedPaddleSurface && paddleCredentialsReady,
     lemonsqueezy:
+      lemonMerchantApproved &&
       process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" &&
       configured("LEMONSQUEEZY_API_KEY") &&
       configured("LEMONSQUEEZY_STORE_ID") &&
@@ -70,7 +82,7 @@ export async function GET(req: NextRequest) {
 
   const checks = {
     deployment: true,
-    catalog: paidProducts.length > 0,
+    catalog: managedProducts.length > 0,
     checkoutProvider: Object.values(providers).some(Boolean),
     downloadTokens: configured("DOWNLOAD_TOKEN_SECRET"),
     fulfillmentWebhook: configuredAny("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL"),
@@ -93,7 +105,12 @@ export async function GET(req: NextRequest) {
       ready,
       simulated: false,
       checkedAt: new Date().toISOString(),
-      products: { paid: paidProducts.length, slugs: paidProducts.map((product) => product.slug) },
+      products: {
+        managedCheckout: managedProducts.length,
+        managedCheckoutSlugs: managedProducts.map((product) => product.slug),
+        scopedServices: scopedServices.length,
+        scopedServiceSlugs: scopedServices.map((product) => product.slug),
+      },
       providers,
       providerEvidence: {
         gumroad: {
@@ -102,7 +119,20 @@ export async function GET(req: NextRequest) {
           subscriptionCreatedNow: gumroadSubscription.created,
           detail: gumroadSubscription.detail,
         },
-        paddle: { approvedSurface: approvedPaddleSurface },
+        paddle: {
+          approvedSurface: approvedPaddleSurface,
+          credentialsReady: paddleCredentialsReady,
+          hostname,
+          approvedHostnames: [
+            "app.aikagan.com",
+            "propulse-autonomax.web.app",
+            "autonomax-revenue-lenljbhrqq-uc.a.run.app",
+          ],
+        },
+        lemonsqueezy: {
+          merchantApproved: lemonMerchantApproved,
+          enabled: lemonMerchantApproved && process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true",
+        },
       },
       checks,
       warnings,
