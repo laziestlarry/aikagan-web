@@ -13,11 +13,15 @@ interface IncomeReality {
   revenue: { grossUsd: number; transactionsCount: number };
 }
 
-const FALLBACK_KPIS: KPI[] = [
-  { label: "Active Pipelines", value: "12+" },
-  { label: "Avg. Delivery Cycle", value: "7 Days" },
-  { label: "SLA Uptime", value: "99.9%" },
-  { label: "Conversion Lift", value: "3.2× avg" },
+/**
+ * Neutral placeholders used only while the evidence ledger is unreachable.
+ * Never substitute estimated, historical, or promotional values for live evidence.
+ */
+const NO_EVIDENCE_KPIS: KPI[] = [
+  { label: "Revenue evidence", value: "Unavailable" },
+  { label: "Transaction evidence", value: "Unavailable" },
+  { label: "Lead evidence", value: "Unavailable" },
+  { label: "Conversion evidence", value: "Unavailable" },
 ];
 
 /** Map real income reality to KPI tiles. No synthetic numbers. */
@@ -35,7 +39,7 @@ function realityToKpis(r: IncomeReality): KPI[] {
 }
 
 export default function LiveKPIs() {
-  const [kpis, setKpis] = useState<KPI[]>(FALLBACK_KPIS);
+  const [kpis, setKpis] = useState<KPI[]>(NO_EVIDENCE_KPIS);
   const [live, setLive] = useState(false);
   const [offline, setOffline] = useState(false);
 
@@ -53,12 +57,15 @@ export default function LiveKPIs() {
           setOffline(false);
           return;
         }
-        // Fall back to the AutonomaX mission endpoint if available
+        // Fall back to the AutonomaX mission endpoint only when it returns evidence-backed KPIs.
         return fetch("/api/revenue-ops/api/mission/status", { cache: "no-store" })
           .then((r) => (r.ok ? r.json() : null))
           .then((m) => {
-            if (cancelled || !m?.kpis) {
-              if (!cancelled) setOffline(true);
+            if (cancelled || !Array.isArray(m?.kpis)) {
+              if (!cancelled) {
+                setKpis(NO_EVIDENCE_KPIS);
+                setOffline(true);
+              }
               return;
             }
             setKpis(m.kpis);
@@ -66,11 +73,17 @@ export default function LiveKPIs() {
             setOffline(false);
           })
           .catch(() => {
-            if (!cancelled) setOffline(true);
+            if (!cancelled) {
+              setKpis(NO_EVIDENCE_KPIS);
+              setOffline(true);
+            }
           });
       })
       .catch(() => {
-        if (!cancelled) setOffline(true);
+        if (!cancelled) {
+          setKpis(NO_EVIDENCE_KPIS);
+          setOffline(true);
+        }
       });
 
     return () => {
@@ -104,7 +117,7 @@ export default function LiveKPIs() {
         {offline && (
           <span className="inline-flex items-center gap-1.5 text-xs text-amber-400">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            Offline — showing fallback
+            Evidence ledger unavailable — no values claimed
           </span>
         )}
       </div>

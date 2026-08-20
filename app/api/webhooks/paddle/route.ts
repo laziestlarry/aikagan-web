@@ -4,13 +4,16 @@
  * Paddle Billing webhook handler.
  *
  * Events processed:
- *   transaction.completed  → issues download token, fires CAPI Purchase,
- *                            records affiliate commission, logs to FastAPI
+ *   transaction.completed  → resolves buyer identity, issues download token,
+ *                            writes the income ledger, queues fulfillment,
+ *                            then marks the provider event complete.
  *
  * Reliability:
- *   - Idempotency: skips duplicate event_id (Paddle retries on non-2xx)
- *   - Webhook receipt audit log
- *   - All side effects are non-blocking except token issuance
+ *   - Provider retries remain retryable until the critical order path succeeds.
+ *   - Duplicate completed events are ignored after successful processing.
+ *   - Token issuance, ledger persistence, and fulfillment queueing are awaited
+ *     before acknowledging transaction.completed.
+ *   - Analytics/affiliate/FastAPI side effects remain non-critical.
  *
  * Configure in Paddle Dashboard → Developer Tools → Webhooks:
  *   Endpoint URL: https://aikagan.com/api/webhooks/paddle
@@ -25,7 +28,7 @@ import { getProduct } from "@/lib/products";
 import { tokenStore } from "@/lib/token-store";
 import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
 import { getPaddleClient, getPaddleEnvironment } from "@/lib/paddle-client";
-import { markEventIfNew } from "@/lib/webhook-idempotency";
+import { hasProcessedEvent, markEventProcessed } from "@/lib/webhook-idempotency";
 import { recordWebhookCommission } from "@/lib/commissions";
 import { recordTransaction, getCommissionRate } from "@/lib/income-ledger";
 import { fulfillPurchase } from "@/lib/fulfillment";
@@ -36,15 +39,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * Log a completed purchase to the FastAPI backend (non-blocking).
- */
+/** Log a completed purchase to the FastAPI backend (non-critical). */
 async function logPurchaseToFastAPI(
   transactionId: string,
   slug: string,
   email: string,
   value: number,
-  refCode: string | null
+  refCode: string | null,
 ) {
   const fastApiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL;
   if (!fastApiUrl) return;
@@ -64,15 +65,22 @@ async function logPurchaseToFastAPI(
       signal: AbortSignal.timeout(5000),
     });
   } catch {
-    // Non-blocking
+    // Non-critical telemetry path.
   }
 }
 
-export async function POST(req: NextRequest) {
-  // ── 1. Read raw body ──────────────────────────────────────────────────
-  const rawBody = await req.text();
+function parseAmountUsd(data: any): number {
+  const raw =
+    data.details?.totals?.grand_total ??
+    data.details?.line_items?.[0]?.totals?.total ??
+    data.details?.line_items?.[0]?.unit_price?.amount ??
+    "0";
+  const cents = Number.parseInt(String(raw), 10);
+  return Number.isFinite(cents) ? cents / 100 : 0;
+}
 
-  // ── 2. Extract Paddle signature header ────────────────────────────────
+export async function POST(req: NextRequest) {
+  const rawBody = await req.text();
   const signature = req.headers.get("p-pl") ?? "";
 
   if (!signature) {
@@ -80,7 +88,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing signature" }, { status: 401 });
   }
 
-  // ── 3. Validate signature ─────────────────────────────────────────────
   let isValid = false;
   try {
     const validator = new WebhooksValidator();
@@ -95,7 +102,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  // ── 4. Parse event ───────────────────────────────────────────────────
   let event: any;
   try {
     event = JSON.parse(rawBody);
@@ -107,7 +113,6 @@ export async function POST(req: NextRequest) {
   const eventId: string = event.event_id ?? "";
   const transactionId: string = event.data?.id ?? "";
 
-  // Log receipt for audit trail
   console.log(JSON.stringify({
     event: "paddle_webhook_received",
     event_type: eventType,
@@ -116,9 +121,9 @@ export async function POST(req: NextRequest) {
     timestamp: new Date().toISOString(),
   }));
 
-  // ── 5. Idempotency check (skip if event already processed) ────────────
-  const isNew = await markEventIfNew("paddle", eventId);
-  if (!isNew) {
+  // Read-only duplicate check. Do not consume Paddle's retry until the critical
+  // transaction path has completed successfully.
+  if (await hasProcessedEvent("paddle", eventId)) {
     console.log(JSON.stringify({
       event: "paddle_webhook_dedup",
       event_id: eventId,
@@ -127,56 +132,84 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, dedup: true });
   }
 
-  // ── 6. Handle transaction.completed ──────────────────────────────────
   const paddle = getPaddleClient();
   const isSandbox = getPaddleEnvironment() !== "production";
 
-  if (eventType === "transaction.completed") {
-    const data = event.data ?? {};
-    const customData = data.custom_data ?? {};
-    const slug: string | undefined = customData.product_slug;
-    const refCode: string | null = customData.ref_code || null;
-    const email: string = data.customer?.email ?? "unknown@checkout";
-    const customerName: string = data.customer?.name ?? email.split("@")[0] ?? "Valued Customer";
-    const value: number =
-      (data.details?.line_items?.[0]?.unit_price?.amount
-        ? parseInt(data.details.line_items[0].unit_price.amount) / 100
-        : 0);
+  if (eventType !== "transaction.completed") {
+    await markEventProcessed("paddle", eventId);
+    return NextResponse.json({ ok: true, ignored: eventType || "unknown" });
+  }
 
-    if (!transactionId || !slug) {
-      console.error("[paddle-webhook] Missing transaction ID or product slug", { transactionId, slug });
-      return NextResponse.json({ error: "Missing data" }, { status: 400 });
+  const data = event.data ?? {};
+  const customData = data.custom_data ?? {};
+  const slug: string | undefined = customData.product_slug;
+  const refCode: string | null = customData.ref_code || null;
+
+  if (!transactionId || !slug) {
+    console.error("[paddle-webhook] Missing transaction ID or product slug", { transactionId, slug });
+    return NextResponse.json({ error: "Missing data" }, { status: 400 });
+  }
+
+  const product = getProduct(slug);
+  if (!product) {
+    console.error(`[paddle-webhook] Unknown product: ${slug}`);
+    return NextResponse.json({ error: `Unknown product: ${slug}` }, { status: 400 });
+  }
+
+  // Paddle transaction webhooks normally carry customer_id, not an embedded
+  // customer email. Resolve the customer through Paddle before fulfillment.
+  let email: string = data.customer?.email ?? "";
+  let customerName: string = data.customer?.name ?? "";
+  const customerId: string | undefined = data.customer_id ?? data.customer?.id;
+
+  if ((!email || !customerName) && paddle && customerId) {
+    try {
+      const customer = await paddle.customers.get(customerId);
+      email = email || customer?.email || "";
+      customerName = customerName || customer?.name || "";
+    } catch (err) {
+      console.error("[paddle-webhook] Failed to resolve Paddle customer", String(err));
+      // Return 5xx so Paddle retries rather than acknowledging an order that
+      // cannot yet be delivered to a verified buyer address.
+      return NextResponse.json({ error: "Customer resolution failed" }, { status: 503 });
     }
+  }
 
-    const product = getProduct(slug);
-    if (!product) {
-      console.error(`[paddle-webhook] Unknown product: ${slug}`);
-      return NextResponse.json({ error: `Unknown product: ${slug}` }, { status: 400 });
-    }
+  if (!email || !email.includes("@")) {
+    console.error("[paddle-webhook] Missing valid buyer email", { transactionId, customerId });
+    return NextResponse.json({ error: "Buyer email unavailable" }, { status: 503 });
+  }
 
-    // ── 6a. Generate download token ────────────────────────────────────
-    const token = generateDownloadToken(slug, transactionId, email);
+  if (!customerName) customerName = email.split("@")[0] || "Valued Customer";
+  const value = parseAmountUsd(data);
 
-    // Store in persistent token store
+  // 1) Issue customer access token.
+  const token = generateDownloadToken(slug, transactionId, email);
+  try {
     await tokenStore.set(transactionId, {
       token,
       slug,
       email,
       exp: Date.now() + 48 * 60 * 60 * 1000,
     });
+  } catch (err) {
+    console.error("[paddle-webhook] token store failed:", err);
+    return NextResponse.json({ error: "Access issuance failed" }, { status: 503 });
+  }
 
-    console.log(JSON.stringify({
-      event: "paddle_webhook_token_issued",
-      transactionId,
-      slug,
-      email: email.replace(/(.{2}).*(@.*)/, "$1***$2"),
-      ref: refCode,
-      sandbox: isSandbox,
-    }));
+  console.log(JSON.stringify({
+    event: "paddle_webhook_token_issued",
+    transactionId,
+    slug,
+    email: email.replace(/(.{2}).*(@.*)/, "$1***$2"),
+    ref: refCode,
+    sandbox: isSandbox,
+  }));
 
-    // ── 6b. Fire CAPI Purchase event (non-blocking) ────────────────────
-    let capiFired = false;
-    if (!isSandbox) {
+  // 2) Analytics is useful but never allowed to block delivery.
+  let capiFired = false;
+  if (!isSandbox) {
+    try {
       const capiRes = await fireCapiEvent(
         {
           event_name: "Purchase",
@@ -191,44 +224,38 @@ export async function POST(req: NextRequest) {
         { req: { headers: req.headers }, source: "paddle_webhook" },
       );
       capiFired = capiRes.ok || capiRes.attempted;
-    }
-
-    // ── 6b-extra. Persist to durable income ledger (zero-gap evidence) ──
-    try {
-      const commission = refCode
-        ? (value * getCommissionRate(slug)) / 100
-        : 0;
-      await recordTransaction({
-        orderId: transactionId,
-        provider: "paddle",
-        slug,
-        email,
-        value,
-        currency: "USD",
-        refCode: refCode ?? null,
-        utm: { product_slug: slug },
-        capturedAt: Date.now(),
-        eventId,
-        commission,
-        capiFired,
-      });
     } catch (err) {
-      console.error("[paddle-webhook] ledger write failed:", err);
+      console.warn("[paddle-webhook] CAPI failed non-critically:", String(err));
     }
+  }
 
-    // ── 6c. Record affiliate commission (non-blocking) ─────────────────
-    if (refCode) {
-      recordWebhookCommission({
-        refCode,
-        orderId: transactionId,
-        productSlug: slug,
-        amount: value,
-        provider: "paddle",
-      });
-    }
+  // 3) Ledger evidence is critical. Never acknowledge a completed payment if
+  // the order cannot be written to the revenue source of truth.
+  const commission = refCode ? (value * getCommissionRate(slug)) / 100 : 0;
+  try {
+    await recordTransaction({
+      orderId: transactionId,
+      provider: "paddle",
+      slug,
+      email,
+      value,
+      currency: "USD",
+      refCode: refCode ?? null,
+      utm: { product_slug: slug },
+      capturedAt: Date.now(),
+      eventId,
+      commission,
+      capiFired,
+    });
+  } catch (err) {
+    console.error("[paddle-webhook] ledger write failed:", err);
+    return NextResponse.json({ error: "Ledger persistence failed" }, { status: 503 });
+  }
 
-    // ── 6d. Fulfillment: send confirmation email + social proof (non-blocking) ─
-    fulfillPurchase({
+  // 4) Fulfillment is critical. Await it so the retryable queue is created
+  // before the webhook is acknowledged.
+  try {
+    await fulfillPurchase({
       orderId: transactionId,
       provider: "paddle",
       email,
@@ -238,13 +265,38 @@ export async function POST(req: NextRequest) {
       value,
       downloadUrl: `${SITE_URL}/checkout-success?transaction_id=${transactionId}`,
     });
-
-    // ── 6e. Log purchase to FastAPI backend (non-blocking) ──────────────
-    logPurchaseToFastAPI(transactionId, slug, email, value, refCode);
-
-    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[paddle-webhook] fulfillment failed:", err);
+    return NextResponse.json({ error: "Fulfillment queue failed" }, { status: 503 });
   }
 
-  // Acknowledge other event types silently
+  // Non-critical post-commit effects.
+  if (refCode) {
+    try {
+      recordWebhookCommission({
+        refCode,
+        orderId: transactionId,
+        productSlug: slug,
+        amount: value,
+        provider: "paddle",
+      });
+    } catch (err) {
+      console.warn("[paddle-webhook] commission side effect failed:", String(err));
+    }
+  }
+  void logPurchaseToFastAPI(transactionId, slug, email, value, refCode);
+
+  // Mark complete only after access, ledger, and fulfillment are committed.
+  await markEventProcessed("paddle", eventId);
+
+  console.log(JSON.stringify({
+    event: "paddle_webhook_committed",
+    event_id: eventId,
+    transaction_id: transactionId,
+    slug,
+    value,
+    sandbox: isSandbox,
+  }));
+
   return NextResponse.json({ ok: true });
 }

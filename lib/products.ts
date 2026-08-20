@@ -1,15 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // PRODUCT CATALOG — AIKAGAN × AutonomaX
 //
-// Offer ladder (mirrors autonomax_revenue_ops/data/offer_ladder.json):
-//   lead_magnet (free) → tripwire ($29) → core ($149–$249) → premium ($299+) → recurring
-//
-// Checkout handled by Paddle Billing (/api/paddle-checkout).
-// zipFilename maps to private/downloads/<file> (not publicly accessible).
-//
-// Paddle (Merchant of Record) replaces Stripe — Stripe does not support
-// Turkish-registered merchants. Paddle handles global tax/VAT compliance
-// and pays out to Payoneer (already held).
+// Revenue rule: only offers with a verified automated fulfillment path may use
+// managed checkout. Human/custom work remains an intake/request flow until a
+// separate service contract and fulfillment process is active.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type ProductTier =
@@ -23,51 +17,31 @@ export type ProductTier =
 export interface Product {
   slug: string;
   name: string;
-  /** Human-readable tier label shown on cards */
   tier: string;
-  /** Machine-readable tier used for offer-ladder logic */
   ladderTier: ProductTier;
   price: number;
   originalPrice?: number;
   priceModel: "free" | "one_time" | "monthly";
   description: string;
   bullets: string[];
-  /** Paddle Checkout — set to "paddle" for paid products; null for free */
   checkoutUrl: string | null;
-  /** Filename inside private/downloads/ — null for lead magnets */
   zipFilename: string | null;
-  /** slug of the next-step upsell product */
   nextSlug: string | null;
   badge?: string;
   guarantee?: string;
   image?: string;
   accentColor?: string;
-  /** For lead magnets: public asset path to deliver on opt-in */
   leadMagnetPath?: string;
-  /** How fulfillment is handled after purchase */
   deliveryMode?: "download" | "service" | "hybrid";
-  /** Product-specific checkout-success and detail-page steps */
   deliverySteps?: string[];
-  /** Short positioning line for featured sales surfaces */
   positioning?: string;
-  /** Fulfillment SLA shown on product detail pages */
   fulfillmentWindow?: string;
 }
 
-// ── Paddle (Merchant of Record) ───────────────────────────────────────────
-// Replaces Stripe which does not support Turkish-registered merchants.
-// Paddle handles global tax/VAT compliance and pays out to Payoneer.
-// The client-side CheckoutButton/CheckoutLink calls /api/income/checkout
-// which always returns a working URL. The placeholder string is the
-// "use the income/checkout endpoint" sentinel — it intentionally does
-// not start with http so client-side decorate() doesn't try to parse it.
-// ───────────────────────────────────────────────────────────────────────────
-export const CHECKOUT_SENTINEL = "paddle"; // see CheckoutButton / CheckoutLink
+/** Managed checkout sentinel. Server routing chooses an approved provider. */
+export const CHECKOUT_SENTINEL = "paddle";
 
 export const products: Product[] = [
-  // ───────────────────────────────────────────────────────
-  // TIER 1 — Lead Magnets (free opt-in)
-  // ───────────────────────────────────────────────────────
   {
     slug: "weekly-operating-map",
     name: "Weekly Operating Map",
@@ -98,8 +72,8 @@ export const products: Product[] = [
     priceModel: "free",
     description: "10-step checklist for first-time builders: from idea to first sale, no overwhelm.",
     bullets: [
-      "10 sequential steps from idea to first \$1",
-      "No audience, no ads required",
+      "10 sequential steps from idea to first paid validation",
+      "No paid ads required to use the checklist",
       "Removes 'where do I even start' paralysis",
       "Instant digital delivery",
     ],
@@ -110,7 +84,6 @@ export const products: Product[] = [
     badge: "Free",
     accentColor: "#34d399",
   },
-  // Third free pack to fill row 1 — Golden Delivery Sample Kit (email-gated download)
   {
     slug: "golden-delivery-sample",
     name: "Golden Delivery — Sample Kit",
@@ -118,9 +91,9 @@ export const products: Product[] = [
     ladderTier: "lead_magnet",
     price: 0,
     priceModel: "free",
-    description: "Curated extract from the full Golden Delivery system. The exact first-sale blueprint, one offer template, and the 24-hour activation checklist — instant email delivery.",
+    description: "Curated extract from the full Golden Delivery system: a launch blueprint preview, one offer template, and a 24-hour activation checklist.",
     bullets: [
-      "7-Day First Sale Blueprint (preview chapter)",
+      "7-Day First Sale Blueprint preview chapter",
       "1 ready-to-use offer template",
       "24-Hour Quick Win activation checklist",
       "AutonomaX revenue map (1-page)",
@@ -133,9 +106,6 @@ export const products: Product[] = [
     badge: "Free Gift",
     accentColor: "#34d399",
   },
-  // ───────────────────────────────────────────────────────
-  // TIER 2 — Flagship conversion offer
-  // ───────────────────────────────────────────────────────
   {
     slug: "ai-venture-launch-blueprint",
     name: "AI Venture Launch Blueprint",
@@ -144,36 +114,31 @@ export const products: Product[] = [
     price: 99,
     originalPrice: 299,
     priceModel: "one_time",
-    description: "Submit an idea, niche, or dormant project and receive a practical venture launch blueprint: market opportunity, monetization path, business model, execution roadmap, investor memo, and automation opportunities.",
+    description: "Structured venture analysis for an idea, niche, or dormant project: market opportunity, monetization path, business model, execution roadmap, risk notes, and automation opportunities.",
     bullets: [
       "Executive summary and market opportunity snapshot",
       "Competitor and positioning analysis",
       "Monetization strategy and business model map",
-      "Launch roadmap with 14-day and 30-day execution phases",
-      "Investor memo and operational risk notes",
-      "Automation opportunities for Make.com, APIs, and AI workflows",
-      "Upgrade path into ProfitOS implementation or Commander operations",
+      "14-day and 30-day execution roadmap",
+      "Operational risk and assumption notes",
+      "Automation opportunities for workflows and APIs",
+      "Implementation options scoped separately after review",
     ],
-    checkoutUrl: CHECKOUT_SENTINEL,
+    checkoutUrl: "/contact?product=ai-venture-launch-blueprint",
     zipFilename: null,
     nextSlug: "masterclass-pro",
-    badge: "Best first revenue offer",
-    guarantee: "30-day delivery-confidence guarantee",
+    badge: "Request scope",
     accentColor: "#38bdf8",
     deliveryMode: "service",
-    fulfillmentWindow: "Delivered within 3 business days after intake",
-    positioning: "Highest-priority offer for converting founder intent into a paid operating plan.",
+    fulfillmentWindow: "Scope and delivery window confirmed before payment",
+    positioning: "A scoped analysis service; it is not placed into automated checkout until delivery terms are confirmed.",
     deliverySteps: [
-      "Checkout completes through the active payment rail.",
-      "Submit your idea, niche, and project context on the post-purchase intake form.",
-      "AutonomaX prepares the venture blueprint, monetization map, and launch roadmap.",
-      "Delivery arrives by email with the next recommended implementation or upgrade action.",
+      "Submit your idea, niche, and project context.",
+      "Receive confirmation of scope, deliverables, timing, and commercial terms.",
+      "Proceed only after the delivery commitment is explicit.",
+      "Completed work is delivered with a recommended next implementation action.",
     ],
   },
-  // ───────────────────────────────────────────────────────
-  // TIER 3 — AutonomaX Masterclass
-  // Each tier bundles its matching Golden Delivery ZIP as a bonus.
-  // ───────────────────────────────────────────────────────
   {
     slug: "masterclass-starter",
     name: "Starter",
@@ -182,14 +147,14 @@ export const products: Product[] = [
     price: 29,
     originalPrice: 97,
     priceModel: "one_time",
-    description: "The 7-day first-sale system — full AutonomaX framework, scripts, offer templates and the activation checklist. Includes the entire Golden Delivery — Starter Pack as a bonus.",
+    description: "A practical first-launch toolkit: execution framework, offer worksheet, response scripts, and activation checklist. Includes the Golden Delivery Starter Pack.",
     bullets: [
-      "Full 7-Day First Sale Blueprint (day-by-day execution map)",
-      "Offer Creation Worksheet (5-section fillable guide)",
-      "Objection Crusher Scripts (6 pre-written DM responses)",
-      "24-Hour Quick Win Activation Checklist",
-      "Masterclass-grade execution workbook",
-      "Bonus: full Golden Delivery — Starter Pack ZIP",
+      "7-Day First Launch Blueprint",
+      "Offer Creation Worksheet",
+      "Buyer-objection response scripts",
+      "24-Hour Activation Checklist",
+      "Execution workbook",
+      "Bonus: Golden Delivery — Starter Pack ZIP",
     ],
     checkoutUrl: CHECKOUT_SENTINEL,
     zipFilename: "AutonomaX_Masterclass_Starter_Pack_v2.zip",
@@ -207,15 +172,15 @@ export const products: Product[] = [
     price: 79,
     originalPrice: 297,
     priceModel: "one_time",
-    description: "Revenue operations deep-dives, AI tools stack, traffic playbook and 5 ready-to-sell offer templates — everything to hit $1K/month. Includes the Golden Delivery — Pro Pack.",
+    description: "A deeper revenue-operations toolkit for building and testing offers, funnels, traffic experiments, automation workflows, and a 30-day operating cadence. Includes the Golden Delivery Pro Pack.",
     bullets: [
-      "Funnel Master Guide (3 complete funnel architectures + copy)",
-      "AI Tools Stack (7 tools, exact prompts, $0–$76/mo setup)",
-      "Traffic Playbook (5 organic + 2 paid channels, post formulas)",
-      "30-Day Revenue Calendar (day-by-day tasks + KPI targets)",
-      "5 Complete Offer Templates (priced $27–$197)",
-      "6 Automation Workflow Templates",
-      "Bonus: full Golden Delivery — Pro Pack ZIP",
+      "Funnel Master Guide with 3 funnel architectures",
+      "AI tools stack with implementation prompts",
+      "Traffic playbook for organic and paid experiments",
+      "30-Day Revenue Operations Calendar",
+      "5 offer templates with editable positioning",
+      "6 automation workflow templates",
+      "Bonus: Golden Delivery — Pro Pack ZIP",
     ],
     checkoutUrl: CHECKOUT_SENTINEL,
     zipFilename: "AutonomaX_Masterclass_Pro_Pack_v2.zip",
@@ -233,20 +198,20 @@ export const products: Product[] = [
     price: 149,
     originalPrice: 597,
     priceModel: "one_time",
-    description: "The full empire architecture. White-label licensing, 60-day scale sprint, partnership playbook, automation OS, KPI dashboard and the $10K+/month revenue path models. Includes the Golden Delivery — Commander Pack.",
+    description: "The complete operating architecture: system map, licensing guide, 60-day scale sprint, partnership playbook, automation OS, and KPI dashboard. Includes the Golden Delivery Commander Pack.",
     bullets: [
-      "Master System Map (5-layer empire architecture + revenue models)",
-      "White-Label Guide (license & resell the system as your own)",
-      "60-Day Scale Sprint (week-by-week milestones + experiments)",
-      "Partnership Playbook (5 deal types, outreach templates, commission tables)",
-      "Automation OS (full stack map, cron schedules, failure prevention)",
-      "KPI Dashboard (4 metric tiers, diagnostics, red flags)",
-      "Bonus: full Golden Delivery — Commander Pack ZIP",
+      "Master System Map with operating and revenue-model patterns",
+      "White-label licensing guide and usage boundaries",
+      "60-Day Scale Sprint with milestones and experiments",
+      "Partnership Playbook with outreach templates",
+      "Automation OS with schedules and failure prevention",
+      "KPI Dashboard with diagnostics and red flags",
+      "Bonus: Golden Delivery — Commander Pack ZIP",
     ],
     checkoutUrl: CHECKOUT_SENTINEL,
     zipFilename: "AutonomaX_Masterclass_Commander_Pack_v2.zip",
     nextSlug: null,
-    badge: "Maximum value",
+    badge: "Maximum toolkit",
     guarantee: "30-day money-back guarantee",
     accentColor: "#a78bfa",
     deliveryMode: "download",
@@ -259,19 +224,20 @@ export const products: Product[] = [
     price: 29,
     originalPrice: 97,
     priceModel: "one_time",
-    description: "Focused review of your current stack, conversion leaks, and high-potential niches with structured recommendations.",
+    description: "Focused review of a current stack, conversion path, and monetization options with structured recommendations.",
     bullets: [
-      "Technical stack and CORS compliance audit",
-      "Conversion tracking and Meta CAPI check",
+      "Technical stack and integration audit",
+      "Conversion tracking review",
       "Ranked monetization opportunities",
-      "Bonus: full Golden Delivery — Starter Pack ZIP included",
+      "Written recommendations and next-action sequence",
     ],
-    checkoutUrl: CHECKOUT_SENTINEL,
-    zipFilename: "AutonomaX_Golden_Delivery_Starter_Pack.zip",
+    checkoutUrl: "/contact?product=revenue-audit-sprint",
+    zipFilename: null,
     nextSlug: "masterclass-pro",
-    badge: "Most popular starting point",
+    badge: "Request scope",
     accentColor: "#f59e0b",
     deliveryMode: "service",
+    fulfillmentWindow: "Scope and delivery window confirmed before payment",
   },
 ];
 

@@ -3,10 +3,9 @@
 import React, { useCallback, useState } from "react";
 import Link from "next/link";
 import { appendAttribution, trackCheckoutIntent } from "@/src/lib/attribution";
-import { hasGumroadProduct } from "@/lib/gumroad-products";
 
 interface CheckoutLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
-  /** Product slug — used to call POST /api/income/checkout */
+  /** Product checkout sentinel or a concrete hosted URL. */
   href?: string | null;
   productSlug: string;
   productName: string;
@@ -22,9 +21,10 @@ declare global {
 /**
  * Checkout Link — production checkout path.
  *
- * The public storefront only opens the managed checkout router when the product
- * has a concrete hosted provider mapping. Unmapped services are routed to an
- * availability request instead of producing a checkout error.
+ * Concrete hosted URLs are followed directly. The managed "paddle" sentinel
+ * calls /api/income/checkout, which evaluates every configured provider and
+ * returns a verified URL or an explicit blocked response. The client must not
+ * pre-block Paddle/Lemon/Shopier merely because Gumroad is unconfigured.
  */
 export default function CheckoutLink({
   href,
@@ -39,7 +39,6 @@ export default function CheckoutLink({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const isManagedCheckout = href === "paddle";
-  const hasVerifiedHostedCheckout = hasGumroadProduct(productSlug);
 
   const handleClick = useCallback(async (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -85,7 +84,7 @@ export default function CheckoutLink({
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: "Unknown error" }));
         console.error("Checkout error:", error.error);
-        if (response.status === 502 || error?.error === "checkout_unavailable") {
+        if (response.status === 502 || response.status === 503 || error?.error === "checkout_unavailable") {
           showCheckoutError(error?.detail ?? "Payment is temporarily unavailable. Please try again in a moment.");
           return;
         }
@@ -128,19 +127,6 @@ export default function CheckoutLink({
     }
     setErrorMessage(message);
     setLoading(false);
-  }
-
-  if (isManagedCheckout && !hasVerifiedHostedCheckout) {
-    return (
-      <Link
-        href={`/contact?product=${encodeURIComponent(productSlug)}`}
-        className={rest.className}
-        style={rest.style}
-        data-product-slug={productSlug}
-      >
-        Request availability
-      </Link>
-    );
   }
 
   if (!isManagedCheckout && href) {

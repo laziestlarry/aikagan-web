@@ -1,14 +1,13 @@
 /**
- * Webhook idempotency — ensures each provider event is processed at most once.
+ * Webhook idempotency — tracks provider events after successful processing.
  *
- * Paddle and LemonSqueezy both retry webhooks on non-2xx. Without dedup, a
- * retried webhook can:
- *   - Send the customer a duplicate "Order confirmed" email
- *   - Double-count an affiliate commission
- *   - Re-trigger the CAPI Purchase event (skewed attribution)
+ * Provider retries must remain retryable until the critical order path has
+ * completed. Marking an event before ledger/fulfillment work finishes can turn
+ * a transient failure into a permanently paid-but-unfulfilled order.
  *
- * Storage: in-memory Set (fast) + Vercel KV (durable). Event IDs are kept
- * for 7 days, which is longer than any reasonable provider retry window.
+ * Storage: in-memory Map (fast) + Vercel KV (durable when configured). Event
+ * IDs are kept for 7 days, which is longer than the normal provider retry
+ * window.
  */
 
 const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -25,7 +24,7 @@ async function getKv() {
       _kv = kv;
     }
   } catch {
-    // ignore
+    // ignore — callers still have in-memory protection
   }
   return _kv;
 }
@@ -44,40 +43,56 @@ if (typeof setInterval !== "undefined") {
   }
 }
 
-/** Check if an event has already been seen. Records it on first call. */
-export async function markEventIfNew(provider: string, eventId: string): Promise<boolean> {
-  if (!eventId) return true; // No event id — can't dedup, allow through
+/** Read-only duplicate check. Does not consume the provider retry. */
+export async function hasProcessedEvent(provider: string, eventId: string): Promise<boolean> {
+  if (!eventId) return false;
   const key = `${provider}:${eventId}`;
   const now = Date.now();
 
-  // In-memory check (fast path)
   const exp = _seen.get(key);
-  if (exp && now < exp) {
-    return false; // already seen
-  }
+  if (exp && now < exp) return true;
 
-  // Try KV for cross-instance dedup
   const kv = await getKv();
   if (kv) {
     try {
       const stored = (await kv.get(`webhook:${key}`)) as string | null;
       if (stored) {
         _seen.set(key, now + TTL_MS);
-        return false;
+        return true;
       }
     } catch {
-      // fall through — allow and mark
+      // A failed dedup lookup must not block a legitimate provider retry.
     }
   }
+  return false;
+}
 
-  // First time we see this event
+/** Persist completion only after the caller's critical processing succeeds. */
+export async function markEventProcessed(provider: string, eventId: string): Promise<void> {
+  if (!eventId) return;
+  const key = `${provider}:${eventId}`;
+  const now = Date.now();
+
   _seen.set(key, now + TTL_MS);
+  const kv = await getKv();
   if (kv) {
     try {
       await kv.set(`webhook:${key}`, "1", { ex: TTL_MS / 1000 });
     } catch {
-      // Non-blocking — in-memory dedup still protects
+      // In-memory dedup still protects this warm instance. Provider-side
+      // transaction IDs and downstream ledgers provide the second guard.
     }
   }
+}
+
+/**
+ * Backwards-compatible check-and-mark helper used by older webhook handlers.
+ * New revenue-critical handlers should call hasProcessedEvent() first and
+ * markEventProcessed() only after durable ledger + fulfillment work succeeds.
+ */
+export async function markEventIfNew(provider: string, eventId: string): Promise<boolean> {
+  if (!eventId) return true;
+  if (await hasProcessedEvent(provider, eventId)) return false;
+  await markEventProcessed(provider, eventId);
   return true;
 }
