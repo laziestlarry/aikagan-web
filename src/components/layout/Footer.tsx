@@ -7,7 +7,6 @@ export default function Footer() {
     <footer className="border-t border-kagan-border/60 bg-kagan-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-3">
               <Zap className="h-5 w-5 text-kagan-gold" />
@@ -18,7 +17,6 @@ export default function Footer() {
             <p className="text-sm text-kagan-muted leading-relaxed">{SITE.description}</p>
           </div>
 
-          {/* Navigation */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">
               Navigate
@@ -37,24 +35,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Systems */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">
               Systems
             </h4>
             <ul className="space-y-2">
-              <li>
-                <span className="text-sm text-kagan-light">AutonomaX</span>
-              </li>
-              <li>
-                <span className="text-sm text-kagan-light">ProPulse</span>
-              </li>
-              <li>
-                <span className="text-sm text-kagan-light">Golden Delivery</span>
-              </li>
-              <li>
-                <span className="text-sm text-kagan-light">Kaganate Council</span>
-              </li>
+              <li><span className="text-sm text-kagan-light">AutonomaX</span></li>
+              <li><span className="text-sm text-kagan-light">ProPulse</span></li>
+              <li><span className="text-sm text-kagan-light">Golden Delivery</span></li>
+              <li><span className="text-sm text-kagan-light">Kaganate Council</span></li>
               <li>
                 <a
                   href={SITE.appUrl}
@@ -68,7 +57,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Action */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">
               Start
@@ -85,26 +73,17 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <Link
-                  href="/products/"
-                  className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium"
-                >
+                <Link href="/products/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
                   Browse All Packs →
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/products/"
-                  className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium"
-                >
+                <Link href="/products/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
                   View Offers →
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/products/"
-                  className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium"
-                >
+                <Link href="/products/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
                   View All Products →
                 </Link>
               </li>
@@ -115,22 +94,12 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href={SOCIAL.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-kagan-light hover:text-kagan-gold transition-colors"
-                >
+                <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">
                   Facebook →
                 </a>
               </li>
               <li>
-                <a
-                  href={SOCIAL.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-kagan-light hover:text-kagan-gold transition-colors"
-                >
+                <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">
                   Instagram →
                 </a>
               </li>
@@ -142,20 +111,14 @@ export default function Footer() {
           <div className="text-xs text-kagan-muted space-y-1 text-center sm:text-left">
             <p>© {SITE.year} {SITE.name}. All rights reserved. Built for operators.</p>
             <p className="opacity-80">
-              AIKAGAN / ProPulse Group. Payments are securely processed by Paddle, our Merchant of Record. 
+              AIKAGAN / ProPulse Group. Paid offers are routed only through the verified provider available for the selected product.{' '}
               Support contact: <a href="mailto:hello@aikagan.com" className="text-kagan-gold hover:underline">hello@aikagan.com</a>.
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/legal/privacy/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/legal/terms/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
-              Terms
-            </Link>
-            <Link href="/legal/refund/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">
-              Refund Policy
-            </Link>
+            <Link href="/legal/privacy/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Privacy Policy</Link>
+            <Link href="/legal/terms/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Terms</Link>
+            <Link href="/legal/refund/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Refund Policy</Link>
           </div>
         </div>
       </div>
