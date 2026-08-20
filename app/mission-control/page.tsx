@@ -66,7 +66,7 @@ export default function MissionControlPage() {
                 </>
               );
 
-              return step.external ? (
+              return 'external' in step && step.external ? (
                 <a key={step.n} href={step.href} className="relative flex min-h-48 flex-col rounded-xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-4 transition hover:border-kagan-gold/55">
                   {body}
                 </a>
