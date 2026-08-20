@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProduct } from "@/lib/products";
+import { CHECKOUT_SENTINEL, getProduct } from "@/lib/products";
 import { recordIntent, type IntentRecord } from "@/lib/income-ledger";
 import { getPaddleClient } from "@/lib/paddle-client";
 import { tokenStore } from "@/lib/token-store";
@@ -45,18 +45,30 @@ function manualFallbackUrl(req: NextRequest, slug: string, intentId: string): st
   return url.toString();
 }
 
+function lemonMerchantApproved(): boolean {
+  return (
+    process.env.LEMONSQUEEZY_MERCHANT_APPROVED === "true" &&
+    process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true"
+  );
+}
+
 const CATALOG_PRICE_IDS: Record<string, string> = {
   "masterclass-starter": "pri_01kx0rg4hmnpbdpsnx3d7j8h5q",
   "masterclass-pro": "pri_01kx0rg4q1ed110tw5cc4xqfs3",
   "masterclass-commander": "pri_01kx0rg4w962z7vmn53c8pq7n3",
 };
 
-async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRecord, requestHostname?: string): Promise<CheckoutResult | null> {
+async function tryPaddle(
+  req: NextRequest,
+  body: CheckoutBody,
+  intent: IntentRecord,
+  requestHostname?: string,
+): Promise<CheckoutResult | null> {
   if (process.env.PADDLE_CHECKOUT_DISABLED === "true") return null;
   const paddle = getPaddleClient();
   if (!paddle) return null;
   const product = getProduct(body.slug);
-  if (!product || !product.price) return null;
+  if (!product || !product.price || product.checkoutUrl !== CHECKOUT_SENTINEL) return null;
 
   try {
     const priceInfo = resolveCouponPrice(body.slug, body.coupon);
@@ -71,19 +83,21 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
     const priceId = CATALOG_PRICE_IDS[body.slug];
     const tx = priceInfo.applied || !priceId
       ? await paddle.transactions.create({
-          items: [{
-            quantity: 1,
-            price: {
-              description: product.description,
-              name: `${product.tier} — ${product.name}${priceInfo.applied ? " (TEST $1)" : ""}`,
-              unitPrice: { amount: String(priceInfo.effectivePriceCents), currencyCode: "USD" },
-              product: {
-                name: `${product.tier} — ${product.name}${priceInfo.applied ? " (TEST $1)" : ""}`,
-                taxCategory: "saas",
+          items: [
+            {
+              quantity: 1,
+              price: {
                 description: product.description,
+                name: `${product.tier} — ${product.name}${priceInfo.applied ? " (TEST $1)" : ""}`,
+                unitPrice: { amount: String(priceInfo.effectivePriceCents), currencyCode: "USD" },
+                product: {
+                  name: `${product.tier} — ${product.name}${priceInfo.applied ? " (TEST $1)" : ""}`,
+                  taxCategory: "saas",
+                  description: product.description,
+                },
               },
             },
-          }],
+          ],
           customData,
         })
       : await paddle.transactions.create({ items: [{ quantity: 1, priceId }], customData });
@@ -98,7 +112,7 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
     }
 
     const base = process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL ||
-      (requestHostname === "aikagan.com" ? "https://app.aikagan.com" : req.nextUrl.origin);
+      (requestHostname === "app.aikagan.com" ? "https://app.aikagan.com" : req.nextUrl.origin);
     return {
       provider: "paddle",
       url: tx.id
@@ -112,7 +126,13 @@ async function tryPaddle(req: NextRequest, body: CheckoutBody, intent: IntentRec
   }
 }
 
-async function tryLemonSqueezy(req: NextRequest, body: CheckoutBody, intent: IntentRecord): Promise<CheckoutResult | null> {
+async function tryLemonSqueezy(
+  req: NextRequest,
+  body: CheckoutBody,
+  intent: IntentRecord,
+): Promise<CheckoutResult | null> {
+  if (!lemonMerchantApproved()) return null;
+
   const apiKey = process.env.LEMONSQUEEZY_API_KEY;
   const storeId = process.env.LEMONSQUEEZY_STORE_ID;
   const variantId = process.env[`LEMONSQUEEZY_VARIANT_${body.slug.replace(/-/g, "_").toUpperCase()}`];
@@ -202,18 +222,21 @@ async function tryGumroad(req: NextRequest, body: CheckoutBody): Promise<Checkou
   };
 }
 
-async function getUsdToTryRate(): Promise<number> {
+async function getUsdToTryRate(): Promise<number | null> {
   try {
-    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const res = await fetch("https://open.er-api.com/v6/latest/USD", {
+      signal: AbortSignal.timeout(5000),
+      cache: "no-store",
+    });
     if (res.ok) {
       const data = await res.json();
       const rate = data.rates?.TRY;
-      if (typeof rate === "number" && rate > 0) return rate;
+      if (typeof rate === "number" && Number.isFinite(rate) && rate > 0) return rate;
     }
   } catch (e) {
     console.error("[currency-converter] Failed to fetch USD/TRY exchange rate", e);
   }
-  return 34.2;
+  return null;
 }
 
 function getProductImageUrl(slug: string): string {
@@ -227,31 +250,35 @@ async function tryShopier(body: CheckoutBody): Promise<CheckoutResult | null> {
   const pat = process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT;
   const product = getProduct(body.slug);
 
-  if (pat && product?.price) {
+  if (pat && product?.price && product.checkoutUrl === CHECKOUT_SENTINEL) {
     try {
-      const platformOrderId = `sp_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
-      await tokenStore.set(platformOrderId, {
-        token: null,
-        slug: body.slug,
-        email: body.email ?? null,
-        exp: Date.now() + 48 * 60 * 60 * 1000,
-      });
       const usdRate = await getUsdToTryRate();
-      const tryPrice = Math.round(product.price * usdRate);
+      if (usdRate !== null) {
+        const platformOrderId = `sp_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+        await tokenStore.set(platformOrderId, {
+          token: null,
+          slug: body.slug,
+          email: body.email ?? null,
+          exp: Date.now() + 48 * 60 * 60 * 1000,
+        });
+        const tryPrice = Math.round(product.price * usdRate);
 
-      const result = await new ShopierPaymentFlow({ api: { pat } }).create({
-        title: product.name,
-        amount: tryPrice,
-        currency: "TRY",
-        orderId: platformOrderId,
-        imageUrl: getProductImageUrl(body.slug),
-      });
-      if (result?.paymentUrl) {
-        return {
-          provider: "shopier",
-          url: result.paymentUrl,
-          transactionId: result.productId || platformOrderId,
-        };
+        const result = await new ShopierPaymentFlow({ api: { pat } }).create({
+          title: product.name,
+          amount: tryPrice,
+          currency: "TRY",
+          orderId: platformOrderId,
+          imageUrl: getProductImageUrl(body.slug),
+        });
+        if (result?.paymentUrl) {
+          return {
+            provider: "shopier",
+            url: result.paymentUrl,
+            transactionId: result.productId || platformOrderId,
+          };
+        }
+      } else {
+        console.error("[income-checkout] Shopier dynamic checkout disabled: live USD/TRY rate unavailable");
       }
     } catch (error) {
       console.error("[income-checkout] Shopier API creation failed", String(error));
@@ -259,17 +286,37 @@ async function tryShopier(body: CheckoutBody): Promise<CheckoutResult | null> {
   }
 
   const suffix = body.slug.replace(/-/g, "_").toUpperCase();
-  const variantUrl = process.env[`SHOPIER_PRODUCT_URL_${suffix}`] || process.env[`AUTONOMAX_SHOPIER_PRODUCT_URL_${suffix}`];
-  return variantUrl
+  const variantUrl =
+    process.env[`SHOPIER_PRODUCT_URL_${suffix}`] ||
+    process.env[`AUTONOMAX_SHOPIER_PRODUCT_URL_${suffix}`];
+  return variantUrl && product?.checkoutUrl === CHECKOUT_SENTINEL
     ? { provider: "shopier", url: variantUrl, transactionId: `sp-hosted-${Date.now()}` }
     : null;
 }
 
-async function createCheckoutSession(req: NextRequest, body: CheckoutBody): Promise<{ status: number; data: any }> {
+async function createCheckoutSession(
+  req: NextRequest,
+  body: CheckoutBody,
+): Promise<{ status: number; data: any }> {
   const product = getProduct(body.slug);
   if (!product) return { status: 404, data: { error: `Unknown product: ${body.slug}` } };
   if (!product.price || product.priceModel === "free") {
     return { status: 400, data: { error: "Free products do not need checkout" } };
+  }
+
+  if (product.checkoutUrl !== CHECKOUT_SENTINEL) {
+    return {
+      status: 409,
+      data: {
+        ok: false,
+        error: "checkout_not_enabled_for_offer",
+        detail: "This offer requires scope and delivery confirmation before payment.",
+        requestUrl:
+          product.checkoutUrl && product.checkoutUrl.startsWith("/")
+            ? product.checkoutUrl
+            : `/contact?product=${encodeURIComponent(body.slug)}`,
+      },
+    };
   }
 
   const sessionId = body.sessionId || newSessionId();
@@ -293,30 +340,24 @@ async function createCheckoutSession(req: NextRequest, body: CheckoutBody): Prom
   const host = req.headers.get("host") || "";
   const hostname = host.split(":")[0].toLowerCase();
   const isApprovedPaddleSurface =
-    hostname === "aikagan.com" ||
     hostname === "app.aikagan.com" ||
     hostname === "propulse-autonomax.web.app" ||
     hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
     hostname === "localhost" ||
     hostname === "127.0.0.1";
 
-  if (body.provider === "paddle") result = isApprovedPaddleSurface ? await tryPaddle(req, body, intent, hostname) : null;
-  else if (body.provider === "gumroad") result = await tryGumroad(req, body);
-  else if (body.provider === "shopier") result = await tryShopier(body);
-  else if (body.provider === "lemonsqueezy") result = await tryLemonSqueezy(req, body, intent);
-  else {
+  if (body.provider === "paddle") {
+    result = isApprovedPaddleSurface ? await tryPaddle(req, body, intent, hostname) : null;
+  } else if (body.provider === "gumroad") {
+    result = await tryGumroad(req, body);
+  } else if (body.provider === "shopier") {
+    result = await tryShopier(body);
+  } else if (body.provider === "lemonsqueezy") {
+    result = await tryLemonSqueezy(req, body, intent);
+  } else {
     if (isApprovedPaddleSurface) result = await tryPaddle(req, body, intent, hostname);
-    if (!result) {
-      if (hostname === "aikagan.com") {
-        result = await tryGumroad(req, body);
-        if (!result) result = await tryLemonSqueezy(req, body, intent);
-        if (!result) result = await tryShopier(body);
-      } else {
-        result = await tryLemonSqueezy(req, body, intent);
-        if (!result) result = await tryGumroad(req, body);
-        if (!result) result = await tryShopier(body);
-      }
-    }
+    if (!result) result = await tryGumroad(req, body);
+    if (!result) result = await tryShopier(body);
   }
 
   if (result) {
@@ -368,7 +409,8 @@ export async function GET(req: NextRequest) {
       utm_content: req.nextUrl.searchParams.get("utm_content"),
       country: req.nextUrl.searchParams.get("country"),
       email: req.nextUrl.searchParams.get("email"),
-      sessionId: req.nextUrl.searchParams.get("sessionId") || req.nextUrl.searchParams.get("session_id"),
+      sessionId:
+        req.nextUrl.searchParams.get("sessionId") || req.nextUrl.searchParams.get("session_id"),
       coupon: req.nextUrl.searchParams.get("coupon"),
     };
     const result = await createCheckoutSession(req, body);
@@ -379,10 +421,20 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     providers: {
-      paddle: Boolean(process.env.PADDLE_API_KEY && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN),
+      paddle: Boolean(
+        process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
+          process.env.PADDLE_API_KEY &&
+          process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
+          process.env.PADDLE_WEBHOOK_SECRET,
+      ),
       gumroad: isGumroadApiConfigured(),
       shopier: Boolean(process.env.SHOPIER_PAT || process.env.AUTONOMAX_SHOPIER_PAT),
-      lemonsqueezy: Boolean(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID),
+      lemonsqueezy: Boolean(
+        lemonMerchantApproved() &&
+          process.env.LEMONSQUEEZY_API_KEY &&
+          process.env.LEMONSQUEEZY_STORE_ID &&
+          process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
+      ),
     },
   });
 }

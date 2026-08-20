@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPaidProducts } from "@/lib/products";
+import { CHECKOUT_SENTINEL, getPaidProducts } from "@/lib/products";
 import { GUMROAD_PRODUCTS } from "@/lib/gumroad-products";
 
 export const runtime = "nodejs";
@@ -27,23 +27,24 @@ function any(...keys: string[]): boolean {
 }
 
 export async function GET() {
-  const paidProducts = getPaidProducts();
-  const hasLemonVariant = paidProducts.some((product) =>
+  const managedProducts = getPaidProducts().filter((product) => product.checkoutUrl === CHECKOUT_SENTINEL);
+  const hasLemonVariant = managedProducts.some((product) =>
     configured(`LEMONSQUEEZY_VARIANT_${product.slug.replace(/-/g, "_").toUpperCase()}`),
   );
+  const lemonMerchantApproved = process.env.LEMONSQUEEZY_MERCHANT_APPROVED === "true";
 
   const providers = {
     gumroad: {
       ready: configured("GUMROAD_ACCESS_TOKEN"),
       mappedProducts: Object.keys(GUMROAD_PRODUCTS),
-      note: "The access token is used to confirm the sale subscription and verify every Ping before fulfillment.",
+      note: "The access token is used to confirm the sale subscription and verify every provider event before fulfillment.",
     },
     shopier: {
       ready:
         any("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
         any("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
         any("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
-      note: "PAT is required for product-specific dynamic checkout. Generic storefront redirects are not considered ready.",
+      note: "PAT plus callback credentials are required for product-specific checkout and verified fulfillment.",
     },
     paddle: {
       ready:
@@ -51,17 +52,23 @@ export async function GET() {
         configured("PADDLE_API_KEY") &&
         configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
         configured("PADDLE_WEBHOOK_SECRET"),
-      approvedSurface: "app.aikagan.com or propulse-autonomax.web.app",
-      note: "Paddle is not treated as the default rail on aikagan.com.",
+      approvedSurfaces: [
+        "app.aikagan.com",
+        "propulse-autonomax.web.app",
+        "autonomax-revenue-lenljbhrqq-uc.a.run.app",
+      ],
+      note: "Paddle may be used only on an approved surface. aikagan.com and checkout.aikagan.com are not treated as approved Paddle surfaces.",
     },
     lemonsqueezy: {
       ready:
+        lemonMerchantApproved &&
         process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" &&
         configured("LEMONSQUEEZY_API_KEY") &&
         configured("LEMONSQUEEZY_STORE_ID") &&
         configured("LEMONSQUEEZY_WEBHOOK_SECRET") &&
         hasLemonVariant,
-      note: "Explicit enablement is required after merchant approval.",
+      merchantApproved: lemonMerchantApproved,
+      note: "Disabled unless a future merchant approval is explicitly recorded. Existing credentials alone never imply approval.",
     },
   };
 
@@ -85,15 +92,15 @@ export async function GET() {
       required: true,
       status: any("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL") ? "set" : "missing",
       where: "Vercel → aikagan-web → Settings → Environment Variables",
-      how: "Use the active Make Purchase Delivery Router or Customer Success Router webhook URL.",
-      notes: "This is the delivery-email handoff. KV preserves the job but does not send customer email by itself.",
+      how: "Use the active purchase-delivery or customer-success webhook URL.",
+      notes: "This is the customer-delivery handoff. KV preserves retry state but does not send customer email by itself.",
     },
     {
       key: "At least one complete checkout provider",
       required: true,
       status: Object.values(providers).some((provider) => provider.ready) ? "set" : "missing",
-      where: "Gumroad, Shopier, Paddle, or Lemon Squeezy plus Vercel variables",
-      how: "For aikagan.com, use API-verified Gumroad or product-specific Shopier. Paddle is restricted to approved surfaces.",
+      where: "Gumroad, Shopier, Paddle, or a future approved processor plus Vercel variables",
+      how: "Use API-verified Gumroad or Shopier on the root storefront. Use Paddle only on an approved Paddle surface with the complete credential set.",
     },
     {
       key: "NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_GA_MEASUREMENT_ID",
@@ -124,11 +131,15 @@ export async function GET() {
         missing_required: missingRequired.length,
         ready,
       },
+      catalog: {
+        managedCheckoutCount: managedProducts.length,
+        managedCheckoutSlugs: managedProducts.map((product) => product.slug),
+      },
       providers,
       required_now: missingRequired,
       all: entries,
       next_step: ready
-        ? "Open /api/ops/status to confirm the Gumroad sale subscription, then execute one low-value real purchase and verify provider event, ledger, email, and secure download."
+        ? "Confirm /api/ops/status on the customer-facing host, then execute one independent real purchase and verify provider event, ledger, delivery, secure access, and payout review."
         : "Set the missing required configuration, redeploy, and re-check /api/ops/status. Do not claim live fulfillment while blocked.",
     },
     { status: ready ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0" } },
