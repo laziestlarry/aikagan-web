@@ -1,8 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Gumroad Product Mappings
 //
-// Maps aikagan product slugs to Gumroad product permalinks/URLs.
-// Products created under nomadauto.gumroad.com.
+// Maps only automated digital-download offers to concrete Gumroad products.
+// Scoped/custom services are intentionally excluded so no alternate code path
+// can accidentally sell them through a mismatched digital-product checkout.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface GumroadProduct {
@@ -34,18 +35,6 @@ export const GUMROAD_PRODUCTS: Record<string, GumroadProduct> = {
     permalink: "autonomax-commander-149",
     url: "https://nomadauto.gumroad.com/l/autonomax-commander-149",
     priceCents: 14900,
-  },
-  "revenue-audit-sprint": {
-    id: "J59rJByCCyKKEfDouQjTDw==",
-    permalink: "autonomax-starter-29",
-    url: "https://nomadauto.gumroad.com/l/autonomax-starter-29",
-    priceCents: 2900,
-  },
-  "ai-venture-launch-blueprint": {
-    id: "1BzBT7MJ_yBSJ1d9W9OrjA==",
-    permalink: "autonomax-pro-79",
-    url: "https://nomadauto.gumroad.com/l/autonomax-pro-79",
-    priceCents: 9900,
   },
 };
 
