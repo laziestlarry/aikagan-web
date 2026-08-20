@@ -204,22 +204,27 @@ async function tryGumroad(req: NextRequest, body: CheckoutBody): Promise<Checkou
   const gumroadProduct = getGumroadProduct(body.slug);
   if (!gumroadProduct || !isGumroadApiConfigured()) return null;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
-  const postUrl = new URL("/api/webhooks/gumroad", siteUrl).toString();
-  const subscription = await ensureGumroadSaleSubscription(postUrl);
-  if (!subscription.ready) {
-    console.error("[income-checkout] Gumroad sale subscription is not ready", subscription.detail);
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+    const postUrl = new URL("/api/webhooks/gumroad", siteUrl).toString();
+    const subscription = await ensureGumroadSaleSubscription(postUrl);
+    if (!subscription.ready) {
+      console.error("[income-checkout] Gumroad sale subscription is not ready", subscription.detail);
+      return null;
+    }
+
+    const url = new URL(gumroadProduct.url);
+    if (body.ref) url.searchParams.set("ref", body.ref);
+    if (body.coupon) url.searchParams.set("coupon", body.coupon);
+    return {
+      provider: "gumroad",
+      url: url.toString(),
+      transactionId: gumroadProduct.id,
+    };
+  } catch (error) {
+    console.error("[income-checkout] Gumroad readiness/checkout failed", String(error));
     return null;
   }
-
-  const url = new URL(gumroadProduct.url);
-  if (body.ref) url.searchParams.set("ref", body.ref);
-  if (body.coupon) url.searchParams.set("coupon", body.coupon);
-  return {
-    provider: "gumroad",
-    url: url.toString(),
-    transactionId: gumroadProduct.id,
-  };
 }
 
 async function getUsdToTryRate(): Promise<number | null> {
