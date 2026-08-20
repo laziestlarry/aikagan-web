@@ -96,7 +96,7 @@ export default function DashboardPage() {
                 </>
               );
 
-              return action.external ? (
+              return 'external' in action && action.external ? (
                 <a
                   key={action.title}
                   href={action.href}
