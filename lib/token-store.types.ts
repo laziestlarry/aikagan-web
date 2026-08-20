@@ -1,5 +1,5 @@
 export interface TokenRecord {
-  token: string;
+  token: string | null;
   slug: string;
   email: string;
   exp: number; // epoch ms
