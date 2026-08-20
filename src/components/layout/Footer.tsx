@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import { Zap, ExternalLink } from 'lucide-react';
-import { SITE, NAV_LINKS, SOCIAL } from '@/lib/constants';
+import { SITE, SOCIAL } from '@/lib/constants';
+
+const PUBLIC_LINKS = [
+  { label: 'Home', href: `${SITE.url}/` },
+  { label: 'Products', href: `${SITE.url}/products/` },
+  { label: 'Services', href: `${SITE.url}/services/` },
+  { label: 'About', href: `${SITE.url}/about/` },
+  { label: 'Contact', href: `${SITE.url}/contact/` },
+] as const;
 
 export default function Footer() {
   return (
@@ -8,101 +16,68 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-3">
+            <a href={SITE.url} className="flex items-center gap-2 mb-3">
               <Zap className="h-5 w-5 text-kagan-gold" />
               <span className="text-lg font-bold tracking-tight text-kagan-white">
                 Autonoma<span className="text-kagan-gold">X</span>
               </span>
-            </Link>
+            </a>
             <p className="text-sm text-kagan-muted leading-relaxed">{SITE.description}</p>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">
-              Navigate
-            </h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">Explore</h4>
             <ul className="space-y-2">
-              {NAV_LINKS.map((link) => (
+              {PUBLIC_LINKS.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-kagan-light hover:text-kagan-gold transition-colors"
-                  >
+                  <a href={link.href} className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">
                     {link.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">
-              Systems
-            </h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">Product</h4>
             <ul className="space-y-2">
-              <li><span className="text-sm text-kagan-light">AutonomaX</span></li>
-              <li><span className="text-sm text-kagan-light">ProPulse</span></li>
-              <li><span className="text-sm text-kagan-light">Golden Delivery</span></li>
-              <li><span className="text-sm text-kagan-light">Kaganate Council</span></li>
               <li>
-                <a
-                  href={SITE.appUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold transition-colors font-medium"
-                >
-                  App <ExternalLink className="h-3 w-3" />
+                <a href={`${SITE.appUrl}/dashboard/`} className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold transition-colors font-medium">
+                  Customer Workspace <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
+              <li>
+                <a href={`${SITE.appUrl}/autonomax/`} className="inline-flex items-center gap-1 text-sm text-kagan-light hover:text-kagan-gold transition-colors">
+                  AutonomaX Control Plane <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
+              <li>
+                <a href={`${SITE.url}/mission-control/`} className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">
+                  System Status & Customer Journey
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">
-              Start
-            </h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mb-4">Start</h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href={SITE.appUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-kagan-amber hover:text-kagan-gold-light transition-colors font-medium"
-                >
-                  Open App <ExternalLink className="h-3 w-3" />
+                <a href={`${SITE.url}/products/`} className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
+                  Explore Products →
                 </a>
               </li>
               <li>
-                <Link href="/products/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
-                  Browse All Packs →
-                </Link>
-              </li>
-              <li>
-                <Link href="/products/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
-                  View Offers →
-                </Link>
-              </li>
-              <li>
-                <Link href="/products/" className="text-sm text-kagan-gold hover:text-kagan-gold-light transition-colors font-medium">
-                  View All Products →
-                </Link>
+                <a href={`${SITE.appUrl}/dashboard/`} className="text-sm text-kagan-amber hover:text-kagan-gold-light transition-colors font-medium">
+                  Open App →
+                </a>
               </li>
             </ul>
 
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mt-8 mb-4">
-              Follow
-            </h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-kagan-muted mt-8 mb-4">Follow</h4>
             <ul className="space-y-2">
-              <li>
-                <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">
-                  Facebook →
-                </a>
-              </li>
-              <li>
-                <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">
-                  Instagram →
-                </a>
-              </li>
+              <li><a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">Facebook →</a></li>
+              <li><a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-kagan-light hover:text-kagan-gold transition-colors">Instagram →</a></li>
             </ul>
           </div>
         </div>
@@ -116,9 +91,9 @@ export default function Footer() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/legal/privacy/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Privacy Policy</Link>
-            <Link href="/legal/terms/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Terms</Link>
-            <Link href="/legal/refund/" className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Refund Policy</Link>
+            <Link href={`${SITE.url}/legal/privacy/`} className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Privacy Policy</Link>
+            <Link href={`${SITE.url}/legal/terms/`} className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Terms</Link>
+            <Link href={`${SITE.url}/legal/refund/`} className="text-xs text-kagan-muted hover:text-kagan-light transition-colors">Refund Policy</Link>
           </div>
         </div>
       </div>
