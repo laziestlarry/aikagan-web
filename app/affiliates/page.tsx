@@ -6,7 +6,7 @@ import AffiliateDashboard from "./AffiliateDashboard";
 export const metadata: Metadata = buildMetadata({
   title: "Affiliate Program",
   description:
-    "Join the AutonomaX affiliate program — earn 20–30% commission by promoting our digital toolkits (PDF templates, scripts, checklists) to your audience.",
+    "Join the AutonomaX affiliate program — earn 20–30% commission on verified sales you refer to our digital toolkits.",
   path: "/affiliates/",
 });
 
@@ -14,14 +14,13 @@ export default function AffiliatesPage() {
   return (
     <Section variant="hero">
       <div className="mx-auto max-w-4xl">
-        {/* ── Hero ──────────────────────────────────────────────────────── */}
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
             Affiliate <span className="text-gradient">Program</span>
           </h1>
           <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Earn 20–30% commission on every sale you refer. Promote downloadable
-            digital toolkits — no inventory, no support tickets, no limits.
+            Earn 20–30% commission on verified sales you refer. Promote downloadable
+            digital toolkits with a unique referral code and live program statistics.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
@@ -39,23 +38,22 @@ export default function AffiliatesPage() {
           </div>
         </div>
 
-        {/* ── How it works ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
             {
               step: "1",
               title: "Sign up free",
-              body: "30 seconds. No approval queue. Get your unique 8-char referral code instantly.",
+              body: "Register with your name and email to receive a unique 8-character referral code.",
             },
             {
               step: "2",
               title: "Share your link",
-              body: "Post on social, email, or your site. Use our pre-built swipes or write your own. Every click and sale is tracked automatically.",
+              body: "Share your referral link where it is relevant. Valid clicks and verified sales are attributed to your code.",
             },
             {
               step: "3",
-              title: "Get paid monthly",
-              body: "Commissions released 30 days after each sale (refund window). Payouts via Payoneer, Wise, or bank transfer.",
+              title: "Earn on verified sales",
+              body: "Commission is recorded after verified payment. Pending balances are reviewed for payout after the refund window and program threshold.",
             },
           ].map((s) => (
             <div
@@ -71,7 +69,6 @@ export default function AffiliatesPage() {
           ))}
         </div>
 
-        {/* ── Commissions table ─────────────────────────────────────────── */}
         <div className="rounded-xl border border-kagan-border bg-kagan-card/60 p-6 mb-12">
           <h2 className="text-lg font-bold text-kagan-white mb-4">Commission Rates</h2>
           <div className="overflow-x-auto">
@@ -102,11 +99,10 @@ export default function AffiliatesPage() {
             </table>
           </div>
           <p className="text-xs text-kagan-muted mt-3">
-            Plus access to 3 free lead magnets for your audience. The 7-day first-sale blueprint alone has a 14% conversion rate to paid.
+            Commission is calculated only from verified paid orders attributed to your referral code. Live program results are shown below rather than estimated conversion claims.
           </p>
         </div>
 
-        {/* ── Client dashboard ──────────────────────────────────────────── */}
         <div id="join">
           <AffiliateDashboard />
         </div>
