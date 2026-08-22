@@ -17,10 +17,26 @@ const APP_NAV = [
   { label: 'Support', href: `${SITE.url}/contact/`, external: true },
 ] as const;
 
+function isApplicationPath(pathname: string): boolean {
+  return (
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/autonomax') ||
+    pathname.startsWith('/checkout') ||
+    pathname.startsWith('/projects') ||
+    pathname.startsWith('/workbench') ||
+    pathname.startsWith('/outputs') ||
+    pathname.startsWith('/credits') ||
+    pathname.startsWith('/downloads') ||
+    pathname.startsWith('/integrations') ||
+    pathname.startsWith('/billing') ||
+    pathname.startsWith('/account')
+  );
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const isAppRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/autonomax');
+  const isAppRoute = isApplicationPath(pathname);
   const links = isAppRoute ? APP_NAV : PUBLIC_NAV;
 
   const normalizeHref = (href: string) => {
