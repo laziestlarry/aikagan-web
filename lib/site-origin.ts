@@ -28,7 +28,10 @@ export function canonicalSiteOrigin(requestOrigin?: string | null): string {
 }
 
 export function paddleCheckoutOrigin(): string {
-  return safeOrigin(process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL, PADDLE_CHECKOUT_ORIGIN);
+  // Keep the browser payment surface on the already verified application
+  // domain. A legacy NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL value must not
+  // redirect buyers to an unverified or stale auxiliary hostname.
+  return PADDLE_CHECKOUT_ORIGIN;
 }
 
 export function isFirstPartyCommerceHost(hostname: string): boolean {
