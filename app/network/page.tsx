@@ -8,6 +8,19 @@ export const metadata: Metadata = {
   title:'Join the AIKAGAN Network | Try, Share & Shape What Gets Built',
   description:'Join a free network around practical AI business tools. Try useful software, shape what gets built next, share what helps, and optionally earn on verified referrals.',
   alternates:{canonical:'https://aikagan.com/network/'},
+  openGraph:{
+    title:'Join the AIKAGAN Network — Use it. Improve it. Share it.',
+    description:'Try practical AI business tools for free, help shape what gets built next, and invite someone who could genuinely benefit.',
+    url:'https://aikagan.com/network/',
+    type:'website',
+    images:['https://aikagan.com/og.png'],
+  },
+  twitter:{
+    card:'summary_large_image',
+    title:'Join the AIKAGAN Network — Use it. Improve it. Share it.',
+    description:'Try practical AI business tools for free, help shape what gets built next, and invite someone who could genuinely benefit.',
+    images:['https://aikagan.com/og.png'],
+  },
 };
 
 export default function NetworkPage(){
