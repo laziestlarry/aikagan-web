@@ -10,6 +10,7 @@ import { SITE } from '@/lib/constants';
 const PUBLIC_NAV = [
   { label: 'Home', href: '/' },
   { label: 'Free Tools', href: '/tools/' },
+  { label: 'Feedback', href: '/feedback/' },
   { label: 'Services', href: '/services/' },
   { label: 'Products', href: '/products/' },
   { label: 'About', href: '/about/' },
