@@ -6,6 +6,8 @@ const WEB_HOSTS = new Set(['aikagan.com', 'www.aikagan.com']);
 const APP_PREFIXES = [
   '/dashboard',
   '/autonomax',
+  '/checkout',
+  '/checkout-success',
   '/projects',
   '/workbench',
   '/outputs',
@@ -31,6 +33,16 @@ const WEB_PREFIXES = [
   '/refund',
 ];
 
+const LEGACY_INTERNAL_DASHBOARDS = [
+  '/dashboard/financials',
+  '/dashboard/investment-policy',
+  '/dashboard/passive-income',
+  '/dashboard/profit-intelligence',
+  '/dashboard/success',
+  '/dashboard/venture-infrastructure',
+  '/dashboard/weekly-intelligence',
+];
+
 function startsWithAny(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
@@ -41,6 +53,10 @@ export function middleware(request: NextRequest) {
 
   if (host === APP_HOST) {
     if (pathname === '/') {
+      return NextResponse.redirect(new URL('/dashboard/', request.url));
+    }
+
+    if (startsWithAny(pathname, LEGACY_INTERNAL_DASHBOARDS)) {
       return NextResponse.redirect(new URL('/dashboard/', request.url));
     }
 

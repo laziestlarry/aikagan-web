@@ -4,9 +4,12 @@ import type { GumroadSale } from "./gumroad-api";
 import { fulfillPurchase } from "./fulfillment";
 import { generateDownloadToken } from "./download-token";
 import { tokenStore } from "./token-store";
-import { markEventIfNew } from "./webhook-idempotency";
+import { hasProcessedEvent, markEventProcessed } from "./webhook-idempotency";
 import { recordTransaction } from "./income-ledger";
 import { fireCapi as fireCapiEvent } from "./capi-fire";
+import { customerStore } from "./customer-store";
+import { customerIdForEmail } from "./customer-session";
+import { canonicalSiteOrigin } from "./site-origin";
 
 function normalizedEmail(value: unknown): string {
   return String(value ?? "").trim().toLowerCase();
@@ -53,26 +56,26 @@ export async function processVerifiedGumroadSale(
   const gumroadProduct = GUMROAD_PRODUCTS[slug];
   if (!product || !gumroadProduct) return { ok: false, saleId, slug, detail: "Product not in catalog" };
 
-  const isNew = await markEventIfNew("gumroad", saleId);
-  if (!isNew) return { ok: true, dedup: true, saleId, slug };
+  if (await hasProcessedEvent("gumroad", saleId)) {
+    return { ok: true, dedup: true, saleId, slug };
+  }
 
   const orderId = `gr-${saleId}`;
   const value = gumroadProduct.priceCents / 100;
   const currency = String(sale.currency ?? "USD").toUpperCase();
   const name = String(sale.full_name ?? sale.purchaser_name ?? email.split("@")[0] ?? "Valued Customer");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
+  const siteUrl = canonicalSiteOrigin();
 
-  let downloadUrl = siteUrl;
+  let token: string | null = null;
   if (product.zipFilename) {
-    const token = generateDownloadToken(slug, orderId, email);
-    downloadUrl = `${siteUrl}/api/download/${token}`;
-    await tokenStore.set(orderId, {
-      token,
-      slug,
-      email,
-      exp: Date.now() + 48 * 60 * 60 * 1000,
-    });
+    token = generateDownloadToken(slug, orderId, email);
   }
+  await tokenStore.set(orderId, {
+    token,
+    slug,
+    email,
+    exp: Date.now() + 48 * 60 * 60 * 1000,
+  });
 
   const capiResult = await fireCapiEvent(
     {
@@ -106,6 +109,15 @@ export async function processVerifiedGumroadSale(
     capiFired: capiResult.ok || capiResult.attempted,
   });
 
+  await customerStore.grantEntitlement(
+    customerIdForEmail(email),
+    email,
+    slug,
+    orderId,
+    token ? `/api/download/${token}` : null,
+  );
+
+  const accessUrl = `${siteUrl}/checkout-success?transaction_id=${encodeURIComponent(orderId)}`;
   await fulfillPurchase({
     email,
     name: name || "Valued Customer",
@@ -114,8 +126,10 @@ export async function processVerifiedGumroadSale(
     orderId,
     value,
     provider: "gumroad",
-    downloadUrl,
+    downloadUrl: accessUrl,
   });
+
+  await markEventProcessed("gumroad", saleId);
 
   console.log(JSON.stringify({
     event: "gumroad_fulfillment_complete",
