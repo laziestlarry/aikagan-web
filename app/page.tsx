@@ -12,6 +12,12 @@ export const metadata = {
     url: 'https://aikagan.com/',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AIKAGAN — Find what is blocking growth. Fix what matters.',
+    description: 'Free business diagnostics and practical AI tools first. Implementation and managed execution when the problem is worth solving.',
+    images: ['https://aikagan.com/og.png'],
+  },
 };
 
 const outcomes = [
