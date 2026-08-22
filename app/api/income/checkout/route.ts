@@ -8,6 +8,7 @@ import { resolveCouponPrice } from "@/lib/coupons";
 import { getGumroadProduct } from "@/lib/gumroad-products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
 import { ShopierPaymentFlow } from "@nopeion/shopier";
+import { canonicalSiteOrigin, isFirstPartyCommerceHost, paddleCheckoutOrigin } from "@/lib/site-origin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,8 +39,7 @@ function newSessionId(): string {
 }
 
 function manualFallbackUrl(req: NextRequest, slug: string, intentId: string): string {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
-  const url = new URL("/checkout/manual", base);
+  const url = new URL("/checkout/manual", canonicalSiteOrigin(req.nextUrl.origin));
   url.searchParams.set("slug", slug);
   url.searchParams.set("intent", intentId);
   return url.toString();
@@ -49,16 +49,6 @@ function lemonMerchantApproved(): boolean {
   return (
     process.env.LEMONSQUEEZY_MERCHANT_APPROVED === "true" &&
     process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true"
-  );
-}
-
-function isApprovedPaddleHostname(hostname: string): boolean {
-  return (
-    hostname === "app.aikagan.com" ||
-    hostname === "propulse-autonomax.web.app" ||
-    hostname === "autonomax-revenue-lenljbhrqq-uc.a.run.app" ||
-    hostname === "localhost" ||
-    hostname === "127.0.0.1"
   );
 }
 
@@ -75,7 +65,10 @@ async function tryPaddle(
   requestHostname: string,
 ): Promise<CheckoutResult | null> {
   if (process.env.PADDLE_CHECKOUT_DISABLED === "true") return null;
-  if (!isApprovedPaddleHostname(requestHostname)) return null;
+  // Transaction creation is server-side. Accept requests from every first-party
+  // commerce hostname, then open Paddle only on the canonical app checkout
+  // surface where the client token/domain approval is maintained.
+  if (!isFirstPartyCommerceHost(requestHostname)) return null;
 
   const paddle = getPaddleClient();
   const product = getProduct(body.slug);
@@ -130,14 +123,10 @@ async function tryPaddle(
       });
     }
 
-    const base =
-      process.env.NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL ||
-      (requestHostname === "app.aikagan.com" ? "https://app.aikagan.com" : req.nextUrl.origin);
-
     return {
       provider: "paddle",
       url: transaction.id
-        ? new URL(`/checkout?_ptxn=${encodeURIComponent(transaction.id)}`, base).toString()
+        ? new URL(`/checkout?_ptxn=${encodeURIComponent(transaction.id)}`, paddleCheckoutOrigin()).toString()
         : manualFallbackUrl(req, body.slug, String(intent.capturedAt)),
       transactionId: transaction.id,
     };
@@ -162,7 +151,7 @@ async function tryLemonSqueezy(
   if (!apiKey || !storeId || !variantId) return null;
 
   try {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+    const siteUrl = canonicalSiteOrigin(req.nextUrl.origin);
     const response = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {
@@ -186,8 +175,8 @@ async function tryLemonSqueezy(
             },
             product_options: {
               redirect_url: `${siteUrl}/checkout-success?provider=lemonsqueezy&ref=${encodeURIComponent(body.ref ?? "")}`,
-              receipt_button_text: "Download your files",
-              receipt_thank_you_note: "Thank you — your digital toolkit is ready.",
+              receipt_button_text: "Open your AIKAGAN delivery",
+              receipt_thank_you_note: "Thank you — your verified delivery and workspace access are being prepared.",
             },
           },
           relationships: {
@@ -228,15 +217,6 @@ async function tryLemonSqueezy(
   }
 }
 
-/**
- * Gumroad checkout is deliberately deterministic.
- *
- * Control-plane readiness (/api/ops/status) verifies authenticated Gumroad API
- * access and the provider callback/reconciliation path. A buyer click should
- * not synchronously call that API again before redirecting to a known hosted
- * checkout URL; doing so couples payment initiation to an unnecessary second
- * external request.
- */
 function tryGumroad(body: CheckoutBody): CheckoutResult | null {
   const gumroadProduct = getGumroadProduct(body.slug);
   if (!gumroadProduct || !isGumroadApiConfigured()) return null;
@@ -308,7 +288,7 @@ async function tryShopier(body: CheckoutBody): Promise<CheckoutResult | null> {
           return {
             provider: "shopier",
             url: result.paymentUrl,
-            transactionId: result.productId || platformOrderId,
+            transactionId: platformOrderId,
           };
         }
       }
@@ -368,9 +348,6 @@ async function createCheckoutSession(
     source: "income_checkout",
   };
 
-  // Checkout-intent analytics must never prevent a buyer from reaching an
-  // already-verified payment rail. Transaction evidence remains critical in
-  // provider webhooks; pre-payment intent evidence is best-effort.
   let intentRecorded = false;
   try {
     await recordIntent(intent, sessionId);
@@ -391,9 +368,12 @@ async function createCheckoutSession(
   } else if (body.provider === "lemonsqueezy") {
     result = await tryLemonSqueezy(req, body, intent);
   } else {
+    // Primary rail is Paddle. Secondary rails are continuity fallbacks, not
+    // competing buyer experiences.
     result = await tryPaddle(req, body, intent, hostname);
     if (!result) result = tryGumroad(body);
     if (!result) result = await tryShopier(body);
+    if (!result) result = await tryLemonSqueezy(req, body, intent);
   }
 
   if (result) {
@@ -471,8 +451,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(result.data, { status: result.status });
   }
 
+  const hostname = (req.headers.get("host") || "").split(":")[0].toLowerCase();
   return NextResponse.json({
     ok: true,
+    commerceHost: hostname,
+    firstPartyCommerceHost: isFirstPartyCommerceHost(hostname),
+    paddleCheckoutOrigin: paddleCheckoutOrigin(),
     providers: {
       paddle: Boolean(
         process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
