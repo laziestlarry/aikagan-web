@@ -59,21 +59,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, dedup: true, orderId });
     }
 
-    let slug = "masterclass-starter";
     const cached = await tokenStore.get(rawOrderId);
-    const priceVal = Number(payload.price ?? 0);
+    const priceTry = Number(payload.price ?? 0);
+    const usdToTry = await getUsdToTryRate();
+    const estimatedUsd = priceTry > 0 && usdToTry > 0 ? priceTry / usdToTry : 0;
 
-    if (cached?.slug) {
-      slug = cached.slug;
-    } else {
-      let usdPrice = priceVal;
-      if (priceVal > 200) usdPrice = priceVal / (await getUsdToTryRate());
-      if (usdPrice >= 130) slug = "masterclass-commander";
-      else if (usdPrice >= 60) slug = "masterclass-pro";
+    let slug = cached?.slug || "masterclass-starter";
+    if (!cached?.slug) {
+      if (estimatedUsd >= 130) slug = "masterclass-commander";
+      else if (estimatedUsd >= 60) slug = "masterclass-pro";
     }
 
     const product = getProduct(slug);
     if (!product) return NextResponse.json({ error: "Product not in catalog" }, { status: 404 });
+    const valueUsd = estimatedUsd > 0 ? estimatedUsd : product.price;
 
     const token = product.zipFilename ? generateDownloadToken(slug, orderId, buyerEmail) : null;
     await tokenStore.set(orderId, {
@@ -90,11 +89,11 @@ export async function POST(req: NextRequest) {
           event_name: "Purchase",
           event_id: orderId,
           email: buyerEmail,
-          value: priceVal,
-          currency: "TRY",
+          value: valueUsd,
+          currency: "USD",
           content_ids: [slug],
           content_name: product.name,
-          utm: { product_slug: slug, provider: "shopier" },
+          utm: { product_slug: slug, provider: "shopier", original_currency: "TRY" },
         },
         { req: { headers: req.headers }, source: "shopier_webhook" },
       );
@@ -109,10 +108,15 @@ export async function POST(req: NextRequest) {
         provider: "shopier",
         slug,
         email: buyerEmail,
-        value: priceVal,
-        currency: "TRY",
+        value: valueUsd,
+        currency: "USD",
         refCode: null,
-        utm: { product_slug: slug },
+        utm: {
+          product_slug: slug,
+          original_currency: "TRY",
+          original_value: String(priceTry),
+          usd_to_try: String(usdToTry),
+        },
         capturedAt: Date.now(),
         eventId: orderId,
         commission: 0,
@@ -145,7 +149,7 @@ export async function POST(req: NextRequest) {
         productName: product.name,
         productSlug: slug,
         orderId,
-        value: priceVal,
+        value: valueUsd,
         provider: "shopier",
         downloadUrl: accessUrl,
       });
@@ -155,7 +159,7 @@ export async function POST(req: NextRequest) {
     }
 
     await markEventProcessed("shopier", orderId);
-    console.log(JSON.stringify({ event: "shopier_webhook_committed", orderId, slug }));
+    console.log(JSON.stringify({ event: "shopier_webhook_committed", orderId, slug, valueUsd, priceTry }));
     return NextResponse.json({ ok: true, orderId, slug });
   } catch (err: any) {
     console.error("[shopier-webhook] processing failed", err);
