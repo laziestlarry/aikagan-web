@@ -1,0 +1,29 @@
+# AIKAGAN
+
+AIKAGAN provides practical AI business tools and implementation services for founders, operators, creators, and small teams.
+
+The public experience is free-first: visitors can try useful tools before deciding whether they need a paid product or implementation service.
+
+## Start here
+- Free tools: https://aikagan.com/tools/
+- Revenue Leak Scan: https://aikagan.com/tools/revenue-leak-scan/
+- AIKAGAN Network: https://aikagan.com/network/
+- Feedback: https://aikagan.com/feedback/
+- Services: https://aikagan.com/services/
+- Products: https://aikagan.com/products/
+- AutonomaX Explorer: https://app.aikagan.com/autonomax/
+
+## Free experiences
+1. Revenue Leak Scan — seven-question diagnostic covering offer, proof, checkout, delivery, follow-up, and retention.
+2. Golden Delivery Sample — a free example of AIKAGAN delivery structure and operating assets.
+3. AutonomaX Explorer — a guided execution environment for turning business objectives into next actions and measurable progress.
+
+## Network
+The AIKAGAN Network is free to join. Participants can try early tools, submit feedback and problems, collaborate or partner, share useful experiences, and optionally use the referral program for verified sales.
+
+## Commercial boundary
+Free use does not create a paid subscription. Paid products and services use explicit provider checkout and verified payment before customer delivery or commercial attribution.
+
+## Contact
+https://aikagan.com/contact/
+hello@aikagan.com
