@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CHECKOUT_SENTINEL, getPaidProducts } from "@/lib/products";
 import { ensureGumroadSaleSubscription, isGumroadApiConfigured } from "@/lib/gumroad-api";
 import { canonicalSiteOrigin, isFirstPartyCommerceHost, paddleCheckoutOrigin } from "@/lib/site-origin";
+import { getSocialCredential } from "@/lib/social/token-store";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -63,17 +64,35 @@ export async function GET(req: NextRequest) {
       configured("LEMONSQUEEZY_WEBHOOK_SECRET"),
   };
 
-  const checks = {
+  const defaultCheckoutProvider = providers.gumroad ? "gumroad" : providers.shopier ? "shopier" : providers.paddle ? "paddle" : providers.lemonsqueezy ? "lemonsqueezy" : null;
+
+  const commerceChecks = {
     deployment: true,
     catalog: managedProducts.length > 0,
     storefrontSurface: firstPartySurface,
-    checkoutProvider: Object.values(providers).some(Boolean),
-    primaryPaddleRail: providers.paddle,
+    checkoutProvider: Boolean(defaultCheckoutProvider),
+    defaultGumroadRail: providers.gumroad,
     downloadTokens: configured("DOWNLOAD_TOKEN_SECRET"),
     customerSessionSigning: configuredAny("CUSTOMER_SESSION_SECRET", "DOWNLOAD_TOKEN_SECRET"),
     fulfillmentWebhook: configuredAny("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL"),
     durableQueue: configured("KV_REST_API_URL") && configured("KV_REST_API_TOKEN"),
   };
+
+  const [linkedinCredential, facebookCredential, instagramCredential] = await Promise.all([
+    getSocialCredential("linkedin"),
+    getSocialCredential("facebook"),
+    getSocialCredential("instagram"),
+  ]);
+  const social = {
+    linkedinAppConfigured: configured("LINKEDIN_CLIENT_ID") && configured("LINKEDIN_CLIENT_SECRET"),
+    metaAppConfigured: configured("META_APP_ID") && configured("META_APP_SECRET"),
+    linkedinConnected: Boolean(linkedinCredential),
+    facebookConnected: Boolean(facebookCredential),
+    instagramConnected: Boolean(instagramCredential),
+    publishAdminConfigured: configured("SOCIAL_PUBLISH_ADMIN_SECRET"),
+    tokenEncryptionConfigured: configuredAny("SOCIAL_TOKEN_ENCRYPTION_KEY", "SOCIAL_PUBLISH_ADMIN_SECRET"),
+  };
+  const directSocialReady = social.publishAdminConfigured && social.tokenEncryptionConfigured && (social.linkedinConnected || social.facebookConnected || social.instagramConnected);
 
   const warnings = {
     analytics: configuredAny("NEXT_PUBLIC_GA_ID", "NEXT_PUBLIC_GA_MEASUREMENT_ID", "NEXT_PUBLIC_META_PIXEL_ID"),
@@ -82,22 +101,28 @@ export async function GET(req: NextRequest) {
     gumroadBackup: gumroadSubscription.ready,
     shopierBackup: providers.shopier,
     lemonsqueezyBackup: providers.lemonsqueezy,
+    directSocialPublishing: directSocialReady,
   };
 
-  const ready = Object.values(checks).every(Boolean);
+  const commerceReady = Object.values(commerceChecks).every(Boolean);
+  const launchReady = commerceReady;
 
   return NextResponse.json(
     {
       service: "AIKAGAN ProfitOS Commerce",
-      mode: ready ? "live" : "blocked",
-      ready,
+      mode: launchReady ? "live" : "blocked",
+      ready: launchReady,
+      commerceReady,
+      growthAutomationReady: directSocialReady,
       simulated: false,
       checkedAt: new Date().toISOString(),
       architecture: {
         storefront: siteUrl,
         app: "https://app.aikagan.com",
-        checkoutSurface: paddleCheckoutOrigin(),
+        checkoutSurface: defaultCheckoutProvider === "paddle" ? paddleCheckoutOrigin() : siteUrl,
+        defaultCheckoutProvider,
         flow: "storefront -> verified checkout -> webhook -> entitlement -> customer session -> app workspace",
+        growthFlow: "intelligence -> approved social publish -> attributed traffic -> offer -> verified checkout -> fulfillment",
       },
       products: {
         managedCheckout: managedProducts.length,
@@ -124,11 +149,19 @@ export async function GET(req: NextRequest) {
           enabled: lemonMerchantApproved && process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true",
         },
       },
-      checks,
+      social,
+      checks: commerceChecks,
       warnings,
-      blockers: Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name),
+      blockers: Object.entries(commerceChecks).filter(([, ok]) => !ok).map(([name]) => name),
+      growthBlockers: [
+        ...(!social.linkedinAppConfigured ? ["linkedin_app_credentials"] : []),
+        ...(!social.metaAppConfigured ? ["meta_app_credentials"] : []),
+        ...(!social.publishAdminConfigured ? ["social_publish_admin_secret"] : []),
+        ...(!social.tokenEncryptionConfigured ? ["social_token_encryption"] : []),
+        ...(!(social.linkedinConnected || social.facebookConnected || social.instagramConnected) ? ["social_account_authorization"] : []),
+      ],
       advisories: Object.entries(warnings).filter(([, ok]) => !ok).map(([name]) => name),
     },
-    { status: ready ? 200 : 503 },
+    { status: launchReady ? 200 : 503 },
   );
 }

@@ -1,10 +1,16 @@
 import { randomBytes } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { putOauthState } from '@/lib/social/token-store';
+import { consumeOauthSetupTicket, putOauthState } from '@/lib/social/token-store';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const setup = req.nextUrl.searchParams.get('setup') || '';
+  if (!setup || !(await consumeOauthSetupTicket(setup, 'linkedin'))) {
+    return NextResponse.json({ error: 'authorized setup ticket required' }, { status: 401 });
+  }
+
   const clientId = process.env.LINKEDIN_CLIENT_ID;
   const redirectUri = process.env.LINKEDIN_REDIRECT_URI || `${req.nextUrl.origin}/api/social/oauth/linkedin/callback`;
   if (!clientId) return NextResponse.json({ error: 'LINKEDIN_CLIENT_ID missing' }, { status: 503 });

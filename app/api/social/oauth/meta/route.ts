@@ -1,10 +1,16 @@
 import { randomBytes } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { putOauthState } from '@/lib/social/token-store';
+import { consumeOauthSetupTicket, putOauthState } from '@/lib/social/token-store';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const setup = req.nextUrl.searchParams.get('setup') || '';
+  if (!setup || !(await consumeOauthSetupTicket(setup, 'meta'))) {
+    return NextResponse.json({ error: 'authorized setup ticket required' }, { status: 401 });
+  }
+
   const appId = process.env.META_APP_ID;
   const redirectUri = process.env.META_REDIRECT_URI || `${req.nextUrl.origin}/api/social/oauth/meta/callback`;
   if (!appId) return NextResponse.json({ error: 'META_APP_ID missing' }, { status: 503 });
