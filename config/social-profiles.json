@@ -1,0 +1,53 @@
+{
+  "brand": "AIKAGAN / AutonomaX",
+  "canonical_url": "https://aikagan.com/start-free/",
+  "positioning": "Free business diagnostics and guided AI workflows first. Paid implementation only after demonstrated value.",
+  "profiles": {
+    "linkedin": {
+      "display_name": "AIKAGAN | AutonomaX",
+      "headline": "Free AI business diagnostics → practical fixes → automation when it is worth it",
+      "about": "AIKAGAN helps founders and operators find business friction before buying more software or traffic. Start with free diagnostics, samples and guided AI workflows. Keep the result and implement it yourself, or use AutonomaX when a proven improvement deserves implementation, automation or managed operation.",
+      "cta": "Start free",
+      "cta_url": "https://aikagan.com/start-free/",
+      "content_pillars": ["revenue leaks", "offer clarity", "checkout friction", "workflow automation", "fulfillment reliability", "practical AI implementation"]
+    },
+    "x": {
+      "display_name": "AIKAGAN / AutonomaX",
+      "bio": "Find the business bottleneck first. Free diagnostics + practical AI workflows. Implement or automate only when the improvement is worth it.",
+      "website": "https://aikagan.com/start-free/",
+      "content_pillars": ["1-minute diagnostics", "before/after fixes", "automation painkillers", "build-in-public evidence"]
+    },
+    "facebook": {
+      "page_name": "AIKAGAN — Practical AI Business Tools",
+      "category": "Software / Business Service",
+      "about": "Free diagnostics and practical AI workflows for founders and operators. Value first; implementation only when useful.",
+      "action_button": "Learn More",
+      "action_url": "https://aikagan.com/start-free/"
+    },
+    "instagram": {
+      "display_name": "AIKAGAN | Practical AI",
+      "bio": "Business friction → free diagnosis → practical fix.\nAI workflows without the pitch-first nonsense.\nStart free ↓",
+      "website": "https://aikagan.com/start-free/",
+      "account_type": "Professional / Business",
+      "content_pillars": ["revenue leak cards", "30-second workflow demos", "before/after landing-page fixes", "free template walkthroughs"]
+    },
+    "github": {
+      "display_name": "AIKAGAN / AutonomaX",
+      "bio": "Building value-first AI business tools: diagnose free, implement when useful.",
+      "website": "https://aikagan.com/start-free/"
+    },
+    "reddit": {
+      "profile_description": "Sharing practical diagnostics, AI workflow experiments and business fixes. Help-first; no unsolicited email.",
+      "posting_rule": "Contribute to the thread first; link only where community rules allow and the free tool directly answers the problem."
+    }
+  },
+  "campaign": {
+    "primary_offer": "Free Revenue Leak Scan",
+    "secondary_offer": "Golden Delivery free sample",
+    "tertiary_offer": "AutonomaX guided exploration",
+    "primary_cta": "Find the bottleneck free",
+    "content_ratio": "80% useful standalone help / 20% product-led invitation",
+    "proof_rule": "Never claim ROI, leads, sales or post success without provider or production evidence.",
+    "email_marketing": false
+  }
+}
