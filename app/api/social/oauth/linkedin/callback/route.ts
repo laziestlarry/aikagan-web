@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { consumeOauthState, setSocialCredential } from '@/lib/social/token-store';
+import { getLinkedInAppConfig } from '@/lib/social/config-store';
 
 export const runtime = 'nodejs';
 
@@ -12,12 +13,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'invalid_oauth_state' }, { status: 400 });
   }
 
-  const clientId = process.env.LINKEDIN_CLIENT_ID;
-  const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
-  const redirectUri = process.env.LINKEDIN_REDIRECT_URI || `${req.nextUrl.origin}/api/social/oauth/linkedin/callback`;
-  if (!clientId || !clientSecret) return NextResponse.json({ error: 'linkedin_oauth_not_configured' }, { status: 503 });
+  const config = await getLinkedInAppConfig();
+  if (!config?.clientId || !config.clientSecret) return NextResponse.json({ error: 'linkedin_oauth_not_configured' }, { status: 503 });
+  const redirectUri = config.redirectUri || `${req.nextUrl.origin}/api/social/oauth/linkedin/callback`;
 
-  const form = new URLSearchParams({ grant_type: 'authorization_code', code, client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri });
+  const form = new URLSearchParams({ grant_type: 'authorization_code', code, client_id: config.clientId, client_secret: config.clientSecret, redirect_uri: redirectUri });
   const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
     method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: form, cache: 'no-store',
   });
