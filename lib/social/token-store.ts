@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
-import { kvGet, kvSet } from '@/lib/kv';
+import { kvDel, kvGet, kvSet } from '@/lib/kv';
 
 export type SocialCredential = {
   accessToken: string;
@@ -12,6 +12,7 @@ export type SocialCredential = {
 };
 
 type StoredEnvelope = { iv: string; tag: string; ciphertext: string };
+type SocialOauthProvider = 'linkedin' | 'meta';
 
 function keyMaterial() {
   const secret = process.env.SOCIAL_TOKEN_ENCRYPTION_KEY || process.env.SOCIAL_PUBLISH_ADMIN_SECRET;
@@ -51,11 +52,26 @@ export async function getSocialCredential(provider: 'linkedin' | 'facebook' | 'i
   }
 }
 
-export async function putOauthState(state: string, provider: 'linkedin' | 'meta') {
+export async function putOauthState(state: string, provider: SocialOauthProvider) {
   await kvSet(`social:oauth:state:${state}`, { provider, exp: Date.now() + 10 * 60_000 }, 10 * 60);
 }
 
-export async function consumeOauthState(state: string, provider: 'linkedin' | 'meta') {
-  const entry = await kvGet<{ provider: string; exp: number }>(`social:oauth:state:${state}`);
+export async function consumeOauthState(state: string, provider: SocialOauthProvider) {
+  const key = `social:oauth:state:${state}`;
+  const entry = await kvGet<{ provider: string; exp: number }>(key);
+  await kvDel(key);
+  return Boolean(entry && entry.provider === provider && entry.exp > Date.now());
+}
+
+export async function issueOauthSetupTicket(provider: SocialOauthProvider) {
+  const ticket = randomBytes(24).toString('base64url');
+  await kvSet(`social:oauth:setup:${ticket}`, { provider, exp: Date.now() + 5 * 60_000 }, 5 * 60);
+  return ticket;
+}
+
+export async function consumeOauthSetupTicket(ticket: string, provider: SocialOauthProvider) {
+  const key = `social:oauth:setup:${ticket}`;
+  const entry = await kvGet<{ provider: string; exp: number }>(key);
+  await kvDel(key);
   return Boolean(entry && entry.provider === provider && entry.exp > Date.now());
 }
