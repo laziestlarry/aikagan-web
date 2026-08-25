@@ -1,28 +1,26 @@
 import { NextResponse } from 'next/server';
 import { getSocialCredential } from '@/lib/social/token-store';
+import { getLinkedInAppConfig, getMetaAppConfig, socialAdminSecret } from '@/lib/social/config-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function configured(name: string): boolean {
-  const value = process.env[name];
-  return Boolean(value && value.trim() && !/^(replace|your_|changeme|placeholder)/i.test(value.trim()));
-}
-
 export async function GET() {
-  const [linkedin, facebook, instagram] = await Promise.all([
+  const [linkedin, facebook, instagram, linkedinConfig, metaConfig] = await Promise.all([
     getSocialCredential('linkedin'),
     getSocialCredential('facebook'),
     getSocialCredential('instagram'),
+    getLinkedInAppConfig(),
+    getMetaAppConfig(),
   ]);
 
   const configuredProviders = {
-    linkedin: configured('LINKEDIN_CLIENT_ID') && configured('LINKEDIN_CLIENT_SECRET'),
-    meta: configured('META_APP_ID') && configured('META_APP_SECRET'),
+    linkedin: Boolean(linkedinConfig),
+    meta: Boolean(metaConfig),
   };
   const security = {
-    encryption: configured('SOCIAL_TOKEN_ENCRYPTION_KEY') || configured('SOCIAL_PUBLISH_ADMIN_SECRET'),
-    publishAdmin: configured('SOCIAL_PUBLISH_ADMIN_SECRET'),
+    encryption: Boolean(process.env.SOCIAL_TOKEN_ENCRYPTION_KEY || process.env.SOCIAL_PUBLISH_ADMIN_SECRET || process.env.ADMIN_SECRET || process.env.DOWNLOAD_TOKEN_SECRET),
+    publishAdmin: Boolean(socialAdminSecret()),
   };
   const connected = {
     linkedin: Boolean(linkedin),
@@ -40,9 +38,11 @@ export async function GET() {
       ...(!configuredProviders.linkedin ? ['linkedin_app_credentials'] : []),
       ...(!configuredProviders.meta ? ['meta_app_credentials'] : []),
       ...(!security.encryption ? ['social_token_encryption'] : []),
-      ...(!security.publishAdmin ? ['social_publish_admin_secret'] : []),
+      ...(!security.publishAdmin ? ['social_publish_admin_authority'] : []),
+      ...(!(connected.linkedin || connected.facebook || connected.instagram) ? ['social_account_authorization'] : []),
     ],
     activation: {
+      config: '/api/social/config',
       setup: '/api/social/oauth/setup',
       linkedin: '/api/social/oauth/linkedin',
       meta: '/api/social/oauth/meta',
