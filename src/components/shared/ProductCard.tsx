@@ -28,11 +28,11 @@ export default function ProductCard({ name, slug, category, price, originalPrice
       <div className="flex items-start justify-between mb-3"><Badge variant="muted">{category}</Badge><Badge variant={badgeVariant}>{badge}</Badge></div>
       <Link href={productHref} className="hover:opacity-90 transition-opacity"><h3 className="text-xl font-bold text-kagan-white mb-1">{name}</h3></Link>
       <div className="flex items-baseline gap-2 mb-2"><p className="text-2xl font-bold text-kagan-gold">{price}</p>{originalPrice && <p className="text-sm text-kagan-light line-through opacity-60">${originalPrice}</p>}</div>
-      <p className="mb-4 text-xs font-semibold text-emerald-300">One payment · instant digital access · 30-day money-back guarantee</p>
+      <p className="mb-4 text-xs font-semibold text-emerald-300">One payment · secure digital delivery · 30-day money-back guarantee</p>
       <p className="text-kagan-light text-sm leading-relaxed mb-5 flex-1">{description}</p>
       <ul className="space-y-2 mb-6">{includes.map((item) => <li key={item} className="flex items-center gap-2 text-sm text-kagan-light"><span className="text-kagan-gold text-xs">✓</span>{item}</li>)}</ul>
       <div className="mb-5 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.05] p-3 text-xs leading-relaxed text-emerald-100">
-        <strong>Use it today:</strong> open START_HERE, choose one offer, follow the activation checklist, and use the included scripts/templates instead of building from scratch.
+        <strong>Use it today:</strong> start with the included launch blueprint/checklist, choose one offer, and adapt the supplied scripts and templates instead of starting from a blank page.
       </div>
       <div className="flex flex-col gap-2">
         {isPaddle ? (
