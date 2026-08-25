@@ -3,6 +3,7 @@ import { CHECKOUT_SENTINEL, getPaidProducts } from "@/lib/products";
 import { ensureGumroadSaleSubscription, isGumroadApiConfigured } from "@/lib/gumroad-api";
 import { canonicalSiteOrigin, isFirstPartyCommerceHost, paddleCheckoutOrigin } from "@/lib/site-origin";
 import { getSocialCredential } from "@/lib/social/token-store";
+import { getLinkedInAppConfig, getMetaAppConfig, socialAdminSecret } from "@/lib/social/config-store";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -78,19 +79,21 @@ export async function GET(req: NextRequest) {
     durableQueue: configured("KV_REST_API_URL") && configured("KV_REST_API_TOKEN"),
   };
 
-  const [linkedinCredential, facebookCredential, instagramCredential] = await Promise.all([
+  const [linkedinCredential, facebookCredential, instagramCredential, linkedinConfig, metaConfig] = await Promise.all([
     getSocialCredential("linkedin"),
     getSocialCredential("facebook"),
     getSocialCredential("instagram"),
+    getLinkedInAppConfig(),
+    getMetaAppConfig(),
   ]);
   const social = {
-    linkedinAppConfigured: configured("LINKEDIN_CLIENT_ID") && configured("LINKEDIN_CLIENT_SECRET"),
-    metaAppConfigured: configured("META_APP_ID") && configured("META_APP_SECRET"),
+    linkedinAppConfigured: Boolean(linkedinConfig),
+    metaAppConfigured: Boolean(metaConfig),
     linkedinConnected: Boolean(linkedinCredential),
     facebookConnected: Boolean(facebookCredential),
     instagramConnected: Boolean(instagramCredential),
-    publishAdminConfigured: configured("SOCIAL_PUBLISH_ADMIN_SECRET"),
-    tokenEncryptionConfigured: configuredAny("SOCIAL_TOKEN_ENCRYPTION_KEY", "SOCIAL_PUBLISH_ADMIN_SECRET"),
+    publishAdminConfigured: Boolean(socialAdminSecret()),
+    tokenEncryptionConfigured: configuredAny("SOCIAL_TOKEN_ENCRYPTION_KEY", "SOCIAL_PUBLISH_ADMIN_SECRET", "ADMIN_SECRET", "DOWNLOAD_TOKEN_SECRET"),
   };
   const directSocialReady = social.publishAdminConfigured && social.tokenEncryptionConfigured && (social.linkedinConnected || social.facebookConnected || social.instagramConnected);
 
@@ -156,7 +159,7 @@ export async function GET(req: NextRequest) {
       growthBlockers: [
         ...(!social.linkedinAppConfigured ? ["linkedin_app_credentials"] : []),
         ...(!social.metaAppConfigured ? ["meta_app_credentials"] : []),
-        ...(!social.publishAdminConfigured ? ["social_publish_admin_secret"] : []),
+        ...(!social.publishAdminConfigured ? ["social_publish_admin_authority"] : []),
         ...(!social.tokenEncryptionConfigured ? ["social_token_encryption"] : []),
         ...(!(social.linkedinConnected || social.facebookConnected || social.instagramConnected) ? ["social_account_authorization"] : []),
       ],

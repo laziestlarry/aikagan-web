@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { consumeOauthState, setSocialCredential } from '@/lib/social/token-store';
+import { getMetaAppConfig } from '@/lib/social/config-store';
 
 export const runtime = 'nodejs';
 
@@ -12,15 +13,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'invalid_oauth_state' }, { status: 400 });
   }
 
-  const appId = process.env.META_APP_ID;
-  const appSecret = process.env.META_APP_SECRET;
-  const redirectUri = process.env.META_REDIRECT_URI || `${req.nextUrl.origin}/api/social/oauth/meta/callback`;
+  const config = await getMetaAppConfig();
+  if (!config?.appId || !config.appSecret) return NextResponse.json({ error: 'meta_oauth_not_configured' }, { status: 503 });
+  const redirectUri = config.redirectUri || `${req.nextUrl.origin}/api/social/oauth/meta/callback`;
   const version = process.env.META_GRAPH_VERSION || 'v25.0';
-  if (!appId || !appSecret) return NextResponse.json({ error: 'meta_oauth_not_configured' }, { status: 503 });
 
   const tokenUrl = new URL(`https://graph.facebook.com/${version}/oauth/access_token`);
-  tokenUrl.searchParams.set('client_id', appId);
-  tokenUrl.searchParams.set('client_secret', appSecret);
+  tokenUrl.searchParams.set('client_id', config.appId);
+  tokenUrl.searchParams.set('client_secret', config.appSecret);
   tokenUrl.searchParams.set('redirect_uri', redirectUri);
   tokenUrl.searchParams.set('code', code);
   const shortResponse = await fetch(tokenUrl, { cache: 'no-store' });
@@ -31,8 +31,8 @@ export async function GET(req: NextRequest) {
 
   const longUrl = new URL(`https://graph.facebook.com/${version}/oauth/access_token`);
   longUrl.searchParams.set('grant_type', 'fb_exchange_token');
-  longUrl.searchParams.set('client_id', appId);
-  longUrl.searchParams.set('client_secret', appSecret);
+  longUrl.searchParams.set('client_id', config.appId);
+  longUrl.searchParams.set('client_secret', config.appSecret);
   longUrl.searchParams.set('fb_exchange_token', short.access_token);
   const longResponse = await fetch(longUrl, { cache: 'no-store' });
   const long = await longResponse.json().catch(() => null);
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'meta_no_manageable_pages', detail: pages }, { status: 409 });
   }
 
-  const preferredPageId = process.env.META_PAGE_ID;
+  const preferredPageId = config.pageId || process.env.META_PAGE_ID;
   const page = (preferredPageId ? pages.data.find((p: any) => String(p.id) === preferredPageId) : null) || pages.data[0];
   if (!page?.id || !page?.access_token) return NextResponse.json({ error: 'meta_page_token_missing' }, { status: 502 });
 

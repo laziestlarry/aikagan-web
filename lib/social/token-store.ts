@@ -15,8 +15,8 @@ type StoredEnvelope = { iv: string; tag: string; ciphertext: string };
 type SocialOauthProvider = 'linkedin' | 'meta';
 
 function keyMaterial() {
-  const secret = process.env.SOCIAL_TOKEN_ENCRYPTION_KEY || process.env.SOCIAL_PUBLISH_ADMIN_SECRET;
-  if (!secret) throw new Error('SOCIAL_TOKEN_ENCRYPTION_KEY is not configured');
+  const secret = process.env.SOCIAL_TOKEN_ENCRYPTION_KEY || process.env.SOCIAL_PUBLISH_ADMIN_SECRET || process.env.ADMIN_SECRET || process.env.DOWNLOAD_TOKEN_SECRET;
+  if (!secret) throw new Error('social token encryption authority is not configured');
   return createHash('sha256').update(secret).digest();
 }
 
