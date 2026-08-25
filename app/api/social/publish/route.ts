@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { publishToNetwork, type SocialNetwork } from '@/lib/social/connectors';
 import { kvLpush } from '@/lib/kv';
+import { socialAdminSecret } from '@/lib/social/config-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -8,7 +9,7 @@ export const dynamic = 'force-dynamic';
 const supported: SocialNetwork[] = ['linkedin', 'x', 'facebook', 'instagram'];
 
 export async function POST(req: NextRequest) {
-  const adminSecret = process.env.SOCIAL_PUBLISH_ADMIN_SECRET;
+  const adminSecret = socialAdminSecret();
   const supplied = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
   if (!adminSecret || supplied !== adminSecret) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
