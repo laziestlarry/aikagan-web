@@ -2,10 +2,9 @@
 
 import React, { useCallback, useState } from "react";
 import Link from "next/link";
-import { appendAttribution, trackCheckoutIntent } from "@/src/lib/attribution";
+import { appendAttribution } from "@/src/lib/attribution";
 
 interface CheckoutLinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
-  /** Product checkout sentinel or a concrete hosted URL. */
   href?: string | null;
   productSlug: string;
   productName: string;
@@ -19,12 +18,12 @@ declare global {
 }
 
 /**
- * Checkout Link — production checkout path.
+ * Production checkout link.
  *
- * Concrete hosted URLs are followed directly. The managed "paddle" sentinel
- * calls /api/income/checkout, which evaluates every configured provider and
- * returns a verified URL or an explicit blocked response. The client must not
- * pre-block Paddle/Lemon/Shopier merely because Gumroad is unconfigured.
+ * Important measurement rule: a checkout intent is recorded server-side only
+ * after /api/income/checkout accepts the request. We deliberately do not emit
+ * a second client-side intent here; that used to inflate the funnel and made
+ * abandoned clicks look like two buyer intents.
  */
 export default function CheckoutLink({
   href,
@@ -37,7 +36,6 @@ export default function CheckoutLink({
 }: CheckoutLinkProps) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   const isManagedCheckout = href === "paddle";
 
   const handleClick = useCallback(async (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -54,7 +52,6 @@ export default function CheckoutLink({
           items: [{ item_id: productSlug, item_name: productName, price, quantity: 1 }],
         },
       });
-      trackCheckoutIntent(productSlug);
     }
 
     if (!isManagedCheckout) {
@@ -103,11 +100,8 @@ export default function CheckoutLink({
         });
       }
 
-      if (url) {
-        window.location.href = url;
-      } else {
-        showCheckoutError("Checkout URL was not returned. Please try again.");
-      }
+      if (url) window.location.href = url;
+      else showCheckoutError("Checkout URL was not returned. Please try again.");
     } catch (error) {
       console.error("Checkout network error:", error);
       showCheckoutError("Network error. Please check your connection and try again.");
@@ -131,19 +125,11 @@ export default function CheckoutLink({
 
   if (!isManagedCheckout && href) {
     const finalHref = appendAttribution(href);
-    return (
-      <a {...rest} href={finalHref} onClick={onClick}>
-        {children}
-      </a>
-    );
+    return <a {...rest} href={finalHref} onClick={onClick}>{children}</a>;
   }
 
   if (!href) {
-    return (
-      <Link href="/products" className={rest.className} style={rest.style}>
-        {children}
-      </Link>
-    );
+    return <Link href="/products" className={rest.className} style={rest.style}>{children}</Link>;
   }
 
   return (
@@ -153,15 +139,12 @@ export default function CheckoutLink({
         href="/api/income/checkout"
         onClick={handleClick}
         data-product-slug={productSlug}
+        aria-busy={loading}
         style={{ ...(rest.style ?? {}), cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
       >
-        {loading ? "Opening checkout..." : children}
+        {loading ? "Opening secure checkout…" : children}
       </a>
-      {errorMessage ? (
-        <span className="mt-2 block text-xs text-red-300" role="alert">
-          {errorMessage}
-        </span>
-      ) : null}
+      {errorMessage ? <span className="mt-2 block text-xs text-red-300" role="alert">{errorMessage}</span> : null}
     </>
   );
 }
