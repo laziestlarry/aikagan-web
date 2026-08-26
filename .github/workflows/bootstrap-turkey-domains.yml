@@ -1,0 +1,66 @@
+name: Bootstrap Türkiye Domains
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bootstrap-turkey-domains.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  VERCEL_ORG_ID: team_67a8OdMpiLhKbsLZ7HVcDsfh
+  VERCEL_PROJECT_ID: prj_ZBuPJBcchGEU62MAkHWJRTBQqwig
+  APEX_DOMAIN: aikagan.com.tr
+  WWW_DOMAIN: www.aikagan.com.tr
+
+jobs:
+  configure-domains:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Register apex and www domains
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          api="https://api.vercel.com"
+          scope="teamId=${VERCEL_ORG_ID}"
+          auth=(-H "Authorization: Bearer ${VERCEL_TOKEN}" -H "Content-Type: application/json")
+
+          domains_json="$(curl -fsS "${auth[@]}" "${api}/v9/projects/${VERCEL_PROJECT_ID}/domains?${scope}&limit=100")"
+
+          if ! jq -e --arg name "$APEX_DOMAIN" '.domains[]? | select(.name == $name)' <<<"$domains_json" >/dev/null; then
+            echo "Adding ${APEX_DOMAIN} to project..."
+            curl -fsS "${auth[@]}" -X POST \
+              "${api}/v10/projects/${VERCEL_PROJECT_ID}/domains?${scope}" \
+              --data "{\"name\":\"${APEX_DOMAIN}\"}" | jq '{name, verified, verification}'
+          else
+            echo "${APEX_DOMAIN} is already assigned to the project."
+          fi
+
+          domains_json="$(curl -fsS "${auth[@]}" "${api}/v9/projects/${VERCEL_PROJECT_ID}/domains?${scope}&limit=100")"
+          if ! jq -e --arg name "$WWW_DOMAIN" '.domains[]? | select(.name == $name)' <<<"$domains_json" >/dev/null; then
+            echo "Adding ${WWW_DOMAIN} with permanent redirect..."
+            curl -fsS "${auth[@]}" -X POST \
+              "${api}/v10/projects/${VERCEL_PROJECT_ID}/domains?${scope}" \
+              --data "{\"name\":\"${WWW_DOMAIN}\",\"redirect\":\"${APEX_DOMAIN}\",\"redirectStatusCode\":308}" | jq '{name, verified, redirect, redirectStatusCode, verification}'
+          else
+            echo "${WWW_DOMAIN} exists; enforcing permanent redirect to ${APEX_DOMAIN}..."
+            curl -fsS "${auth[@]}" -X PATCH \
+              "${api}/v9/projects/${VERCEL_PROJECT_ID}/domains/${WWW_DOMAIN}?${scope}" \
+              --data "{\"redirect\":\"${APEX_DOMAIN}\",\"redirectStatusCode\":308}" | jq '{name, verified, redirect, redirectStatusCode, verification}'
+          fi
+
+      - name: Report final domain state
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}/domains?teamId=${VERCEL_ORG_ID}&limit=100" \
+            | jq --arg apex "$APEX_DOMAIN" --arg www "$WWW_DOMAIN" '[.domains[] | select(.name == $apex or .name == $www) | {name, verified, redirect, redirectStatusCode, verification}]'
