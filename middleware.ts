@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 const APP_HOST = 'app.aikagan.com';
 const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
+const TURKISH_APEX_HOST = 'aikagan.com.tr';
+const TURKISH_WWW_HOST = 'www.aikagan.com.tr';
 
 const APP_PREFIXES = [
   '/dashboard',
@@ -51,48 +53,151 @@ const LEGACY_INTERNAL_DASHBOARDS = [
   '/dashboard/weekly-intelligence',
 ];
 
+const TURKISH_PUBLIC_TO_INTERNAL: Record<string, string> = {
+  '/': '/tr',
+  '/urunler': '/tr/products',
+  '/ucretsiz-araclar': '/tr/tools',
+  '/ucretsiz-araclar/gelir-kacagi-testi': '/tr/tools/revenue-leak-scan',
+  '/hizmetler': '/tr/services',
+  '/hakkimizda': '/tr/about',
+  '/iletisim': '/tr/contact',
+  '/topluluk': '/tr/network',
+  '/gizlilik': '/tr/legal/privacy',
+  '/kullanim-kosullari': '/tr/legal/terms',
+  '/iade-kosullari': '/tr/legal/refund',
+};
+
+const TURKISH_INTERNAL_TO_PUBLIC = Object.fromEntries(
+  Object.entries(TURKISH_PUBLIC_TO_INTERNAL).map(([publicPath, internalPath]) => [internalPath, publicPath]),
+) as Record<string, string>;
+
+const TURKISH_LEGACY_TO_PUBLIC: Record<string, string> = {
+  '/products': '/urunler',
+  '/tools': '/ucretsiz-araclar',
+  '/tools/revenue-leak-scan': '/ucretsiz-araclar/gelir-kacagi-testi',
+  '/services': '/hizmetler',
+  '/about': '/hakkimizda',
+  '/contact': '/iletisim',
+  '/network': '/topluluk',
+  '/legal/privacy': '/gizlilik',
+  '/privacy': '/gizlilik',
+  '/legal/terms': '/kullanim-kosullari',
+  '/terms': '/kullanim-kosullari',
+  '/legal/refund': '/iade-kosullari',
+  '/refund': '/iade-kosullari',
+};
+
+const TURKISH_GLOBAL_ONLY_PREFIXES = [
+  '/free',
+  '/feedback',
+  '/start-free',
+  '/work-with-kagan',
+  '/cash-resilience',
+  '/marketing',
+  '/affiliates',
+  '/mission-control',
+];
+
 function startsWithAny(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
+function normalizePath(pathname: string) {
+  if (pathname === '/') return '/';
+  return pathname.replace(/\/+$/, '') || '/';
+}
+
+function localeHeaders(request: NextRequest, locale: 'en' | 'tr') {
+  const nextHeaders = new Headers(request.headers);
+  nextHeaders.set('x-site-locale', locale);
+  return nextHeaders;
+}
+
+function redirectTo(host: string, pathname: string, search = '') {
+  return NextResponse.redirect(new URL(`${pathname}${search}`, `https://${host}`), 308);
 }
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host')?.split(':')[0]?.toLowerCase() ?? '';
   const { pathname, search } = request.nextUrl;
+  const cleanPath = normalizePath(pathname);
+
+  if (host === TURKISH_WWW_HOST) {
+    if (startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
+    if (cleanPath.startsWith('/products/') || startsWithAny(cleanPath, TURKISH_GLOBAL_ONLY_PREFIXES)) {
+      return redirectTo(APEX_HOST, cleanPath, search);
+    }
+    const canonicalPath = TURKISH_INTERNAL_TO_PUBLIC[cleanPath] || TURKISH_LEGACY_TO_PUBLIC[cleanPath] || cleanPath;
+    return redirectTo(TURKISH_APEX_HOST, canonicalPath, search);
+  }
+
+  if (host === TURKISH_APEX_HOST) {
+    if (startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
+
+    if (cleanPath === '/robots.txt' || cleanPath === '/sitemap.xml') {
+      return NextResponse.next({ request: { headers: localeHeaders(request, 'tr') } });
+    }
+
+    if (cleanPath.startsWith('/products/') || startsWithAny(cleanPath, TURKISH_GLOBAL_ONLY_PREFIXES)) {
+      return redirectTo(APEX_HOST, cleanPath, search);
+    }
+
+    const canonicalRedirect = TURKISH_INTERNAL_TO_PUBLIC[cleanPath] || TURKISH_LEGACY_TO_PUBLIC[cleanPath];
+    if (canonicalRedirect) return redirectTo(TURKISH_APEX_HOST, canonicalRedirect, search);
+
+    if (pathname !== cleanPath && TURKISH_PUBLIC_TO_INTERNAL[cleanPath]) {
+      return redirectTo(TURKISH_APEX_HOST, cleanPath, search);
+    }
+
+    const internalPath = TURKISH_PUBLIC_TO_INTERNAL[cleanPath];
+    if (internalPath) {
+      const url = request.nextUrl.clone();
+      url.pathname = internalPath;
+      return NextResponse.rewrite(url, { request: { headers: localeHeaders(request, 'tr') } });
+    }
+
+    return NextResponse.next({ request: { headers: localeHeaders(request, 'tr') } });
+  }
+
+  if ((host === APEX_HOST || host === WWW_HOST) && cleanPath.startsWith('/tr')) {
+    const publicPath = TURKISH_INTERNAL_TO_PUBLIC[cleanPath] || '/';
+    return redirectTo(TURKISH_APEX_HOST, publicPath, search);
+  }
 
   if (host === WWW_HOST) {
-    const targetHost = startsWithAny(pathname, APP_PREFIXES) ? APP_HOST : APEX_HOST;
-    return NextResponse.redirect(new URL(`${pathname}${search}`, `https://${targetHost}`), 308);
+    const targetHost = startsWithAny(cleanPath, APP_PREFIXES) ? APP_HOST : APEX_HOST;
+    return redirectTo(targetHost, cleanPath, search);
   }
 
   if (host === APP_HOST) {
-    if (pathname === '/robots.txt' || pathname === '/sitemap.xml') {
-      return NextResponse.redirect(new URL(pathname, 'https://aikagan.com'), 308);
+    if (cleanPath === '/robots.txt' || cleanPath === '/sitemap.xml') {
+      return redirectTo(APEX_HOST, cleanPath);
     }
 
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL('/dashboard', request.url), 308);
+    if (cleanPath === '/') {
+      return redirectTo(APP_HOST, '/dashboard');
     }
 
-    if (startsWithAny(pathname, LEGACY_INTERNAL_DASHBOARDS)) {
-      return NextResponse.redirect(new URL('/dashboard', request.url), 308);
+    if (startsWithAny(cleanPath, LEGACY_INTERNAL_DASHBOARDS)) {
+      return redirectTo(APP_HOST, '/dashboard');
     }
 
-    if (startsWithAny(pathname, WEB_PREFIXES)) {
-      return NextResponse.redirect(new URL(`${pathname}${search}`, 'https://aikagan.com'), 308);
+    if (startsWithAny(cleanPath, WEB_PREFIXES)) {
+      return redirectTo(APEX_HOST, cleanPath, search);
     }
   }
 
-  if (host === APEX_HOST && startsWithAny(pathname, APP_PREFIXES)) {
-    return NextResponse.redirect(new URL(`${pathname}${search}`, 'https://app.aikagan.com'), 308);
+  if (host === APEX_HOST && startsWithAny(cleanPath, APP_PREFIXES)) {
+    return redirectTo(APP_HOST, cleanPath, search);
   }
 
-  const response = NextResponse.next();
-  if (host === APP_HOST || startsWithAny(pathname, ['/admin', '/income', '/intake', '/thank-you'])) {
+  const response = NextResponse.next({ request: { headers: localeHeaders(request, 'en') } });
+  if (host === APP_HOST || startsWithAny(cleanPath, ['/admin', '/income', '/intake', '/thank-you'])) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
   return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|favicon.svg).*)'],
 };
