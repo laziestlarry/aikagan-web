@@ -64,3 +64,26 @@ jobs:
             -H "Authorization: Bearer ${VERCEL_TOKEN}" \
             "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}/domains?teamId=${VERCEL_ORG_ID}&limit=100" \
             | jq --arg apex "$APEX_DOMAIN" --arg www "$WWW_DOMAIN" '[.domains[] | select(.name == $apex or .name == $www) | {name, verified, redirect, redirectStatusCode, verification}]'
+
+      - name: Verify DNS configuration
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for domain in "$APEX_DOMAIN" "$WWW_DOMAIN"; do
+            echo "--- ${domain} ---"
+            curl -fsS \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+              "https://api.vercel.com/v6/domains/${domain}/config?teamId=${VERCEL_ORG_ID}&projectIdOrName=${VERCEL_PROJECT_ID}" \
+              | jq '{configuredBy, misconfigured, recommendedIPv4, recommendedCNAME}'
+          done
+
+      - name: Probe live Türkiye hosts
+        shell: bash
+        run: |
+          set -u
+          echo "--- apex ---"
+          curl -sSIL --max-time 20 "https://${APEX_DOMAIN}/" || true
+          echo "--- www ---"
+          curl -sSIL --max-time 20 "https://${WWW_DOMAIN}/" || true
