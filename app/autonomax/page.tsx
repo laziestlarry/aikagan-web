@@ -5,13 +5,22 @@ import AutonomaXBlueprintConsole from '@/components/shared/AutonomaXBlueprintCon
 import Section from '@/components/ui/Section';
 import Badge from '@/components/ui/Badge';
 import { buildMetadata } from '@/lib/metadata';
+import { SITE } from '@/lib/constants';
 
-export const metadata: Metadata = buildMetadata({
+const autonomaxMetadata = buildMetadata({
   title: 'AutonomaX Control Plane',
   description:
     'Live blueprint, readiness gates, governed ProductBrief intake, agent mandates, and product-to-revenue pipeline for AutonomaX.',
-  path: '/autonomax/',
+  path: '/autonomax',
 });
+
+export const metadata: Metadata = {
+  ...autonomaxMetadata,
+  metadataBase: new URL(SITE.appUrl),
+  alternates: { canonical: `${SITE.appUrl}/autonomax` },
+  robots: { index: false, follow: false },
+  openGraph: { ...autonomaxMetadata.openGraph, url: `${SITE.appUrl}/autonomax` },
+};
 
 export default function AutonomaXPage() {
   return (
@@ -28,13 +37,13 @@ export default function AutonomaXPage() {
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link
-              href="/mission-control/"
+              href="https://aikagan.com/mission-control"
               className="inline-flex items-center gap-2 rounded-xl border border-kagan-gold/35 px-5 py-3 text-sm font-bold text-kagan-gold transition hover:bg-kagan-gold/10"
             >
               Mission Control <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/products/"
+              href="https://aikagan.com/products"
               className="inline-flex items-center gap-2 rounded-xl bg-kagan-gold px-5 py-3 text-sm font-extrabold text-black transition hover:bg-kagan-gold-light"
             >
               Revenue offers <ArrowRight className="h-4 w-4" />

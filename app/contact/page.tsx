@@ -304,21 +304,21 @@ Interest: ${payload.interest || "-"}
           <h2 className="text-2xl font-bold text-kagan-white mb-6">Not Ready to Submit? Start Here.</h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/products/"
+              href="/products"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
               Browse Products
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/products/"
+              href="/products"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
               Browse All Packs
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/mission-control/"
+              href="/mission-control"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/60 px-6 py-3 text-kagan-gold hover:bg-kagan-gold/10 transition-colors font-medium"
             >
               View Process

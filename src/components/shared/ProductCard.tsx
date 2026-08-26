@@ -19,7 +19,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ name, slug, category, price, originalPrice, description, includes, badge, checkoutUrl, featured = false }: ProductCardProps) {
   const badgeVariant = featured ? 'gold' : badge.includes('Popular') ? 'amber' : 'blue';
-  const productHref = `/products/${slug}/`;
+  const productHref = `/products/${slug}`;
   const isPaddle = checkoutUrl === 'paddle';
   const numericPrice = parseInt(price.replace(/[^0-9]/g, '')) || 0;
 

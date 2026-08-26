@@ -20,10 +20,10 @@ const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || "";
 export const metadata: Metadata = {
   metadataBase: new URL("https://aikagan.com"),
   title: { default: "AutonomaX Profit OS — AI Revenue Operations", template: "%s | AutonomaX Profit OS" },
-  description: "AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.",
+  description: "Turn scattered offers, checkout, delivery, and performance data into one practical revenue-operations system for founders, operators, and small teams.",
   openGraph: {
     title: "AutonomaX Profit OS — Instant-Download Digital Toolkits — Checkout, Delivery & Growth",
-    description: "AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.",
+    description: "Turn scattered offers, checkout, delivery, and performance data into one practical revenue-operations system for founders, operators, and small teams.",
     url: "https://aikagan.com",
     siteName: "AutonomaX Profit OS",
     locale: "en_US",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AutonomaX Profit OS — Instant-Download Digital Toolkits — Checkout, Delivery & Growth",
-    description: "AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.",
+    description: "Turn scattered offers, checkout, delivery, and performance data into one practical revenue-operations system for founders, operators, and small teams.",
     images: ["/og.png"],
   },
 };

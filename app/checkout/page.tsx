@@ -16,7 +16,7 @@ function CheckoutContent() {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const token = params.get("_ptxn");
-    if (!token) { window.location.replace("https://aikagan.com/products/"); return; }
+    if (!token) { window.location.replace("https://aikagan.com/products"); return; }
     setPtxn(token);
 
     let mounted = true;
@@ -102,7 +102,7 @@ function CheckoutContent() {
 
       {status === "error" && <div className="w-full max-w-lg rounded-2xl border border-red-400/25 bg-[#111319] p-8 text-center">
         <div className="text-red-400 text-4xl mb-4">⚠</div><h2 className="text-xl font-bold text-white mb-2">Hosted checkout could not open</h2><p className="text-neutral-300 mb-2">Your purchase has not been charged.</p>{errorDetail && <p className="rounded-lg bg-red-400/10 p-3 text-xs text-red-200 mb-5">{errorDetail}</p>}
-        <div className="flex flex-col gap-3"><button onClick={() => window.location.reload()} className="inline-flex justify-center rounded-xl bg-amber-300 px-6 py-3 font-semibold text-black hover:bg-amber-200">Retry secure checkout</button><Link href="/checkout/manual" className="inline-flex justify-center rounded-xl border border-amber-300/30 bg-amber-300/10 px-6 py-3 font-semibold text-amber-200 hover:bg-amber-300/20">Continue with payment fallback</Link><Link href="https://aikagan.com/products/" className="inline-flex justify-center rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/5">Choose another offer</Link></div>
+        <div className="flex flex-col gap-3"><button onClick={() => window.location.reload()} className="inline-flex justify-center rounded-xl bg-amber-300 px-6 py-3 font-semibold text-black hover:bg-amber-200">Retry secure checkout</button><Link href="/checkout/manual" className="inline-flex justify-center rounded-xl border border-amber-300/30 bg-amber-300/10 px-6 py-3 font-semibold text-amber-200">Continue with payment fallback</Link><Link href="https://aikagan.com/products" className="inline-flex justify-center rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/5">Choose another offer</Link></div>
         <form onSubmit={handleDeliveryUpdates} className="mt-5 rounded-xl border border-white/10 bg-black/30 p-4 text-left"><p className="text-xs font-semibold text-neutral-200">Send me checkout/delivery help</p><div className="mt-2 flex flex-col sm:flex-row gap-2"><input type="email" required value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="name@company.com" className="flex-1 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-neutral-500"/><button type="submit" disabled={emailState === "saving"} className="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-black disabled:opacity-60">{emailState === "saving" ? "Saving…" : "Get help"}</button></div>{emailState === "saved" && <p className="mt-2 text-xs text-green-400">Saved. We&apos;ll use this address for checkout support.</p>}{emailState === "error" && <p className="mt-2 text-xs text-red-400">Could not save right now. Email hello@aikagan.com.</p>}</form>
       </div>}
     </div>

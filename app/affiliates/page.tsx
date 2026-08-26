@@ -30,7 +30,7 @@ export default function AffiliatesPage() {
               Get Your Referral Link
             </a>
             <a
-              href="/marketing/"
+              href="/marketing"
               className="inline-flex items-center gap-2 rounded-lg border border-kagan-gold/40 px-5 py-2.5 text-sm font-semibold text-kagan-gold hover:bg-kagan-gold/10 transition-colors"
             >
               Social Swipes & Templates →

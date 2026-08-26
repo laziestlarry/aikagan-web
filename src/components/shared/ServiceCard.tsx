@@ -28,7 +28,7 @@ export default function ServiceCard({
   features,
   icon,
   cta,
-  href = '/contact/',
+  href = '/contact',
 }: ServiceCardProps) {
   const IconComponent = iconMap[icon] || Zap;
 

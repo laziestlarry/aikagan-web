@@ -1,9 +1,11 @@
-export const metadata = {
-  title: "Contact & Support | AutonomaX",
-  description: "Get help with your AutonomaX order, product questions, or business inquiries.",
-};
-
+import { buildMetadata } from "@/lib/metadata";
 import Link from "next/link";
+
+export const metadata = buildMetadata({
+  title: "Contact & Support",
+  description: "Get AIKAGAN support for an AutonomaX order, missing delivery, refund request, product question, partnership proposal, or business inquiry.",
+  path: "/legal/contact",
+});
 
 export default function ContactPage() {
   return (
@@ -53,7 +55,7 @@ export default function ContactPage() {
               Not satisfied? Email within 30 days of purchase with your order ID.
               We review and respond within 2 business days.
             </p>
-            <a href="/legal/refund/"
+            <a href="/legal/refund"
               className="text-amber-300 underline text-sm hover:text-amber-200">
               View refund policy →
             </a>

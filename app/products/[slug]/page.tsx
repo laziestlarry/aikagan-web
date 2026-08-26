@@ -5,6 +5,15 @@ import { ArrowUpRight, Shield, Star, TrendingUp, Zap } from "lucide-react";
 import CheckoutLink from "@/components/ui/CheckoutLink";
 import ExitIntentModal from "@/components/ui/ExitIntentModal";
 import { getProduct, products } from "@/lib/products";
+import { buildMetadata } from "@/lib/metadata";
+
+const seoDescriptions: Record<string, string> = {
+  "masterclass-starter": "Turn one business idea into a clear offer and first-sale action plan with a seven-day blueprint, buyer scripts, a workbook, and immediate digital delivery.",
+  "masterclass-pro": "Build a complete offer-to-checkout conversion path with funnel plans, traffic experiments, automation workflows, AI prompts, and a 30-day operating calendar.",
+  "masterclass-commander": "Systemize a proven commercial motion with a scale sprint, partnership playbook, automation controls, KPI diagnostics, and defined white-label usage rights.",
+  "revenue-audit-sprint": "Request a focused review of your current stack, conversion path, and monetization options, followed by ranked recommendations and a practical action sequence.",
+  "ai-venture-launch-blueprint": "Get a scoped venture analysis covering market opportunity, positioning, monetization, business model, execution roadmap, risks, and automation opportunities.",
+};
 
 export function generateStaticParams() {
   return products
@@ -24,11 +33,11 @@ export async function generateMetadata({
     return { title: "Product Not Found | AutonomaX" };
   }
 
-  return {
-    title: `${product.name} | AutonomaX`,
-    description: product.description,
-    alternates: { canonical: `/products/${product.slug}` },
-  };
+  return buildMetadata({
+    title: product.name,
+    description: seoDescriptions[product.slug] ?? product.description,
+    path: `/products/${product.slug}`,
+  });
 }
 
 const comparisonRows = [

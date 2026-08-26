@@ -49,7 +49,7 @@ It's a fillable worksheet + DM scripts + 24-hour activation checklist.
 
 You get the same playbook. $29. 30-day refund.
 
-→ https://aikagan.com/products/masterclass-starter/`,
+→ https://aikagan.com/products/masterclass-starter`,
   },
   {
     angle: "listicle",
@@ -109,7 +109,7 @@ So I built my own. It's a fillable worksheet with the exact steps I used to make
 
 7 days. 5 templates. 6 DM scripts. $29. No upsell.
 
-→ https://aikagan.com/products/masterclass-starter/`,
+→ https://aikagan.com/products/masterclass-starter`,
   },
   {
     angle: "stat",
@@ -141,7 +141,7 @@ Because I used a system:
 
 The whole system is in a $29 worksheet. 30-day refund.
 
-→ https://aikagan.com/products/masterclass-starter/`,
+→ https://aikagan.com/products/masterclass-starter`,
   },
   {
     angle: "polarizing",
@@ -374,7 +374,7 @@ export default function MarketingPage() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
-              href="/affiliates/"
+              href="/affiliates"
               className="inline-flex items-center gap-2 rounded-lg bg-kagan-gold px-5 py-2.5 text-sm font-semibold text-black hover:bg-kagan-gold-light transition-colors"
             >
               Get Your Referral Link
@@ -396,7 +396,7 @@ export default function MarketingPage() {
           <ol className="space-y-2 text-sm text-kagan-light">
             <li>
               <span className="text-kagan-gold font-semibold">1.</span> Sign up
-              free on the <a href="/affiliates/" className="text-kagan-gold hover:underline">Affiliates page</a> — get your unique 8-char code
+              free on the <a href="/affiliates" className="text-kagan-gold hover:underline">Affiliates page</a> — get your unique 8-char code
             </li>
             <li>
               <span className="text-kagan-gold font-semibold">2.</span> Share
@@ -430,7 +430,7 @@ export default function MarketingPage() {
                 label={s.label}
                 angle={s.angle}
                 body={s.body}
-                cta="https://aikagan.com/products/masterclass-starter/"
+                cta="https://aikagan.com/products/masterclass-starter"
               />
             ))}
           </div>
@@ -543,7 +543,7 @@ export default function MarketingPage() {
             20–30% on every sale.
           </p>
           <a
-            href="/affiliates/"
+            href="/affiliates"
             className="inline-flex items-center gap-2 rounded-lg bg-kagan-gold px-6 py-3 text-sm font-semibold text-black hover:bg-kagan-gold-light transition-colors"
           >
             Get My Referral Link →

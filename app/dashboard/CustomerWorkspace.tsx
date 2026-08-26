@@ -74,8 +74,8 @@ export default function CustomerWorkspace() {
           <h1 className="text-4xl font-extrabold text-kagan-white md:text-6xl">Activate through a verified purchase</h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-kagan-light">Customer data, entitlements and delivery assets only appear after a verified checkout establishes your signed AIKAGAN session. You can still explore AutonomaX before buying.</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/autonomax/" className="rounded-xl border border-kagan-gold/40 px-6 py-3 font-semibold text-kagan-gold">Explore AutonomaX</Link>
-            <a href={`${SITE.url}/products/`} className="rounded-xl bg-kagan-gold px-6 py-3 font-semibold text-black">Choose a plan</a>
+            <Link href="/autonomax" className="rounded-xl border border-kagan-gold/40 px-6 py-3 font-semibold text-kagan-gold">Explore AutonomaX</Link>
+            <a href={`${SITE.url}/products`} className="rounded-xl bg-kagan-gold px-6 py-3 font-semibold text-black">Choose a plan</a>
           </div>
         </div>
       </Section>
@@ -88,7 +88,7 @@ export default function CustomerWorkspace() {
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div><Badge variant="green" className="mb-3">Verified customer session</Badge><h1 className="text-4xl font-extrabold text-kagan-white md:text-5xl">Outcome workspace</h1><p className="mt-3 text-kagan-light">{customer.email} · {activeEntitlements.length} active entitlement{activeEntitlements.length === 1 ? '' : 's'}</p></div>
-            <a href={`${SITE.url}/products/`} className="inline-flex items-center gap-2 text-sm font-bold text-kagan-gold">Expand capabilities <ArrowRight className="h-4 w-4" /></a>
+            <a href={`${SITE.url}/products`} className="inline-flex items-center gap-2 text-sm font-bold text-kagan-gold">Expand capabilities <ArrowRight className="h-4 w-4" /></a>
           </div>
 
           {notice && <div className="mb-6 rounded-xl border border-kagan-gold/30 bg-kagan-gold/10 px-4 py-3 text-sm text-kagan-light">{notice}</div>}

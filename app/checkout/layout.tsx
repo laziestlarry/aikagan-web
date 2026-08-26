@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: `Secure Checkout | ${SITE.name}`,
   description: 'Secure AIKAGAN checkout handoff for verified AutonomaX products.',
   metadataBase: new URL(SITE.appUrl),
-  alternates: { canonical: `${SITE.appUrl}/checkout/` },
+  alternates: { canonical: `${SITE.appUrl}/checkout` },
   robots: { index: false, follow: false },
 };
 

@@ -26,7 +26,7 @@ async function verifiedResponse(transactionId: string, record: TokenRecord, extr
     token: record.token,
     slug: record.slug,
     email: record.email.replace(/(.{2}).*(@.*)/, "$1***$2"),
-    workspace: "https://app.aikagan.com/dashboard/",
+    workspace: "https://app.aikagan.com/dashboard",
     ...extra,
   });
 

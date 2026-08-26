@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Check, Copy, Linkedin, Share2 } from 'lucide-react';
 
-const DESTINATION = 'https://aikagan.com/tools/?utm_source=member_share&utm_medium=referral&utm_campaign=aikagan_network';
+const DESTINATION = 'https://aikagan.com/tools?utm_source=member_share&utm_medium=referral&utm_campaign=aikagan_network';
 const TEXT = 'I found a useful free AI business toolkit: diagnose revenue friction, inspect a practical delivery sample, and explore AutonomaX before buying anything.';
 
 export default function ShareNetwork(){

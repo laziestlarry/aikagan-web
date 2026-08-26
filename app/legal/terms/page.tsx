@@ -1,7 +1,10 @@
-export const metadata = {
-  title: "Terms of Service | AutonomaX",
-  description: "Terms governing the purchase and use of AutonomaX digital products.",
-};
+import { buildMetadata } from "@/lib/metadata";
+
+export const metadata = buildMetadata({
+  title: "Terms of Service",
+  description: "Read the terms governing AIKAGAN and AutonomaX digital products, checkout, delivery, permitted use, customer responsibilities, and support.",
+  path: "/legal/terms",
+});
 
 export default function TermsPage() {
   return (

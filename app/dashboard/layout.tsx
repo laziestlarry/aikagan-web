@@ -4,7 +4,7 @@ import { SITE } from '@/lib/constants';
 const title = `Workspace | ${SITE.name}`;
 const description =
   'AutonomaX customer execution workspace for activating projects, running governed workflows, keeping evidence, and reaching verified outcomes.';
-const canonical = `${SITE.appUrl}/dashboard/`;
+const canonical = `${SITE.appUrl}/dashboard`;
 
 export const metadata: Metadata = {
   title,
