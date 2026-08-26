@@ -29,7 +29,10 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "url=${{ inputs.production_url }}" >> "$GITHUB_OUTPUT"
           else
-            echo "url=${{ github.event.deployment_status.target_url }}" >> "$GITHUB_OUTPUT"
+            # Vercel deployment URLs can be protected even when the public production
+            # aliases are healthy. Automatic readiness must validate the canonical
+            # first-party commerce surface; previews can still be tested manually.
+            echo "url=https://aikagan.com" >> "$GITHUB_OUTPUT"
           fi
       - name: Verify live commerce gates
         env:
