@@ -1,7 +1,10 @@
-export const metadata = {
-  title: "Privacy Policy | AutonomaX",
-  description: "How AutonomaX collects, uses, and protects your information.",
-};
+import { buildMetadata } from "@/lib/metadata";
+
+export const metadata = buildMetadata({
+  title: "Privacy Policy",
+  description: "Learn what information AIKAGAN and AutonomaX collect, how it is used and protected, which providers receive it, and how to exercise your rights.",
+  path: "/legal/privacy",
+});
 
 export default function PrivacyPage() {
   return (

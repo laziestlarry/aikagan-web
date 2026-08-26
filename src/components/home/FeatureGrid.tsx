@@ -24,7 +24,7 @@ export default function FeatureGrid() {
       </div>
 
       <div className="text-center">
-        <Button href="/services/" variant="outline" size="md">
+        <Button href="/services" variant="outline" size="md">
           View All Services →
         </Button>
       </div>

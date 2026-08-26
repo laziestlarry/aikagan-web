@@ -1,46 +1,47 @@
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, ShieldCheck, Wrench, Zap } from 'lucide-react';
+import { buildMetadata } from '@/lib/metadata';
 
-export const metadata = {
-  title: 'Cash-Resilience Offers — AIKAGAN',
+export const metadata = buildMetadata({
+  title: 'Cash-Resilience Offers',
   description: 'Use existing AIKAGAN assets and services to solve real business bottlenecks without adding unnecessary spend.',
-  alternates: { canonical: 'https://aikagan.com/cash-resilience/' },
-};
+  path: '/cash-resilience',
+});
 
 const offers = [
   {
     title: 'Revenue Audit Sprint',
     price: '$29',
     body: 'A focused review of your stack, conversion path, and monetization options with ranked recommendations.',
-    href: '/products/revenue-audit-sprint/',
+    href: '/products/revenue-audit-sprint',
     mode: 'Scoped service',
   },
   {
     title: 'Starter Toolkit',
     price: '$29',
     body: 'Immediate digital delivery: launch framework, offer worksheet, objection scripts, activation checklist, and Golden Delivery starter assets.',
-    href: '/products/masterclass-starter/',
+    href: '/products/masterclass-starter',
     mode: 'Instant download',
   },
   {
     title: 'Pro Revenue Ops Toolkit',
     price: '$79',
     body: 'Funnel architectures, traffic experiments, offer templates, automation workflows, and a 30-day operating cadence.',
-    href: '/products/masterclass-pro/',
+    href: '/products/masterclass-pro',
     mode: 'Instant download',
   },
   {
     title: 'AI Venture Launch Blueprint',
     price: '$99',
     body: 'Structured market, monetization, business-model, roadmap, risk, and automation analysis for a real venture or dormant project.',
-    href: '/products/ai-venture-launch-blueprint/',
+    href: '/products/ai-venture-launch-blueprint',
     mode: 'Scoped service',
   },
   {
     title: 'Commander Operating Architecture',
     price: '$149',
     body: 'The complete operating architecture with system map, scale sprint, partnership playbook, automation OS, and KPI dashboard.',
-    href: '/products/masterclass-commander/',
+    href: '/products/masterclass-commander',
     mode: 'Instant download',
   },
 ];
@@ -53,7 +54,7 @@ export default function CashResiliencePage() {
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/[0.06] px-4 py-2 text-sm font-bold text-emerald-300"><ShieldCheck className="h-4 w-4" /> Cash-resilience mode</div>
           <h1 className="mt-7 max-w-4xl text-5xl font-black tracking-[-0.04em] sm:text-7xl">Use what already exists. <span className="text-amber-300">Solve a real bottleneck before spending more.</span></h1>
           <p className="mt-7 max-w-3xl text-lg leading-8 text-neutral-300">AIKAGAN is prioritizing high-margin digital assets and tightly scoped services that already have a delivery path. No invented scarcity, no speculative ROI promise, and no requirement to buy before the problem is clear.</p>
-          <div className="mt-9 flex flex-wrap gap-3"><Link href="/start-free/" className="rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black">Diagnose first for free</Link><Link href="/products/" className="rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold">Browse all offers</Link></div>
+          <div className="mt-9 flex flex-wrap gap-3"><Link href="/start-free" className="rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black">Diagnose first for free</Link><Link href="/products" className="rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold">Browse all offers</Link></div>
         </div>
       </section>
 

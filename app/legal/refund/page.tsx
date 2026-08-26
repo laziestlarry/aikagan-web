@@ -1,7 +1,10 @@
-export const metadata = {
-  title: "Refund Policy | AutonomaX",
-  description: "AutonomaX 30-day digital product refund policy.",
-};
+import { buildMetadata } from "@/lib/metadata";
+
+export const metadata = buildMetadata({
+  title: "Refund Policy",
+  description: "Review the AIKAGAN and AutonomaX 30-day refund policy, eligibility rules, request steps, response timing, and payment-provider processing.",
+  path: "/legal/refund",
+});
 
 export default function RefundPage() {
   return (

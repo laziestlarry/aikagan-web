@@ -11,13 +11,13 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'Products', href: '/products/' },
-  { label: 'Marketing', href: '/marketing/' },
-  { label: 'Affiliates', href: '/affiliates/' },
-  { label: 'Dashboard', href: '/dashboard/' },
-  { label: 'Mission Control', href: '/mission-control/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Contact', href: '/contact/' },
+  { label: 'Products', href: '/products' },
+  { label: 'Marketing', href: '/marketing' },
+  { label: 'Affiliates', href: '/affiliates' },
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Mission Control', href: '/mission-control' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ] as const;
 
 export const SERVICES = [

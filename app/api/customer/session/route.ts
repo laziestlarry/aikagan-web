@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     authenticated: true,
     customerId,
     entitlement: purchase.slug,
-    workspace: "https://app.aikagan.com/dashboard/",
+    workspace: "https://app.aikagan.com/dashboard",
     entitlements: record.entitlements.filter((e) => e.status === "active").map((e) => e.slug),
   });
 

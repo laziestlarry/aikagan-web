@@ -17,12 +17,12 @@ export const metadata: Metadata = buildMetadata({
 });
 
 const JOURNEY = [
-  { n: '1', label: 'Discover', body: 'Understand the outcome, scope, price, and evidence standard before buying.', href: '/products/', linkLabel: 'Explore offers' },
-  { n: '2', label: 'Experience', body: 'Use a free sample or product explanation to validate fit before committing.', href: '/free/golden-delivery-sample/', linkLabel: 'Try a sample' },
-  { n: '3', label: 'Buy', body: 'Complete checkout through the named payment provider for the selected offer.', href: '/products/', linkLabel: 'Choose a product' },
-  { n: '4', label: 'Activate', body: 'Move into the AutonomaX application for the post-purchase execution experience.', href: `${SITE.appUrl}/dashboard/`, linkLabel: 'Open the app', external: true },
-  { n: '5', label: 'Execute', body: 'Run the governed workflow and create the actual customer deliverable.', href: `${SITE.appUrl}/autonomax/`, linkLabel: 'Open AutonomaX', external: true },
-  { n: '6', label: 'Verify', body: 'Keep fulfillment, production state, and commercial evidence distinct and inspectable.', href: '/contact/', linkLabel: 'Get support' },
+  { n: '1', label: 'Discover', body: 'Understand the outcome, scope, price, and evidence standard before buying.', href: '/products', linkLabel: 'Explore offers' },
+  { n: '2', label: 'Experience', body: 'Use a free sample or product explanation to validate fit before committing.', href: '/free/golden-delivery-sample', linkLabel: 'Try a sample' },
+  { n: '3', label: 'Buy', body: 'Complete checkout through the named payment provider for the selected offer.', href: '/products', linkLabel: 'Choose a product' },
+  { n: '4', label: 'Activate', body: 'Move into the AutonomaX application for the post-purchase execution experience.', href: `${SITE.appUrl}/dashboard`, linkLabel: 'Open the app', external: true },
+  { n: '5', label: 'Execute', body: 'Run the governed workflow and create the actual customer deliverable.', href: `${SITE.appUrl}/autonomax`, linkLabel: 'Open AutonomaX', external: true },
+  { n: '6', label: 'Verify', body: 'Keep fulfillment, production state, and commercial evidence distinct and inspectable.', href: '/contact', linkLabel: 'Get support' },
 ] as const;
 
 const PUBLIC_PROOFS = [
@@ -116,7 +116,7 @@ export default function MissionControlPage() {
           primaryLabel="Explore Products"
           primaryHref="/products/"
           secondaryLabel="Open AutonomaX App"
-          secondaryHref={`${SITE.appUrl}/dashboard/`}
+          secondaryHref={`${SITE.appUrl}/dashboard`}
         />
       </Section>
     </>

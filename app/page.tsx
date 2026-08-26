@@ -3,13 +3,13 @@ import { ArrowRight, CheckCircle2, Gauge, Gift, ShieldCheck, Sparkles, Wrench, W
 import SocialProof from '@/components/home/SocialProof';
 
 export const metadata = {
-  title: 'AIKAGAN — Free AI Business Tools & Practical Automation',
+  title: 'Free AI Business Tools',
   description: 'Try free AI business tools that help you find revenue leaks, improve workflows, and understand what to automate next. No purchase required.',
-  alternates: { canonical: 'https://aikagan.com/' },
+  alternates: { canonical: 'https://aikagan.com' },
   openGraph: {
     title: 'Try useful AI business tools for free | AIKAGAN',
     description: 'Get a useful result first. Find a business problem, explore a practical AI workflow, and only pay if you want help implementing it.',
-    url: 'https://aikagan.com/',
+    url: 'https://aikagan.com',
     type: 'website',
   },
   twitter: {
@@ -25,7 +25,7 @@ const freeExperiences = [
     title: 'Find where revenue is leaking',
     body: 'Answer 7 simple questions and get an immediate score across your offer, checkout, delivery, follow-up and retention path.',
     result: 'You leave with a ranked list of what to fix first.',
-    href: '/tools/revenue-leak-scan/',
+    href: '/tools/revenue-leak-scan',
     cta: 'Get my free score',
     icon: Gauge,
   },
@@ -33,7 +33,7 @@ const freeExperiences = [
     title: 'See a ready-made business delivery example',
     body: 'Open a free sample of the practical checklists, operating assets and delivery structure behind AIKAGAN products.',
     result: 'You can judge the usefulness before paying for anything.',
-    href: '/free/golden-delivery-sample/',
+    href: '/free/golden-delivery-sample',
     cta: 'Open free sample',
     icon: Gift,
   },
@@ -41,7 +41,7 @@ const freeExperiences = [
     title: 'Explore how AutonomaX works',
     body: 'See how a business objective can be turned into a guided execution mission with next actions and measurable progress.',
     result: 'You understand the product by using the experience, not reading a pitch.',
-    href: 'https://app.aikagan.com/autonomax/',
+    href: 'https://app.aikagan.com/autonomax',
     cta: 'Explore AutonomaX',
     icon: Workflow,
   },
@@ -61,10 +61,10 @@ export default function HomePage() {
             AIKAGAN gives you free tools to spot business friction, improve conversion and explore practical automation. If a problem is worth solving, AutonomaX can help turn the diagnosis into execution.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <Link href="/tools/revenue-leak-scan/" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black transition hover:bg-amber-200">
+            <Link href="/tools/revenue-leak-scan" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black transition hover:bg-amber-200">
               Start free Revenue Leak Scan <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/tools/" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold text-white hover:border-white/30">
+            <Link href="/tools" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold text-white hover:border-white/30">
               See all free experiences
             </Link>
           </div>
@@ -107,7 +107,7 @@ export default function HomePage() {
           <p className="text-sm font-semibold text-amber-300">What happens if the free result helps?</p>
           <h2 className="mt-3 text-4xl font-black">You choose how far to go.</h2>
           <p className="mt-5 leading-8 text-neutral-400">Keep the free result and do it yourself, use a ready-made product, or ask AIKAGAN to help implement and operate the solution. There is no requirement to upgrade.</p>
-          <Link href="/services/" className="mt-7 inline-flex items-center gap-2 rounded-xl border border-amber-300/35 px-5 py-3 font-bold text-amber-300">See implementation help <ArrowRight className="h-4 w-4"/></Link>
+          <Link href="/services" className="mt-7 inline-flex items-center gap-2 rounded-xl border border-amber-300/35 px-5 py-3 font-bold text-amber-300">See implementation help <ArrowRight className="h-4 w-4"/></Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {[
@@ -128,7 +128,7 @@ export default function HomePage() {
         <p className="mt-5 text-sm font-semibold text-amber-300">You can start without knowing exactly what you need.</p>
         <h2 className="mt-4 text-4xl font-black">Find the problem first. Then decide whether it deserves a tool, a workflow, or no purchase at all.</h2>
         <p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-400">The Revenue Leak Scan is the simplest place to begin. It gives you an immediate result and points to the next useful step.</p>
-        <Link href="/tools/revenue-leak-scan/" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black hover:bg-amber-200">Start free scan <ArrowRight className="h-4 w-4"/></Link>
+        <Link href="/tools/revenue-leak-scan" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black hover:bg-amber-200">Start free scan <ArrowRight className="h-4 w-4"/></Link>
       </div>
     </section>
   </main>;

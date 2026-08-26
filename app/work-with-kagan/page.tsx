@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { ArrowRight, Bot, Box, BriefcaseBusiness, Building2, CheckCircle2, FileText, Github, Languages, Rocket, Ruler, Workflow } from 'lucide-react';
+import { buildMetadata } from '@/lib/metadata';
 
-export const metadata = {
-  title: 'Work with Kagan — Rapid Technical, Business & AI Execution',
+export const metadata = buildMetadata({
+  title: 'Work with Kagan',
   description: 'Rapid project execution for CAD, 3D modeling, technical documentation, business strategy, AI workflows, research and implementation.',
-  alternates: { canonical: 'https://aikagan.com/work-with-kagan/' },
-};
+  path: '/work-with-kagan',
+});
 
 const capabilities = [
   { icon: Ruler, title: 'CAD & Technical Drawings', body: '2D drafting, drawing cleanup, PDF/DWG conversion, plan revisions, technical documentation and coordination-ready outputs.' },
@@ -45,7 +46,7 @@ export default function WorkWithKaganPage() {
           <p className="mt-7 max-w-3xl text-lg leading-8 text-neutral-300">I take defined problems from raw inputs to reviewable deliverables: CAD and 3D work, technical documentation, business plans and strategy, research, automation and AI-enabled operating workflows. For urgent scopes, I prioritize an early milestone so you can evaluate the work before expanding the engagement.</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link href="/contact?service=rapid-project" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black hover:bg-amber-200">Discuss a project <ArrowRight className="h-4 w-4" /></Link>
-            <Link href="/cash-resilience/" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold hover:border-white/30">See ready offers</Link>
+            <Link href="/cash-resilience" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold hover:border-white/30">See ready offers</Link>
           </div>
         </div>
       </section>

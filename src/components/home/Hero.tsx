@@ -47,14 +47,14 @@ export default function Hero() {
 
         {/* CTA Row */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/contact/" variant="primary" size="lg">
+          <Button href="/contact" variant="primary" size="lg">
             Start Project
             <ArrowRight className="h-5 w-5" />
           </Button>
-          <Button href="/products/" variant="outline" size="lg">
+          <Button href="/products" variant="outline" size="lg">
             View Offers
           </Button>
-          <Button href="/services/#golden-delivery" variant="ghost" size="lg">
+          <Button href="/services#golden-delivery" variant="ghost" size="lg">
             Request Audit
           </Button>
         </div>

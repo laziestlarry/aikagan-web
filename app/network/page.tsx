@@ -5,17 +5,17 @@ import ShareNetwork from './ShareNetwork';
 import NetworkJoinForm from './NetworkJoinForm';
 
 export const metadata: Metadata = {
-  title:'Join the AIKAGAN Network | Try, Share & Shape What Gets Built',
-  description:'Join a free network around practical AI business tools. Try useful software, shape what gets built next, share what helps, and optionally earn on verified referrals.',
-  alternates:{canonical:'https://aikagan.com/network/'},
-  openGraph:{title:'Join the AIKAGAN Network — Use it. Improve it. Share it.',description:'Try practical AI business tools for free, help shape what gets built next, and invite someone who could genuinely benefit.',url:'https://aikagan.com/network/',type:'website',images:['https://aikagan.com/og.png']},
+  title:'Join the AIKAGAN Network',
+  description:'Join a free network for practical AI business tools. Try useful software, shape what gets built next, share what helps, and earn on verified referrals.',
+  alternates:{canonical:'https://aikagan.com/network'},
+  openGraph:{title:'Join the AIKAGAN Network — Use it. Improve it. Share it.',description:'Try practical AI business tools for free, help shape what gets built next, and invite someone who could genuinely benefit.',url:'https://aikagan.com/network',type:'website',images:['https://aikagan.com/og.png']},
   twitter:{card:'summary_large_image',title:'Join the AIKAGAN Network — Use it. Improve it. Share it.',description:'Try practical AI business tools for free, help shape what gets built next, and invite someone who could genuinely benefit.',images:['https://aikagan.com/og.png']},
 };
 
 export default function NetworkPage(){
   return <main className="min-h-screen bg-[#08080a] px-5 py-20 text-white"><section className="mx-auto max-w-6xl">
     <div className="grid gap-10 lg:grid-cols-[1.05fr_.95fr] lg:items-start">
-      <div><p className="text-sm font-semibold text-emerald-300">AIKAGAN Network · free to join</p><h1 className="mt-4 text-5xl font-black leading-[.95] md:text-7xl">Use it. Improve it. <span className="text-amber-300">Invite someone who could benefit.</span></h1><p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">This network is for builders, operators, founders, creators and small teams who want practical AI tools without needing to buy first. Try the free experiences, tell us what would make them better, and share the useful ones with people who have the same problem.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/tools/" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-3 font-black text-black">Try free tools <ArrowRight className="h-4 w-4"/></Link><a href="https://github.com/laziestlarry/aikagan-web/issues/38" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/30 px-5 py-3 font-bold text-emerald-300">Builder discussion</a><Link href="/affiliates/" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-bold text-white">Referral program</Link></div></div>
+      <div><p className="text-sm font-semibold text-emerald-300">AIKAGAN Network · free to join</p><h1 className="mt-4 text-5xl font-black leading-[.95] md:text-7xl">Use it. Improve it. <span className="text-amber-300">Invite someone who could benefit.</span></h1><p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">This network is for builders, operators, founders, creators and small teams who want practical AI tools without needing to buy first. Try the free experiences, tell us what would make them better, and share the useful ones with people who have the same problem.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/tools" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-3 font-black text-black">Try free tools <ArrowRight className="h-4 w-4"/></Link><a href="https://github.com/laziestlarry/aikagan-web/issues/38" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/30 px-5 py-3 font-bold text-emerald-300">Builder discussion</a><Link href="/affiliates" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-bold text-white">Referral program</Link></div></div>
       <NetworkJoinForm/>
     </div>
 

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const APP_HOST = 'app.aikagan.com';
-const WEB_HOSTS = new Set(['aikagan.com', 'www.aikagan.com']);
+const APEX_HOST = 'aikagan.com';
+const WWW_HOST = 'www.aikagan.com';
 
 const APP_PREFIXES = [
   '/dashboard',
@@ -25,6 +26,13 @@ const WEB_PREFIXES = [
   '/about',
   '/contact',
   '/free',
+  '/tools',
+  '/network',
+  '/feedback',
+  '/start-free',
+  '/work-with-kagan',
+  '/cash-resilience',
+  '/legal',
   '/marketing',
   '/affiliates',
   '/mission-control',
@@ -51,27 +59,40 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get('host')?.split(':')[0]?.toLowerCase() ?? '';
   const { pathname, search } = request.nextUrl;
 
+  if (host === WWW_HOST) {
+    const targetHost = startsWithAny(pathname, APP_PREFIXES) ? APP_HOST : APEX_HOST;
+    return NextResponse.redirect(new URL(`${pathname}${search}`, `https://${targetHost}`), 308);
+  }
+
   if (host === APP_HOST) {
+    if (pathname === '/robots.txt' || pathname === '/sitemap.xml') {
+      return NextResponse.redirect(new URL(pathname, 'https://aikagan.com'), 308);
+    }
+
     if (pathname === '/') {
-      return NextResponse.redirect(new URL('/dashboard/', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url), 308);
     }
 
     if (startsWithAny(pathname, LEGACY_INTERNAL_DASHBOARDS)) {
-      return NextResponse.redirect(new URL('/dashboard/', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url), 308);
     }
 
     if (startsWithAny(pathname, WEB_PREFIXES)) {
-      return NextResponse.redirect(new URL(`${pathname}${search}`, 'https://aikagan.com'));
+      return NextResponse.redirect(new URL(`${pathname}${search}`, 'https://aikagan.com'), 308);
     }
   }
 
-  if (WEB_HOSTS.has(host) && startsWithAny(pathname, APP_PREFIXES)) {
-    return NextResponse.redirect(new URL(`${pathname}${search}`, 'https://app.aikagan.com'));
+  if (host === APEX_HOST && startsWithAny(pathname, APP_PREFIXES)) {
+    return NextResponse.redirect(new URL(`${pathname}${search}`, 'https://app.aikagan.com'), 308);
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (host === APP_HOST || startsWithAny(pathname, ['/admin', '/income', '/intake', '/thank-you'])) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

@@ -3,6 +3,13 @@ import { getProduct, getProductsByTier } from "@/lib/products";
 import LeadMagnetForm from "@/components/ui/LeadMagnetForm";
 import MetaPixelEvent from "@/components/MetaPixelEvent";
 import Link from "next/link";
+import { buildMetadata } from "@/lib/metadata";
+
+const seoDescriptions: Record<string, string> = {
+  "weekly-operating-map": "Download a free one-page weekly operating map with a simple Sunday planning block and Wednesday reset to replace tool clutter with a usable routine.",
+  "builder-starter-checklist": "Download a free 10-step builder checklist that moves a first-time founder from an initial idea to paid validation without paid ads or unnecessary tool complexity.",
+  "golden-delivery-sample": "Open a free Golden Delivery sample with a launch-blueprint preview, offer template, activation checklist, and practical AIKAGAN delivery structure.",
+};
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -10,6 +17,19 @@ interface Props {
 
 export function generateStaticParams() {
   return getProductsByTier("lead_magnet").map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const product = getProduct(slug);
+  if (!product || product.ladderTier !== "lead_magnet") {
+    return { title: "Free Resource Not Found", robots: { index: false, follow: false } };
+  }
+  return buildMetadata({
+    title: product.name,
+    description: seoDescriptions[product.slug] ?? product.description,
+    path: `/free/${product.slug}`,
+  });
 }
 
 export default async function FreeProductPage({ params }: Props) {

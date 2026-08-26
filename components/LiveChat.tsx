@@ -18,8 +18,8 @@ export default function LiveChat() {
             <button aria-label="Close chat" onClick={() => setOpen(false)} className="text-kagan-muted hover:text-kagan-white"><X className="h-4 w-4" /></button>
           </div>
           <div className="mt-4 flex flex-col gap-2">
-            <Link href="/tools/revenue-leak-scan/" className="rounded-lg bg-kagan-gold px-4 py-2 text-center text-sm font-bold text-black">Run free scan</Link>
-            <Link href="/contact/" className="rounded-lg border border-kagan-border px-4 py-2 text-center text-sm text-kagan-light">Contact support</Link>
+            <Link href="/tools/revenue-leak-scan" className="rounded-lg bg-kagan-gold px-4 py-2 text-center text-sm font-bold text-black">Run free scan</Link>
+            <Link href="/contact" className="rounded-lg border border-kagan-border px-4 py-2 text-center text-sm text-kagan-light">Contact support</Link>
           </div>
         </div>
       ) : null}
