@@ -9,6 +9,7 @@ import AttributionInit from "@/components/AttributionInit";
 import PageviewBeacon from "@/components/PageviewBeacon";
 import WebVitalsReporter from "@/components/WebVitalsReporter";
 import { Analytics } from "@vercel/analytics/next";
+import { headers } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -38,9 +39,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = (await headers()).get("x-site-locale") === "tr" ? "tr" : "en";
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${mono.variable}`}>
       <head>
         {GTM_ID ? <Script id="google-tag-manager" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');` }} /> : null}
         {GA_MEASUREMENT_ID ? <><Script id="ga4-loader" strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} /><Script id="ga4-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: true });` }} /></> : null}
@@ -83,10 +85,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {GTM_ID ? <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} /> : null}
         <AttributionInit />
         <PageviewBeacon />
-        <Navbar />
+        <Navbar locale={locale} />
         <main className="flex-1">{children}</main>
-        <Footer />
-        <LiveChat />
+        <Footer locale={locale} />
+        <LiveChat locale={locale} />
         <WebVitalsReporter />
         <Analytics />
       </body>

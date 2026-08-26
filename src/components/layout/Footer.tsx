@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Zap, ExternalLink, Users } from 'lucide-react';
 import { SITE, SOCIAL } from '@/lib/constants';
 
+type Locale = 'en' | 'tr';
+
 const PUBLIC_LINKS = [
   { label: 'Home', href: SITE.url },
   { label: 'Free Tools', href: `${SITE.url}/tools` },
@@ -12,7 +14,16 @@ const PUBLIC_LINKS = [
   { label: 'Contact', href: `${SITE.url}/contact` },
 ] as const;
 
-export default function Footer() {
+export default function Footer({ locale = 'en' }: { locale?: Locale }) {
+  if (locale === 'tr') return <footer className="border-t border-kagan-border/60 bg-kagan-black"><div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mb-10 grid gap-5 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-6 md:grid-cols-[1fr_auto] md:items-center"><div className="flex gap-4"><Users className="mt-1 h-5 w-5 flex-none text-emerald-300"/><div><h3 className="text-lg font-bold text-kagan-white">Faydalı yapay zekâ araçlarını birlikte büyütelim.</h3><p className="mt-1 text-sm leading-6 text-kagan-light">Ücretsiz araçları deneyin, geliştirmeleri şekillendirin ve faydalanabilecek bir kişiyle paylaşın.</p></div></div><Link href="/topluluk" className="inline-flex items-center justify-center rounded-lg bg-emerald-300 px-5 py-3 text-sm font-bold text-black">Katıl ve paylaş →</Link></div>
+    <div className="grid gap-8 md:grid-cols-4"><div><Link href="/" className="flex items-center gap-2"><Zap className="h-5 w-5 text-kagan-gold"/><span className="text-lg font-bold text-kagan-white">Autonoma<span className="text-kagan-gold">X</span></span></Link><p className="mt-3 text-sm leading-relaxed text-kagan-muted">Önce faydalı araçlar. Gerçek ihtiyaç varsa uygulama desteği.</p></div>
+    <div><h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-kagan-muted">Keşfet</h4><ul className="space-y-2">{[['Ana Sayfa','/'],['Ücretsiz Araçlar','/ucretsiz-araclar'],['Topluluğa Katıl','/topluluk'],['Hizmetler','/hizmetler'],['Hazır Paketler','/urunler'],['Hakkımızda','/hakkimizda'],['İletişim','/iletisim']].map(([label,href])=><li key={href}><Link href={href} className="text-sm text-kagan-light hover:text-kagan-gold">{label}</Link></li>)}</ul></div>
+    <div><h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-kagan-muted">Kullan</h4><ul className="space-y-2"><li><Link href="/ucretsiz-araclar/gelir-kacagi-testi" className="text-sm font-medium text-emerald-300">Ücretsiz Gelir Kaçağı Testi →</Link></li><li><a href={`${SITE.appUrl}/autonomax`} className="inline-flex items-center gap-1 text-sm text-kagan-light">AutonomaX’ı Keşfet <ExternalLink className="h-3 w-3"/></a></li><li><a href={`${SITE.appUrl}/dashboard`} className="inline-flex items-center gap-1 text-sm text-kagan-light">Müşteri Alanı <ExternalLink className="h-3 w-3"/></a></li></ul></div>
+    <div><h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-kagan-muted">Daha fazlası gerektiğinde</h4><ul className="space-y-2"><li><Link href="/hizmetler" className="text-sm font-medium text-kagan-gold">Uygulama desteği →</Link></li><li><Link href="/urunler" className="text-sm text-kagan-light">Kendin yap paketleri →</Link></li></ul></div></div>
+    <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-kagan-border/60 pt-6 sm:flex-row"><div className="space-y-1 text-center text-xs text-kagan-muted sm:text-left"><p>© {SITE.year} {SITE.name}. Faydalı sonuçlar üretmek için geliştirildi.</p><p>Ücretli ürünler yalnızca doğrulanmış ödeme sağlayıcısı üzerinden satılır. Destek: <a href="mailto:hello@aikagan.com" className="text-kagan-gold">hello@aikagan.com</a></p></div><div className="flex gap-4"><Link href="/gizlilik" className="text-xs text-kagan-muted">Gizlilik</Link><Link href="/kullanim-kosullari" className="text-xs text-kagan-muted">Koşullar</Link><Link href="/iade-kosullari" className="text-xs text-kagan-muted">İade</Link></div></div>
+  </div></footer>;
+
   return <footer className="border-t border-kagan-border/60 bg-kagan-black"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
     <div className="mb-10 grid gap-5 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-6 md:grid-cols-[1fr_auto] md:items-center"><div className="flex gap-4"><Users className="mt-1 h-5 w-5 flex-none text-emerald-300"/><div><h3 className="text-lg font-bold text-kagan-white">Help grow a useful AI network.</h3><p className="mt-1 text-sm leading-6 text-kagan-light">Try free tools, shape what gets built, and invite one person who could genuinely benefit.</p></div></div><Link href={`${SITE.url}/network?utm_source=footer&utm_medium=onsite&utm_campaign=aikagan_network`} className="inline-flex items-center justify-center rounded-lg bg-emerald-300 px-5 py-3 text-sm font-bold text-black">Join & share →</Link></div>
     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
