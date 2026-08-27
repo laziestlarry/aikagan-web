@@ -1,37 +1,34 @@
 import { MetadataRoute } from 'next';
-import { headers } from 'next/headers';
 import { products } from '@/lib/products';
 
-const TURKISH_HOSTS = new Set(['aikagan.com.tr', 'www.aikagan.com.tr']);
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const host = ((await headers()).get('host') || '').split(':')[0].toLowerCase();
-  const now = new Date();
-
-  if (TURKISH_HOSTS.has(host)) {
-    const base = 'https://aikagan.com.tr';
-    return [
-      { url: base, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
-      { url: `${base}/ucretsiz-araclar`, lastModified: now, changeFrequency: 'daily', priority: 0.95 },
-      { url: `${base}/ucretsiz-araclar/gelir-kacagi-testi`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 },
-      { url: `${base}/urunler`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-      { url: `${base}/hizmetler`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
-      { url: `${base}/topluluk`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-      { url: `${base}/hakkimizda`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-      { url: `${base}/iletisim`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-      { url: `${base}/gizlilik`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-      { url: `${base}/kullanim-kosullari`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-      { url: `${base}/iade-kosullari`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    ];
-  }
-
+export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://aikagan.com';
+  const now = new Date();
   const productRoutes = products.map((product) => ({
     url: `${base}/${product.priceModel === 'free' ? 'free' : 'products'}/${product.slug}`,
     lastModified: now,
     changeFrequency: product.priceModel === 'free' ? 'weekly' : 'daily',
     priority: product.priceModel === 'free' ? 0.75 : 0.9,
   })) satisfies MetadataRoute.Sitemap;
+
+  const turkishRoutes = [
+    '/tr',
+    '/tr/tools',
+    '/tr/tools/revenue-leak-scan',
+    '/tr/products',
+    '/tr/services',
+    '/tr/network',
+    '/tr/about',
+    '/tr/contact',
+    '/tr/legal/privacy',
+    '/tr/legal/terms',
+    '/tr/legal/refund',
+  ].map((path, index) => ({
+    url: `${base}${path}`,
+    lastModified: now,
+    changeFrequency: index < 3 ? 'weekly' as const : 'monthly' as const,
+    priority: index === 0 ? 0.95 : index < 5 ? 0.8 : 0.55,
+  }));
 
   return [
     { url: base, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
@@ -42,12 +39,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/start-free`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${base}/products`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${base}/services`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${base}/mission-control`, lastModified: now, changeFrequency: 'daily', priority: 0.85 },
-    { url: `${base}/affiliates`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${base}/marketing`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${base}/cash-resilience`, lastModified: now, changeFrequency: 'weekly', priority: 0.75 },
-    { url: `${base}/work-with-kagan`, lastModified: now, changeFrequency: 'weekly', priority: 0.75 },
     ...productRoutes,
+    ...turkishRoutes,
     { url: `${base}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${base}/legal/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
