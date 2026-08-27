@@ -5,7 +5,7 @@ export const metadata = { title: 'Ücretsiz İş Araçları', description: 'Soru
 
 const tools = [
   { title:'Gelir Kaçağı Testi', q:'İşim nerede hız kaybediyor?', body:'Teklif, güven, ödeme, teslimat, takip ve tekrar satış hakkında yedi kolay soruyu yanıtlayın.', result:'Hemen bir puan ve önce neyi düzeltmeniz gerektiğini gösteren sıralı liste.', href:'/tr/tools/revenue-leak-scan/', icon:Gauge, cta:'Ücretsiz puanımı al' },
-  { title:'Ücretsiz Teslimat Örneği', q:'Hazır bir AIKAGAN teslimatı nasıl görünüyor?', body:'Paketlerde kullanılan kontrol listelerinden ve çalışma dosyalarından gerçek bir örnek inceleyin.', result:'Para ödemeden önce kaliteyi kendiniz değerlendirin.', href:'/free/golden-delivery-sample/', icon:Gift, cta:'Ücretsiz örneği aç' },
+  { title:'Ücretsiz Teslimat Örneği', q:'Hazır bir AIKAGAN teslimatı nasıl görünüyor?', body:'Teslimatlarda kullanılan kontrol yaklaşımının küçük bir Türkçe örneğini e-posta vermeden inceleyin.', result:'Para ödemeden önce yaklaşımı ve size uygun olup olmadığını değerlendirin.', href:'/tr/free/golden-delivery-sample/', icon:Gift, cta:'Ücretsiz örneği aç' },
   { title:'AutonomaX Gezgini', q:'Yapay zekâ bir iş hedefini nasıl eyleme çevirir?', body:'Bir hedefin nasıl görev, sonraki adım ve ölçülebilir ilerlemeye dönüştüğünü görün.', result:'Platformu özellik listesi okuyarak değil, deneyerek anlayın.', href:'https://app.aikagan.com/autonomax/', icon:Workflow, cta:'AutonomaX’ı keşfet' },
 ];
 
