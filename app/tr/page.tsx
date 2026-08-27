@@ -9,7 +9,7 @@ export const metadata = {
 
 const experiences = [
   { title: 'Para nerede kaçıyor, bulun', body: 'Yedi kolay soruyla teklif, ödeme, teslimat, takip ve tekrar satış yolunuzu kontrol edin.', result: 'Önce düzeltmeniz gereken noktaların sıralı listesi.', href: '/tr/tools/revenue-leak-scan/', cta: 'Ücretsiz puanımı al', icon: Gauge },
-  { title: 'Hazır bir teslimat örneğini açın', body: 'AIKAGAN paketlerindeki kontrol listelerinin ve çalışma dosyalarının küçük bir örneğini inceleyin.', result: 'Satın almadan önce kalitesini ve size uygun olup olmadığını görün.', href: '/free/golden-delivery-sample/', cta: 'Ücretsiz örneği aç', icon: Gift },
+  { title: 'Hazır bir teslimat örneğini açın', body: 'AIKAGAN teslimat yaklaşımının küçük bir Türkçe örneğini e-posta vermeden inceleyin.', result: 'Satın almadan önce yaklaşımı ve size uygun olup olmadığını değerlendirin.', href: '/tr/free/golden-delivery-sample/', cta: 'Ücretsiz örneği aç', icon: Gift },
   { title: 'AutonomaX nasıl çalışıyor, deneyin', body: 'Bir iş hedefinin nasıl küçük görevlere ve ölçülebilir ilerlemeye dönüştüğünü görün.', result: 'Ürünü uzun uzun okumak yerine kullanarak anlayın.', href: 'https://app.aikagan.com/autonomax/', cta: 'AutonomaX’ı keşfet', icon: Workflow },
 ];
 
