@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tr',
     '/tr/tools',
     '/tr/tools/revenue-leak-scan',
+    '/tr/free/golden-delivery-sample',
     '/tr/products',
     '/tr/services',
     '/tr/network',
@@ -26,8 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ].map((path, index) => ({
     url: `${base}${path}`,
     lastModified: now,
-    changeFrequency: index < 3 ? 'weekly' as const : 'monthly' as const,
-    priority: index === 0 ? 0.95 : index < 5 ? 0.8 : 0.55,
+    changeFrequency: index < 4 ? 'weekly' as const : 'monthly' as const,
+    priority: index === 0 ? 0.95 : index < 6 ? 0.8 : 0.55,
   }));
 
   return [
