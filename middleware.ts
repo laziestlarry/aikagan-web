@@ -5,6 +5,7 @@ const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
 const TURKISH_APEX_HOST = 'aikagan.com.tr';
 const TURKISH_WWW_HOST = 'www.aikagan.com.tr';
+const TURKISH_DOMAIN_AUTO_REDIRECT = process.env.TURKISH_DOMAIN_AUTO_REDIRECT === '1';
 const LOCALE_COOKIE = 'aikagan_locale';
 const BOT_UA = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|whatsapp/i;
 
@@ -165,7 +166,7 @@ export function middleware(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') ?? '';
     const preference = request.cookies.get(LOCALE_COOKIE)?.value;
     const turkeyFirstVisit = (country === 'TR' || (!country && acceptLanguage.startsWith('tr'))) && preference !== 'en' && !BOT_UA.test(userAgent);
-    if (turkeyFirstVisit) return redirectTo(TURKISH_APEX_HOST, '/', search, 307);
+    if (TURKISH_DOMAIN_AUTO_REDIRECT && turkeyFirstVisit) return redirectTo(TURKISH_APEX_HOST, '/', search, 307);
   }
 
   if (host === TURKISH_APEX_HOST) {
