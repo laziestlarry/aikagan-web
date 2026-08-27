@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { ArrowRight, Gauge, Gift, Workflow } from 'lucide-react';
 
-export const metadata = { title: 'Ücretsiz İş Araçları', description: 'Sorununuzu seçin ve hemen kullanabileceğiniz ücretsiz bir sonuç alın.', alternates: { canonical: 'https://aikagan.com.tr/ucretsiz-araclar' } };
+export const metadata = { title: 'Ücretsiz İş Araçları', description: 'Sorununuzu seçin ve hemen kullanabileceğiniz ücretsiz bir sonuç alın.', alternates: { canonical: 'https://aikagan.com/tr/tools' } };
 
 const tools = [
   { title:'Gelir Kaçağı Testi', q:'İşim nerede hız kaybediyor?', body:'Teklif, güven, ödeme, teslimat, takip ve tekrar satış hakkında yedi kolay soruyu yanıtlayın.', result:'Hemen bir puan ve önce neyi düzeltmeniz gerektiğini gösteren sıralı liste.', href:'/tr/tools/revenue-leak-scan/', icon:Gauge, cta:'Ücretsiz puanımı al' },
-  { title:'Golden Delivery Örneği', q:'Hazır bir AIKAGAN teslimatı nasıl görünüyor?', body:'Paketlerde kullanılan kontrol listelerinden ve çalışma dosyalarından gerçek bir örnek inceleyin.', result:'Para ödemeden önce kaliteyi kendiniz değerlendirin.', href:'/free/golden-delivery-sample/', icon:Gift, cta:'Ücretsiz örneği aç' },
+  { title:'Ücretsiz Teslimat Örneği', q:'Hazır bir AIKAGAN teslimatı nasıl görünüyor?', body:'Paketlerde kullanılan kontrol listelerinden ve çalışma dosyalarından gerçek bir örnek inceleyin.', result:'Para ödemeden önce kaliteyi kendiniz değerlendirin.', href:'/free/golden-delivery-sample/', icon:Gift, cta:'Ücretsiz örneği aç' },
   { title:'AutonomaX Gezgini', q:'Yapay zekâ bir iş hedefini nasıl eyleme çevirir?', body:'Bir hedefin nasıl görev, sonraki adım ve ölçülebilir ilerlemeye dönüştüğünü görün.', result:'Platformu özellik listesi okuyarak değil, deneyerek anlayın.', href:'https://app.aikagan.com/autonomax/', icon:Workflow, cta:'AutonomaX’ı keşfet' },
 ];
 
