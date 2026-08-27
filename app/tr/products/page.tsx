@@ -6,8 +6,8 @@ export const metadata = {
   title: 'AutonomaX Ticaret Stüdyosu | Türkiye Ürünleri',
   description: 'Türkiye için yerelleştirilmiş dijital ürün, eğitim, danışmanlık ve otomasyon hizmetlerini TL fiyatlarıyla inceleyin ve Shopier üzerinden güvenli ödeme yapın.',
   alternates: {
-    canonical: 'https://aikagan.com.tr/urunler',
-    languages: { 'tr-TR': 'https://aikagan.com.tr/urunler', en: 'https://aikagan.com/products' },
+    canonical: 'https://aikagan.com/tr/products',
+    languages: { 'tr-TR': 'https://aikagan.com/tr/products', en: 'https://aikagan.com/products' },
   },
 };
 
@@ -71,6 +71,6 @@ export default function TurkishProducts() {
       </div>
     </section>
 
-    <section className="px-6 py-20"><div className="mx-auto max-w-5xl rounded-[32px] border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.06] to-white/[0.02] px-7 py-12 text-center"><p className="text-sm font-black text-amber-300">Önce ücretsiz denemek ister misiniz?</p><h2 className="mt-4 text-3xl font-black sm:text-4xl">Satın almadan önce işinizde nerede değer kaybı olduğunu görün.</h2><a href="/ucretsiz-araclar/gelir-kacagi-testi" className="mt-7 inline-flex items-center gap-2 rounded-xl border border-amber-300/40 px-5 py-3 font-black text-amber-300">Ücretsiz Gelir Kaçağı Testi <ArrowRight className="h-4 w-4" /></a></div></section>
+    <section className="px-6 py-20"><div className="mx-auto max-w-5xl rounded-[32px] border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.06] to-white/[0.02] px-7 py-12 text-center"><p className="text-sm font-black text-amber-300">Önce ücretsiz denemek ister misiniz?</p><h2 className="mt-4 text-3xl font-black sm:text-4xl">Satın almadan önce işinizde nerede değer kaybı olduğunu görün.</h2><a href="/tr/tools/revenue-leak-scan" className="mt-7 inline-flex items-center gap-2 rounded-xl border border-amber-300/40 px-5 py-3 font-black text-amber-300">Ücretsiz Gelir Kaçağı Testi <ArrowRight className="h-4 w-4" /></a></div></section>
   </main>;
 }
