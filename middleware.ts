@@ -5,6 +5,8 @@ const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
 const TURKISH_APEX_HOST = 'aikagan.com.tr';
 const TURKISH_WWW_HOST = 'www.aikagan.com.tr';
+const LOCALE_COOKIE = 'aikagan_locale';
+const BOT_UA = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|whatsapp/i;
 
 const APP_PREFIXES = [
   '/dashboard',
@@ -113,14 +115,28 @@ function localeHeaders(request: NextRequest, locale: 'en' | 'tr') {
   return nextHeaders;
 }
 
-function redirectTo(host: string, pathname: string, search = '') {
-  return NextResponse.redirect(new URL(`${pathname}${search}`, `https://${host}`), 308);
+function redirectTo(host: string, pathname: string, search = '', status: 307 | 308 = 308) {
+  return NextResponse.redirect(new URL(`${pathname}${search}`, `https://${host}`), status);
+}
+
+function localePreferenceRedirect(request: NextRequest, locale: 'en' | 'tr') {
+  const url = request.nextUrl.clone();
+  url.searchParams.delete('lang');
+  const response = NextResponse.redirect(url, 307);
+  response.cookies.set(LOCALE_COOKIE, locale, {
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: 'lax',
+    secure: true,
+  });
+  return response;
 }
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host')?.split(':')[0]?.toLowerCase() ?? '';
   const { pathname, search } = request.nextUrl;
   const cleanPath = normalizePath(pathname);
+  const requestedLanguage = request.nextUrl.searchParams.get('lang');
 
   if (host === TURKISH_WWW_HOST) {
     if (startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
@@ -129,6 +145,27 @@ export function middleware(request: NextRequest) {
     }
     const canonicalPath = TURKISH_INTERNAL_TO_PUBLIC[cleanPath] || TURKISH_LEGACY_TO_PUBLIC[cleanPath] || cleanPath;
     return redirectTo(TURKISH_APEX_HOST, canonicalPath, search);
+  }
+
+  if (host === WWW_HOST) {
+    const targetHost = startsWithAny(cleanPath, APP_PREFIXES) ? APP_HOST : APEX_HOST;
+    return redirectTo(targetHost, cleanPath, search);
+  }
+
+  if (host === APEX_HOST && requestedLanguage === 'en') {
+    return localePreferenceRedirect(request, 'en');
+  }
+  if (host === TURKISH_APEX_HOST && requestedLanguage === 'tr') {
+    return localePreferenceRedirect(request, 'tr');
+  }
+
+  if (host === APEX_HOST && cleanPath === '/') {
+    const country = request.headers.get('x-vercel-ip-country')?.toUpperCase() ?? '';
+    const acceptLanguage = request.headers.get('accept-language')?.toLowerCase() ?? '';
+    const userAgent = request.headers.get('user-agent') ?? '';
+    const preference = request.cookies.get(LOCALE_COOKIE)?.value;
+    const turkeyFirstVisit = (country === 'TR' || (!country && acceptLanguage.startsWith('tr'))) && preference !== 'en' && !BOT_UA.test(userAgent);
+    if (turkeyFirstVisit) return redirectTo(TURKISH_APEX_HOST, '/', search, 307);
   }
 
   if (host === TURKISH_APEX_HOST) {
@@ -162,11 +199,6 @@ export function middleware(request: NextRequest) {
   if ((host === APEX_HOST || host === WWW_HOST) && cleanPath.startsWith('/tr')) {
     const publicPath = TURKISH_INTERNAL_TO_PUBLIC[cleanPath] || '/';
     return redirectTo(TURKISH_APEX_HOST, publicPath, search);
-  }
-
-  if (host === WWW_HOST) {
-    const targetHost = startsWithAny(cleanPath, APP_PREFIXES) ? APP_HOST : APEX_HOST;
-    return redirectTo(targetHost, cleanPath, search);
   }
 
   if (host === APP_HOST) {
