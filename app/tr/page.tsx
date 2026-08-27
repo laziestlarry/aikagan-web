@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2, Gauge, Gift, ShieldCheck, Sparkles, Workflow 
 export const metadata = {
   title: 'Ücretsiz Yapay Zekâ İş Araçları ve Pratik Otomasyon',
   description: 'İşinizde satışın nerede tıkandığını görün. Önce ücretsiz deneyin, sonucu görün, işinize yararsa devam edin.',
-  alternates: { canonical: 'https://aikagan.com.tr/', languages: { 'tr-TR': 'https://aikagan.com.tr/', en: 'https://aikagan.com/' } },
+  alternates: { canonical: 'https://aikagan.com/tr', languages: { 'tr-TR': 'https://aikagan.com/tr', en: 'https://aikagan.com/' } },
 };
 
 const experiences = [
