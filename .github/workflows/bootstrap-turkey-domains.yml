@@ -1,4 +1,4 @@
-name: Bootstrap Türkiye Domains
+name: Configure Türkiye Domain Redirects
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
   configure-domains:
     runs-on: ubuntu-latest
     steps:
-      - name: Register apex and www domains
+      - name: Register redirect entry domains
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         shell: bash
@@ -43,16 +43,23 @@ jobs:
 
           domains_json="$(curl -fsS "${auth[@]}" "${api}/v9/projects/${VERCEL_PROJECT_ID}/domains?${scope}&limit=100")"
           if ! jq -e --arg name "$WWW_DOMAIN" '.domains[]? | select(.name == $name)' <<<"$domains_json" >/dev/null; then
-            echo "Adding ${WWW_DOMAIN} with permanent redirect..."
+            echo "Adding ${WWW_DOMAIN} to the redirect project..."
             curl -fsS "${auth[@]}" -X POST \
               "${api}/v10/projects/${VERCEL_PROJECT_ID}/domains?${scope}" \
-              --data "{\"name\":\"${WWW_DOMAIN}\",\"redirect\":\"${APEX_DOMAIN}\",\"redirectStatusCode\":308}" | jq '{name, verified, redirect, redirectStatusCode, verification}'
+              --data "{\"name\":\"${WWW_DOMAIN}\"}" | jq '{name, verified, redirect, redirectStatusCode, verification}'
           else
-            echo "${WWW_DOMAIN} exists; enforcing permanent redirect to ${APEX_DOMAIN}..."
-            curl -fsS "${auth[@]}" -X PATCH \
-              "${api}/v9/projects/${VERCEL_PROJECT_ID}/domains/${WWW_DOMAIN}?${scope}" \
-              --data "{\"redirect\":\"${APEX_DOMAIN}\",\"redirectStatusCode\":308}" | jq '{name, verified, redirect, redirectStatusCode, verification}'
+            echo "${WWW_DOMAIN} is already assigned to the project."
           fi
+
+          # Domain-level redirects run before middleware and would create an
+          # avoidable www -> apex .com.tr -> aikagan.com/tr redirect chain.
+          # Clear them so both retained entry hosts receive the same one-hop
+          # canonical redirect from middleware.
+          for domain in "$APEX_DOMAIN" "$WWW_DOMAIN"; do
+            curl -fsS "${auth[@]}" -X PATCH \
+              "${api}/v9/projects/${VERCEL_PROJECT_ID}/domains/${domain}?${scope}" \
+              --data '{"redirect":null}' | jq '{name, verified, redirect, redirectStatusCode, verification}'
+          done
 
       - name: Report final domain state
         env:
@@ -79,11 +86,14 @@ jobs:
               | jq '{configuredBy, misconfigured, recommendedIPv4, recommendedCNAME}'
           done
 
-      - name: Probe live Türkiye hosts
+      - name: Verify permanent canonical redirects
         shell: bash
         run: |
-          set -u
-          echo "--- apex ---"
-          curl -sSIL --max-time 20 "https://${APEX_DOMAIN}/" || true
-          echo "--- www ---"
-          curl -sSIL --max-time 20 "https://${WWW_DOMAIN}/" || true
+          set -euo pipefail
+          for domain in "$APEX_DOMAIN" "$WWW_DOMAIN"; do
+            headers="$(curl -fsSI --max-time 20 "https://${domain}/")"
+            status="$(awk 'toupper($1) ~ /^HTTP\// { code=$2 } END { print code }' <<<"$headers")"
+            location="$(awk 'BEGIN { IGNORECASE=1 } /^location:/ { sub(/^[^:]+:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit }' <<<"$headers")"
+            test "$status" = "308"
+            test "$location" = "https://aikagan.com/tr"
+          done

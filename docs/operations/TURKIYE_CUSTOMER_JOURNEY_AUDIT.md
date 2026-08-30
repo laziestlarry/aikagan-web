@@ -1,20 +1,20 @@
 # Türkiye Customer Journey — Lifecycle Audit
 
 Audit date: 2026-08-28
-Scope: Turkish visitor experience currently represented by `aikagan.com/tr` fallback and the intended `aikagan.com.tr` public paths.
+Scope: Turkish visitor experience canonicalized under `aikagan.com/tr`; the retained `.com.tr` domain is a redirect-only defensive entry point.
 Rule: code/configuration is evidence of implementation, not proof of external payment or fulfillment success.
 
 ## Journey map and status
 
 | Stage | Intended route/action | Status | Evidence / gap |
 |---|---|---|---|
-| Türkiye entry | `aikagan.com` → `/tr` during DNS rollout | Implemented, deployment pending | Middleware progressive fallback committed; latest Vercel deployment was canceled externally. |
+| Türkiye entry | `aikagan.com` → `/tr`; `.com.tr` → `aikagan.com/tr` | Implemented, deployment pending | Middleware owns locale selection and permanent country-domain redirects. |
 | Language override | TR Türkiye ↔ EN Global | Implemented, deployment pending | Locale cookie and explicit selector implemented. |
-| Turkish home | `/tr` fallback; later `.com.tr/` | Implemented | Turkish value proposition and free-first CTAs exist. |
-| Free tools index | `/tr/tools` / public `/ucretsiz-araclar` | Implemented | Revenue scan, sample, AutonomaX links exist. |
+| Turkish home | `/tr` canonical | Implemented | Turkish value proposition and free-first CTAs exist. |
+| Free tools index | `/tr/tools` | Implemented | Revenue scan, sample, AutonomaX links exist. |
 | Revenue Leak Scan | `/tr/tools/revenue-leak-scan` / public localized path | Implemented | 7-question interaction calculates result without email. |
 | Free-result next step | AutonomaX or products | Implemented in UI | Must verify application onboarding and local product route after deployment. |
-| Local catalog | `/tr/products` / public `/urunler` | Implemented | 18 TRY offers across digital/training/consulting/subscription/service categories. |
+| Local catalog | `/tr/products` | Implemented | 18 TRY offers across digital/training/consulting/subscription/service categories. |
 | Local checkout | Shopier per SKU | Configured, not end-to-end verified in this audit | Each SKU has a Shopier destination. Actual product-page identity, payment completion and post-payment behavior require live transaction/provider evidence. |
 | Digital fulfillment | Product promises “Anında dijital teslimat” | **Not proven** | No payment→delivery evidence inspected here. Do not treat the promise as verified until tested per SKU/family. |
 | Subscription activation | AutonomaX/Bopper promises immediate access | **Not proven** | Requires successful paid activation/access test. |
@@ -29,11 +29,11 @@ Rule: code/configuration is evidence of implementation, not proof of external pa
 
 ## Link integrity defects found in source review
 
-Several Turkish components use internal `/tr/...` links while middleware also defines public Turkish paths. This works differently depending on host and rollout state and creates avoidable redirect complexity. The target standard is:
+The target standard is:
 
-- On `aikagan.com/tr` fallback, links stay within the reachable fallback namespace until `.com.tr` is live.
-- On `.com.tr`, public paths are canonical: `/ucretsiz-araclar`, `/urunler`, `/hizmetler`, `/iletisim`, etc.
-- No Turkish CTA should point to `.com.tr` until DNS/HTTPS are verified.
+- All Turkish navigation, metadata, canonicals and sitemap entries stay under `aikagan.com/tr`.
+- `.com.tr` and `www.com.tr` requests permanently redirect to the matching canonical `/tr` destination.
+- Historical localized paths such as `/urunler` redirect to their current equivalents such as `/tr/products`.
 - No local-commerce CTA should accidentally fall back to the global USD catalog.
 
 ## Critical launch gates
@@ -63,7 +63,7 @@ Run on mobile and desktop, anonymous and returning visitor:
 
 1. TR geo/no preference → Turkish fallback.
 2. TR visitor chooses EN → remains global on next root visit.
-3. Global visitor chooses TR → Turkish fallback while `.com.tr` unavailable.
+3. Global visitor chooses TR → canonical Turkish experience under `/tr`.
 4. Turkish home → free tools → scan → result → product catalog.
 5. Turkish home → services → contact/intake.
 6. Turkish home/tools → AutonomaX → registration/auth → usable first-value state.

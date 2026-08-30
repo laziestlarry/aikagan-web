@@ -3,12 +3,26 @@ import { NextRequest, NextResponse } from 'next/server';
 const APP_HOST = 'app.aikagan.com';
 const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
+const TURKEY_HOSTS = new Set(['aikagan.com.tr', 'www.aikagan.com.tr']);
 const LOCALE_COOKIE = 'aikagan_locale';
 const BOT_UA = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|whatsapp/i;
 
 const APP_PREFIXES = ['/dashboard','/autonomax','/checkout','/checkout-success','/projects','/workbench','/outputs','/credits','/downloads','/integrations','/billing','/account','/admin'];
 const WEB_PREFIXES = ['/products','/services','/about','/contact','/free','/tools','/network','/feedback','/start-free','/work-with-kagan','/cash-resilience','/legal','/marketing','/affiliates','/mission-control','/privacy','/terms','/refund','/tr'];
 const LEGACY_INTERNAL_DASHBOARDS = ['/dashboard/financials','/dashboard/investment-policy','/dashboard/passive-income','/dashboard/profit-intelligence','/dashboard/success','/dashboard/venture-infrastructure','/dashboard/weekly-intelligence'];
+const LEGACY_TURKISH_PATHS: Record<string, string> = {
+  '/': '/tr',
+  '/ucretsiz-araclar': '/tr/tools',
+  '/ucretsiz-araclar/gelir-kacagi-testi': '/tr/tools/revenue-leak-scan',
+  '/urunler': '/tr/products',
+  '/hizmetler': '/tr/services',
+  '/topluluk': '/tr/network',
+  '/hakkimizda': '/tr/about',
+  '/iletisim': '/tr/contact',
+  '/gizlilik': '/tr/legal/privacy',
+  '/kullanim-kosullari': '/tr/legal/terms',
+  '/iade-kosullari': '/tr/legal/refund',
+};
 
 function startsWithAny(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
@@ -25,6 +39,10 @@ function localeHeaders(request: NextRequest, locale: 'en' | 'tr') {
 function redirectTo(host: string, pathname: string, search = '', status: 307 | 308 = 308) {
   return NextResponse.redirect(new URL(`${pathname}${search}`, `https://${host}`), status);
 }
+function canonicalTurkishPath(pathname: string) {
+  if (pathname === '/tr' || pathname.startsWith('/tr/')) return pathname;
+  return LEGACY_TURKISH_PATHS[pathname] ?? `/tr${pathname}`;
+}
 function setPreferenceAndRedirect(request: NextRequest, locale: 'en' | 'tr') {
   const url = request.nextUrl.clone();
   url.searchParams.delete('lang');
@@ -39,6 +57,12 @@ export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const cleanPath = normalizePath(pathname);
   const requestedLanguage = request.nextUrl.searchParams.get('lang');
+
+  // aikagan.com/tr is the only Turkish canonical. Keep the country domain as
+  // a defensive entry point, never as a second indexable website.
+  if (TURKEY_HOSTS.has(host)) {
+    return redirectTo(APEX_HOST, canonicalTurkishPath(cleanPath), search);
+  }
 
   if (host === WWW_HOST) {
     const targetHost = startsWithAny(cleanPath, APP_PREFIXES) ? APP_HOST : APEX_HOST;
