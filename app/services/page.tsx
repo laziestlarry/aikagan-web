@@ -9,7 +9,7 @@ import Link from 'next/link';
 export const metadata: Metadata = buildMetadata({
   title: 'Services',
   description:
-    'AI automation, e-commerce conversion, deployment, orchestration, Golden Delivery, freelance project offers, digital products, and passive income — end-to-end execution for serious operators.',
+    'AI automation, e-commerce conversion, deployment, orchestration, Golden Delivery, and revenue-operations implementation — scoped around measurable outcomes and verified delivery.',
   path: '/services/',
 });
 
@@ -18,11 +18,12 @@ export default function ServicesPage() {
     <>
       <Section variant="hero">
         <div className="text-center mb-14">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-300 mb-4">Implementation requests are live</p>
           <h1 className="text-4xl md:text-5xl font-extrabold text-kagan-white mb-4">
             What We <span className="text-gradient">Deliver</span>
           </h1>
           <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Five service lines — each one built for production, measured by conversion, and backed by real delivery.
+            Five service lines built around production work, measurable acceptance criteria, and evidence-backed delivery. Scope is agreed before implementation begins.
           </p>
         </div>
 
@@ -33,14 +34,13 @@ export default function ServicesPage() {
         </div>
       </Section>
 
-      {/* Project Offers & Side Hustles */}
       <Section variant="default">
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-extrabold text-kagan-white mb-4">
-            Project Offers & <span className="text-gradient">Side Hustles</span>
+            Implementation Offers & <span className="text-gradient">Build Paths</span>
           </h2>
-          <p className="text-lg text-kagan-light max-w-2xl mx-auto">
-            Freelance services, digital products, and passive income streams — available for immediate purchase or hire.
+          <p className="text-lg text-kagan-light max-w-3xl mx-auto">
+            These offer families remain available for scoping and implementation requests. Self-serve paid checkout stays gated until each product, payment, fulfillment, and delivery path is verified end to end.
           </p>
         </div>
 
@@ -57,14 +57,12 @@ export default function ServicesPage() {
                   </li>
                 ))}
               </ul>
-              <a
-                href={offer.ctaUrl}
-                target={offer.ctaUrl.startsWith('http') ? '_blank' : undefined}
-                rel={offer.ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
+              <Link
+                href="/contact/"
                 className="inline-flex items-center px-5 py-2.5 rounded-full bg-kagan-gold/10 text-kagan-gold border border-kagan-gold/20 hover:bg-kagan-gold/20 transition-all text-sm font-semibold"
               >
-                {offer.cta} →
-              </a>
+                Request scope →
+              </Link>
             </div>
           ))}
         </div>
@@ -73,11 +71,11 @@ export default function ServicesPage() {
       <Section variant="alt">
         <CTA
           title="Not Sure Where to Start?"
-          subtitle="Most projects begin with a structured intake and architecture review. Tell us what you're building — we'll map the path."
-          primaryLabel="Request Consultation"
+          subtitle="Start with one real bottleneck. We will diagnose it, rank the next mission, define the acceptance criteria, and only then decide whether implementation is justified."
+          primaryLabel="Request Mission Scope"
           primaryHref="/contact/"
-          secondaryLabel="View Products"
-          secondaryHref="/products/"
+          secondaryLabel="See Flight 002"
+          secondaryHref="/flight/"
         />
       </Section>
     </>
