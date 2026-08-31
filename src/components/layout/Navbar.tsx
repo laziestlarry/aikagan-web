@@ -11,6 +11,7 @@ type Locale = 'en' | 'tr';
 
 const PUBLIC_NAV = [
   { label: 'Home', href: '/' },
+  { label: 'Flight 002', href: '/flight' },
   { label: 'Try Free', href: '/tools' },
   { label: 'Services', href: '/services' },
   { label: 'Products', href: '/products' },
@@ -19,6 +20,7 @@ const PUBLIC_NAV = [
 
 const TURKISH_NAV = [
   { label: 'Ana Sayfa', href: '/tr' },
+  { label: 'Flight 002', href: '/tr/flight' },
   { label: 'Ücretsiz Araçlar', href: '/tr/tools' },
   { label: 'Hizmetler', href: '/tr/services' },
   { label: 'Ürünler', href: '/tr/products' },
@@ -32,7 +34,7 @@ const APP_NAV = [
 ] as const;
 
 const EN_TO_TR: Record<string, string> = {
-  '/': '/tr', '/tools': '/tr/tools', '/tools/revenue-leak-scan': '/tr/tools/revenue-leak-scan', '/services': '/tr/services', '/products': '/tr/products', '/about': '/tr/about', '/contact': '/tr/contact', '/network': '/tr/network', '/legal/privacy': '/tr/legal/privacy', '/legal/terms': '/tr/legal/terms', '/legal/refund': '/tr/legal/refund',
+  '/': '/tr', '/flight': '/tr/flight', '/tools': '/tr/tools', '/tools/revenue-leak-scan': '/tr/tools/revenue-leak-scan', '/services': '/tr/services', '/products': '/tr/products', '/about': '/tr/about', '/contact': '/tr/contact', '/network': '/tr/network', '/legal/privacy': '/tr/legal/privacy', '/legal/terms': '/tr/legal/terms', '/legal/refund': '/tr/legal/refund',
 };
 const TR_TO_EN = Object.fromEntries(Object.entries(EN_TO_TR).map(([en, tr]) => [tr, en])) as Record<string, string>;
 
