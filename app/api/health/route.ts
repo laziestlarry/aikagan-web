@@ -130,6 +130,7 @@ export async function GET() {
     {
       ok,
       simulated: false,
+      storefront_mode: "maintenance",
       version: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
       uptime_seconds: Math.floor((Date.now() - START_TIME) / 1000),
       environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
