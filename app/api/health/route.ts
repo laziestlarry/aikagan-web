@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getKv } from "@/lib/kv";
 import { getPaidProducts } from "@/lib/products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
+import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -121,7 +122,11 @@ export async function GET() {
     checks.fastapi_backend = await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`);
   }
 
-  const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue"];
+  checks.storefront_commerce = configCheck(
+    isStorefrontCommerceEnabled(),
+    "STOREFRONT_COMMERCE_ENABLED is not enabled until commercial commissioning passes",
+  );
+  const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue", "storefront_commerce"];
   const criticalDegraded = criticalNames.filter((name) => checks[name]?.status !== "ok");
   const degraded = Object.entries(checks).filter(([, result]) => result.status !== "ok").map(([name]) => name);
   const ok = criticalDegraded.length === 0;
@@ -130,7 +135,7 @@ export async function GET() {
     {
       ok,
       simulated: false,
-      storefront_mode: "maintenance",
+      storefront_mode: storefrontCommerceState(),
       version: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
       uptime_seconds: Math.floor((Date.now() - START_TIME) / 1000),
       environment: process.env.VERCEL_ENV || process.env.NODE_ENV,

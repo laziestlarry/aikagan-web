@@ -4,6 +4,7 @@ import { ensureGumroadSaleSubscription, isGumroadApiConfigured } from "@/lib/gum
 import { canonicalSiteOrigin, isFirstPartyCommerceHost, paddleCheckoutOrigin } from "@/lib/site-origin";
 import { getSocialCredential } from "@/lib/social/token-store";
 import { getLinkedInAppConfig, getMetaAppConfig, socialAdminSecret } from "@/lib/social/config-store";
+import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -69,6 +70,7 @@ export async function GET(req: NextRequest) {
 
   const commerceChecks = {
     deployment: true,
+    storefrontEnabled: isStorefrontCommerceEnabled(),
     catalog: managedProducts.length > 0,
     storefrontSurface: firstPartySurface,
     checkoutProvider: Boolean(defaultCheckoutProvider),
@@ -113,7 +115,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(
     {
       service: "AIKAGAN ProfitOS Commerce",
-      mode: launchReady ? "live" : "blocked",
+      mode: launchReady ? "live" : storefrontCommerceState(),
       ready: launchReady,
       commerceReady,
       growthAutomationReady: directSocialReady,
