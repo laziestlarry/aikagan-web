@@ -124,3 +124,19 @@ export async function provisionCustomerSuccessPlan(id: string): Promise<Provisio
   await kvSet(briefKey(id), provisionedBrief, BRIEF_TTL_S);
   return { brief: provisionedBrief, customerSuccessPlan };
 }
+
+export async function provisionQueuedCustomerSuccessPlans(limit = 100): Promise<number> {
+  const queued = await kvLrange<string>(BRIEF_QUEUE_KEY, 0, Math.max(0, limit - 1));
+  let provisioned = 0;
+
+  for (const value of queued) {
+    const brief = parseBrief(value);
+    if (!brief) continue;
+    const existing = await kvGet<CustomerSuccessPlan>(planKey(brief.id));
+    if (existing) continue;
+    await provisionCustomerSuccessPlan(brief.id);
+    provisioned += 1;
+  }
+
+  return provisioned;
+}
