@@ -3,6 +3,7 @@ import { getKv } from "@/lib/kv";
 import { getPaidProducts } from "@/lib/products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
 import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,7 +43,7 @@ async function checkUrl(url: string, timeout = 5000): Promise<CheckResult> {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const checks: Record<string, CheckResult> = {};
   const paidProducts = getPaidProducts();
   const hasLemonVariant = paidProducts.some((product) =>
@@ -131,8 +132,7 @@ export async function GET() {
   const degraded = Object.entries(checks).filter(([, result]) => result.status !== "ok").map(([name]) => name);
   const ok = criticalDegraded.length === 0;
 
-  return NextResponse.json(
-    {
+  const payload = {
       ok,
       simulated: false,
       storefront_mode: storefrontCommerceState(),
@@ -158,7 +158,19 @@ export async function GET() {
         track: "/api/income/track",
         checkout: "/api/income/checkout",
       },
-    },
-    { status: ok ? 200 : 503 },
-  );
+    };
+
+  if (!isAdminRequest(request)) {
+    return NextResponse.json(
+      {
+        ok: payload.ok,
+        storefront_mode: payload.storefront_mode,
+        version: payload.version,
+        environment: payload.environment,
+      },
+      { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } },
+    );
+  }
+
+  return NextResponse.json(payload, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } });
 }

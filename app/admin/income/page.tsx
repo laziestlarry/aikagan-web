@@ -26,7 +26,7 @@ export default function AdminIncomePage() {
     setLoading(true);
     setError(null);
     try {
-      const r = await fetch("/api/health", { cache: "no-store" });
+      const r = await fetch("/api/health", { cache: "no-store", headers: { "x-admin-secret": secret } });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       setHealth(await r.json());
       setAuthed(true);

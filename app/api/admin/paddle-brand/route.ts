@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getPaddleEnvironment } from "@/lib/paddle-client";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,10 +30,7 @@ const BRAND = {
 };
 
 export async function GET(req: NextRequest) {
-  const adminSecret = req.headers.get("x-admin-secret") || req.nextUrl.searchParams.get("secret");
-  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const env = getPaddleEnvironment();
   const apiKey = process.env.PADDLE_API_KEY;
@@ -90,10 +88,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const adminSecret = req.headers.get("x-admin-secret") || req.nextUrl.searchParams.get("secret");
-  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const env = getPaddleEnvironment();
   const apiKey = process.env.PADDLE_API_KEY;

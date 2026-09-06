@@ -9,15 +9,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getPaddleEnvironment } from "@/lib/paddle-client";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const adminSecret = req.headers.get("x-admin-secret") || req.nextUrl.searchParams.get("secret");
-  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: "Unauthorized — provide ADMIN_SECRET via x-admin-secret header or ?secret=" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const env = getPaddleEnvironment();
   const results: Record<string, any> = {
@@ -130,9 +128,7 @@ export async function GET(req: NextRequest) {
       "",
       "4. Click Save",
       "",
-      "5. Verify: after saving, run:",
-      "   curl -s 'https://aikagan.com/api/admin/paddle-setup",
-      `     ?secret=${adminSecret.substring(0, 8)}...'`,
+      "5. Verify with an x-admin-secret request header after saving.",
       "",
       "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
     ];

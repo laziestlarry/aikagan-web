@@ -8,13 +8,15 @@
  * This is the ground truth that powers the income dashboard.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 import { getIncomeReality } from "@/lib/income-ledger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
   const url = new URL(req.url);
   const days = Math.max(1, Math.min(90, Number(url.searchParams.get("days") || 7)));
   const reality = await getIncomeReality(days);

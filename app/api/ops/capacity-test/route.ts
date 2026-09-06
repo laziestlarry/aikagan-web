@@ -4,6 +4,7 @@ import { getPaidProducts } from "@/lib/products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
 import crypto from "node:crypto";
 import { recordTransaction } from "@/lib/income-ledger";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,22 +43,15 @@ function configuredAny(...names: string[]): boolean {
   return names.some(configured);
 }
 
-function authOk(req: NextRequest, body: any): boolean {
+function authOk(req: NextRequest): boolean {
   const host = req.headers.get("host") || "";
   const hostname = host.split(":")[0].toLowerCase();
   const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
-  if (isLocal) return true; // Bypass auth for local dev/sprints
-
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return true; // If admin secret is unset, allow it
-  const header = req.headers.get("x-admin-secret");
-  if (header === secret) return true;
-  if (body?.adminSecret === secret) return true;
-  if (req.nextUrl.searchParams.get("secret") === secret) return true;
-  return false;
+  return isLocal && process.env.NODE_ENV !== "production" ? true : isAdminRequest(req);
 }
 
 export async function GET(req: NextRequest) {
+  if (!authOk(req)) return adminUnauthorizedResponse();
   const host = req.headers.get("host") || "";
   const hostname = host.split(":")[0].toLowerCase();
   const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
@@ -76,9 +70,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  if (!authOk(req, body)) {
-    return NextResponse.json({ error: "Unauthorized — ADMIN_SECRET required" }, { status: 401 });
-  }
+  if (!authOk(req)) return adminUnauthorizedResponse();
 
   const logs: string[] = [];
   const sprintName = body.sprintName;
