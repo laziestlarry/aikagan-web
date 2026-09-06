@@ -9,8 +9,12 @@ export async function POST(req: NextRequest) {
   const session = verifyCustomerSession(req.cookies.get(CUSTOMER_SESSION_COOKIE)?.value);
   if (!session) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 
-  let body: { subject?: string; message?: string } = {};
-  try { body = await req.json(); } catch {}
+  let body: { subject?: string; message?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "A valid JSON request body is required" }, { status: 400 });
+  }
   const subject = body.subject?.trim();
   const message = body.message?.trim();
   if (!subject || !message) return NextResponse.json({ error: "Subject and message are required" }, { status: 400 });

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Download, LifeBuoy, Loader2, LockKeyhole, Rocket, ShieldCheck, Sparkles } from 'lucide-react';
 import Section from '@/components/ui/Section';
 import Badge from '@/components/ui/Badge';
+import WorkspaceEntry from '@/components/autonomax/WorkspaceEntry';
 import { SITE } from '@/lib/constants';
 
 type Entitlement = { slug: string; transactionId: string; grantedAt: string; status: 'active' | 'revoked' };
@@ -39,28 +40,40 @@ export default function CustomerWorkspace() {
 
   async function createMission(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMissionBusy(true); setNotice('');
-    const form = new FormData(event.currentTarget);
-    const res = await fetch('/api/customer/mission', {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ title: form.get('title'), segment: form.get('segment'), objective: form.get('objective') }),
-    });
-    setMissionBusy(false);
-    if (res.ok) { setNotice('Mission activated. Your next action is ready.'); event.currentTarget.reset(); await load(); }
-    else setNotice('Mission could not be created. Please retry or contact support.');
+    const form = new FormData(formElement);
+    try {
+      const res = await fetch('/api/customer/mission', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title: form.get('title'), segment: form.get('segment'), objective: form.get('objective') }),
+      });
+      if (res.ok) { setNotice('Mission activated. Your next action is ready.'); formElement.reset(); await load(); }
+      else setNotice('Mission could not be created. Please retry or contact support.');
+    } catch {
+      setNotice('Mission could not be created. Please retry or contact support.');
+    } finally {
+      setMissionBusy(false);
+    }
   }
 
   async function createTicket(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setSupportBusy(true); setNotice('');
-    const form = new FormData(event.currentTarget);
-    const res = await fetch('/api/customer/support', {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ subject: form.get('subject'), message: form.get('message') }),
-    });
-    setSupportBusy(false);
-    if (res.ok) { setNotice('Support request recorded.'); event.currentTarget.reset(); await load(); }
-    else setNotice('Support request could not be recorded. Email hello@aikagan.com if the issue continues.');
+    const form = new FormData(formElement);
+    try {
+      const res = await fetch('/api/customer/support', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ subject: form.get('subject'), message: form.get('message') }),
+      });
+      if (res.ok) { setNotice('Support request recorded.'); formElement.reset(); await load(); }
+      else setNotice('Support request could not be recorded. Email hello@aikagan.com if the issue continues.');
+    } catch {
+      setNotice('Support request could not be recorded. Email hello@aikagan.com if the issue continues.');
+    } finally {
+      setSupportBusy(false);
+    }
   }
 
   if (loading) return <Section variant="hero"><div className="mx-auto flex max-w-4xl items-center justify-center gap-3 py-24 text-kagan-light"><Loader2 className="h-5 w-5 animate-spin text-kagan-gold" /> Loading workspace…</div></Section>;
@@ -68,14 +81,16 @@ export default function CustomerWorkspace() {
   if (!customer) {
     return (
       <Section variant="hero">
-        <div className="mx-auto max-w-4xl text-center">
-          <Badge variant="gold" className="mb-4">Secure customer workspace</Badge>
-          <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-kagan-gold" />
-          <h1 className="text-4xl font-extrabold text-kagan-white md:text-6xl">Activate through a verified purchase</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-kagan-light">Customer data, entitlements and delivery assets only appear after a verified checkout establishes your signed AIKAGAN session. You can still explore AutonomaX before buying.</p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/autonomax" className="rounded-xl border border-kagan-gold/40 px-6 py-3 font-semibold text-kagan-gold">Explore AutonomaX</Link>
-            <a href={`${SITE.url}/products`} className="rounded-xl bg-kagan-gold px-6 py-3 font-semibold text-black">Choose a plan</a>
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-8 text-center">
+            <Badge variant="gold" className="mb-4">Customer workspace</Badge>
+            <LockKeyhole className="mx-auto mb-5 h-10 w-10 text-kagan-gold" />
+            <h1 className="text-4xl font-extrabold text-kagan-white md:text-6xl">Start your first verified outcome</h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-kagan-light">Create a planning workspace to define an outcome and acceptance check. Verified purchases can add entitlements and delivery links, but planning access alone does not imply a payment or fulfillment.</p>
+          </div>
+          <WorkspaceEntry compact />
+          <div className="mt-6 text-center">
+            <Link href="/autonomax" className="text-sm font-bold text-kagan-gold hover:underline">Explore how the outcome journey works</Link>
           </div>
         </div>
       </Section>
@@ -87,7 +102,7 @@ export default function CustomerWorkspace() {
       <Section variant="hero">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-            <div><Badge variant="green" className="mb-3">Verified customer session</Badge><h1 className="text-4xl font-extrabold text-kagan-white md:text-5xl">Outcome workspace</h1><p className="mt-3 text-kagan-light">{customer.email} · {activeEntitlements.length} active entitlement{activeEntitlements.length === 1 ? '' : 's'}</p></div>
+            <div><Badge variant="green" className="mb-3">{activeEntitlements.length ? 'Verified purchase entitlement' : 'Planning workspace session'}</Badge><h1 className="text-4xl font-extrabold text-kagan-white md:text-5xl">Outcome workspace</h1><p className="mt-3 text-kagan-light">{customer.email} · {activeEntitlements.length} active entitlement{activeEntitlements.length === 1 ? '' : 's'}</p></div>
             <a href={`${SITE.url}/products`} className="inline-flex items-center gap-2 text-sm font-bold text-kagan-gold">Expand capabilities <ArrowRight className="h-4 w-4" /></a>
           </div>
 
@@ -106,11 +121,29 @@ export default function CustomerWorkspace() {
 
       <Section variant="alt">
         <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+          <section className="rounded-2xl border border-kagan-gold/25 bg-kagan-gold/[0.04] p-6 lg:col-span-2">
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="mt-0.5 h-5 w-5 flex-none text-kagan-gold" />
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-kagan-gold">First-result activation</p>
+                <h2 className="mt-2 text-xl font-bold text-kagan-white">Make progress visible before calling the work complete</h2>
+              </div>
+            </div>
+            <ol className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <ActivationStep complete label="Workspace access" detail="Your planning record is available." />
+              <ActivationStep complete={Boolean(activeMission)} label="Outcome defined" detail={activeMission ? "A mission and next action are recorded." : "Create one mission with a measurable objective."} />
+              <ActivationStep complete={customer.deliverables.length > 0} label="Delivery evidence" detail={customer.deliverables.length ? "A delivery item is recorded below." : "No delivery item has been recorded yet."} />
+              <ActivationStep complete={false} label="Acceptance check" detail="Confirm the result with your test or evidence, then ask support to record any blocker." />
+            </ol>
+            <p className="mt-5 text-sm leading-6 text-kagan-light">Use the workflow engine, automation vendor, or AI provider that fits your stack. This workspace records the outcome and evidence; it does not claim that any model, vendor connection, payment, or fulfillment is configured unless a verified record says so.</p>
+          </section>
+
           <form onSubmit={createMission} className="rounded-2xl border border-kagan-border bg-kagan-card/60 p-6">
-            <div className="mb-5 flex items-center gap-3"><Sparkles className="h-5 w-5 text-kagan-gold" /><h2 className="text-xl font-bold text-kagan-white">Start an outcome mission</h2></div>
-            <input name="title" placeholder="Mission title (optional)" className="mb-3 w-full rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" />
-            <select name="segment" defaultValue="founder" className="mb-3 w-full rounded-xl border border-kagan-border bg-kagan-black px-4 py-3 text-kagan-white">{segments.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}</select>
-            <textarea name="objective" required rows={5} placeholder="What measurable outcome do you want to achieve?" className="w-full rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" />
+            <div className="mb-5 flex items-center gap-3"><Sparkles className="h-5 w-5 text-kagan-gold" /><h2 className="text-xl font-bold text-kagan-white">Define your first outcome</h2></div>
+            <p className="mb-5 text-sm leading-6 text-kagan-light">Use an observable result and acceptance check—not a generic request. This creates a planning mission; it does not start an external automation.</p>
+            <label className="block text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">Mission name<input name="title" placeholder="e.g. Verify a lead-to-follow-up workflow" className="mt-2 mb-3 w-full rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" /></label>
+            <label className="block text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">Operating context<select name="segment" defaultValue="founder" className="mt-2 mb-3 w-full rounded-xl border border-kagan-border bg-kagan-black px-4 py-3 text-kagan-white">{segments.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}</select></label>
+            <label className="block text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">Outcome and acceptance check<textarea name="objective" required rows={5} placeholder="e.g. A test lead reaches our follow-up queue, and the team can verify the timestamp and owner." className="mt-2 w-full rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" /></label>
             <button disabled={missionBusy} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-kagan-gold px-5 py-3 font-bold text-black disabled:opacity-50">{missionBusy && <Loader2 className="h-4 w-4 animate-spin" />} Activate mission</button>
           </form>
 
@@ -121,9 +154,10 @@ export default function CustomerWorkspace() {
           </div>
 
           <form onSubmit={createTicket} className="rounded-2xl border border-kagan-border bg-kagan-card/60 p-6 lg:col-span-2">
-            <div className="mb-5 flex items-center gap-3"><LifeBuoy className="h-5 w-5 text-kagan-gold" /><h2 className="text-xl font-bold text-kagan-white">Mid-end support & recovery</h2></div>
-            <div className="grid gap-3 md:grid-cols-2"><input name="subject" required placeholder="What needs attention?" className="rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" /><textarea name="message" required rows={4} placeholder="Describe the blocker, expected result, and any order/project context." className="rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" /></div>
-            <button disabled={supportBusy} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-kagan-gold/40 px-5 py-3 font-bold text-kagan-gold disabled:opacity-50">{supportBusy && <Loader2 className="h-4 w-4 animate-spin" />} Create support request</button>
+            <div className="mb-3 flex items-center gap-3"><LifeBuoy className="h-5 w-5 text-kagan-gold" /><h2 className="text-xl font-bold text-kagan-white">Support and recovery escalation</h2></div>
+            <p className="mb-5 text-sm leading-6 text-kagan-light">If a vendor setup, proof checkpoint, order, or delivery record is blocked, record the expected result and evidence. The support request is recorded for follow-up; submitting it does not mean the issue has been resolved.</p>
+            <div className="grid gap-3 md:grid-cols-2"><label className="text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">Escalation subject<input name="subject" required placeholder="e.g. Acceptance evidence is missing" className="mt-2 w-full rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" /></label><label className="text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">Blocker and expected result<textarea name="message" required rows={4} placeholder="State the blocker, expected result, test/evidence, and relevant order or project context." className="mt-2 w-full rounded-xl border border-kagan-border bg-black/20 px-4 py-3 text-kagan-white" /></label></div>
+            <button disabled={supportBusy} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-kagan-gold/40 px-5 py-3 font-bold text-kagan-gold disabled:opacity-50">{supportBusy && <Loader2 className="h-4 w-4 animate-spin" />} Record support escalation</button>
           </form>
         </div>
       </Section>
@@ -133,4 +167,13 @@ export default function CustomerWorkspace() {
 
 function Stat({ icon: Icon, label, value }: { icon: typeof Rocket; label: string; value: string }) {
   return <div className="rounded-2xl border border-kagan-border bg-kagan-card/60 p-5"><Icon className="mb-4 h-5 w-5 text-kagan-gold" /><div className="text-3xl font-extrabold text-kagan-white">{value}</div><div className="mt-1 text-xs uppercase tracking-wider text-kagan-muted">{label}</div></div>;
+}
+
+function ActivationStep({ complete, label, detail }: { complete: boolean; label: string; detail: string }) {
+  return <li className="rounded-xl border border-kagan-border bg-black/20 p-4">
+    <div className="flex items-start gap-2">
+      <CheckCircle2 className={`mt-0.5 h-4 w-4 flex-none ${complete ? 'text-emerald-300' : 'text-kagan-muted'}`} />
+      <div><p className="text-sm font-bold text-kagan-white">{label}</p><p className="mt-1 text-xs leading-5 text-kagan-light">{detail}</p></div>
+    </div>
+  </li>;
 }
