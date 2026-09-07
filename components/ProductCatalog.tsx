@@ -51,7 +51,7 @@ function ProductCard({ product, locale }: { product: Product; locale: "en" | "tr
       <p className="mt-3 text-sm leading-7 text-neutral-300">{product.description}</p>
       <p className="mt-6 text-3xl font-black text-white">${product.price}<span className="text-sm font-medium text-neutral-400"> USD</span></p>
       <ul className="mt-6 space-y-3 text-sm leading-6 text-neutral-300">
-        {product.bullets.slice(0, 4).map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />{item}</li>)}
+        {product.bullets.slice(0, 4).map((item, index) => <li key={`${product.slug}-${index}`} className="flex gap-2"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />{item}</li>)}
       </ul>
       <Link href={href} className="mt-8 inline-flex items-center gap-2 font-bold text-amber-300 hover:text-amber-200">{text.view}<ArrowRight className="h-4 w-4" /></Link>
       {!ready && product.checkoutUrl === "paddle" && <p className="mt-4 text-xs leading-5 text-neutral-500">{text.commissioning}</p>}
@@ -79,7 +79,7 @@ export default function ProductCatalog({ locale = "en", product }: Props) {
           </div>
           <div className="mt-12 rounded-3xl border border-white/10 bg-white/[0.03] p-7">
             <h2 className="text-2xl font-black">{text.contents}</h2>
-            <ul className="mt-6 space-y-4 text-neutral-300">{product.bullets.map((item) => <li key={item} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-emerald-300" />{item}</li>)}</ul>
+            <ul className="mt-6 space-y-4 text-neutral-300">{product.bullets.map((item, index) => <li key={`${product.slug}-${index}`} className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-emerald-300" />{item}</li>)}</ul>
             <h2 className="mt-10 text-2xl font-black">{text.delivery}</h2>
             <p className="mt-3 leading-7 text-neutral-300">{product.fulfillmentWindow ?? (product.deliveryMode === "download" ? "After a verified payment, access is issued to the purchasing customer through a secure, expiring link." : "We confirm scope, deliverables, timeline, support, and commercial terms in writing before accepting payment.")}</p>
             <p className="mt-5 text-sm leading-6 text-neutral-400">{text.support}</p>

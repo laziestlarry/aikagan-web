@@ -53,7 +53,6 @@ interface BlueprintResponse {
     requiredReady: number;
     requiredTotal: number;
     queueDepth: number;
-    provisionedCustomerSuccessPlans: number;
     gates: Gate[];
   };
 }
@@ -177,7 +176,6 @@ export default function AutonomaXBlueprintConsole() {
           state={ready ? 'ready' : 'blocked'}
         />
         <StatusTile icon={Database} label="Brief queue" value={String(data.runtime.queueDepth)} />
-        <StatusTile icon={CheckCircle2} label="Plans provisioned" value={String(data.runtime.provisionedCustomerSuccessPlans)} state="ready" />
         <StatusTile icon={Bot} label="Director agents" value={String(data.blueprint.directors.length)} />
         <StatusTile icon={Workflow} label="Pipeline stages" value={String(data.blueprint.pipeline.length)} />
       </section>

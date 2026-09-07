@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { adminUnauthorizedResponse, isAdminRequest } from '@/lib/admin-auth';
+import { getAutonomaXReadiness } from '@/lib/autonomax-blueprint';
 import { provisionCustomerSuccessPlan, storeQueuedBrief, type ProductBrief } from '@/lib/autonomax-briefs';
 import { kvIncrBy } from '@/lib/kv';
 import { clientKey, rateLimit, rateLimitResponse } from '@/lib/rate-limit';
@@ -82,6 +83,9 @@ export async function POST(req: NextRequest) {
   await storeQueuedBrief(record);
   await kvIncrBy('autonomax:event:product.brief_queued', 1, 30 * 24 * 60 * 60);
   const provisioned = await provisionCustomerSuccessPlan(record.id);
+  const modelProviderConfigured = getAutonomaXReadiness().some(
+    (gate) => gate.id === 'model-provider' && gate.configured,
+  );
 
   return NextResponse.json(
     {
@@ -89,7 +93,9 @@ export async function POST(req: NextRequest) {
       event: 'product.brief_queued',
       brief: provisioned?.brief ?? record,
       customerSuccessPlan: provisioned?.customerSuccessPlan,
-      nextAction: 'Customer Success Plan is ready for operator review. AI draft generation remains unavailable until a model provider is configured.',
+      nextAction: modelProviderConfigured
+        ? 'Customer Success Plan is ready for operator review. A configured model provider may be used only through an approved generation workflow.'
+        : 'Customer Success Plan is ready for operator review. AI draft generation remains unavailable until a model provider is configured.',
     },
     { status: 202 },
   );

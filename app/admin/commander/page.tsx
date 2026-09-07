@@ -19,7 +19,6 @@ type BlueprintStatus = {
   runtime: {
     state: "ready" | "blocked";
     queueDepth: number;
-    provisionedCustomerSuccessPlans: number;
     gates: Array<{ id: string; title: string; required: boolean; configured: boolean; detail: string }>;
   };
 };
@@ -80,7 +79,6 @@ export default function CommanderPage() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <Metric label="Required gates clear" value={`${blueprint.runtime.gates.filter((gate) => gate.required && gate.configured).length}/${blueprint.runtime.gates.filter((gate) => gate.required).length}`} />
           <Metric label="Queued product briefs" value={String(blueprint.runtime.queueDepth)} />
-          <Metric label="Plans provisioned this check" value={String(blueprint.runtime.provisionedCustomerSuccessPlans)} />
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">

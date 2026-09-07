@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { AUTONOMAX_BLUEPRINT, getAutonomaXReadiness } from '@/lib/autonomax-blueprint';
 import { provisionQueuedCustomerSuccessPlans } from '@/lib/autonomax-briefs';
+import { adminUnauthorizedResponse, isAdminRequest } from '@/lib/admin-auth';
 import { kvLlen } from '@/lib/kv';
 
 export const runtime = 'nodejs';
@@ -10,10 +11,7 @@ export async function GET() {
   const gates = getAutonomaXReadiness();
   const required = gates.filter((gate) => gate.required);
   const requiredReady = required.filter((gate) => gate.configured).length;
-  const [queueDepth, provisionedCustomerSuccessPlans] = await Promise.all([
-    kvLlen('autonomax:briefs'),
-    provisionQueuedCustomerSuccessPlans(),
-  ]);
+  const queueDepth = await kvLlen('autonomax:briefs');
 
   return NextResponse.json(
     {
@@ -25,7 +23,6 @@ export async function GET() {
         requiredReady,
         requiredTotal: required.length,
         queueDepth,
-        provisionedCustomerSuccessPlans,
         gates,
       },
     },
@@ -34,5 +31,15 @@ export async function GET() {
         'Cache-Control': 'no-store, max-age=0',
       },
     },
+  );
+}
+
+export async function POST(req: NextRequest) {
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
+
+  const provisionedCustomerSuccessPlans = await provisionQueuedCustomerSuccessPlans();
+  return NextResponse.json(
+    { ok: true, provisionedCustomerSuccessPlans },
+    { headers: { 'Cache-Control': 'no-store, max-age=0' } },
   );
 }

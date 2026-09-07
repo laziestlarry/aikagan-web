@@ -25,6 +25,17 @@ export async function POST(req: NextRequest) {
   }
 
   const customerId = customerIdForEmail(email);
+  const existingCustomer = await customerStore.get(customerId);
+  if (existingCustomer) {
+    return NextResponse.json(
+      {
+        error: "An existing workspace must be accessed through a verified checkout session.",
+        access: "verification_required",
+      },
+      { status: 409 },
+    );
+  }
+
   const customer = await customerStore.ensure(customerId, email);
   const response = NextResponse.json({
     authenticated: true,
