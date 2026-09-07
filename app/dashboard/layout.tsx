@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { SITE } from '@/lib/constants';
 
-const title = `Workspace | ${SITE.name}`;
+const title = "Workspace";
 const description =
   'AutonomaX customer execution workspace for activating projects, running governed workflows, keeping evidence, and reaching verified outcomes.';
 const canonical = `${SITE.appUrl}/dashboard`;

@@ -34,14 +34,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Free products do not need checkout" }, { status: 400 });
     }
 
-    const hasToken = Boolean(process.env.GUMROAD_ACCESS_TOKEN);
-    if (!hasToken) {
-      return NextResponse.json(
-        { error: "Gumroad not configured (set GUMROAD_ACCESS_TOKEN)" },
-        { status: 503 }
-      );
-    }
-
     const gumroadProduct = getGumroadProduct(slug);
     if (!gumroadProduct) {
       return NextResponse.json(

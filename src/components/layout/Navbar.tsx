@@ -15,6 +15,7 @@ const PUBLIC_NAV = [
   { label: 'Try Free', href: '/tools' },
   { label: 'Services', href: '/services' },
   { label: 'Products', href: '/products' },
+  { label: 'Genesis', href: '/genesis' },
   { label: 'About', href: '/about' },
 ] as const;
 
