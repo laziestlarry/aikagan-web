@@ -3,7 +3,7 @@ import { getKv } from "@/lib/kv";
 import { getPaidProducts } from "@/lib/products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
 import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
-import { isAdminRequest } from "@/lib/admin-auth";
+import { hasAdminSecretHeader, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -160,7 +160,15 @@ export async function GET(request: Request) {
       },
     };
 
-  if (!isAdminRequest(request)) {
+  const adminAuthorized = isAdminRequest(request);
+  if (!adminAuthorized && hasAdminSecretHeader(request)) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } },
+    );
+  }
+
+  if (!adminAuthorized) {
     return NextResponse.json(
       {
         ok: payload.ok,

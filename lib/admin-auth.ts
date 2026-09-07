@@ -18,6 +18,10 @@ export function isAdminRequest(request: NextRequest | Request): boolean {
   return isSecretHeaderValid(request, "x-admin-secret", "ADMIN_SECRET");
 }
 
+export function hasAdminSecretHeader(request: NextRequest | Request): boolean {
+  return Boolean(request.headers.get("x-admin-secret")?.trim());
+}
+
 export function isCronRequest(request: NextRequest | Request): boolean {
   return isSecretHeaderValid(request, "authorization", "CRON_SECRET", "Bearer ");
 }

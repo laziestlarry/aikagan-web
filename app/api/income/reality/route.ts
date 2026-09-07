@@ -9,18 +9,16 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
-import { getIncomeReality } from "@/lib/income-ledger";
+import { getIncomeReality, publicIncomeReality } from "@/lib/income-ledger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
   const url = new URL(req.url);
   const days = Math.max(1, Math.min(90, Number(url.searchParams.get("days") || 7)));
   const reality = await getIncomeReality(days);
-  return NextResponse.json(reality, {
+  return NextResponse.json(publicIncomeReality(reality), {
     headers: { "Cache-Control": "no-store, max-age=0" },
   });
 }

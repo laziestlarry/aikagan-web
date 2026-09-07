@@ -17,7 +17,9 @@ export default function LiveReadinessPanel() {
     try {
       const response = await fetch("/api/health", { cache: "no-store" });
       const payload = (await response.json()) as PublicHealth;
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (response.status !== 200 && response.status !== 503) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       setStatus(payload);
       setError(null);
     } catch (cause) {

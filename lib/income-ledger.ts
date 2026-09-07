@@ -409,6 +409,16 @@ export interface IncomeReality {
   };
 }
 
+export function publicIncomeReality(reality: IncomeReality): Omit<IncomeReality, "recentTransactions"> & {
+  recentTransactions: [];
+} {
+  return {
+    ...reality,
+    // Order IDs and attribution references remain operator-only.
+    recentTransactions: [],
+  };
+}
+
 const DEFAULT_WINDOW_DAYS = 7;
 
 function revenueOpsBaseUrl(): string | undefined {
