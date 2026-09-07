@@ -50,6 +50,12 @@ export default function AutonomaXPage() {
             >
               Open customer workspace <ArrowRight className="h-4 w-4" />
             </Link>
+            <Link
+              href="/genesis"
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-300/35 px-5 py-3 text-sm font-bold text-emerald-200 transition hover:bg-emerald-300/10"
+            >
+              Chimera Genesis intake <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
 

@@ -1,3 +1,6 @@
+import { hasGumroadProduct } from "./gumroad-products";
+import { CHECKOUT_SENTINEL, getProduct } from "./products";
+
 export type StorefrontCommerceState = "open" | "commissioning";
 
 /**
@@ -10,4 +13,18 @@ export function storefrontCommerceState(): StorefrontCommerceState {
 
 export function isStorefrontCommerceEnabled(): boolean {
   return storefrontCommerceState() === "open";
+}
+
+/** Digital SKUs with a live Gumroad permalink are the commissioned hosted rail. */
+export function isHostedGumroadOffer(slug: string): boolean {
+  const product = getProduct(slug);
+  return Boolean(product && product.checkoutUrl === CHECKOUT_SENTINEL && hasGumroadProduct(slug));
+}
+
+/**
+ * Automated Paddle/Lemon remain gated. Hosted Gumroad for mapped Golden
+ * Delivery packs may start checkout while the rest of the storefront commissions.
+ */
+export function canStartPaidCheckout(slug: string): boolean {
+  return isStorefrontCommerceEnabled() || isHostedGumroadOffer(slug);
 }

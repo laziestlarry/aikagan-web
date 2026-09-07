@@ -27,6 +27,17 @@ function BlueprintIntakeForm() {
           interest: "ai-venture-launch-blueprint",
         }),
       });
+      await fetch("/api/autonomax/briefs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "ABS Blueprint",
+          audience: String(payload.niche || payload.email || "unspecified audience"),
+          keywords: ["venture-blueprint", String(payload.project_stage || "idea")],
+          refs: ["https://aikagan.com/intake/venture-blueprint"],
+          successCriteria: String(payload.desired_outcome || "").slice(0, 500),
+        }),
+      }).catch(() => null);
       if (!res.ok) throw new Error("Intake failed");
       setStatus("success");
     } catch {

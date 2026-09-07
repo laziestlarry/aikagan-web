@@ -51,6 +51,28 @@ export default function StartFreePage() {
       <section className="border-y border-white/5 bg-[#0b0b0e]"><div className="mx-auto grid max-w-6xl gap-10 px-6 py-24 lg:grid-cols-2 lg:items-center"><div><Wrench className="h-7 w-7 text-amber-300" /><h2 className="mt-5 text-4xl font-black">The paid boundary moves after demonstrated value.</h2><p className="mt-5 leading-8 text-neutral-400">If a free result exposes an improvement worth making, you can implement it yourself or ask AIKAGAN / AutonomaX to configure, deploy and operate it. The service is the execution—not access to a sales pitch.</p></div><div className="space-y-4">{[['Free','Diagnostics, examples, public tools and practical guidance.'],['Implement','A defined correction or workflow is completed for you.'],['Automate','The useful workflow is integrated into real operations.'],['Manage','Ongoing optimization and execution are operated as a service.']].map(([title, body]) => (<div key={title} className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5"><CheckCircle2 className="mt-0.5 h-5 w-5 flex-none text-emerald-300" /><div><h3 className="font-bold">{title}</h3><p className="mt-1 text-sm leading-6 text-neutral-400">{body}</p></div></div>))}</div></div></section>
 
       <section className="px-6 py-24"><div className="mx-auto max-w-5xl rounded-[32px] border border-amber-300/20 bg-[#0d0d10] px-7 py-14 text-center sm:px-12"><p className="text-sm font-bold text-amber-300">The simplest first step</p><h2 className="mt-4 text-4xl font-black">Find the problem first. Then decide whether it deserves action.</h2><p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-400">Run the free Revenue Leak Scan. It gives you a concrete result immediately and points to the commercial area that looks weakest.</p><Link href="/tools/revenue-leak-scan" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black hover:bg-amber-200">Get my free score <ArrowRight className="h-4 w-4" /></Link></div></section>
+      <section className="border-t border-white/5 px-6 py-24">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-sm font-bold text-amber-300">When the free result is enough to act</p>
+          <h2 className="mt-3 text-4xl font-black">Hosted Golden Delivery packs, $29–$149.</h2>
+          <p className="mt-4 max-w-3xl text-neutral-400">Digital kits check out on Gumroad. Implementation and blueprints still require written scope. No fake open-store claims.</p>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {[
+              ["First-Sale Starter", "$29", "Offer + first-sale sequence", "/products/masterclass-starter"],
+              ["Revenue Conversion Pro", "$79", "Funnel + 30-day operating cadence", "/products/masterclass-pro"],
+              ["Scale Commander", "$149", "Repeatability, partners, licensing", "/products/masterclass-commander"],
+            ].map(([name, price, body, href]) => (
+              <Link key={name} href={href} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 hover:border-amber-300/40">
+                <p className="text-2xl font-black">{price}</p>
+                <h3 className="mt-2 text-xl font-bold">{name}</h3>
+                <p className="mt-2 text-sm text-neutral-400">{body}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-amber-300">Buy this pack <ArrowRight className="h-4 w-4" /></span>
+              </Link>
+            ))}
+          </div>
+          <Link href="/genesis" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-emerald-300">Or file a Chimera Genesis intake <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </section>
     </main>
   );
 }
