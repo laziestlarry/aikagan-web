@@ -360,7 +360,7 @@ function PlanList({ title, items }: { title: string; items: string[] }) {
     <div>
       <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">{title}</h3>
       <ol className="mt-3 space-y-2 text-sm leading-6 text-kagan-light">
-        {items.map((item, index) => <li key={item} className="flex gap-3"><span className="font-mono text-emerald-200">{index + 1}.</span><span>{item}</span></li>)}
+        {items.map((item, index) => <li key={`${title}-${index}`} className="flex gap-3"><span className="font-mono text-emerald-200">{index + 1}.</span><span>{item}</span></li>)}
       </ol>
     </div>
   );
