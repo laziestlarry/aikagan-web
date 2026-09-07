@@ -1,0 +1,9 @@
+{
+  // Cloudflare Workers Builds runs `npx wrangler versions upload` with no args.
+  // This config supplies the missing entry-point. Vercel remains the Next.js host.
+  "name": "aikagan-web",
+  "main": "workers/edge.ts",
+  "compatibility_date": "2026-09-03",
+  "workers_dev": true,
+  "preview_urls": true
+}
