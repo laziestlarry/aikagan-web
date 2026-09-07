@@ -1,13 +1,16 @@
 import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
+import { adminUnauthorizedResponse, isAdminRequest } from '@/lib/admin-auth';
 import { getAutonomaXReadiness } from '@/lib/autonomax-blueprint';
-import { kvIncrBy, kvLpush } from '@/lib/kv';
+import { provisionCustomerSuccessPlan, storeQueuedBrief, type ProductBrief } from '@/lib/autonomax-briefs';
+import { kvIncrBy } from '@/lib/kv';
 import { clientKey, rateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 interface ProductBriefInput {
+  briefId?: unknown;
   category?: unknown;
   audience?: unknown;
   keywords?: unknown;
@@ -40,6 +43,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
   }
 
+  const requestedBriefId = cleanText(body.briefId, 64);
+  if (requestedBriefId) {
+    if (!isAdminRequest(req)) return adminUnauthorizedResponse();
+    const provisioned = await provisionCustomerSuccessPlan(requestedBriefId);
+    if (!provisioned) {
+      return NextResponse.json({ error: 'Brief not found in the active retention window.' }, { status: 404 });
+    }
+    return NextResponse.json({ ok: true, event: 'customer.success_plan_provisioned', ...provisioned });
+  }
+
   const category = cleanText(body.category, 120);
   const audience = cleanText(body.audience, 240);
   const keywords = cleanList(body.keywords, 12, 80);
@@ -55,7 +68,7 @@ export async function POST(req: NextRequest) {
 
   const id = randomUUID();
   const createdAt = new Date().toISOString();
-  const record = {
+  const record: ProductBrief = {
     id,
     status: 'queued',
     category,
@@ -67,21 +80,22 @@ export async function POST(req: NextRequest) {
     source: 'autonomax-control-plane',
   };
 
-  await kvLpush('autonomax:briefs', JSON.stringify(record), 30 * 24 * 60 * 60);
+  await storeQueuedBrief(record);
   await kvIncrBy('autonomax:event:product.brief_queued', 1, 30 * 24 * 60 * 60);
-
-  const modelReady = getAutonomaXReadiness().find(
-    (gate) => gate.id === 'model-provider',
-  )?.configured;
+  const provisioned = await provisionCustomerSuccessPlan(record.id);
+  const modelProviderConfigured = getAutonomaXReadiness().some(
+    (gate) => gate.id === 'model-provider' && gate.configured,
+  );
 
   return NextResponse.json(
     {
       ok: true,
       event: 'product.brief_queued',
-      brief: record,
-      nextAction: modelReady
-        ? 'Draft generation may be dispatched by the configured orchestrator.'
-        : 'Brief is stored, but generation remains blocked until a model provider is configured.',
+      brief: provisioned?.brief ?? record,
+      customerSuccessPlan: provisioned?.customerSuccessPlan,
+      nextAction: modelProviderConfigured
+        ? 'Customer Success Plan is ready for operator review. A configured model provider may be used only through an approved generation workflow.'
+        : 'Customer Success Plan is ready for operator review. AI draft generation remains unavailable until a model provider is configured.',
     },
     { status: 202 },
   );

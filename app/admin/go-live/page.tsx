@@ -51,12 +51,12 @@ export default function GoLivePage() {
   async function loadAll(s: string) {
     setError(null);
     try {
-      const r1 = await fetch("/api/health", { cache: "no-store" });
+      const r1 = await fetch("/api/health", { cache: "no-store", headers: { "x-admin-secret": s } });
       if (r1.ok) {
         const h = await r1.json();
         setHealth(h);
       }
-      const r2 = await fetch("/api/income/setup", { cache: "no-store" });
+      const r2 = await fetch("/api/income/setup", { cache: "no-store", headers: { "x-admin-secret": s } });
       if (r2.ok) setSetup(await r2.json());
       setAuthed(true);
     } catch (err) {

@@ -57,6 +57,16 @@ interface BlueprintResponse {
   };
 }
 
+interface CustomerSuccessPlan {
+  status: 'ready_for_review';
+  customerOutcome: string;
+  activationSteps: string[];
+  proofCheckpoints: string[];
+  supportRoute: string;
+  escalationPolicy: string;
+  deliveryBoundary: string;
+}
+
 const EMPTY_FORM = {
   category: '',
   audience: '',
@@ -71,6 +81,7 @@ export default function AutonomaXBlueprintConsole() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState('');
+  const [customerSuccessPlan, setCustomerSuccessPlan] = useState<CustomerSuccessPlan | null>(null);
 
   async function refresh() {
     setLoading(true);
@@ -94,6 +105,7 @@ export default function AutonomaXBlueprintConsole() {
     event.preventDefault();
     setSubmitting(true);
     setResult('');
+    setCustomerSuccessPlan(null);
     setError('');
 
     try {
@@ -114,9 +126,11 @@ export default function AutonomaXBlueprintConsole() {
         error?: string;
         brief?: { id: string };
         nextAction?: string;
+        customerSuccessPlan?: CustomerSuccessPlan;
       };
       if (!response.ok) throw new Error(payload.error || 'Brief intake failed.');
       setResult(`Queued brief ${payload.brief?.id ?? ''}. ${payload.nextAction ?? ''}`.trim());
+      setCustomerSuccessPlan(payload.customerSuccessPlan ?? null);
       setForm(EMPTY_FORM);
       await refresh();
     } catch (err) {
@@ -305,6 +319,21 @@ export default function AutonomaXBlueprintConsole() {
         </form>
       </section>
 
+      {customerSuccessPlan ? (
+        <section className="rounded-3xl border border-emerald-300/25 bg-emerald-300/[0.05] p-6 md:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-200">Customer Success Plan · Ready for review</p>
+          <h2 className="mt-3 text-2xl font-bold text-kagan-white">Activation and delivery controls</h2>
+          <p className="mt-3 text-sm leading-6 text-kagan-light">{customerSuccessPlan.customerOutcome}</p>
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <PlanList title="Activation steps" items={customerSuccessPlan.activationSteps} />
+            <PlanList title="Proof checkpoints" items={customerSuccessPlan.proofCheckpoints} />
+          </div>
+          <p className="mt-6 text-sm text-kagan-light"><span className="font-bold text-kagan-white">Support:</span> {customerSuccessPlan.supportRoute}</p>
+          <p className="mt-2 text-sm text-kagan-light"><span className="font-bold text-kagan-white">Escalation:</span> {customerSuccessPlan.escalationPolicy}</p>
+          <p className="mt-5 text-xs leading-5 text-emerald-100/75">{customerSuccessPlan.deliveryBoundary}</p>
+        </section>
+      ) : null}
+
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-kagan-gold">Product to revenue</p>
         <h2 className="mt-2 text-2xl font-bold text-kagan-white">Governed pipeline</h2>
@@ -322,6 +351,17 @@ export default function AutonomaXBlueprintConsole() {
           ))}
         </div>
       </section>
+    </div>
+  );
+}
+
+function PlanList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div>
+      <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-kagan-light">{title}</h3>
+      <ol className="mt-3 space-y-2 text-sm leading-6 text-kagan-light">
+        {items.map((item, index) => <li key={`${title}-${index}`} className="flex gap-3"><span className="font-mono text-emerald-200">{index + 1}.</span><span>{item}</span></li>)}
+      </ol>
     </div>
   );
 }

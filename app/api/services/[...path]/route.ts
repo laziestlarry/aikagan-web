@@ -17,8 +17,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_FASTAPI_URL ||
-  "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
+  process.env.NEXT_PUBLIC_FASTAPI_URL;
 
 async function handler(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
   const path = (await ctx.params).path;
@@ -66,6 +65,13 @@ async function handler(req: NextRequest, ctx: { params: Promise<{ path: string[]
           "Cache-Control": "no-store, max-age=0",
         },
       },
+    );
+  }
+
+  if (!BACKEND_URL) {
+    return NextResponse.json(
+      { error: "AutonomaX service backend is not configured" },
+      { status: 503 },
     );
   }
 

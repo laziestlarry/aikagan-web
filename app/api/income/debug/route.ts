@@ -7,16 +7,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getKv, kvGet, kvSet } from "@/lib/kv";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const secret = process.env.ADMIN_SECRET;
-  const provided = req.headers.get("x-admin-secret") ?? req.nextUrl.searchParams.get("secret") ?? "";
-  if (!secret || provided !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const kv = await getKv();
   const type: string = kv?.type ?? "memory";

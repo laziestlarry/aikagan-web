@@ -4,6 +4,8 @@ import { ensureGumroadSaleSubscription, isGumroadApiConfigured } from "@/lib/gum
 import { canonicalSiteOrigin, isFirstPartyCommerceHost, paddleCheckoutOrigin } from "@/lib/site-origin";
 import { getSocialCredential } from "@/lib/social/token-store";
 import { getLinkedInAppConfig, getMetaAppConfig, socialAdminSecret } from "@/lib/social/config-store";
+import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,6 +20,7 @@ function configuredAny(...names: string[]): boolean {
 }
 
 export async function GET(req: NextRequest) {
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
   const paidProducts = getPaidProducts();
   const managedProducts = paidProducts.filter((product) => product.checkoutUrl === CHECKOUT_SENTINEL);
   const scopedServices = paidProducts.filter((product) => product.checkoutUrl !== CHECKOUT_SENTINEL);
@@ -69,6 +72,7 @@ export async function GET(req: NextRequest) {
 
   const commerceChecks = {
     deployment: true,
+    storefrontEnabled: isStorefrontCommerceEnabled(),
     catalog: managedProducts.length > 0,
     storefrontSurface: firstPartySurface,
     checkoutProvider: Boolean(defaultCheckoutProvider),
@@ -113,7 +117,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(
     {
       service: "AIKAGAN ProfitOS Commerce",
-      mode: launchReady ? "live" : "blocked",
+      mode: launchReady ? "live" : storefrontCommerceState(),
       ready: launchReady,
       commerceReady,
       growthAutomationReady: directSocialReady,

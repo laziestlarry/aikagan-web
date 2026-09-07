@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import CommercialComingSoon from "@/components/CommercialComingSoon";
+import ProductCatalog from "@/components/ProductCatalog";
 import { buildMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = buildMetadata({
@@ -9,5 +9,5 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default function ProductsPage() {
-  return <CommercialComingSoon />;
+  return <ProductCatalog />;
 }

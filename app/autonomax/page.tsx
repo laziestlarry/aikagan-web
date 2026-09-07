@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldCheck, Workflow } from 'lucide-react';
 import AutonomaXBlueprintConsole from '@/components/shared/AutonomaXBlueprintConsole';
+import WorkspaceEntry from '@/components/autonomax/WorkspaceEntry';
+import LazyLarryGuide from '@/components/autonomax/LazyLarryGuide';
 import Section from '@/components/ui/Section';
 import Badge from '@/components/ui/Badge';
 import { buildMetadata } from '@/lib/metadata';
@@ -29,40 +31,72 @@ export default function AutonomaXPage() {
         <div className="mx-auto mb-12 max-w-4xl text-center">
           <Badge variant="green" className="mb-4">Blueprint v1 · Live Upgrade</Badge>
           <h1 className="text-4xl font-extrabold text-kagan-white md:text-6xl">
-            Autonoma<span className="text-gradient">X Control Plane</span>
+            Autonoma<span className="text-gradient">X outcome workspace</span>
           </h1>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-kagan-light">
-            A truthful operating surface for the next-generation AI organization: capability gates, durable brief intake,
-            director mandates, and the governed path from discovery to paid delivery.
+            Install an outcome-ready business system you own: reusable workflows, operating procedures, controls, and
+            acceptance evidence—without tying your business to another AI platform.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link
-              href="https://aikagan.com/mission-control"
+              href="#workspace-access"
               className="inline-flex items-center gap-2 rounded-xl border border-kagan-gold/35 px-5 py-3 text-sm font-bold text-kagan-gold transition hover:bg-kagan-gold/10"
             >
-              Mission Control <ArrowRight className="h-4 w-4" />
+              Create or access workspace <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="https://aikagan.com/products"
+              href="/dashboard"
               className="inline-flex items-center gap-2 rounded-xl bg-kagan-gold px-5 py-3 text-sm font-extrabold text-black transition hover:bg-kagan-gold-light"
             >
-              Revenue offers <ArrowRight className="h-4 w-4" />
+              Open customer workspace <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
-        <AutonomaXBlueprintConsole />
+        <div className="mx-auto max-w-6xl">
+          <AutonomaXBlueprintConsole />
+        </div>
       </Section>
 
       <Section variant="alt">
+        <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-3">
+          {[
+            ['01', 'Name the outcome', 'Choose one operational result and the evidence that will show it is complete.'],
+            ['02', 'Use your stack', 'Deploy the provided workflow and procedure with the tools and vendors you already use.'],
+            ['03', 'Review the proof', 'Keep the test, acceptance check, delivery record, and recovery path visible.'],
+          ].map(([number, title, body]) => (
+            <article key={number} className="rounded-2xl border border-kagan-border bg-kagan-card/50 p-6">
+              <p className="text-xs font-black tracking-[0.2em] text-kagan-gold">{number}</p>
+              <Workflow className="mt-5 h-5 w-5 text-emerald-300" />
+              <h2 className="mt-4 text-xl font-bold text-kagan-white">{title}</h2>
+              <p className="mt-3 text-sm leading-6 text-kagan-light">{body}</p>
+            </article>
+          ))}
+        </div>
+        <div className="mx-auto mt-6 max-w-6xl">
+          <WorkspaceEntry id="workspace-access" />
+        </div>
+        <div className="mx-auto mt-6 max-w-6xl">
+          <LazyLarryGuide />
+        </div>
+      </Section>
+
+      <Section variant="hero">
         <div className="mx-auto max-w-4xl rounded-3xl border border-kagan-gold/20 bg-kagan-gold/[0.04] p-7 md:p-10">
           <div className="flex items-start gap-4">
             <ShieldCheck className="mt-1 h-6 w-6 flex-none text-kagan-gold" />
             <div>
-              <h2 className="text-2xl font-bold text-kagan-white">Operational contract</h2>
+              <h2 className="text-2xl font-bold text-kagan-white">Operational contract and escalation</h2>
               <p className="mt-3 leading-7 text-kagan-light">
-                A queued brief is evidence of intake, not evidence of generation, publication, payment, or fulfillment.
-                Each downstream state must be produced by its own verified event and release gate.
+                A workspace records planning, mission inputs, entitlements, deliverable links, and support requests. It does
+                not by itself configure AI models, run your vendors, process a payment, or fulfill an order. A queued brief
+                is evidence of intake—not generation, publication, payment, or fulfillment. Each downstream state needs its
+                own verified event and release gate.
+              </p>
+              <p className="mt-4 flex gap-2 text-sm leading-6 text-kagan-light">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none text-emerald-300" />
+                If the result is blocked or its acceptance evidence is missing, use the workspace support route to record
+                the blocker, expected result, and recovery context for triage.
               </p>
             </div>
           </div>

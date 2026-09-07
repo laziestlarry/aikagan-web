@@ -9,15 +9,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { GUMROAD_PRODUCTS } from "@/lib/gumroad-products";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const adminSecret = req.headers.get("x-admin-secret") || req.nextUrl.searchParams.get("secret");
-  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const token = process.env.GUMROAD_ACCESS_TOKEN;
   const results: Record<string, any> = {
@@ -123,10 +121,7 @@ export async function GET(req: NextRequest) {
 // This copies the correct name + description onto the live listings.
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const adminSecret = req.headers.get("x-admin-secret") || req.nextUrl.searchParams.get("secret");
-  if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const action = req.nextUrl.searchParams.get("action");
   const token = process.env.GUMROAD_ACCESS_TOKEN;

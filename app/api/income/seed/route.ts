@@ -5,7 +5,7 @@
  * income dashboard has something to render. This is the bridge to "fully
  * live" before real traffic arrives.
  *
- * Auth: x-admin-secret header / body.adminSecret / ?secret= matching ADMIN_SECRET.
+ * Auth: x-admin-secret header matching ADMIN_SECRET.
  *
  * Implementation note: writes are batched via Upstash's pipeline API
  * (one HTTP call per ~100 commands) to keep the seed fast (~3s for 30
@@ -17,6 +17,7 @@ import { fireCapi as fireCapiEvent } from "@/lib/capi-fire";
 import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
 import { kvBatch, type BatchOp, kvSet, kvLpush, kvZadd, kvExpire } from "@/lib/kv";
 import crypto from "node:crypto";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,16 +46,6 @@ const TEST_DOMAINS = [
 const TX_TTL_S = 180 * 24 * 60 * 60;
 const DAY_TTL_S = 365 * 24 * 60 * 60;
 const RECENT_TTL_S = 90 * 24 * 60 * 60;
-
-function authOk(req: NextRequest, body: any): boolean {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  const header = req.headers.get("x-admin-secret");
-  if (header === secret) return true;
-  if (body?.adminSecret === secret) return true;
-  if (req.nextUrl.searchParams.get("secret") === secret) return true;
-  return false;
-}
 
 function dayKey(ts: number): string {
   return new Date(ts).toISOString().slice(0, 10);
@@ -87,10 +78,8 @@ export async function POST(req: NextRequest) {
   const limit = rateLimit({ key: clientKey(req, "income-seed"), max: 10, windowMs: 60_000 });
   if (!limit.allowed) return rateLimitResponse(limit);
 
-  const body = (await req.json().catch(() => ({}))) as { days?: number; scale?: number; adminSecret?: string };
-  if (!authOk(req, body)) {
-    return NextResponse.json({ error: "Unauthorized — set ADMIN_SECRET env var" }, { status: 401 });
-  }
+  const body = (await req.json().catch(() => ({}))) as { days?: number; scale?: number };
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const days = Math.max(1, Math.min(30, Number(body.days ?? 7)));
   const scale = Math.max(0.1, Math.min(10, Number(body.scale ?? 1)));
@@ -276,6 +265,6 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     instructions:
-      "POST /api/income/seed with x-admin-secret header, body.adminSecret, or ?secret=... matching ADMIN_SECRET. Body: { days?: 7, scale?: 1.0 }. All seeded data is tagged source=self_test.",
+      "POST /api/income/seed with x-admin-secret matching ADMIN_SECRET. Body: { days?: 7, scale?: 1.0 }. All seeded data is tagged source=self_test.",
   });
 }

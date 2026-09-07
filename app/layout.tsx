@@ -17,6 +17,7 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";
 const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || "";
+const VERCEL_ANALYTICS_ENABLED = Boolean(process.env.VERCEL);
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aikagan.com"),
@@ -90,7 +91,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <Footer locale={locale} />
         <LiveChat locale={locale} />
         <WebVitalsReporter />
-        <Analytics />
+        {VERCEL_ANALYTICS_ENABLED ? <Analytics /> : null}
       </body>
     </html>
   );

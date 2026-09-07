@@ -7,8 +7,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  let body: { transaction_id?: string } = {};
-  try { body = await req.json(); } catch {}
+  let body: { transaction_id?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "A valid JSON request body is required" }, { status: 400 });
+  }
   const transactionId = body.transaction_id?.trim();
   if (!transactionId) return NextResponse.json({ error: "Missing transaction_id" }, { status: 400 });
 

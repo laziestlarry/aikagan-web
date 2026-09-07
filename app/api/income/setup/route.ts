@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 import { CHECKOUT_SENTINEL, getPaidProducts } from "@/lib/products";
 import { GUMROAD_PRODUCTS } from "@/lib/gumroad-products";
 
@@ -26,7 +27,8 @@ function any(...keys: string[]): boolean {
   return keys.some(configured);
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
   const managedProducts = getPaidProducts().filter((product) => product.checkoutUrl === CHECKOUT_SENTINEL);
   const hasLemonVariant = managedProducts.some((product) =>
     configured(`LEMONSQUEEZY_VARIANT_${product.slug.replace(/-/g, "_").toUpperCase()}`),

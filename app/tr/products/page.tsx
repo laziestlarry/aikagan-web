@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import CommercialComingSoon from "@/components/CommercialComingSoon";
+import ProductCatalog from "@/components/ProductCatalog";
 
 export const metadata: Metadata = {
-  title: "Doğrulanmış Teslimat Yakında | AIKAGAN Türkiye",
-  description: "AIKAGAN ücretli ürünleri; içerik, lisans, ödeme ve teslimat doğrulaması tamamlanana kadar geçici olarak satışa kapalıdır. Ücretsiz araçlar kullanıma açıktır.",
+  title: "AIKAGAN Teslimat Paketleri | AIKAGAN Türkiye",
+  description: "AIKAGAN teslimat paketlerinin içeriğini, fiyatını, desteğini ve doğrulanmış kullanılabilirlik durumunu ödeme öncesinde inceleyin.",
   alternates: {
     canonical: "https://aikagan.com/tr/products",
     languages: { "tr-TR": "https://aikagan.com/tr/products", en: "https://aikagan.com/products" },
@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function TurkishProducts() {
-  return <CommercialComingSoon locale="tr" />;
+  return <ProductCatalog locale="tr" />;
 }

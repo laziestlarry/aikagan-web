@@ -6,7 +6,8 @@
  * window. Conversion rates are computed server-side.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 import {
   countPageviewsSince,
   countIntentsSince,
@@ -18,7 +19,8 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
   const url = new URL(req.url);
   const days = Math.max(1, Math.min(90, Number(url.searchParams.get("days") || 7)));
   const since = Date.now() - days * 24 * 60 * 60 * 1000;

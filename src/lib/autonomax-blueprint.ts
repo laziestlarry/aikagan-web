@@ -106,8 +106,15 @@ export function getAutonomaXReadiness(): CapabilityGate[] {
     'LEMONSQUEEZY_API_KEY',
     'GUMROAD_ACCESS_TOKEN',
     'SHOPIER_API_KEY',
+    'SHOPIER_PAT',
+    'AUTONOMAX_SHOPIER_PAT',
   );
-  const fulfillment = configured('MAKE_WEBHOOK_URL', 'FULFILLMENT_WEBHOOK_URL');
+  const fulfillment = configured(
+    'MAKE_WEBHOOK_URL',
+    'FULFILLMENT_WEBHOOK_URL',
+    'MAKE_PURCHASE_WEBHOOK_URL',
+    'MAKE_CUSTOMER_SERVICE_WEBHOOK_URL',
+  );
   const telemetry = configured('NEXT_PUBLIC_GA_ID', 'META_CAPI_ACCESS_TOKEN');
   const changeControl = configured('ADMIN_SECRET', 'CRON_SECRET');
 

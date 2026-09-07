@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { drainFulfillmentQueue } from "@/lib/fulfillment";
 import { reconcileRecentGumroadSales } from "@/lib/gumroad-reconcile";
+import { isCronRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 function authorized(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET ?? "";
-  if (!secret) return false;
-  return (
-    req.headers.get("authorization") === `Bearer ${secret}` ||
-    req.nextUrl.searchParams.get("secret") === secret
-  );
+  return isCronRequest(req);
 }
 
 async function run(req: NextRequest) {

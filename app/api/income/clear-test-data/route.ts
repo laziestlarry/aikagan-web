@@ -13,34 +13,22 @@
  *   2. Delete the Vercel KV namespace (or wait for the daily counters to
  *      naturally roll over after a day boundary)
  *
- * Auth: ADMIN_SECRET (header, body, or query).
+ * Auth: x-admin-secret header matching ADMIN_SECRET.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { deleteTransaction, listSelfTestOrderIds } from "@/lib/income-ledger";
 import { rateLimit, clientKey, rateLimitResponse } from "@/lib/rate-limit";
+import { adminUnauthorizedResponse, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function authOk(req: NextRequest, body: any): boolean {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) return false;
-  const header = req.headers.get("x-admin-secret");
-  if (header === secret) return true;
-  if (body?.adminSecret === secret) return true;
-  if (req.nextUrl.searchParams.get("secret") === secret) return true;
-  return false;
-}
 
 export async function POST(req: NextRequest) {
   const limit = rateLimit({ key: clientKey(req, "income-clear"), max: 5, windowMs: 60_000 });
   if (!limit.allowed) return rateLimitResponse(limit);
 
-  const body = (await req.json().catch(() => ({}))) as { adminSecret?: string };
-  if (!authOk(req, body)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
 
   const orderIds = await listSelfTestOrderIds();
   let deleted = 0;
@@ -67,9 +55,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  if (!isAdminRequest(req)) return adminUnauthorizedResponse();
   return NextResponse.json({
     ok: true,
     instructions:
-      "POST /api/income/clear-test-data with x-admin-secret / body.adminSecret / ?secret= matching ADMIN_SECRET. Removes every transaction tagged source=self_test.",
+      "POST /api/income/clear-test-data with x-admin-secret matching ADMIN_SECRET. Removes every transaction tagged source=self_test.",
   });
 }

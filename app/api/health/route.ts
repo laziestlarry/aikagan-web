@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getKv } from "@/lib/kv";
 import { getPaidProducts } from "@/lib/products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
+import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
+import { hasAdminSecretHeader, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,7 +43,7 @@ async function checkUrl(url: string, timeout = 5000): Promise<CheckResult> {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const checks: Record<string, CheckResult> = {};
   const paidProducts = getPaidProducts();
   const hasLemonVariant = paidProducts.some((product) =>
@@ -121,16 +123,19 @@ export async function GET() {
     checks.fastapi_backend = await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`);
   }
 
-  const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue"];
+  checks.storefront_commerce = configCheck(
+    isStorefrontCommerceEnabled(),
+    "STOREFRONT_COMMERCE_ENABLED is not enabled until commercial commissioning passes",
+  );
+  const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue", "storefront_commerce"];
   const criticalDegraded = criticalNames.filter((name) => checks[name]?.status !== "ok");
   const degraded = Object.entries(checks).filter(([, result]) => result.status !== "ok").map(([name]) => name);
   const ok = criticalDegraded.length === 0;
 
-  return NextResponse.json(
-    {
+  const payload = {
       ok,
       simulated: false,
-      storefront_mode: "maintenance",
+      storefront_mode: storefrontCommerceState(),
       version: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
       uptime_seconds: Math.floor((Date.now() - START_TIME) / 1000),
       environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
@@ -153,7 +158,27 @@ export async function GET() {
         track: "/api/income/track",
         checkout: "/api/income/checkout",
       },
-    },
-    { status: ok ? 200 : 503 },
-  );
+    };
+
+  const adminAuthorized = isAdminRequest(request);
+  if (!adminAuthorized && hasAdminSecretHeader(request)) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } },
+    );
+  }
+
+  if (!adminAuthorized) {
+    return NextResponse.json(
+      {
+        ok: payload.ok,
+        storefront_mode: payload.storefront_mode,
+        version: payload.version,
+        environment: payload.environment,
+      },
+      { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } },
+    );
+  }
+
+  return NextResponse.json(payload, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } });
 }

@@ -16,12 +16,18 @@ export const dynamic = "force-dynamic";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_AUTONOMAX_API_URL ||
-  "https://autonomax-revenue-lenljbhrqq-uc.a.run.app";
+  process.env.NEXT_PUBLIC_FASTAPI_URL;
 const API_KEY = process.env.AUTONOMAX_API_KEY ?? "";
 
 async function handler(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
   const path = (await ctx.params).path;
   const cleanPath = path.filter(Boolean).join("/");
+  if (!BACKEND_URL) {
+    return NextResponse.json(
+      { error: "Revenue operations backend is not configured" },
+      { status: 503 },
+    );
+  }
   const url = `${BACKEND_URL.replace(/\/+$/, "")}/${cleanPath}${req.nextUrl.search}`;
 
   const headers: Record<string, string> = {

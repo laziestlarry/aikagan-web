@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const APP_HOST = 'app.aikagan.com';
+const CHECKOUT_HOST = 'checkout.aikagan.com';
 const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
 const TURKEY_HOSTS = new Set(['aikagan.com.tr', 'www.aikagan.com.tr']);
@@ -67,6 +68,13 @@ export function middleware(request: NextRequest) {
   if (host === WWW_HOST) {
     const targetHost = startsWithAny(cleanPath, APP_PREFIXES) ? APP_HOST : APEX_HOST;
     return redirectTo(targetHost, cleanPath, search);
+  }
+
+  // Checkout is a named entry point, not an independent storefront. Keep all
+  // commerce navigation on the app host until a separately verified checkout
+  // surface is intentionally introduced.
+  if (host === CHECKOUT_HOST) {
+    return redirectTo(APP_HOST, cleanPath === '/' ? '/checkout' : cleanPath, search);
   }
 
   if (host === APEX_HOST && requestedLanguage === 'tr') return setPreferenceAndRedirect(request, 'tr');
