@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { getKv } from "@/lib/kv";
 import { getPaidProducts } from "@/lib/products";
 import { isGumroadApiConfigured } from "@/lib/gumroad-api";
-import { isStorefrontCommerceEnabled, storefrontCommerceState } from "@/lib/commerce";
+import {
+  canStartPaidCheckout,
+  isHostedGumroadOffer,
+  isStorefrontCommerceEnabled,
+  storefrontCommerceState,
+} from "@/lib/commerce";
 import { hasAdminSecretHeader, isAdminRequest } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
@@ -46,12 +51,16 @@ async function checkUrl(url: string, timeout = 5000): Promise<CheckResult> {
 export async function GET(request: Request) {
   const checks: Record<string, CheckResult> = {};
   const paidProducts = getPaidProducts();
+  const hostedGumroadProducts = paidProducts.filter((product) => isHostedGumroadOffer(product.slug));
+  const startablePaidProducts = paidProducts.filter((product) => canStartPaidCheckout(product.slug));
   const hasLemonVariant = paidProducts.some((product) =>
     configured(`LEMONSQUEEZY_VARIANT_${product.slug.replace(/-/g, "_").toUpperCase()}`),
   );
 
   const providers = {
-    gumroad: isGumroadApiConfigured(),
+    // A mapped hosted Gumroad product is a real customer checkout rail even
+    // when the Gumroad API is not needed to construct the checkout URL.
+    gumroad: isGumroadApiConfigured() || hostedGumroadProducts.length > 0,
     shopier:
       configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
       configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
@@ -70,7 +79,7 @@ export async function GET(request: Request) {
   };
 
   checks.catalog = configCheck(paidProducts.length > 0, "No paid products are registered");
-  checks.checkout_provider = configCheck(Object.values(providers).some(Boolean), "No complete payment provider configuration is available");
+  checks.checkout_provider = configCheck(Object.values(providers).some(Boolean), "No complete payment provider configuration or commissioned hosted checkout is available");
   checks.download_token_config = configCheck(configured("DOWNLOAD_TOKEN_SECRET"), "DOWNLOAD_TOKEN_SECRET not set");
   checks.fulfillment_webhook = configCheck(
     configuredAny("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL"),
@@ -123,9 +132,13 @@ export async function GET(request: Request) {
     checks.fastapi_backend = await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`);
   }
 
+  // Commissioning mode is not itself an outage. The health contract is green
+  // when at least one paid SKU can start a real checkout path. The global flag
+  // still controls automated rails; hosted Gumroad SKUs are commissioned
+  // individually through canStartPaidCheckout().
   checks.storefront_commerce = configCheck(
-    isStorefrontCommerceEnabled(),
-    "STOREFRONT_COMMERCE_ENABLED is not enabled until commercial commissioning passes",
+    startablePaidProducts.length > 0,
+    "No paid product currently has a startable checkout path; finish commissioning or map a hosted Gumroad offer",
   );
   const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue", "storefront_commerce"];
   const criticalDegraded = criticalNames.filter((name) => checks[name]?.status !== "ok");
@@ -143,6 +156,11 @@ export async function GET(request: Request) {
       checks,
       degraded: degraded.length ? degraded : undefined,
       critical_degraded: criticalDegraded.length ? criticalDegraded : undefined,
+      commerce: {
+        global_enabled: isStorefrontCommerceEnabled(),
+        startable_paid_products: startablePaidProducts.map((product) => product.slug),
+        hosted_gumroad_products: hostedGumroadProducts.map((product) => product.slug),
+      },
       income_sources: {
         kv: kvConnected,
         provider: Object.values(providers).some(Boolean),
