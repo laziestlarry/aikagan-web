@@ -1,78 +1,36 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/gumroad-checkout
-//
-// Returns a Gumroad checkout URL for the given product slug.
-// Gumroad is a Merchant of Record — handles payment, tax, and delivery.
-//
-// Environment:
-//   GUMROAD_ACCESS_TOKEN  — set in Vercel for license verification / webhooks
-//
-// Product URLs are pre-configured in lib/gumroad-products.ts.
-// Webhook: POST /api/webhooks/gumroad (set up in Gumroad dashboard)
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { NextRequest, NextResponse } from "next/server";
-import { getProduct } from "@/lib/products";
-import { getGumroadProduct } from "@/lib/gumroad-products";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * Legacy compatibility endpoint.
+ *
+ * /api/income/checkout is the single checkout authority for product validation,
+ * intent attribution, provider selection and fallback policy. Keep this route
+ * only so older clients do not bypass those controls.
+ */
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json().catch(() => null);
-    const slug = body?.slug;
-    if (!slug || typeof slug !== "string") {
-      return NextResponse.json({ error: "Missing or invalid slug" }, { status: 400 });
-    }
+  const target = new URL("/api/income/checkout", req.url);
+  const body = await req.text();
+  const response = await fetch(target, {
+    method: "POST",
+    headers: {
+      "content-type": req.headers.get("content-type") || "application/json",
+      "user-agent": req.headers.get("user-agent") || "aikagan-gumroad-compat",
+      "x-forwarded-host": req.headers.get("host") || "",
+    },
+    body,
+    cache: "no-store",
+  });
 
-    const product = getProduct(slug);
-    if (!product) {
-      return NextResponse.json({ error: `Unknown product: ${slug}` }, { status: 404 });
-    }
-    if (!product.price || product.priceModel === "free") {
-      return NextResponse.json({ error: "Free products do not need checkout" }, { status: 400 });
-    }
-
-    const gumroadProduct = getGumroadProduct(slug);
-    if (!gumroadProduct) {
-      return NextResponse.json(
-        { error: `No Gumroad product for slug: ${slug}` },
-        { status: 404 }
-      );
-    }
-
-    // Apply coupon override if present
-    let url = gumroadProduct.url;
-    const coupon = body?.coupon;
-    if (coupon) {
-      // For test coupon, we just pass it as a query param — Gumroad itself
-      // won't apply it, but our system will recognize it in the webhook/flow
-      url = `${url}?coupon=${encodeURIComponent(coupon)}`;
-    }
-
-    // Add attribution params
-    const ref = body?.ref;
-    if (ref) {
-      url += `${url.includes("?") ? "&" : "?"}ref=${encodeURIComponent(ref)}`;
-    }
-
-    console.log("✅ Gumroad checkout:", {
-      slug,
-      url,
-      price: product.price,
-      coupon: coupon ?? null,
-    });
-
-    return NextResponse.json({
-      url,
-      transactionId: gumroadProduct.id,
-    });
-  } catch (err: any) {
-    console.error("❌ Gumroad checkout error:", err);
-    return NextResponse.json(
-      { error: err?.message ?? "Failed to create Gumroad checkout" },
-      { status: 500 }
-    );
-  }
+  const payload = await response.text();
+  return new NextResponse(payload, {
+    status: response.status,
+    headers: {
+      "content-type": response.headers.get("content-type") || "application/json",
+      "cache-control": "no-store, max-age=0",
+      "x-aikagan-checkout-authority": "/api/income/checkout",
+    },
+  });
 }
