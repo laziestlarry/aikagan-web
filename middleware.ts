@@ -125,9 +125,6 @@ export function middleware(request: NextRequest) {
     if (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/')) return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
   }
 
-  if (host === APEX_HOST && (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/'))) {
-    return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
-  }
   if (host === APEX_HOST && startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
 
   const response = NextResponse.next({ request: { headers: localeHeaders(request, 'en') } });
