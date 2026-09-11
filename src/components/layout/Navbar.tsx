@@ -13,6 +13,7 @@ const PUBLIC_NAV = [
   { label: 'Home', href: '/' },
   { label: 'Flight 002', href: '/flight' },
   { label: 'Try Free', href: '/tools' },
+  { label: 'OutcomeOS', href: SITE.outcomeUrl },
   { label: 'Services', href: '/services' },
   { label: 'Products', href: '/products' },
   { label: 'Genesis', href: '/genesis' },
@@ -31,6 +32,7 @@ const TURKISH_NAV = [
 const APP_NAV = [
   { label: 'Workspace', href: '/dashboard' },
   { label: 'AutonomaX', href: '/autonomax' },
+  { label: 'OutcomeOS', href: SITE.outcomeUrl, external: true },
   { label: 'Support', href: `${SITE.url}/contact`, external: true },
 ] as const;
 

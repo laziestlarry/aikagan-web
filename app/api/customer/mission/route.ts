@@ -37,3 +37,13 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json({ mission }, { status: 201 });
 }
+
+export async function DELETE(req: NextRequest) {
+  const session = verifyCustomerSession(req.cookies.get(CUSTOMER_SESSION_COOKIE)?.value);
+  if (!session) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  const missionId = req.nextUrl.searchParams.get("missionId")?.trim();
+  if (!missionId) return NextResponse.json({ error: "missionId is required" }, { status: 400 });
+  const mission = await customerStore.cancelMission(session.customerId, missionId);
+  if (!mission) return NextResponse.json({ error: "Mission not found" }, { status: 404 });
+  return NextResponse.json({ mission, notice: "Mission cancelled. Its audit record has been preserved." });
+}

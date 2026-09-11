@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Download, LifeBuoy, Loader2, LockKeyhole, Rocket, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Download, LifeBuoy, Loader2, LockKeyhole, Rocket, ShieldCheck, Sparkles, XCircle } from 'lucide-react';
 import Section from '@/components/ui/Section';
 import Badge from '@/components/ui/Badge';
 import WorkspaceEntry from '@/components/autonomax/WorkspaceEntry';
@@ -36,7 +36,7 @@ export default function CustomerWorkspace() {
   useEffect(() => { load(); }, []);
 
   const activeEntitlements = useMemo(() => customer?.entitlements.filter((e) => e.status === 'active') ?? [], [customer]);
-  const activeMission = customer?.missions.find((m) => m.status === 'active') ?? customer?.missions[0];
+  const activeMission = customer?.missions.find((m) => ['active','planned','blocked'].includes(m.status));
 
   async function createMission(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,12 +68,24 @@ export default function CustomerWorkspace() {
         body: JSON.stringify({ subject: form.get('subject'), message: form.get('message') }),
       });
       if (res.ok) { setNotice('Support request recorded.'); formElement.reset(); await load(); }
-      else setNotice('Support request could not be recorded. Email hello@aikagan.com if the issue continues.');
+      else setNotice('Support request could not be recorded. Email kagan@aikagan.com if the issue continues.');
     } catch {
-      setNotice('Support request could not be recorded. Email hello@aikagan.com if the issue continues.');
+      setNotice('Support request could not be recorded. Email kagan@aikagan.com if the issue continues.');
     } finally {
       setSupportBusy(false);
     }
+  }
+
+  async function cancelMission(missionId: string) {
+    if (!window.confirm('Cancel this mission? Its audit record will be preserved and further execution will stop.')) return;
+    setMissionBusy(true); setNotice('');
+    try {
+      const res = await fetch(`/api/customer/mission?missionId=${encodeURIComponent(missionId)}`, { method: 'DELETE' });
+      if (res.ok) { setNotice('Mission cancelled. Its audit record was preserved.'); await load(); }
+      else setNotice('Mission could not be cancelled. Please retry or contact kagan@aikagan.com.');
+    } catch {
+      setNotice('Mission could not be cancelled. Please retry or contact kagan@aikagan.com.');
+    } finally { setMissionBusy(false); }
   }
 
   if (loading) return <Section variant="hero"><div className="mx-auto flex max-w-4xl items-center justify-center gap-3 py-24 text-kagan-light"><Loader2 className="h-5 w-5 animate-spin text-kagan-gold" /> Loading workspace…</div></Section>;
@@ -115,7 +127,7 @@ export default function CustomerWorkspace() {
             <Stat icon={LifeBuoy} label="Open support" value={String(customer.supportTickets.filter((t) => t.status === 'open').length)} />
           </div>
 
-          {activeMission && <div className="mt-6 rounded-2xl border border-kagan-gold/30 bg-kagan-gold/[0.05] p-6"><div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-wider text-kagan-gold">Current mission</p><h2 className="mt-2 text-2xl font-bold text-kagan-white">{activeMission.title}</h2></div><span className="rounded-full border border-kagan-gold/30 px-3 py-1 text-xs text-kagan-gold">{activeMission.progress}%</span></div><p className="mt-3 text-kagan-light">{activeMission.objective}</p><div className="mt-5 rounded-xl bg-black/20 p-4"><p className="text-xs uppercase tracking-wider text-kagan-muted">Next best action</p><p className="mt-2 font-medium text-kagan-white">{activeMission.nextAction}</p></div></div>}
+          {activeMission && <div className="mt-6 rounded-2xl border border-kagan-gold/30 bg-kagan-gold/[0.05] p-6"><div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-wider text-kagan-gold">Current mission</p><h2 className="mt-2 text-2xl font-bold text-kagan-white">{activeMission.title}</h2></div><span className="rounded-full border border-kagan-gold/30 px-3 py-1 text-xs text-kagan-gold">{activeMission.progress}%</span></div><p className="mt-3 whitespace-pre-wrap text-kagan-light">{activeMission.objective}</p><div className="mt-5 rounded-xl bg-black/20 p-4"><p className="text-xs uppercase tracking-wider text-kagan-muted">Next best action</p><p className="mt-2 font-medium text-kagan-white">{activeMission.nextAction}</p></div><button type="button" disabled={missionBusy} onClick={()=>cancelMission(activeMission.id)} className="mt-5 inline-flex items-center gap-2 rounded-xl border border-red-300/25 px-4 py-2 text-sm font-bold text-red-200 disabled:opacity-50"><XCircle className="h-4 w-4"/>Cancel mission</button></div>}
         </div>
       </Section>
 

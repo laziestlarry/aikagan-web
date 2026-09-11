@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const APP_HOST = 'app.aikagan.com';
+const OUTCOME_HOST = 'outcome.aikagan.com';
 const CHECKOUT_HOST = 'checkout.aikagan.com';
 const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
@@ -77,6 +78,29 @@ export function middleware(request: NextRequest) {
     return redirectTo(APP_HOST, cleanPath === '/' ? '/checkout' : cleanPath, search);
   }
 
+  // OutcomeOS is a focused public intake surface on the same application.
+  // Rewrites keep the memorable subdomain URL while sharing the versioned
+  // API, customer session, and mission store with app.aikagan.com.
+  if (host === OUTCOME_HOST) {
+    if (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/')) {
+      return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
+    }
+    if (cleanPath === '/robots.txt' || cleanPath === '/sitemap.xml') return redirectTo(APEX_HOST, cleanPath);
+    if (cleanPath === '/api' || cleanPath.startsWith('/api/')) {
+      const response = NextResponse.next({ request: { headers: localeHeaders(request, 'en') } });
+      response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+      return response;
+    }
+    if (cleanPath === '/workspace' || cleanPath === '/dashboard') return redirectTo(APP_HOST, '/dashboard', search);
+    if (startsWithAny(cleanPath, ['/products','/services','/legal','/contact'])) return redirectTo(APEX_HOST, cleanPath, search);
+    if (startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
+    const outcomeUrl = request.nextUrl.clone();
+    outcomeUrl.pathname = cleanPath === '/' ? '/outcome' : `/outcome${cleanPath}`;
+    const response = NextResponse.rewrite(outcomeUrl, { request: { headers: localeHeaders(request, 'en') } });
+    response.headers.set('X-Robots-Tag', cleanPath === '/' ? 'index, follow' : 'noindex, follow');
+    return response;
+  }
+
   if (host === APEX_HOST && requestedLanguage === 'tr') return setPreferenceAndRedirect(request, 'tr');
   if (host === APEX_HOST && requestedLanguage === 'en') return setPreferenceAndRedirect(request, 'en');
 
@@ -98,8 +122,12 @@ export function middleware(request: NextRequest) {
     if (cleanPath === '/') return redirectTo(APP_HOST, '/dashboard');
     if (startsWithAny(cleanPath, LEGACY_INTERNAL_DASHBOARDS)) return redirectTo(APP_HOST, '/dashboard');
     if (startsWithAny(cleanPath, WEB_PREFIXES)) return redirectTo(APEX_HOST, cleanPath, search);
+    if (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/')) return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
   }
 
+  if (host === APEX_HOST && (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/'))) {
+    return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
+  }
   if (host === APEX_HOST && startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
 
   const response = NextResponse.next({ request: { headers: localeHeaders(request, 'en') } });

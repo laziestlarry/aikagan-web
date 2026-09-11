@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { getPaidProducts, type Product } from "@/lib/products";
-import { canStartPaidCheckout, isStorefrontCommerceEnabled } from "@/lib/commerce";
+import { canStartPaidCheckout, isHostedGumroadOffer, isStorefrontCommerceEnabled } from "@/lib/commerce";
 import CheckoutButton from "@/components/CheckoutButton";
 
 type Props = {
@@ -16,7 +16,7 @@ const copy = {
     body: "Each pack identifies its contents, price, delivery method, support boundary, and current availability. Implementation work is always scoped before payment.",
     contents: "What is included",
     delivery: "Delivery",
-    support: "Support: hello@aikagan.com · 30-day refund policy for eligible digital products.",
+    support: "Support: kagan@aikagan.com · 30-day refund policy for eligible digital products.",
     commissioning: "Checkout is not open yet. This offer is being commissioned against its payment and delivery checks.",
     hosted: "Hosted Gumroad checkout is live for this digital pack. Delivery follows a verified sale.",
     view: "See the complete offer",
@@ -30,7 +30,7 @@ const copy = {
     body: "Her paket içeriğini, fiyatını, teslimat yöntemini, destek kapsamını ve güncel durumunu açıkça gösterir. Uygulama işleri için ödeme öncesi kapsam yazılı olarak onaylanır.",
     contents: "Pakete dahil olanlar",
     delivery: "Teslimat",
-    support: "Destek: hello@aikagan.com · Uygun dijital ürünler için 30 günlük iade politikası.",
+    support: "Destek: kagan@aikagan.com · Uygun dijital ürünler için 30 günlük iade politikası.",
     commissioning: "Ödeme henüz açık değil. Bu teklif, ödeme ve teslimat kontrolleriyle devreye alınıyor.",
     hosted: "Bu dijital paket için Gumroad üzerinden doğrulanmış ödeme açık. Teslimat doğrulanmış satıştan sonra yapılır.",
     view: "Teklifin tamamını gör",
@@ -46,6 +46,9 @@ function ProductCard({ product, locale }: { product: Product; locale: "en" | "tr
   const buyable = canStartPaidCheckout(product.slug);
   const href = `${prefix}/products/${product.slug}`;
   const isScoped = product.checkoutUrl !== "paddle";
+  const checkoutHref = isHostedGumroadOffer(product.slug)
+    ? `/api/income/checkout?slug=${encodeURIComponent(product.slug)}&provider=gumroad`
+    : product.checkoutUrl;
 
   return (
     <article className="flex flex-col rounded-3xl border border-white/10 bg-white/[0.03] p-7">
@@ -59,7 +62,7 @@ function ProductCard({ product, locale }: { product: Product; locale: "en" | "tr
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <Link href={href} className="inline-flex items-center gap-2 font-bold text-amber-300 hover:text-amber-200">{text.view}<ArrowRight className="h-4 w-4" /></Link>
         {!isScoped && buyable ? (
-          <CheckoutButton href={product.checkoutUrl} slug={product.slug} price={product.price} className="inline-flex items-center gap-2 rounded-lg bg-amber-300 px-4 py-2 text-sm font-black text-black">{text.open}</CheckoutButton>
+          <CheckoutButton href={checkoutHref} slug={product.slug} price={product.price} className="inline-flex items-center gap-2 rounded-lg bg-amber-300 px-4 py-2 text-sm font-black text-black">{text.open}</CheckoutButton>
         ) : null}
       </div>
       {!buyable && product.checkoutUrl === "paddle" && <p className="mt-4 text-xs leading-5 text-neutral-500">{text.commissioning}</p>}
@@ -76,6 +79,9 @@ export default function ProductCatalog({ locale = "en", product }: Props) {
   if (product) {
     const isScoped = product.checkoutUrl !== "paddle";
     const buyable = canStartPaidCheckout(product.slug);
+    const checkoutHref = isHostedGumroadOffer(product.slug)
+      ? `/api/income/checkout?slug=${encodeURIComponent(product.slug)}&provider=gumroad`
+      : product.checkoutUrl;
     return (
       <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white">
         <section className="mx-auto max-w-4xl">
@@ -97,7 +103,7 @@ export default function ProductCatalog({ locale = "en", product }: Props) {
           <div id="checkout-error-banner" className="hidden mt-6 rounded-xl border border-red-400/30 bg-red-400/10 px-5 py-3 text-sm text-red-100" />
           <div className="mt-10">
             {isScoped ? <Link href={`${prefix}/contact?product=${encodeURIComponent(product.slug)}`} className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 font-black text-black">{text.scope}<ArrowRight className="h-4 w-4" /></Link>
-              : buyable ? <CheckoutButton href={product.checkoutUrl} slug={product.slug} price={product.price} className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 font-black text-black">{text.open}<ArrowRight className="h-4 w-4" /></CheckoutButton>
+              : buyable ? <CheckoutButton href={checkoutHref} slug={product.slug} price={product.price} className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 font-black text-black">{text.open}<ArrowRight className="h-4 w-4" /></CheckoutButton>
               : <p className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] px-5 py-4 text-sm leading-6 text-amber-100"><ShieldCheck className="mr-2 inline h-4 w-4" />{text.commissioning}</p>}
             {buyable && !isScoped && !ready ? <p className="mt-4 text-sm leading-6 text-emerald-200/80">{text.hosted}</p> : null}
           </div>

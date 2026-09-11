@@ -12,7 +12,7 @@ export type Mission = {
   title: string;
   segment: string;
   objective: string;
-  status: "planned" | "active" | "blocked" | "delivered";
+  status: "planned" | "active" | "blocked" | "delivered" | "cancelled";
   progress: number;
   nextAction: string;
   createdAt: string;
@@ -133,6 +133,19 @@ export const customerStore = {
       updatedAt: now,
     };
     record.missions.unshift(mission);
+    await persist(record);
+    return mission;
+  },
+
+  async cancelMission(customerId: string, missionId: string) {
+    const record = await this.get(customerId);
+    if (!record) return null;
+    const mission = record.missions.find((item) => item.id === missionId);
+    if (!mission) return null;
+    mission.status = "cancelled";
+    mission.progress = 0;
+    mission.nextAction = "Mission cancelled by the responsible human. No further execution is authorized.";
+    mission.updatedAt = new Date().toISOString();
     await persist(record);
     return mission;
   },

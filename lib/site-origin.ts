@@ -5,6 +5,7 @@ export const FIRST_PARTY_HOSTS = new Set([
   "aikagan.com",
   "www.aikagan.com",
   "app.aikagan.com",
+  "outcome.aikagan.com",
   "checkout.aikagan.com",
   "localhost",
   "127.0.0.1",

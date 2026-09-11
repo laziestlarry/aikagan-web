@@ -65,6 +65,15 @@ export default function AutonomaXPage() {
       </Section>
 
       <Section variant="alt">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-3xl"><Badge variant="gold" className="mb-4">Verified Gumroad rail</Badge><h2 className="text-3xl font-extrabold text-kagan-white md:text-4xl">Add the ready-made assets that match your mission.</h2><p className="mt-4 leading-7 text-kagan-light">AIKAGAN records the checkout handoff, then Gumroad processes payment. A verified provider sale activates the corresponding entitlement and delivery workflow.</p></div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">{[
+            ['Starter','$29','masterclass-starter'],['Pro','$79','masterclass-pro'],['Commander','$149','masterclass-commander'],
+          ].map(([name,price,slug])=><article key={slug} className="rounded-2xl border border-kagan-border bg-kagan-card/60 p-6"><p className="text-xs font-black uppercase tracking-[.2em] text-kagan-muted">AutonomaX {name}</p><p className="mt-4 text-3xl font-extrabold text-kagan-white">{price}</p><a href={`/api/income/checkout?slug=${slug}&provider=gumroad`} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-kagan-gold px-5 py-3 text-sm font-extrabold text-black">Continue to Gumroad <ArrowRight className="h-4 w-4"/></a></article>)}</div>
+        </div>
+      </Section>
+
+      <Section variant="alt">
         <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-3">
           {[
             ['01', 'Name the outcome', 'Choose one operational result and the evidence that will show it is complete.'],
