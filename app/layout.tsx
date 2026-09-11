@@ -4,7 +4,6 @@ import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import LazyLarryAmbassador from "@/components/autonomax/LazyLarryAmbassador";
 import AttributionInit from "@/components/AttributionInit";
 import PageviewBeacon from "@/components/PageviewBeacon";
 import WebVitalsReporter from "@/components/WebVitalsReporter";
@@ -57,7 +56,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <Navbar locale={locale} />
         <main className="flex-1">{children}</main>
         <Footer locale={locale} />
-        <LazyLarryAmbassador locale={locale} />
         <WebVitalsReporter />
         {VERCEL_ANALYTICS_ENABLED ? <Analytics /> : null}
       </body>
