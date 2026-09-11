@@ -38,11 +38,11 @@ const freeExperiences = [
     icon: Gift,
   },
   {
-    title: 'Explore how AutonomaX works',
-    body: 'See how a business objective can be turned into a guided execution mission with next actions and measurable progress.',
-    result: 'You understand the product by using the experience, not reading a pitch.',
-    href: 'https://app.aikagan.com/autonomax',
-    cta: 'Explore AutonomaX',
+    title: 'Turn a problem into an outcome mission',
+    body: 'Use the guided OutcomeOS intake to define the bottleneck, target, human owner and AI authority before any work starts.',
+    result: 'You get a structured planning mission in your AutonomaX workspace.',
+    href: 'https://outcome.aikagan.com/intake',
+    cta: 'Build my mission',
     icon: Workflow,
   },
 ];

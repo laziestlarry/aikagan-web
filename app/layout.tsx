@@ -16,7 +16,6 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";
-const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || "";
 const VERCEL_ANALYTICS_ENABLED = Boolean(process.env.VERCEL);
 
 export const metadata: Metadata = {
@@ -50,37 +49,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta name="facebook-domain-verification" content="xz1psq5ml5n8je8ljwl7k689or7wkp" />
-        <Script src="https://cdn.paddle.com/paddle/v2/paddle.js" strategy="afterInteractive" />
-        <Script id="paddle-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: `
-          (function initPaddle(){
-            var token = ${JSON.stringify(PADDLE_CLIENT_TOKEN)};
-            var env = token.startsWith('test_') ? 'sandbox' : 'production';
-            if (!token) return;
-            var initialized = false;
-            function apply() {
-              if (initialized || !window.Paddle) return;
-              try {
-                if (env === 'sandbox' && window.Paddle.Environment && typeof window.Paddle.Environment.set === 'function') window.Paddle.Environment.set('sandbox');
-                if (typeof window.Paddle.Initialize === 'function') {
-                  window.Paddle.Initialize({
-                    token: token,
-                    eventCallback: function(data) {
-                      try {
-                        window.dispatchEvent(new CustomEvent('aikagan:paddle', { detail: data }));
-                        if (data && data.name === 'checkout.completed') window.dispatchEvent(new CustomEvent('checkout.completed', { detail: data }));
-                        if (data && data.name === 'checkout.error') window.dispatchEvent(new CustomEvent('checkout.error', { detail: data }));
-                      } catch (eventErr) { console.error('[paddle-event] bridge failed', eventErr); }
-                    }
-                  });
-                  initialized = true;
-                }
-              } catch (err) { console.error('[paddle-init] failed', err); }
-            }
-            apply();
-            var t = setInterval(function () { apply(); if (initialized) clearInterval(t); }, 200);
-            setTimeout(function () { clearInterval(t); }, 10000);
-          })();
-        ` }} />
       </head>
       <body className="min-h-screen flex flex-col">
         {GTM_ID ? <noscript dangerouslySetInnerHTML={{ __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe>` }} /> : null}
