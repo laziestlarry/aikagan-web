@@ -41,7 +41,7 @@ const freeExperiences = [
     title: 'Turn a problem into an outcome mission',
     body: 'Use the guided OutcomeOS intake to define the bottleneck, target, human owner and AI authority before any work starts.',
     result: 'You get a structured planning mission in your AutonomaX workspace.',
-    href: 'https://outcome.aikagan.com/intake',
+    href: '/outcome/intake',
     cta: 'Build my mission',
     icon: Workflow,
   },
