@@ -5,7 +5,9 @@ export const SITE = {
     'AutonomaX Profit OS turns scattered digital products, checkouts, delivery steps, and KPI dashboards into one measurable revenue operations funnel. Built for founders, operators, and small teams.',
   url: 'https://aikagan.com',
   appUrl: 'https://app.aikagan.com',
-  outcomeUrl: 'https://outcome.aikagan.com',
+  // Keep the public path usable before the dedicated subdomain is attached.
+  // outcome.aikagan.com serves the same route through middleware once DNS is live.
+  outcomeUrl: 'https://aikagan.com/outcome',
   author: 'AutonomaX / ProPulse Group',
   year: 2026,
 } as const;
