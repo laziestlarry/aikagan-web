@@ -25,9 +25,7 @@ function configured(name: string): boolean {
   const value = process.env[name];
   return Boolean(value && value.trim() && !/^(replace|your_|changeme|placeholder)/i.test(value.trim()));
 }
-function configuredAny(...names: string[]): boolean {
-  return names.some(configured);
-}
+function configuredAny(...names: string[]): boolean { return names.some(configured); }
 function configCheck(ok: boolean, detail: string): CheckResult {
   return ok ? { status: "ok", latency_ms: 0 } : { status: "degraded", latency_ms: 0, detail };
 }
@@ -36,15 +34,9 @@ async function checkUrl(url: string, timeout = 5000): Promise<CheckResult> {
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(timeout), cache: "no-store" });
     const latency = Math.round(performance.now() - start);
-    return response.ok
-      ? { status: "ok", latency_ms: latency }
-      : { status: "degraded", latency_ms: latency, detail: `HTTP ${response.status}` };
+    return response.ok ? { status: "ok", latency_ms: latency } : { status: "degraded", latency_ms: latency, detail: `HTTP ${response.status}` };
   } catch (cause) {
-    return {
-      status: "error",
-      latency_ms: Math.round(performance.now() - start),
-      detail: cause instanceof Error ? cause.message : String(cause),
-    };
+    return { status: "error", latency_ms: Math.round(performance.now() - start), detail: cause instanceof Error ? cause.message : String(cause) };
   }
 }
 
@@ -53,38 +45,19 @@ export async function GET(request: Request) {
   const paidProducts = getPaidProducts();
   const hostedGumroadProducts = paidProducts.filter((product) => isHostedGumroadOffer(product.slug));
   const startablePaidProducts = paidProducts.filter((product) => canStartPaidCheckout(product.slug));
-  const hasLemonVariant = paidProducts.some((product) =>
-    configured(`LEMONSQUEEZY_VARIANT_${product.slug.replace(/-/g, "_").toUpperCase()}`),
-  );
+  const hasLemonVariant = paidProducts.some((product) => configured(`LEMONSQUEEZY_VARIANT_${product.slug.replace(/-/g, "_").toUpperCase()}`));
 
   const providers = {
-    // A mapped hosted Gumroad product is a real customer checkout rail even
-    // when the Gumroad API is not needed to construct the checkout URL.
     gumroad: isGumroadApiConfigured() || hostedGumroadProducts.length > 0,
-    shopier:
-      configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
-      configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
-      configuredAny("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
-    paddle:
-      process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
-      configured("PADDLE_API_KEY") &&
-      configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
-      configured("PADDLE_WEBHOOK_SECRET"),
-    lemonsqueezy:
-      process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" &&
-      configured("LEMONSQUEEZY_API_KEY") &&
-      configured("LEMONSQUEEZY_STORE_ID") &&
-      configured("LEMONSQUEEZY_WEBHOOK_SECRET") &&
-      hasLemonVariant,
+    shopier: configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") && configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") && configuredAny("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
+    paddle: process.env.PADDLE_CHECKOUT_DISABLED !== "true" && configured("PADDLE_API_KEY") && configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") && configured("PADDLE_WEBHOOK_SECRET"),
+    lemonsqueezy: process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" && configured("LEMONSQUEEZY_API_KEY") && configured("LEMONSQUEEZY_STORE_ID") && configured("LEMONSQUEEZY_WEBHOOK_SECRET") && hasLemonVariant,
   };
 
   checks.catalog = configCheck(paidProducts.length > 0, "No paid products are registered");
   checks.checkout_provider = configCheck(Object.values(providers).some(Boolean), "No complete payment provider configuration or commissioned hosted checkout is available");
   checks.download_token_config = configCheck(configured("DOWNLOAD_TOKEN_SECRET"), "DOWNLOAD_TOKEN_SECRET not set");
-  checks.fulfillment_webhook = configCheck(
-    configuredAny("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL"),
-    "MAKE_PURCHASE_WEBHOOK_URL or MAKE_CUSTOMER_SERVICE_WEBHOOK_URL not set",
-  );
+  checks.fulfillment_webhook = configCheck(configuredAny("MAKE_PURCHASE_WEBHOOK_URL", "MAKE_CUSTOMER_SERVICE_WEBHOOK_URL"), "MAKE_PURCHASE_WEBHOOK_URL or MAKE_CUSTOMER_SERVICE_WEBHOOK_URL not set");
 
   let kvConnected = false;
   const kv = await getKv();
@@ -93,17 +66,9 @@ export async function GET(request: Request) {
     try {
       if (kv.type === "upstash") await (kv as unknown as { ping: () => Promise<boolean> }).ping();
       kvConnected = true;
-      checks.durable_queue = {
-        status: "ok",
-        latency_ms: Math.round(performance.now() - pingStart),
-        detail: `Connected via ${kv.type}`,
-      };
+      checks.durable_queue = { status: "ok", latency_ms: Math.round(performance.now() - pingStart), detail: `Connected via ${kv.type}` };
     } catch (cause) {
-      checks.durable_queue = {
-        status: "error",
-        latency_ms: Math.round(performance.now() - pingStart),
-        detail: cause instanceof Error ? cause.message : String(cause),
-      };
+      checks.durable_queue = { status: "error", latency_ms: Math.round(performance.now() - pingStart), detail: cause instanceof Error ? cause.message : String(cause) };
     }
   } else {
     checks.durable_queue = { status: "degraded", latency_ms: 0, detail: "KV_REST_API_URL / KV_REST_API_TOKEN not set" };
@@ -112,90 +77,62 @@ export async function GET(request: Request) {
   const pixelId = configuredAny("NEXT_PUBLIC_META_PIXEL_ID", "META_PIXEL_ID");
   const capiToken = configured("META_CAPI_ACCESS_TOKEN");
   checks.meta_capi_config = configCheck(pixelId && capiToken, "Meta Pixel ID or META_CAPI_ACCESS_TOKEN not set");
-  checks.analytics_config = configCheck(
-    configuredAny("NEXT_PUBLIC_GA_ID", "NEXT_PUBLIC_GA_MEASUREMENT_ID", "NEXT_PUBLIC_META_PIXEL_ID"),
-    "No GA4 or Meta browser analytics identifier is configured",
-  );
+  checks.analytics_config = configCheck(configuredAny("NEXT_PUBLIC_GA_ID", "NEXT_PUBLIC_GA_MEASUREMENT_ID", "NEXT_PUBLIC_META_PIXEL_ID"), "No GA4 or Meta browser analytics identifier is configured");
   checks.admin_secret = configCheck(configured("ADMIN_SECRET"), "ADMIN_SECRET not set");
   checks.cron_secret = configCheck(configured("CRON_SECRET"), "CRON_SECRET not set");
 
-  // Legacy AutonomaX/FastAPI services are optional. Only probe them when an
-  // explicit live URL is configured; absence is an intentional no-cost state,
-  // not production degradation.
   const revenueOpsUrl = process.env.NEXT_PUBLIC_AUTONOMAX_API_URL?.trim();
-  if (revenueOpsUrl) {
-    checks.revenue_ops_backend = await checkUrl(`${revenueOpsUrl.replace(/\/+$/, "")}/api/dashboard`);
-  }
-
+  if (revenueOpsUrl) checks.revenue_ops_backend = await checkUrl(`${revenueOpsUrl.replace(/\/+$/, "")}/api/dashboard`);
   const fastApiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL?.trim();
-  if (fastApiUrl) {
-    checks.fastapi_backend = await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`);
-  }
+  if (fastApiUrl) checks.fastapi_backend = await checkUrl(`${fastApiUrl.replace(/\/+$/, "")}/api/intelligence/weekly`);
 
-  // Commissioning mode is not itself an outage. The health contract is green
-  // when at least one paid SKU can start a real checkout path. The global flag
-  // still controls automated rails; hosted Gumroad SKUs are commissioned
-  // individually through canStartPaidCheckout().
-  checks.storefront_commerce = configCheck(
-    startablePaidProducts.length > 0,
-    "No paid product currently has a startable checkout path; finish commissioning or map a hosted Gumroad offer",
-  );
+  checks.storefront_commerce = configCheck(startablePaidProducts.length > 0, "No paid product currently has a startable checkout path; finish commissioning or map a hosted Gumroad offer");
   const criticalNames = ["catalog", "checkout_provider", "download_token_config", "fulfillment_webhook", "durable_queue", "storefront_commerce"];
   const criticalDegraded = criticalNames.filter((name) => checks[name]?.status !== "ok");
   const degraded = Object.entries(checks).filter(([, result]) => result.status !== "ok").map(([name]) => name);
   const ok = criticalDegraded.length === 0;
+  const primaryCheckoutProvider = hostedGumroadProducts.length > 0 ? "gumroad" : providers.shopier ? "shopier" : providers.paddle ? "paddle" : providers.lemonsqueezy ? "lemonsqueezy" : null;
 
   const payload = {
-      ok,
-      simulated: false,
-      storefront_mode: storefrontCommerceState(),
-      version: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
-      uptime_seconds: Math.floor((Date.now() - START_TIME) / 1000),
-      environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
-      providers,
-      checks,
-      degraded: degraded.length ? degraded : undefined,
-      critical_degraded: criticalDegraded.length ? criticalDegraded : undefined,
-      commerce: {
-        global_enabled: isStorefrontCommerceEnabled(),
-        startable_paid_products: startablePaidProducts.map((product) => product.slug),
-        hosted_gumroad_products: hostedGumroadProducts.map((product) => product.slug),
-      },
-      income_sources: {
-        kv: kvConnected,
-        provider: Object.values(providers).some(Boolean),
-        capi: pixelId && capiToken,
-        analytics: checks.analytics_config.status === "ok",
-      },
-      audit_endpoints: {
-        readiness: "/api/ops/status",
-        setup: "/api/income/setup",
-        reality: "/api/income/reality",
-        funnel: "/api/income/funnel",
-        transactions: "/api/income/transactions",
-        track: "/api/income/track",
-        checkout: "/api/income/checkout",
-      },
-    };
+    ok,
+    simulated: false,
+    storefront_mode: storefrontCommerceState(),
+    version: process.env.VERCEL_GIT_COMMIT_SHA || "dev",
+    uptime_seconds: Math.floor((Date.now() - START_TIME) / 1000),
+    environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
+    primary_checkout_provider: primaryCheckoutProvider,
+    startable_paid_offers: startablePaidProducts.length,
+    checkout_startable: startablePaidProducts.length > 0,
+    commercial_evidence: "configuration_only" as const,
+    providers,
+    checks,
+    degraded: degraded.length ? degraded : undefined,
+    critical_degraded: criticalDegraded.length ? criticalDegraded : undefined,
+    commerce: {
+      global_enabled: isStorefrontCommerceEnabled(),
+      startable_paid_products: startablePaidProducts.map((product) => product.slug),
+      hosted_gumroad_products: hostedGumroadProducts.map((product) => product.slug),
+    },
+    income_sources: { kv: kvConnected, provider: Object.values(providers).some(Boolean), capi: pixelId && capiToken, analytics: checks.analytics_config.status === "ok" },
+    audit_endpoints: { readiness: "/api/ops/status", setup: "/api/income/setup", reality: "/api/income/reality", funnel: "/api/income/funnel", transactions: "/api/income/transactions", track: "/api/income/track", checkout: "/api/income/checkout" },
+  };
 
   const adminAuthorized = isAdminRequest(request);
   if (!adminAuthorized && hasAdminSecretHeader(request)) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } },
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } });
   }
 
   if (!adminAuthorized) {
-    return NextResponse.json(
-      {
-        ok: payload.ok,
-        storefront_mode: payload.storefront_mode,
-        version: payload.version,
-        environment: payload.environment,
-      },
-      { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } },
-    );
+    return NextResponse.json({
+      ok: payload.ok,
+      storefront_mode: payload.storefront_mode,
+      version: payload.version,
+      environment: payload.environment,
+      primary_checkout_provider: payload.primary_checkout_provider,
+      startable_paid_offers: payload.startable_paid_offers,
+      checkout_startable: payload.checkout_startable,
+      commercial_evidence: payload.commercial_evidence,
+    }, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } });
   }
 
   return NextResponse.json(payload, { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store, max-age=0", Vary: "x-admin-secret" } });
