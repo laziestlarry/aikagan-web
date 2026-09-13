@@ -22,8 +22,8 @@ export function isHostedGumroadOffer(slug: string): boolean {
 }
 
 /**
- * Automated Paddle/Lemon remain gated. Hosted Gumroad for mapped Golden
- * Delivery packs may start checkout while the rest of the storefront commissions.
+ * Hosted Gumroad for mapped Golden Delivery packs may start checkout while
+ * the rest of the storefront commissions.
  */
 export function canStartPaidCheckout(slug: string): boolean {
   return isStorefrontCommerceEnabled() || isHostedGumroadOffer(slug);

@@ -17,13 +17,13 @@ Configure at least one complete payment rail.
 
 Gumroad's legacy resource-subscription API is not used. The production worker polls authenticated sales data, rejects refunded or disputed sales, and processes each order idempotently.
 
-### Paddle — approved surfaces only
+### Retired provider — approved surfaces only
 
-- `PADDLE_API_KEY`
-- `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`
-- `PADDLE_WEBHOOK_SECRET`
-- `PADDLE_CHECKOUT_DISABLED` must not be `true`
-- Use only on a Paddle-approved domain such as `app.aikagan.com` or `propulse-autonomax.web.app`
+- `RETIRED_PROVIDER_API_KEY`
+- `NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN`
+- `RETIRED_PROVIDER_WEBHOOK_SECRET`
+- `RETIRED_PROVIDER_CHECKOUT_DISABLED` must not be `true`
+- Use only on a Retired provider-approved domain such as `app.aikagan.com` or `propulse-autonomax.web.app`
 
 ### Lemon Squeezy
 

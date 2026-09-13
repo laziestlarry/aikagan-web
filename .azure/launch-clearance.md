@@ -10,7 +10,7 @@
 
 | Provider | Status | Detail | Cleared |
 |----------|--------|--------|---------|
-| **Paddle** (primary) | 🟢 Live | Catalog prices, overlay checkout, webhook active | ✅ |
+| **Retired provider** (primary) | 🟢 Live | Catalog prices, overlay checkout, webhook active | ✅ |
 | **LemonSqueezy** (fallback) | 🟢 Live | Card + PayPal, custom checkout URLs working | ✅ |
 | **Gumroad** (fallback) | 🟢 Live | 3 products published, branded covers/descriptions | ✅ |
 | **Manual** (last resort) | 🟢 Live | Form with live provider links + direct entry | ✅ |
@@ -19,20 +19,20 @@
 
 | Entry Point | Route | Provider | Status |
 |-------------|-------|----------|--------|
-| Product page (Starter) | → /api/checkout → Paddle | paddle | 🟢 |
-| Product page (Pro) | → /api/checkout → Paddle | paddle | 🟢 |
-| Product page (Commander) | → /api/checkout → Paddle | paddle | 🟢 |
-| Home page CTA | → /api/checkout → Paddle | paddle | 🟢 |
-| Products listing | → /api/checkout → Paddle | paddle | 🟢 |
-| Affiliate link | → /?ref=CODE → Paddle | paddle | 🟢 |
+| Product page (Starter) | → /api/checkout → Retired provider | retired_provider | 🟢 |
+| Product page (Pro) | → /api/checkout → Retired provider | retired_provider | 🟢 |
+| Product page (Commander) | → /api/checkout → Retired provider | retired_provider | 🟢 |
+| Home page CTA | → /api/checkout → Retired provider | retired_provider | 🟢 |
+| Products listing | → /api/checkout → Retired provider | retired_provider | 🟢 |
+| Affiliate link | → /?ref=CODE → Retired provider | retired_provider | 🟢 |
 | Coupon/test flow | → /api/checkout + coupon → manual fallback | manual | 🟢 |
-| Provider cascade | Paddle → LS → Gumroad → Manual | cascading | 🟢 |
+| Provider cascade | Retired provider → LS → Gumroad → Manual | cascading | 🟢 |
 
 ## 3. POST-PURCHASE DELIVERY
 
 | Component | Function | Status |
 |-----------|----------|--------|
-| Paddle webhook | Issues HMAC token on transaction.completed | 🟢 |
+| Retired provider webhook | Issues HMAC token on transaction.completed | 🟢 |
 | Token store | KV + in-memory, 48h TTL | 🟢 |
 | Session-token polling | /api/session-token, polls every 2s, 60s timeout | 🟢 |
 | Download endpoint | /api/download/[token], HMAC-verified, serves ZIP | 🟢 |
@@ -46,8 +46,8 @@
 | Landing | Products page | /products | 🟢 |
 | Lead capture | 3 free gifts | /free/{slug} | 🟢 |
 | Product detail | Individual tiers | /products/{slug} | 🟢 |
-| Checkout | Paddle overlay | /checkout-success?_ptxn=... | 🟢 |
-| Payment | Card / PayPal / Apple Pay | Paddle.js overlay | 🟢 |
+| Checkout | Retired provider overlay | /checkout-success?_ptxn=... | 🟢 |
+| Payment | Card / PayPal / Apple Pay | Retired provider.js overlay | 🟢 |
 | Success | Confetti + download | /checkout-success | 🟢 |
 | Upsell | Order bump + done-with-you | on success page | 🟢 |
 | Support | Email + contact | affiliates@autonomax.ai | 🟢 |
@@ -69,7 +69,7 @@
 |--------|--------|--------|----------|
 | GA4 | GTM container (GTM-NZW2CP6H) | 🟢 | User confirmed property 395163192 |
 | Meta Pixel | GTM + CAPI server side | 🟢 | META_PIXEL_ID + CAPI token set |
-| CAPI Purchase | Paddle webhook → Meta | 🟢 | 54 test events, 0 failures |
+| CAPI Purchase | Retired provider webhook → Meta | 🟢 | 54 test events, 0 failures |
 | Income ledger | KV-backed event store | 🟢 | Pageviews, intents, purchases |
 | GTM dataLayer | Checkout events | 🟢 | begin_checkout, Purchase |
 
@@ -81,7 +81,7 @@
 | Terms of Service | /legal/terms | 🟢 |
 | Refund Policy | /legal/refund | 🟢 |
 | Contact | /legal/contact | 🟢 |
-| Paddle (MoR) | Handles tax/VAT/GDPR | 🟢 |
+| Retired provider (MoR) | Handles tax/VAT/GDPR | 🟢 |
 
 ## 8. BRAND & DESIGN
 
@@ -106,8 +106,8 @@
 | GitHub repository | 🟢 | lazylestlarry/aikagan-web, main branch |
 | Environment variables | 🟢 | All 15 required + optional set |
 | KV store (Upstash) | 🟢 | Connected via REST client |
-| Paddle API key | 🟢 | Production (pdl_live_*) |
-| Paddle webhook | 🟢 | Active at /api/webhooks/paddle |
+| Retired provider API key | 🟢 | Production ([REDACTED] |
+| Retired provider webhook | 🟢 | Active at /api/webhooks/retired_provider |
 | Make.com webhooks | 🟢 | 4 webhooks configured |
 | Cron jobs | 🟢 | Affiliate payouts, email processing, weekly intelligence |
 

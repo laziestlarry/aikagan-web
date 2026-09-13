@@ -4,7 +4,7 @@
 
 | Capability | Status | Detail |
 |-----------|--------|--------|
-| Payment Processing | 🟢 Paddle (primary) → LS → Gumroad | All 3 providers live |
+| Payment Processing | 🟢 Retired provider (primary) → LS → Gumroad | All 3 providers live |
 | Product Delivery | 🟢 HMAC tokens → auto-download | 48h TTL, KV-backed |
 | Income Ledger | 🟢 KV-backed, real-time | CAPI + GA4 tracking |
 | Affiliate Program | 🟢 20-30% commission | Referral codes, dashboard, cron payouts |
@@ -25,7 +25,7 @@
 ### Conversion Optimization
 
 - **Landing pages**: /products shows all tiers with social proof ("128+ builders")
-- **Checkout**: Paddle gold-branded overlay → minimal friction
+- **Checkout**: Retired provider gold-branded overlay → minimal friction
 - **Post-purchase**: Confetti success page → download → upsell (Pro/Commander upgrade)
 - **Exit intent**: Modal offers free gift on exit (/products/[slug])
 
@@ -70,7 +70,7 @@ Target:  Add recurring options
 ### Platform Expansion
 
 1. **Shopier** — Turkish market (already configured, env vars set)
-2. **Recurring billing** — Paddle subscriptions for monthly/annual plans
+2. **Recurring billing** — Retired provider subscriptions for monthly/annual plans
 3. **White-label licensing** — Commander tier enterprise sales
 
 ### Technical Growth
@@ -79,14 +79,14 @@ Target:  Add recurring options
 |-----------|--------|
 | Single-page checkout | Reduce bounce, increase conversion |
 | Abandoned cart recovery | Email reminders via cron |
-| Multi-currency pricing | Paddle localizes automatically |
+| Multi-currency pricing | Retired provider localizes automatically |
 | Affiliate leaderboard | Gamification for top referrers |
 
 ## Financial Model
 
 ### Current Unit Economics
 
-| Tier | Price | Paddle Fee | Net | Affiliate (30%) | Net after Affiliate |
+| Tier | Price | Retired provider Fee | Net | Affiliate (30%) | Net after Affiliate |
 |------|-------|------------|-----|-----------------|---------------------|
 | Starter | $29 | ~$2.90 | $26.10 | $8.70 | $17.40 |
 | Pro | $79 | ~$5.90 | $73.10 | $23.70 | $49.40 |
@@ -102,10 +102,10 @@ Target:  Add recurring options
 
 | Risk | Mitigation |
 |------|-----------|
-| Paddle payment failure | Falls through to LS → Gumroad → Manual |
+| Retired provider payment failure | Falls through to LS → Gumroad → Manual |
 | Download token expiry | Email backup via Make.com webhook |
 | Serverless cold start | KV persistence, in-memory fallback |
-| Chargebacks | Paddle handles as Merchant of Record |
+| Chargebacks | Retired provider handles as Merchant of Record |
 
 ## Legal & Compliance Checklist
 
@@ -115,6 +115,6 @@ Target:  Add recurring options
 | Terms of Service | ✅ Live | /legal/terms |
 | Refund Policy | ✅ Live | /legal/refund |
 | Contact Page | ✅ Live | /legal/contact |
-| GDPR Compliance | ✅ Paddle handles (MoR) | Paddle terms |
+| GDPR Compliance | ✅ Retired provider handles (MoR) | Retired provider terms |
 | Cookie Consent | ✅ GTM consent mode | Google Tag Manager |
 | Accessibility | ⚠️ Baseline | WCAG 2.1 AA pending |

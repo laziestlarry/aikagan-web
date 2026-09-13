@@ -65,7 +65,7 @@ export async function recordCapiAttempt(rec: CapiAttemptRecord): Promise<void> {
   await kvIncrBy(`capi:${day}:count:${rec.event_name}`, 1, CAPI_TTL_S);
 }
 
-export type Provider = "paddle" | "lemonsqueezy" | "gumroad" | "shopier" | "manual";
+export type Provider = "lemonsqueezy" | "gumroad" | "shopier" | "manual";
 
 export interface TransactionRecord {
   /** Provider order/transaction id. */
@@ -201,7 +201,7 @@ export async function listRecentTransactions(limit = 50): Promise<TransactionRec
   const out: TransactionRecord[] = [];
   for (const orderId of recent) {
     // Try each provider prefix; first hit wins
-    for (const p of ["paddle", "lemonsqueezy", "gumroad", "manual"] as Provider[]) {
+    for (const p of ["gumroad", "shopier", "lemonsqueezy", "manual"] as Provider[]) {
       const tx = await getTransaction(p, orderId);
       if (tx) {
         out.push(tx);
@@ -318,7 +318,7 @@ export interface IncomeReality {
   generatedAt: string;
   sources: {
     kv: boolean;
-    paddle: boolean;
+    gumroad: boolean;
     capi: boolean;
     ga4: boolean;
   };
@@ -361,7 +361,7 @@ export interface IncomeReality {
   /** Sources of evidence (for the audit panel). */
   evidence: {
     kvRecords: { transactions: number; leads: number; intents: number };
-    paddleApi?: { ok: boolean; message: string };
+    gumroadApi?: { ok: boolean; message: string };
     capi?: { configured: boolean; message: string };
   };
   /** Projected financials from revenue-ops backend (forward-looking). */
@@ -531,7 +531,7 @@ export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promis
     (process.env.NEXT_PUBLIC_META_PIXEL_ID || process.env.META_PIXEL_ID) &&
     process.env.META_CAPI_ACCESS_TOKEN,
   );
-  const paddleConfigured = Boolean(process.env.PADDLE_API_KEY);
+  const gumroadConfigured = Boolean(process.env.GUMROAD_ACCESS_TOKEN);
 
   // Sanity ratio
   const leadRate = pv > 0 ? (leads / pv) * 100 : 0;
@@ -577,7 +577,7 @@ export async function getIncomeReality(windowDays = DEFAULT_WINDOW_DAYS): Promis
     generatedAt: new Date().toISOString(),
     sources: {
       kv: kvAvailable,
-      paddle: paddleConfigured,
+      gumroad: gumroadConfigured,
       capi: capiConfigured,
       ga4: Boolean(process.env.NEXT_PUBLIC_GA_ID),
     },

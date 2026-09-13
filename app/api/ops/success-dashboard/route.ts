@@ -40,8 +40,8 @@ export async function GET(req: NextRequest) {
     capiLive: reality?.sources?.capi || false,
     uptimeDays: Math.floor((Date.now() - 1742169600000) / 86400000),
     lastDeploy: reality?.generatedAt || new Date().toISOString(),
-    activeProviders: ["gumroad", "shopier", "paddle", "lemonsqueezy"].filter(p => {
-      if (p === "paddle") return process.env.PADDLE_API_KEY && !process.env.PADDLE_CHECKOUT_DISABLED;
+    activeProviders: ["gumroad", "shopier", "lemonsqueezy"].filter(p => {
+      if (p === "gumroad") return process.env.GUMROAD_ACCESS_TOKEN;
       if (p === "lemonsqueezy") return process.env.LEMONSQUEEZY_API_KEY;
       return true;
     }),

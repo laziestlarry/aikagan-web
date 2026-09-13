@@ -74,7 +74,7 @@ Day 12 of AutonomaX (digital toolkit for first-sale operators)
 What I shipped:
 - 3 paid products ($29/$79/$149)
 - 3 free lead magnets
-- Aikagan.com site, Paddle checkout, HMAC token download
+- Aikagan.com site, Gumroad checkout, HMAC token download
 - Affiliate program w/ 20–30% commission
 
 Next: SEO content + Meta ads test.
@@ -169,7 +169,7 @@ What I learned:
 → Start at $29. $297 is a fantasy for an unknown brand.
 → Build the affiliate program BEFORE the launch. Recruit 5 people who already have audiences.
 → HMAC-signed download tokens are cheaper than a database.
-→ Paddle is the only MoR that works from Turkey.
+→ Gumroad is the only MoR that works from Turkey.
 
 If you're a first-time founder, ship before you feel ready.`,
   },
@@ -182,13 +182,13 @@ Before:
 
 After (72 hours):
 - aikagan.com live on Vercel
-- 3 paid products in Paddle
+- 3 paid products in Gumroad
 - 3 lead magnets as email opt-ins
 - Affiliate dashboard with referral codes
 - Meta CAPI + GA4 tracking
 - HMAC-signed download links
 
-Cost: $0 in tools (Vercel hobby, Paddle free signup, Next.js open source)
+Cost: $0 in tools (Vercel hobby, Gumroad free signup, Next.js open source)
 
 Revenue potential: 1 sale/day = $900/mo.
 
@@ -199,7 +199,7 @@ The playbook is in the AutonomaX Masterclass. →`,
     body: `Build-in-public: Week 1 of AutonomaX
 
 ✅ aikagan.com (Next.js + Vercel, 1.4s mobile load)
-✅ Paddle checkout (Merchant of Record, works from Turkey)
+✅ Gumroad checkout (Merchant of Record, works from Turkey)
 ✅ 3 paid packs: Starter $29, Pro $79, Commander $149
 ✅ 3 free lead magnets as email-gated downloads
 ✅ Affiliate program (20–30% commission)
@@ -218,11 +218,11 @@ PayPal → banned in Turkey since 2016.
 Wise → restricted for new accounts.
 
 What works:
-→ Paddle (MoR, pays to Payoneer)
+→ Gumroad (MoR, pays to Payoneer)
 → LemonSqueezy (same model, similar fees)
 → Gumroad (simpler, higher fees)
 
-I went Paddle primary + LemonSqueezy fallback. 24-hour setup.
+I went Gumroad primary + LemonSqueezy fallback. 24-hour setup.
 
 If you sell digital products from Turkey, this is the playbook.`,
   },
@@ -234,7 +234,7 @@ If you sell digital products from Turkey, this is the playbook.`,
    Fixed: dropped to $29. 11 sales in week 1.
 
 2. Used Stripe — declined (Turkish merchant).
-   Fixed: Paddle. Same UX, MoR, works globally.
+   Fixed: Gumroad. Same UX, MoR, works globally.
 
 3. No affiliate program at launch.
    Fixed: 5/30/25/25/20% commission ladder.
@@ -255,12 +255,12 @@ I'm documenting the build of aikagan.com — a digital product marketplace for f
 
 Day 0: idea (a fillable worksheet that walks through your first $500 online)
 Day 3: site live on Vercel
-Day 5: Paddle checkout integrated
+Day 5: Gumroad checkout integrated
 Day 7: 23 sales, $0 → $1,200
 
 Stack:
 - Next.js 15 (Vercel hobby)
-- Paddle (Merchant of Record, 5% + $0.50)
+- Gumroad (Merchant of Record, 5% + $0.50)
 - HMAC-signed download tokens (no DB)
 - Meta CAPI + GA4
 
@@ -274,11 +274,11 @@ Stripe won't serve Turkish-registered merchants. PayPal is banned in Turkey sinc
 
 I tested 3 workarounds:
 
-1. Paddle — Merchant of Record, 5% + $0.50 fee, pays to Payoneer. **Best for global.**
+1. Gumroad — Merchant of Record, 5% + $0.50 fee, pays to Payoneer. **Best for global.**
 2. LemonSqueezy — Same MoR model, similar Turkey support. **Good fallback.**
 3. Gumroad — Simpler, 10% fee, fewer features. **Easy start.**
 
-I went Paddle primary + LemonSqueezy fallback. Both have APIs and webhooks. 1 day to integrate.
+I went Gumroad primary + LemonSqueezy fallback. Both have APIs and webhooks. 1 day to integrate.
 
 Anyone else selling from Turkey? What stack are you using?`,
   },
@@ -290,7 +290,7 @@ Idea: a 7-day first-sale blueprint, sold as a $29 PDF + worksheet bundle.
 
 Why $29? Because I had no audience. Lower price = lower friction = more impulse buys.
 
-Why Paddle? Because I'm in Turkey and Stripe doesn't serve here. Paddle is Merchant of Record — they handle VAT, fraud, and pay me out to Payoneer.
+Why Gumroad? Because I'm in Turkey and Stripe doesn't serve here. Gumroad is Merchant of Record — they handle VAT, fraud, and pay me out to Payoneer.
 
 Why affiliate program at launch? Because 5 people sharing your link is worth more than 100 hours of marketing.
 
@@ -299,7 +299,7 @@ Revenue (week 1):
 - 2 upsells to Pro ($79) = $158
 - Total: $825
 
-Cost: $0 in tools (Vercel hobby, Paddle free signup, Open Source everything)
+Cost: $0 in tools (Vercel hobby, Gumroad free signup, Open Source everything)
 
 If you want the full playbook, it's at aikagan.com — and yes, that's the meta loop. The product teaches the product.`,
   },

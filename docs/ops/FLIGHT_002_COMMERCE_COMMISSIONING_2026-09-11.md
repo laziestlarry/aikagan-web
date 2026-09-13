@@ -41,7 +41,7 @@ This is capability evidence only until a provider-confirmed external purchase ex
 ## Customer / legal truth alignment
 
 - Mission Control public readiness now separates checkout configuration from external commercial proof.
-- Privacy and refund notices identify the provider presented at purchase and declare Gumroad as the mapped hosted self-serve rail rather than falsely naming Paddle for every purchase.
+- Privacy and refund notices identify the provider presented at purchase and declare Gumroad as the mapped hosted self-serve rail rather than falsely naming Retired provider for every purchase.
 - Service offers remain scope-first rather than bypassing fulfillment acceptance with instant checkout.
 
 ## Founding Tester Circle

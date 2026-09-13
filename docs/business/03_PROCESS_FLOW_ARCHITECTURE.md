@@ -16,7 +16,7 @@
                                            ▼
                     ┌─────────────────────────────────────────────────────────────┐
                     │                   FINANCIAL CONVERSION                      │
-                    │  (Paddle Checkout, Shopier Cart, Shopify Buy)               │
+                    │  (Retired provider Checkout, Shopier Cart, Shopify Buy)               │
                     └──────────────────────┬──────────────────────────────────────┘
                                            │
                                            ▼
@@ -53,7 +53,7 @@
                               ▼
                     ┌───────────────────────┐
                     │  Checkout Initiated   │────▶ Layer 2
-                    │  (Paddle Transaction  │
+                    │  (Retired provider Transaction  │
                     │   Created via API)    │
                     └───────────────────────┘
 ```
@@ -81,17 +81,17 @@
 
 ## LAYER 2: FINANCIAL CONVERSION
 
-### Paddle Checkout Flow (aikagan.com)
+### Retired provider Checkout Flow (aikagan.com)
 
 ```
 ┌─────────────────────┐
 │  User Clicks "Buy"  │
 │  (CheckoutLink.tsx) │
 └─────────┬───────────┘
-          │ POST /api/paddle-checkout
+          │ POST /api/retired_provider-checkout
           ▼
 ┌─────────────────────┐
-│  Create Paddle       │
+│  Create Retired provider       │
 │  Checkout Session   │  ← Uses price_data (no Price ID needed)
 │  mode: payment      │
 └─────────┬───────────┘
@@ -99,8 +99,8 @@
           ▼
 ┌─────────────────────┐
 │  Redirect to         │
-│  Paddle Checkout     │  ← Paddle-hosted checkout page
-│  (checkout.paddle.    │
+│  Retired provider Checkout     │  ← Retired provider-hosted checkout page
+│  (checkout.retired_provider.    │
 │   com/txn_...)       │
 └─────────┬───────────┘
           │
@@ -119,20 +119,20 @@ SUCCESS   FAILURE
 ### Settlement Flow (Successful Payment)
 
 ```
-Paddle Success
+Retired provider Success
       │
       ├──────────────────────────────────────────────────────┐
       │                                                      │
       ▼                                                      ▼
 Webhook Processing                                Client-side Fallback
-(Paddle sends event)                             (Success page polls)
+(Retired provider sends event)                             (Success page polls)
       │                                                      │
-      │ POST /api/webhooks/paddle                            │ GET /api/session-token
+      │ POST /api/webhooks/retired_provider                            │ GET /api/session-token
       │ (verify p-pl signature)                              │ (verify transaction_id)
       ▼                                                      ▼
 ┌─────────────────────┐                           ┌─────────────────────┐
 │  Store download      │                           │  Verify session     │
-│  token in memory     │                           │  via Paddle API     │
+│  token in memory     │                           │  via Retired provider API     │
 │  (token-store.ts)    │                           │  (fallback)         │
 └─────────┬───────────┘                           └─────────┬───────────┘
           │                                                    │
@@ -196,20 +196,20 @@ AUTOMATION PLAN: Build Shopier API scraper → cron job → auto-email
 
 | Channel | Settlement | Hold Period | Withdrawal | Notes |
 |---------|-----------|-------------|-----------|-------|
-| **Paddle** | T+2 business days | 0 days (low-risk digital goods) | Instant to Payoneer | 5% + $0.50 (global, MoR tax included) |
+| **Retired provider** | T+2 business days | 0 days (low-risk digital goods) | Instant to Payoneer | 5% + $0.50 (global, MoR tax included) |
 | **Shopier** | T+7 business days | Varies by order | Bank transfer weekly | 2.9% fee, Turkish lira |
 | **Shopify** | T+2 (Payments) | 3-day rolling reserve | Daily auto-transfer | 2.9% + $0.30 + $30/mo |
 
 ### Payment Reconciliation
 ```
 Each transaction recorded:
-├── paddle_transaction_id (txn_...)
+├── retired_provider_transaction_id (txn_...)
 ├── amount (cents)
 ├── currency (usd/try)
 ├── product_slug
 ├── customer_email
 ├── timestamp
-├── channel (paddle/shopier/shopify)
+├── channel (retired_provider/shopier/shopify)
 └── fulfillment_status (pending/complete/refunded)
 
 → Viewable in /api/transactions (once built)
@@ -226,7 +226,7 @@ Each transaction recorded:
 ```
 Purchase Event
       │
-      ├──▶ Paddle Webhook: transaction.completed
+      ├──▶ Retired provider Webhook: transaction.completed
       │     ├── email
       │     ├── name (if collected)
       │     ├── product_slug
@@ -250,19 +250,19 @@ Purchase Event
 ### Data Points Collected
 | Data Point | Source | Use | Retention |
 |-----------|--------|-----|-----------|
-| Email | Paddle Checkout | Fulfillment, marketing | Indefinite (opt-out) |
-| Purchase amount | Paddle webhook | Revenue tracking | 7 years (tax) |
-| Product purchased | Paddle session | Fulfillment, recommendations | Indefinite |
-| Date/time | Paddle event | Analytics | 7 years |
-| Country/IP | Paddle metadata | Market analysis | 90 days |
-| Order ID | Paddle generated | Support, refunds | 7 years |
+| Email | Retired provider Checkout | Fulfillment, marketing | Indefinite (opt-out) |
+| Purchase amount | Retired provider webhook | Revenue tracking | 7 years (tax) |
+| Product purchased | Retired provider session | Fulfillment, recommendations | Indefinite |
+| Date/time | Retired provider event | Analytics | 7 years |
+| Country/IP | Retired provider metadata | Market analysis | 90 days |
+| Order ID | Retired provider generated | Support, refunds | 7 years |
 | Lead magnet downloads | Formspree | Email list building | Indefinite |
 
 ### Privacy & Compliance
 - **GDPR:** EU customers have right to deletion. Include email footer link.
 - **Turkey KVKK:** Shopier customers must be offered data deletion.
 - **CCPA:** California residents can opt out of data sale. (We don't sell data.)
-- **PCI DSS:** Handled by Paddle (Paddle Checkout is PCI Level 1).
+- **PCI DSS:** Handled by Retired provider (Retired provider Checkout is PCI Level 1).
 - **No customer data stored on our servers** — only tokens (transient) + email in token-store (in-memory).
 - **Future:** Add data deletion endpoint: `POST /api/delete-my-data`
 
@@ -331,7 +331,7 @@ Sees Twitter      ┘                │
                                Clicks "Buy Now"
                                       │
                                       ▼
-                              Paddle Checkout Session
+                              Retired provider Checkout Session
                                       │
                                   ───┴───
                                  │       │
@@ -359,9 +359,9 @@ Every flow has monitoring points:
 
 | Checkpoint | Monitor | Alert If | Recovery |
 |-----------|---------|----------|----------|
-| Paddle Checkout creation | API error count | > 1% error rate | Check Paddle API status |
-| Webhook processing | Failed events | > 2 failed in 24h | Replay from Paddle Dashboard |
-| Token delivery | Session poll timeout | > 30s without token | Direct Paddle API fallback |
+| Retired provider Checkout creation | API error count | > 1% error rate | Check Retired provider API status |
+| Webhook processing | Failed events | > 2 failed in 24h | Replay from Retired provider Dashboard |
+| Token delivery | Session poll timeout | > 30s without token | Direct Retired provider API fallback |
 | ZIP download | File not found | Any 404 | Verify private/downloads/ |
 | Make.com webhook | HTTP 500 responses | Any failure | Check Make.com dashboard |
 | AI provider chain | All providers fail | Total AI outage | Fallback to static content |
@@ -375,10 +375,10 @@ Every flow has monitoring points:
 
 | Trigger | Action | Tool | Priority |
 |---------|--------|------|----------|
-| `transaction.completed` | Generate download token | Paddle webhook → token-store | P0 |
-| `transaction.completed` | Send WhatsApp alert | Paddle webhook → Make.com | P1 |
-| `transaction.completed` | Send thank-you email | Paddle webhook → Resend/SendGrid | P1 |
-| `transaction.payment_failed` | Alert for retry | Paddle webhook → Make.com | P1 |
+| `transaction.completed` | Generate download token | Retired provider webhook → token-store | P0 |
+| `transaction.completed` | Send WhatsApp alert | Retired provider webhook → Make.com | P1 |
+| `transaction.completed` | Send thank-you email | Retired provider webhook → Resend/SendGrid | P1 |
+| `transaction.payment_failed` | Alert for retry | Retired provider webhook → Make.com | P1 |
 | New email on lead form | Add to nurture sequence | Formspree → Mailchimp/Resend | P2 |
 | AI agent completes task | Log to analytics | AI agent → console/file | P2 |
 | New Shopier order | Send manual download link | Human (until scripted) | P2 |

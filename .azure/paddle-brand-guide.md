@@ -1,4 +1,4 @@
-# Paddle Brand Setup Guide
+# Retired provider Brand Setup Guide
 
 ## Brand Profile
 
@@ -10,10 +10,10 @@
 | Logo URL | https://aikagan.com/brand/logo.png |
 | Icon URL | https://aikagan.com/brand/logo-icon.png |
 
-## Steps in Paddle Dashboard
+## Steps in Retired provider Dashboard
 
 ### 1. Login
-https://vendors.paddle.com
+https://vendors.retired_provider.com
 
 ### 2. Company Profile
 Settings → Company → Edit
@@ -35,7 +35,7 @@ Settings → Checkout → Default Payment Link
 ### 5. Verify
 After saving, run:
 ```bash
-curl -s "https://aikagan.com/api/admin/paddle-setup?secret=d401c1bbf749c228dc999fd45a84fc66f53e3629269497334772baae6f3a9f51"
+curl -s "https://aikagan.com/api/admin/retired_provider-setup?secret=d401c1bbf749c228dc999fd45a84fc66f53e3629269497334772baae6f3a9f51"
 ```
 
 Expected: `"checkout_test": "✅ PASSED — checkout settings are configured"`

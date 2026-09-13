@@ -27,7 +27,7 @@ We sell digital sovereignty and immediate cash flow. By packaging complex AI aut
 
 * **Current State:** Clean Next.js 14, static export, Tailwind CSS interface. Relies on Formspree for contact and static links.
 * **Conversion Gaps:** Lacks native, frictionless checkout (requires exiting the experience). No authenticated user portal ("Mission Control" is currently passive). Missing dynamic trust signals and personalized AI concierge.
-* **Quick Wins:** Replace static outbound links with embedded Stripe/Paddle checkout modals. Inject the "LazyStatus" React component for real-time social proof and system health.
+* **Quick Wins:** Replace static outbound links with embedded Stripe/Retired provider checkout modals. Inject the "LazyStatus" React component for real-time social proof and system health.
 
 ### B. Knowledge-Base Synthesis
 

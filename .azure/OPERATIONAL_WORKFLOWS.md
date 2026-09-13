@@ -297,7 +297,7 @@
    ├── Follow up on proposal (address questions, objections)
    ├── Negotiate terms (if needed)
    ├── Send contract (DocuSign, HelloSign)
-   ├── Collect payment (Stripe, Paddle)
+   ├── Collect payment (Stripe, Retired provider)
    └── Automated: Mark deal as "Closed Won" in CRM
 ```
 
@@ -309,7 +309,7 @@
 - Video: Zoom, Google Meet
 - Proposals: PandaDoc, Proposify
 - Contracts: DocuSign, HelloSign
-- Payments: Stripe, Paddle
+- Payments: Stripe, Retired provider
 
 **Metrics**:
 - Outreach sent per day (target: 20-30)
@@ -362,7 +362,7 @@
 
 5. CLOSING (Day 14-21)
    ├── Send contract (DocuSign, HelloSign)
-   ├── Collect payment (Stripe, Paddle)
+   ├── Collect payment (Stripe, Retired provider)
    ├── Confirm implementation timeline
    └── Update deal stage to "Closed Won"
 
@@ -383,7 +383,7 @@
 - CRM: HubSpot, Salesforce
 - Proposals: PandaDoc, Proposify
 - Contracts: DocuSign, HelloSign
-- Payments: Stripe, Paddle
+- Payments: Stripe, Retired provider
 - Communication: Slack, Email
 
 **Metrics**:
@@ -741,7 +741,7 @@
 2. PAYMENT COLLECTION (Within 7 days)
    ├── Monitor payment status (paid, pending, overdue)
    ├── Send payment reminders (Day 3, Day 5, Day 7)
-   ├── Process payment (Stripe, Paddle, bank transfer)
+   ├── Process payment (Stripe, Retired provider, bank transfer)
    ├── Reconcile payment (match payment to invoice)
    └── Automated: Update invoice status to "Paid"
 
@@ -782,9 +782,9 @@
 ```
 
 **Tools**:
-- Invoicing: Stripe, Paddle, QuickBooks
+- Invoicing: Stripe, Retired provider, QuickBooks
 - Accounting: QuickBooks, Xero, FreshBooks
-- Payments: Stripe, Paddle, bank transfer
+- Payments: Stripe, Retired provider, bank transfer
 - Reporting: Google Data Studio, Supermetrics
 - Tax: TurboTax, TaxJar
 

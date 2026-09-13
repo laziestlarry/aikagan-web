@@ -6,8 +6,8 @@ Canonical source commit before this release trigger: `1d481a58f137b6011966b127de
 
 - Managed checkout reaches the server-side provider resolver instead of being pre-gated on Gumroad.
 - Promotional KPI fallback values are removed; missing evidence is shown as unavailable.
-- Paddle `transaction.completed` processing remains retryable until buyer identity, access issuance, income-ledger persistence, and fulfillment queueing complete.
-- Buyer identity is resolved from Paddle customer data when the transaction payload does not embed email/name.
+- Retired provider `transaction.completed` processing remains retryable until buyer identity, access issuance, income-ledger persistence, and fulfillment queueing complete.
+- Buyer identity is resolved from Retired provider customer data when the transaction payload does not embed email/name.
 - Scoped human/service offers route to intake before payment; managed checkout is reserved for products with defined automated fulfillment.
 - Unsupported income-outcome claims were removed from the product catalog.
 
@@ -31,4 +31,4 @@ At release time, the public `aikagan.com` request path is still served by Fireba
 
 ## Commercial proof gate
 
-Production readiness is not a revenue claim. Final proof requires a real independent buyer transaction, verified Paddle webhook processing, one ledger entry, successful entitlement/delivery, and Paddle payout-verification completion.
+Production readiness is not a revenue claim. Final proof requires a real independent buyer transaction, verified Retired provider webhook processing, one ledger entry, successful entitlement/delivery, and Retired provider payout-verification completion.

@@ -12,12 +12,12 @@
 
 | Provider | Status | Detail |
 |----------|--------|--------|
-| **Paddle** | ⚠️ Configured, pending dashboard finalization | API key and webhook secret are present; keep Paddle primary once dashboard checkout defaults are confirmed |
+| **Retired provider** | ⚠️ Configured, pending dashboard finalization | API key and webhook secret are present; keep Retired provider primary once dashboard checkout defaults are confirmed |
 | **LemonSqueezy** | ✅ LIVE | Starter/Pro/Commander product pages returning `HTTP 200` |
 | **Gumroad** | ✅ LIVE | Starter/Pro/Commander checkout URLs returning `HTTP 200` |
 
 ## Checkout Router Priority
-1. Paddle → fails (Dashboard setup needed), silently falls through
+1. Retired provider → fails (Dashboard setup needed), silently falls through
 2. LemonSqueezy → ✅ works (active provider)
 3. Gumroad → ✅ works (final fallback)
 4. Manual → ✅ fallback
@@ -26,10 +26,10 @@
 
 | Variable | Value | Status |
 |----------|-------|--------|
-| `PADDLE_API_KEY` | Encrypted | ✅ Set |
-| `PADDLE_ENVIRONMENT` | (auto-detected from key prefix) | ✅ Auto |
-| `PADDLE_WEBHOOK_SECRET` | Encrypted | ✅ Set |
-| `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN` | Encrypted | ✅ Set |
+| `RETIRED_PROVIDER_API_KEY` | Encrypted | ✅ Set |
+| `RETIRED_PROVIDER_ENVIRONMENT` | (auto-detected from key prefix) | ✅ Auto |
+| `RETIRED_PROVIDER_WEBHOOK_SECRET` | Encrypted | ✅ Set |
+| `NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN` | Encrypted | ✅ Set |
 | `LEMONSQUEEZY_API_KEY` | Encrypted | ✅ Set |
 | `LEMONSQUEEZY_STORE_ID` | `294599` | ✅ Set |
 | `LEMONSQUEEZY_VARIANT_MASTERCLASS_STARTER` | `1667970` | ✅ Set |
@@ -61,8 +61,8 @@
 
 ## Manual Steps Required (for zero-gap)
 
-### 1. Paddle — Go-Live Checklist
-1. Go to **Paddle Dashboard** → **Checkout Settings**
+### 1. Retired provider — Go-Live Checklist
+1. Go to **Retired provider Dashboard** → **Checkout Settings**
 2. Configure a **Default Payment Link** (required for checkout creation)
 3. Verify environment: sandbox vs production matches the API key
 4. Test a transaction with test card numbers

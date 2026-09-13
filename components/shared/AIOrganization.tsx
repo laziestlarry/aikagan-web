@@ -139,7 +139,7 @@ const RELEASE_PHASES: SprintPhase[] = [
     tasks: [
       "Point aikagan.com and app.aikagan.com at the canonical production runtime",
       "Verify packaged checkout and scoped-service denial on the public host",
-      "Configure the complete Paddle credential set on an approved host if Paddle is used",
+      "Configure the complete Gumroad credential set on an approved host if Gumroad is used",
     ],
   },
   {
@@ -150,7 +150,7 @@ const RELEASE_PHASES: SprintPhase[] = [
     tasks: [
       "Receive one independent customer payment through the public production path",
       "Verify provider callback → one ledger entry → entitlement → delivery",
-      "Verify support/refund behavior and complete Paddle payout review when triggered",
+      "Verify support/refund behavior and complete Gumroad payout review when triggered",
     ],
   },
   {

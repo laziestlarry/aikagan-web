@@ -30,51 +30,26 @@ const SERVICE_STEPS = [
 ];
 
 /**
- * Polls /api/session-token until the token is ready.
- * Paddle appends ?transaction_id=txn_... to the success URL configured
- * in the Paddle Dashboard (Checkout → Return URL After Transaction).
+ * Polls /api/session-token until the verified hosted sale is ready.
  */
 function useSessionToken(): { token: string | null; slug: string | null; service: boolean; loading: boolean; error: string | null } {
   const searchParams = useSearchParams();
   const rawTxnId = searchParams.get("transaction_id");
   const saleId = searchParams.get("sale_id");
   const transactionId = rawTxnId || (saleId ? `gr-${saleId}` : null);
-  const ptxn = searchParams.get("_ptxn");
   const [token, setToken] = useState<string | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
   const [service, setService] = useState(false);
-  const [loading, setLoading] = useState(!!transactionId || !!ptxn);
+  const [loading, setLoading] = useState(!!transactionId);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Open Paddle checkout overlay when _ptxn is detected
-  useEffect(() => {
-    if (!ptxn) return;
-    // Wait for Paddle.js to be ready
-    const checkPaddle = setInterval(() => {
-      if (window.Paddle?.Checkout) {
-        clearInterval(checkPaddle);
-        window.Paddle.Checkout.open({ transactionId: ptxn });
-        // On completion, redirect uses the same _ptxn as transaction_id
-        const onComplete = () => {
-          window.removeEventListener("checkout.completed", onComplete);
-          window.location.href = `/checkout-success?transaction_id=${ptxn}`;
-        };
-        window.addEventListener("checkout.completed", onComplete);
-      }
-    }, 200);
-    setTimeout(() => clearInterval(checkPaddle), 10000);
-  }, [ptxn]);
-
   useEffect(() => {
     // If no transaction_id, nothing to poll
-    if (!transactionId && !ptxn) {
+    if (!transactionId) {
       setLoading(false);
       return;
     }
-
-    // If we have _ptxn but no transaction_id yet, wait
-    if (!transactionId) return;
 
     // Poll /api/session-token every 2s until ready
     let attempts = 0;
@@ -112,7 +87,7 @@ function useSessionToken(): { token: string | null; slug: string | null; service
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [transactionId, ptxn]);
+  }, [transactionId]);
 
   return { token, slug, service, loading, error };
 }
@@ -160,7 +135,7 @@ function CheckoutSuccessContent() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const sp = new URLSearchParams(window.location.search);
-    setHasTransaction(Boolean(sp.get("transaction_id") || sp.get("_ptxn") || sp.get("sale_id")));
+    setHasTransaction(Boolean(sp.get("transaction_id") || sp.get("sale_id")));
   }, []);
 
   // Resolve which product to show
@@ -248,7 +223,7 @@ function CheckoutSuccessContent() {
               Where&apos;s my download?
             </h1>
             <p className="mt-3 text-neutral-300">
-              This page appears after a successful Paddle payment. If you just
+              This page appears after a verified Gumroad payment. If you just
               completed a purchase, please return to the email we sent — your
               secure download link is there.
             </p>
@@ -471,7 +446,7 @@ function CheckoutSuccessContent() {
             </p>
             <ul className="mt-4 space-y-1.5 text-sm text-neutral-400">
               {[
-                "Checkout routing (Paddle + Shopier multi-region)",
+                "Hosted Gumroad checkout and verified delivery routing",
                 "Automated digital delivery with email fulfillment",
                 "KPI event tracking (traffic → payment → delivery)",
                 "30-minute strategy call + documentation handoff",

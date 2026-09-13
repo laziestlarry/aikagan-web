@@ -10,7 +10,7 @@
  *
  * Call from:
  *   /api/lead                → event_name: "Lead"
- *   /api/webhooks/paddle     → event_name: "Purchase"
+ *   /api/webhooks/gumroad    → event_name: "Purchase"
  *   /api/webhooks/lemonsqueezy → event_name: "Purchase"
  *
  * Required env (set in Vercel project settings):

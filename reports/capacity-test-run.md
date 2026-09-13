@@ -27,7 +27,7 @@
 
 ## Integration Coverage Dials
 
-- **Paddle Checkout:** ❌ UNCONFIGURED
+- **Retired provider Checkout:** ❌ UNCONFIGURED
 - **Shopier Fallback:** ✅ READY
 - **Gumroad Fallback:** ✅ READY
 - **Meta CAPI Events:** ✅ READY
@@ -39,7 +39,7 @@
 ```
 [SYSTEM] Starting Capacity & Performance Scoring Test.
 [STORAGE] Identified storage backend: upstash
-[CONFIG] Paddle configured: false
+[CONFIG] Retired provider configured: false
 [CONFIG] Shopier configured: true
 [CONFIG] Gumroad configured: true
 [CONFIG] Meta CAPI configured: true

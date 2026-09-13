@@ -20,7 +20,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold text-white mb-3">1. Products and Delivery</h2>
             <p>
               AutonomaX sells digital business execution packs delivered as downloadable ZIP files.
-              Upon successful checkout via Paddle, you will receive an email confirmation
+              Upon successful checkout via Gumroad, you will receive an email confirmation
               and download link. Delivery is instant and automated. If you do not receive your
               download within 30 minutes of purchase, contact{" "}
               <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>.
@@ -91,7 +91,7 @@ export default function TermsPage() {
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">5. Payment and VAT</h2>
             <p>
- Payments are processed by Paddle. Prices displayed are in USD. Applicable taxes
+ Payments are processed by Gumroad. Prices displayed are in USD. Applicable taxes
 are determined by your country of residence. You are responsible for any additional
               local taxes applicable to digital product purchases in your jurisdiction.
             </p>

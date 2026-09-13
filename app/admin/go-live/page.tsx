@@ -32,7 +32,7 @@ interface SetupResponse {
 
 interface HealthResponse {
   ok: boolean;
-  income_sources: { kv: boolean; paddle: boolean; capi: boolean; ga4: boolean };
+  income_sources: { kv: boolean; gumroad: boolean; capi: boolean; ga4: boolean };
   checks: Record<string, { status: string; detail?: string }>;
 }
 
@@ -266,7 +266,7 @@ export default function GoLivePage() {
               >
                 <div className="flex items-center gap-2">
                   {k === "kv" && <Database className="h-4 w-4 text-kagan-gold" />}
-                  {k === "paddle" && <Server className="h-4 w-4 text-kagan-gold" />}
+                  {k === "gumroad" && <Server className="h-4 w-4 text-kagan-gold" />}
                   {k === "capi" && <Activity className="h-4 w-4 text-kagan-gold" />}
                   {k === "ga4" && <Globe className="h-4 w-4 text-kagan-gold" />}
                   <span className="text-sm font-bold text-kagan-white uppercase">{k}</span>

@@ -9,7 +9,7 @@
 | Dimension | Status |
 |-----------|--------|
 | Health | ✅ 11/11 gates passing |
-| Checkout | ✅ Paddle primary — Gumroad/LemonSqueezy/Shopier fallback |
+| Checkout | ✅ Retired provider primary — Gumroad/LemonSqueezy/Shopier fallback |
 | CAPI | ✅ Server-side Pixel live |
 | KV | ✅ Upstash connected |
 | Content | ✅ 9 wave payloads in backlog |
@@ -24,7 +24,7 @@ The seeded data shows what the system CAN do. Going live means:
 
 1. **Real content hits social platforms** via Make.com omnichannel router
 2. **Real traffic clicks through** from X, LinkedIn, Reddit, Instagram
-3. **Real purchases process** through Paddle checkout
+3. **Real purchases process** through Retired provider checkout
 4. **Real CAPI events fire** to Meta for attribution
 5. **Real income appears** on the dashboard
 

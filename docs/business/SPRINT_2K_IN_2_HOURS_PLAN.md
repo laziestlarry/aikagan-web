@@ -64,7 +64,7 @@ The $2K target is therefore reachable with **8–10 buyers** in a 2-hour push.
 | 2:00 | **Total captured (low estimate):** $1,184 | — | — |
 | 2:00 | **Total captured (target):** $2,014 | — | — |
 
-> **Note on the 2-hour sprint:** the *number* is the operating window. The actual fulfillment (Blueprint delivery, Masterclass download) happens async within the SLA, but cash is captured in-window via the Paddle (primary) → Shopier/Gumroad (fallback) rails.
+> **Note on the 2-hour sprint:** the *number* is the operating window. The actual fulfillment (Blueprint delivery, Masterclass download) happens async within the SLA, but cash is captured in-window via the Retired provider (primary) → Shopier/Gumroad (fallback) rails.
 
 ---
 
@@ -76,8 +76,8 @@ These are the 6 pre-loaded answers used by the Customer Success agent. They are 
 |---|-----------|-----------------|
 | 1 | "I don't have time." | Starter is 7 days, 20 min/day. Commander's 60-Day Scale Sprint fits one Sunday + one Wednesday block. |
 | 2 | "I don't have an audience." | Builder Starter Checklist walks from $0 to first $1 without an audience; Blueprint shows the no-audience channels first. |
-| 3 | "Is the Blueprint service actually delivered?" | Yes — 3 business days after intake, with an intake form auto-emailed the moment Paddle marks the order paid. |
-| 4 | "Why not just buy on Gumroad?" | Same product, same Paddle receipt; the Aikagan checkout is a Merchant of Record with global tax/VAT handled. |
+| 3 | "Is the Blueprint service actually delivered?" | Yes — 3 business days after intake, with an intake form auto-emailed the moment Retired provider marks the order paid. |
+| 4 | "Why not just buy on Gumroad?" | Same product, same Retired provider receipt; the Aikagan checkout is a Merchant of Record with global tax/VAT handled. |
 | 5 | "Can I get a refund?" | 30-day money-back guarantee on every Masterclass tier; Blueprint has a delivery-confidence guarantee. |
 | 6 | "Will this work for my niche?" | The audit sprint reviews your current stack first; if it doesn't fit, the service deliverable spells out the niche you'd win. |
 
@@ -87,7 +87,7 @@ These are the 6 pre-loaded answers used by the Customer Success agent. They are 
 
 | Trigger | Webhook | Action |
 |---------|---------|--------|
-| Paddle `transaction.completed` | `/api/webhooks/paddle` | Record ledger entry via `lib/income-ledger.ts`, fire Meta CAPI event, issue HMAC download token. |
+| Retired provider `transaction.completed` | `/api/webhooks/retired_provider` | Record ledger entry via `lib/income-ledger.ts`, fire Meta CAPI event, issue HMAC download token. |
 | Shopier `order.paid` | `/api/webhooks/shopier` | Same as above; fallback for Turkish buyers. |
 | Gumroad `sale.created` | `/api/webhooks/gumroad` | Same as above; legacy/secondary rail. |
 | 14:00 UTC daily | Make.com Omnichannel Publisher | Posts pre-baked Reddit / IndieHackers / LinkedIn copy from `scripts/agent/content_backlog/`. |

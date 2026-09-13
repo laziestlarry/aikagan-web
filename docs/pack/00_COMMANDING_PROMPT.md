@@ -3,7 +3,7 @@
 
 > **Reverse-engineered from:** ChatGPT session atlas_chat16022026 + live codebase at `/Users/pq/aikagan-web/`
 > **Date:** 2026-07-06
-> **Status:** 🟢 Phase 1 Code Complete — Blocked on Paddle credentials for live revenue
+> **Status:** 🟢 Phase 1 Code Complete — Blocked on Retired provider credentials for live revenue
 
 ---
 
@@ -16,7 +16,7 @@
 | **URL** | [https://aikagan.com](https://aikagan.com) — deployed to Vercel, build passes |
 | **Product Tier** | Starter ($29) → Pro ($79) → Commander ($149) — one-time, digital delivery |
 | **Turkey Channel** | [autonomax.shopier.com](https://autonomax.shopier.com) — 19 products LIVE |
-| **Payment Primary** | Paddle (Merchant of Record) — 5% + $0.50 fee |
+| **Payment Primary** | Retired provider (Merchant of Record) — 5% + $0.50 fee |
 | **Payment Fallback** | Shopier — 2.9% fee (Turkey domestic) |
 | **Payment Future** | Stripe — blocked from Turkey, deferred to Phase 2 (UK/US entity) |
 | **AI Provider Chain** | Groq (free, 30 req/s) → DeepSeek ($0.14/M) → Gemini (free) → OpenAI → Ollama → Custom |
@@ -31,7 +31,7 @@
 
 ```
 Frontend:     Next.js 15 (React 18) + Tailwind CSS + TypeScript
-Payment:      @paddle/paddle-node-sdk v3.8.0 (replaced Stripe)
+Payment:      @retired_provider/retired_provider-node-sdk v3.8.0 (replaced Stripe)
 Delivery:     HMAC-SHA256 download tokens (48h TTL), no database
 Auth:         Token-based (no user accounts — instant digital delivery)
 Hosting:      Vercel (serverless — in-memory token store, single-instance)
@@ -58,11 +58,11 @@ PUBLIC PAGES
 /legal/contact                      → Legal contact
 
 API ROUTES (Dynamic)
-POST /api/paddle-checkout           → Creates Paddle transaction → returns checkout URL
-POST /api/webhooks/paddle           → Paddle webhook receiver (transaction.completed)
+POST /api/retired_provider-checkout           → Creates Retired provider transaction → returns checkout URL
+POST /api/webhooks/retired_provider           → Retired provider webhook receiver (transaction.completed)
 GET  /api/session-token             → Poll for download token (?transaction_id=...)
 GET  /api/download/[token]          → Streams ZIP file from private/downloads/
-POST /api/checkout                  → Legacy redirect (410 → /api/paddle-checkout)
+POST /api/checkout                  → Legacy redirect (410 → /api/retired_provider-checkout)
 POST /api/capi                      → Meta Conversions API proxy
 POST /api/lead                      → Lead magnet email capture
 POST /api/services/chat             → Chat proxy
@@ -78,14 +78,14 @@ STATIC ASSETS
 
 ```
 Buyer clicks "Buy Now"
-  → POST /api/paddle-checkout { slug }
-  → Paddle.transactions.create() with inline price + product_slug custom_data
-  → Returns { url: checkout.paddle.com/txn_..., transactionId }
+  → POST /api/retired_provider-checkout { slug }
+  → Retired provider.transactions.create() with inline price + product_slug custom_data
+  → Returns { url: checkout.retired_provider.com/txn_..., transactionId }
   → Pre-registers txn_... in tokenStore (Map)
-  → Buyer redirected to Paddle Checkout
+  → Buyer redirected to Retired provider Checkout
   → Pays (card, PayPal, etc.)
-  → Paddle redirects to /checkout-success?transaction_id=txn_...
-  → Paddle sends webhook POST /api/webhooks/paddle (transaction.completed)
+  → Retired provider redirects to /checkout-success?transaction_id=txn_...
+  → Retired provider sends webhook POST /api/webhooks/retired_provider (transaction.completed)
   → Webhook validates p-sk signature, extracts product_slug from custom_data
   → generateDownloadToken(slug, txn_id, email) → HMAC-SHA256
   → tokenStore.set(txn_id, { token, slug, email })
@@ -99,7 +99,7 @@ Buyer clicks "Buy Now"
 
 ```
 Map<string, TokenRecord>
-Key:   Paddle transaction ID (txn_...)
+Key:   Retired provider transaction ID (txn_...)
 Value: { token: string, slug: string, email: string, exp: number (ms) }
 TTL:   48 hours (checked by download route)
 Note:  Single-instance Vercel only. For multi-instance, swap to Vercel KV.
@@ -121,9 +121,9 @@ Note:  Single-instance Vercel only. For multi-instance, swap to Vercel KV.
 
 **Verdict:** The Cyprus Stripe account cannot be activated from Turkey. PayPal has been banned in Turkey since 2016. LemonSqueezy migrated to Stripe Managed Payments (same blocker).
 
-### 3.2 Paddle Selected as Merchant of Record
+### 3.2 Retired provider Selected as Merchant of Record
 
-| Criterion | Paddle | Stripe |
+| Criterion | Retired provider | Stripe |
 |-----------|--------|--------|
 | Works from Turkey | ✅ Yes | ❌ No |
 | Tax/VAT compliance | ✅ Included (MoR) | ❌ Merchant must handle |
@@ -136,7 +136,7 @@ Note:  Single-instance Vercel only. For multi-instance, swap to Vercel KV.
 
 | Phase | Timeline | Entity | Payment | Status |
 |-------|----------|--------|---------|--------|
-| **Phase 1** | Now | Current (TR/CY) | Paddle + Shopier | 🟢 Code complete |
+| **Phase 1** | Now | Current (TR/CY) | Retired provider + Shopier | 🟢 Code complete |
 | **Phase 2** | Month 2-3 | UK LTD or US LLC | Stripe UK/US | 🔲 Pending |
 | **Phase 3** | Month 4+ | Stripe SaaS billing | Full Stripe stack | 🔲 Future |
 
@@ -165,19 +165,19 @@ Priority   Provider     Cost          Rate Limit         Use Case
 | masterclass-pro | Pro | Masterclass | $79 | masterclass-commander | AutonomaX_Masterclass_Pro_Pack_v2.zip |
 | masterclass-commander | Commander | Masterclass | $149 | — | AutonomaX_Masterclass_Commander_Pack_v2.zip |
 
-**Sentinel system:** `lib/products.ts` uses `PADDLE_PLACEHOLDER = "paddle"` as sentinel — components check `checkoutUrl === "paddle"` to trigger API checkout flow.
+**Sentinel system:** `lib/products.ts` uses `RETIRED_PROVIDER_PLACEHOLDER = "retired_provider"` as sentinel — components check `checkoutUrl === "retired_provider"` to trigger API checkout flow.
 
 ---
 
 ## 5. ENVIRONMENT TOPOLOGY
 
-### 5.1 Required Env Vars (Paddle)
+### 5.1 Required Env Vars (Retired provider)
 
 ```bash
 # Required for live payments:
-PADDLE_API_KEY=           # pdl_... — server-side API key (from paddle.com)
-NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=  # pct_... — client-side token
-PADDLE_WEBHOOK_SECRET=    # psk_... — webhook signing secret
+RETIRED_PROVIDER_API_KEY=           # pdl_... — server-side API key (from retired_provider.com)
+NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN=  # pct_... — client-side token
+RETIRED_PROVIDER_WEBHOOK_SECRET=    # psk_... — webhook signing secret
 
 # Already set:
 DOWNLOAD_TOKEN_SECRET=    # e2032e5b68adf2993... — HMAC secret
@@ -207,7 +207,7 @@ NEXT_PUBLIC_STRIPE_PRICE_PRO=
 NEXT_PUBLIC_STRIPE_PRICE_COMMANDER=
 
 # Payment router:
-PRIMARY_GATEWAY=paddle
+PRIMARY_GATEWAY=retired_provider
 FALLBACK_GATEWAY=shopier
 ```
 
@@ -221,9 +221,9 @@ STRIPE_SECRET_KEY=        # ❌ Dead — from old Stripe migration, not needed
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=  # ❌ Dead
 
 # Need to add in Vercel:
-PADDLE_API_KEY=           # ❌ Missing — BLOCKING
-NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=     # ❌ Missing
-PADDLE_WEBHOOK_SECRET=    # ❌ Missing
+RETIRED_PROVIDER_API_KEY=           # ❌ Missing — BLOCKING
+NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN=     # ❌ Missing
+RETIRED_PROVIDER_WEBHOOK_SECRET=    # ❌ Missing
 ```
 
 ---
@@ -232,16 +232,16 @@ PADDLE_WEBHOOK_SECRET=    # ❌ Missing
 
 ### ✅ COMPLETED — Code
 
-- [x] Stripe → Paddle migration: `lib/paddle-client.ts`, `/api/paddle-checkout`, `/api/webhooks/paddle`
-- [x] `lib/products.ts` sentinel changed from `"stripe"` to `"paddle"`
+- [x] Stripe → Retired provider migration: `lib/retired_provider-client.ts`, `/api/retired_provider-checkout`, `/api/webhooks/retired_provider`
+- [x] `lib/products.ts` sentinel changed from `"stripe"` to `"retired_provider"`
 - [x] All client components updated: CheckoutLink, CheckoutButton, ProductCard, ExitIntentModal
 - [x] `app/checkout-success/page.tsx` updated for `transaction_id` instead of `session_id`
-- [x] `/api/session-token/route.ts` — Paddle API fallback
-- [x] All legal/terms/privacy/refund pages updated to mention "Paddle"
-- [x] All homepage copy updated (Stripe → Paddle references)
+- [x] `/api/session-token/route.ts` — Retired provider API fallback
+- [x] All legal/terms/privacy/refund pages updated to mention "Retired provider"
+- [x] All homepage copy updated (Stripe → Retired provider references)
 - [x] Stripe API routes deleted (`/api/stripe-checkout`, `/api/webhooks/stripe`)
 - [x] `stripe` npm package removed from `package.json`
-- [x] `.env.local` and `.env.local.example` updated for Paddle
+- [x] `.env.local` and `.env.local.example` updated for Retired provider
 - [x] `npm run build` passes — 0 errors, 30 static pages, 7 dynamic API routes
 - [x] 6 product ZIPs ready in `private/downloads/`
 - [x] `vercel --prod` succeeded — aikagan.com live
@@ -249,11 +249,11 @@ PADDLE_WEBHOOK_SECRET=    # ❌ Missing
 
 ### 🟡 READY but Need Credentials
 
-- [ ] **Create Paddle account** at paddle.com/sign-up → get API key
-- [ ] **Set Vercel env vars**: `PADDLE_API_KEY`, `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`
-- [ ] **Configure Paddle webhook**: Endpoint `https://aikagan.com/api/webhooks/paddle`, event `transaction.completed`
-- [ ] **Set `PADDLE_WEBHOOK_SECRET`** in Vercel after webhook creation
-- [ ] **Test end-to-end**: Buy → Paddle Checkout → payment → webhook → token → download
+- [ ] **Create Retired provider account** at retired_provider.com/sign-up → get API key
+- [ ] **Set Vercel env vars**: `RETIRED_PROVIDER_API_KEY`, `NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN`
+- [ ] **Configure Retired provider webhook**: Endpoint `https://aikagan.com/api/webhooks/retired_provider`, event `transaction.completed`
+- [ ] **Set `RETIRED_PROVIDER_WEBHOOK_SECRET`** in Vercel after webhook creation
+- [ ] **Test end-to-end**: Buy → Retired provider Checkout → payment → webhook → token → download
 
 ### 🔲 NOT STARTED — Future Phases
 
@@ -268,15 +268,15 @@ PADDLE_WEBHOOK_SECRET=    # ❌ Missing
 
 ---
 
-## 7. UNIT ECONOMICS (Updated for Paddle)
+## 7. UNIT ECONOMICS (Updated for Retired provider)
 
-| Product | Price | Paddle Fee (5%+$0.50) | Net Revenue | Hosting | Gross Profit | Margin |
+| Product | Price | Retired provider Fee (5%+$0.50) | Net Revenue | Hosting | Gross Profit | Margin |
 |---------|-------|----------------------|-------------|---------|-------------|--------|
 | Starter | $29.00 | $1.95 | $27.05 | $0.25 | $26.80 | 92.4% |
 | Pro | $79.00 | $4.45 | $74.55 | $0.50 | $74.05 | 93.7% |
 | Commander | $149.00 | $7.95 | $141.05 | $1.00 | $140.05 | 94.0% |
 
-**Breakeven:** 2 Paddle sales/month covers all fixed costs ($50/mo).
+**Breakeven:** 2 Retired provider sales/month covers all fixed costs ($50/mo).
 **Weighted AOV:** ~$85 (expected mix: 60% Starter, 30% Pro, 10% Commander).
 
 ---
@@ -284,7 +284,7 @@ PADDLE_WEBHOOK_SECRET=    # ❌ Missing
 ## 8. REVENUE PROJECTION (First 90 Days)
 
 ```
-Weeks 1-4:   $500 - $3,600/week    → Phase 1: Organic social + Paddle live
+Weeks 1-4:   $500 - $3,600/week    → Phase 1: Organic social + Retired provider live
 Weeks 5-8:   $2,000 - $8,000/week  → Phase 1 scaling + Shopier promotion
 Weeks 9-12:  $4,000 - $15,000/week → Phase 2: Entity formation, email sequences
 Month 4-6:   $15,000 - $60,000/mo  → Phase 3: Stripe live, recurring subscriptions
@@ -296,13 +296,13 @@ Month 4-6:   $15,000 - $60,000/mo  → Phase 3: Stripe live, recurring subscript
 
 ## 9. IMMEDIATE BLOCKER
 
-**One thing stops live revenue:** Paddle account creation + API keys.
+**One thing stops live revenue:** Retired provider account creation + API keys.
 
 The user must:
-1. Go to [paddle.com/sign-up](https://paddle.com/sign-up)
+1. Go to [retired_provider.com/sign-up](https://retired_provider.com/sign-up)
 2. Complete business verification
-3. Navigate to Developer Tools → API Keys → copy `PADDLE_API_KEY` (pdl_...)
-4. Create a webhook: endpoint `https://aikagan.com/api/webhooks/paddle`, event `transaction.completed`
+3. Navigate to Developer Tools → API Keys → copy `RETIRED_PROVIDER_API_KEY` (pdl_...)
+4. Create a webhook: endpoint `https://aikagan.com/api/webhooks/retired_provider`, event `transaction.completed`
 5. Copy the webhook secret (`psk_...`)
 6. Share all 3 secrets with me
 7. I set them as Vercel env vars + deploy → **live revenue within 30 minutes**
@@ -313,17 +313,17 @@ The user must:
 
 | Path | Purpose |
 |------|---------|
-| `lib/paddle-client.ts` | Singleton Paddle SDK client |
+| `lib/retired_provider-client.ts` | Singleton Retired provider SDK client |
 | `lib/products.ts` | Product catalog (3 paid + 3 free + sentinel) |
 | `lib/download-token.ts` | HMAC-SHA256 token generator |
 | `lib/token-store.ts` | In-memory token cache (Map) |
-| `app/api/paddle-checkout/route.ts` | Create Paddle transaction → return checkout URL |
-| `app/api/webhooks/paddle/route.ts` | Receive transaction.completed → issue download token |
-| `app/api/session-token/route.ts` | Poll for token (Paddle API fallback) |
+| `app/api/retired_provider-checkout/route.ts` | Create Retired provider transaction → return checkout URL |
+| `app/api/webhooks/retired_provider/route.ts` | Receive transaction.completed → issue download token |
+| `app/api/session-token/route.ts` | Poll for token (Retired provider API fallback) |
 | `app/api/download/[token]/route.ts` | Verify token → stream ZIP |
 | `app/checkout-success/page.tsx` | Post-purchase polling page |
 | `private/downloads/*.zip` | 6 product ZIPs |
 | `docs/business/01-07` | 7 business development documents |
 | `docs/pack/` | This execution kit |
-| `.env.local` | Local env vars (Paddle commented out) |
+| `.env.local` | Local env vars (Retired provider commented out) |
 | `.env.local.example` | Template for all env vars |

@@ -73,7 +73,7 @@ async function main() {
 
 ## Integration Coverage Dials
 
-- **Paddle Checkout:** ${data.integrations.paddle ? "✅ READY" : "❌ UNCONFIGURED"}
+- **Gumroad Checkout:** ${data.integrations.gumroad ? "✅ READY" : "❌ UNCONFIGURED"}
 - **Shopier Fallback:** ${data.integrations.shopier ? "✅ READY" : "❌ UNCONFIGURED"}
 - **Gumroad Fallback:** ${data.integrations.gumroad ? "✅ READY" : "❌ UNCONFIGURED"}
 - **Meta CAPI Events:** ${data.integrations.metaCapi ? "✅ READY" : "❌ UNCONFIGURED"}

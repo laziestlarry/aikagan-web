@@ -3,7 +3,7 @@
 
 > **Assessment date:** 2026-07-06  
 > **Prepared for:** Kagan Dolek Management Consultancy  
-> **Based on:** Live codebase audit + ChatGPT session reverse-engineering + Paddle infrastructure analysis
+> **Based on:** Live codebase audit + ChatGPT session reverse-engineering + Retired provider infrastructure analysis
 
 ---
 
@@ -14,10 +14,10 @@
 | **Technical Feasibility** | ✅ HIGH | The codebase is complete, compiled, deployed, and ready |
 | **Market Feasibility** | ✅ HIGH | Proven demand, 95% margins, multi-channel distribution |
 | **Financial Feasibility** | ✅ VERY HIGH | $21/mo burn, breakeven at 1 sale, no external capital needed |
-| **Legal/Regulatory** | 🟡 MEDIUM | Paddle as MoR solves cross-border compliance; Turkey operations via Shopier are compliant |
+| **Legal/Regulatory** | 🟡 MEDIUM | Retired provider as MoR solves cross-border compliance; Turkey operations via Shopier are compliant |
 | **Operational Feasibility** | 🟡 MEDIUM-HIGH | Solo founder operation; automation will be key to scale |
 
-**Overall Verdict:** VIABLE — The project is technically ready for revenue generation. The one remaining operational blocker is Paddle account setup for API credentials.
+**Overall Verdict:** VIABLE — The project is technically ready for revenue generation. The one remaining operational blocker is Retired provider account setup for API credentials.
 
 ---
 
@@ -28,8 +28,8 @@
 | Component | Readiness | Risk | Notes |
 |-----------|-----------|------|-------|
 | aikagan.com (Next.js) | ✅ Deployed to Vercel | Very Low | Build passes, 30 pages, 7 API routes |
-| Paddle checkout | ✅ Code written | Very Low | 89-line route, tested, type-safe |
-| Paddle webhook | ✅ Code written | Very Low | 108-line handler, signature validation |
+| Retired provider checkout | ✅ Code written | Very Low | 89-line route, tested, type-safe |
+| Retired provider webhook | ✅ Code written | Very Low | 108-line handler, signature validation |
 | Download token system | ✅ Working | Very Low | HMAC-SHA256, no DB, 48h TTL |
 | Product ZIPs | ✅ 6 files ready | Very Low | In private/downloads/ |
 | Shopier store | ✅ LIVE, 19 products | Very Low | autonomax.shopier.com already active |
@@ -40,18 +40,18 @@
 
 | Risk | Probability | Impact | Mitigation |
 |------|-----------|--------|-----------|
-| Paddle API changes | Low | Medium | Using official SDK @paddle/paddle-node-sdk v3.8.0 |
-| Vercel cold start (serverless) | Medium | Low | In-memory token store resets; webhook fallback to Paddle API works |
+| Retired provider API changes | Low | Medium | Using official SDK @retired_provider/retired_provider-node-sdk v3.8.0 |
+| Vercel cold start (serverless) | Medium | Low | In-memory token store resets; webhook fallback to Retired provider API works |
 | Token system broken | Low | High | HMAC validation = no external dependency; verified at build time |
-| Paddle webhook fails | Low | High | session-token has direct Paddle API fallback — tokens issued regardless |
+| Retired provider webhook fails | Low | High | session-token has direct Retired provider API fallback — tokens issued regardless |
 
 ### Technical Dependencies
 
 ```
 Required for live:          Nice to have:
-  PADDLE_API_KEY  ❌          Email provider     ❌
-  PADDLE_WEBHOOK_SECRET ❌    Make.com webhooks  ❌
-  Paddle account   ❌          Analytics (GA4)    ❌
+  RETIRED_PROVIDER_API_KEY  ❌          Email provider     ❌
+  RETIRED_PROVIDER_WEBHOOK_SECRET ❌    Make.com webhooks  ❌
+  Retired provider account   ❌          Analytics (GA4)    ❌
 ```
 
 ---
@@ -76,7 +76,7 @@ Required for live:          Nice to have:
 | Kajabi | $149/mo | $29 one-time, instant delivery | Low |
 | System.io | $49/mo | $29 one-time, AI agents included | Low |
 | Gumroad | 10%+$0.10 | No AI, no automation | Medium |
-| LemonSqueezy | 5%+$0.50 | Paddle competitor, similar pricing | Low |
+| LemonSqueezy | 5%+$0.50 | Retired provider competitor, similar pricing | Low |
 
 **Pricing advantage:** AutonomaX charges $29-$149 **one-time** vs competitors $49-$149 **per month**. This is a 10-50x cost advantage for the customer.
 
@@ -96,7 +96,7 @@ Required for live:          Nice to have:
 |----------|---------|--------|
 | Vercel Pro | $20.00 | $240.00 |
 | Domain renewal | $1.00 | $12.00 |
-| Paddle fees (est. 5%+$0.50) | Variable | Variable |
+| Retired provider fees (est. 5%+$0.50) | Variable | Variable |
 | Shopier fees (est. 2.9%) | Variable | Variable |
 | **Fixed costs** | **$21.00/mo** | **$252.00/yr** |
 
@@ -104,7 +104,7 @@ Required for live:          Nice to have:
 
 ```
 Fixed costs:       $21/mo
-Variable costs:    ~6% (Paddle 5%+$0.50 on avg $58 order ≈ 5.9%)
+Variable costs:    ~6% (Retired provider 5%+$0.50 on avg $58 order ≈ 5.9%)
 Break-even:        1 sale/month ($29 Starter)
 ```
 
@@ -135,11 +135,11 @@ Break-even:        1 sale/month ($29 Starter)
 
 | Requirement | Status | Notes |
 |------------|--------|-------|
-| Payment processing | 🟢 Solved | Paddle MoR handles global tax/VAT compliance |
-| Cross-border sales | 🟢 Solved | Paddle is MoR — they handle local compliance |
+| Payment processing | 🟢 Solved | Retired provider MoR handles global tax/VAT compliance |
+| Cross-border sales | 🟢 Solved | Retired provider is MoR — they handle local compliance |
 | Turkey operations | 🟢 Legal | Shopier is Turkey-licensed payment provider |
-| EU VAT | 🟢 Managed | Paddle automatically calculates and remits |
-| US sales tax | 🟢 Managed | Paddle handles state-level sales tax |
+| EU VAT | 🟢 Managed | Retired provider automatically calculates and remits |
+| US sales tax | 🟢 Managed | Retired provider handles state-level sales tax |
 | Data privacy (GDPR) | 🟢 Basic | Privacy policy exists; no user data stored |
 | Entity registration | 🔲 Phase 2 | UK LTD or US LLC for Stripe access |
 | Stripe activation | 🔲 Phase 3 | Requires supported-country entity + bank |
@@ -148,7 +148,7 @@ Break-even:        1 sale/month ($29 Starter)
 
 | Risk | Mitigation |
 |------|-----------|
-| Paddle requires business verification | Use "Kagan Dolek Management Consultancy" as registered business |
+| Retired provider requires business verification | Use "Kagan Dolek Management Consultancy" as registered business |
 | Shopier account limits | Keep within transaction thresholds; provide records if requested |
 | Future Stripe compliance | Entity in supported jurisdiction solves all Stripe blockers |
 
@@ -164,7 +164,7 @@ Break-even:        1 sale/month ($29 Starter)
 | Traffic generation | 30 min/day | Yes (scheduling tools) | Not started |
 | Customer support | 15 min/day | Yes (AI chatbot) | support@aikagan.com set up |
 | Order fulfillment | Automated | Yes (HMAC token system) | ✅ Working |
-| Payment reconciliation | 5 min/day | Yes (Paddle dashboard) | Not started |
+| Payment reconciliation | 5 min/day | Yes (Retired provider dashboard) | Not started |
 | Code maintenance | 2-4 hrs/week | No | ✅ Build passing |
 
 **Founder time budget:** ~2 hours/day for Phase 1. Sustainable for solo operation.
@@ -177,7 +177,7 @@ Break-even:        1 sale/month ($29 Starter)
 | AI content drafts | Week 2 | AI provider chain | 20 min/day |
 | Make.com alerts | Week 2 | Make.com | 5 min/day |
 | Email sequences | Week 3 | Formspree → Resend | 10 min/day |
-| Affiliate tracking | Month 2 | Paddle affiliates | 10 min/week |
+| Affiliate tracking | Month 2 | Retired provider affiliates | 10 min/week |
 
 ---
 
@@ -188,9 +188,9 @@ Break-even:        1 sale/month ($29 Starter)
 | Technical | 9.5/10 | Complete, tested, deployed |
 | Market | 8.5/10 | Proven demand, competitive pricing advantage |
 | Financial | 9.8/10 | Near-zero costs, breakeven at 1 sale |
-| Legal | 7.0/10 | Paddle solves most; entity needed for Stripe |
+| Legal | 7.0/10 | Retired provider solves most; entity needed for Stripe |
 | Operational | 7.5/10 | Solo-capable with automation |
 
 **Overall: 8.5/10 — HIGHLY FEASIBLE**
 
-**The project is ready to generate revenue immediately.** The single operational gap (Paddle credentials) is a 30-minute task. No technical, market, or financial barriers prevent launch.
+**The project is ready to generate revenue immediately.** The single operational gap (Retired provider credentials) is a 30-minute task. No technical, market, or financial barriers prevent launch.

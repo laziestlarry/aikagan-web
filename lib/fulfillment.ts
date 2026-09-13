@@ -18,7 +18,7 @@ import { kvSet, kvGet, kvDel, kvExpire, kvScan } from "./kv";
 export interface PurchaseFulfillment {
   type: "purchase_confirmation";
   orderId: string;
-  provider: "paddle" | "lemonsqueezy" | "gumroad" | "shopier" | "manual";
+  provider: "lemonsqueezy" | "gumroad" | "shopier" | "manual";
   email: string;
   name: string;
   productName: string;
@@ -51,7 +51,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aikagan.com";
 
 /**
  * Send a purchase confirmation email and broadcast social proof.
- * Called from webhook handlers (Paddle, LemonSqueezy, manual) after
+ * Called from verified provider webhooks after
  * the transaction is recorded in the income ledger.
  */
 export async function fulfillPurchase(

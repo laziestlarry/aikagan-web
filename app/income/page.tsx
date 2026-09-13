@@ -37,7 +37,7 @@ interface DailyPoint {
 
 interface IncomeReality {
   generatedAt: string;
-  sources: { kv: boolean; paddle: boolean; capi: boolean; ga4: boolean };
+  sources: { kv: boolean; gumroad: boolean; capi: boolean; ga4: boolean };
   windowDays: number;
   traffic: {
     pageviews: number;
@@ -142,10 +142,10 @@ function SourcesBadges({ sources, evidence }: { sources: IncomeReality["sources"
       detail: sources.kv ? "durable evidence ledger online" : "in-memory only — set KV_REST_API_URL/KV_REST_API_TOKEN",
     },
     {
-      key: "paddle",
-      ok: sources.paddle,
-      label: "Paddle API",
-      detail: sources.paddle ? "configured — webhook + transaction API live" : "PADDLE_API_KEY missing — set in Vercel",
+      key: "gumroad",
+      ok: sources.gumroad,
+      label: "Gumroad API",
+      detail: sources.gumroad ? "configured — verified sale API live" : "GUMROAD_ACCESS_TOKEN missing — set in Vercel",
     },
     {
       key: "capi",
@@ -360,7 +360,7 @@ export default function IncomeRealityPage() {
         </h1>
         <p className="text-lg text-kagan-light max-w-2xl mx-auto">
           Every number on this page is sourced from Vercel KV (durable evidence ledger),
-          the Paddle API (when configured), Meta CAPI, and the live webhook audit log.
+          the Gumroad API (when configured), Meta CAPI, and the live webhook audit log.
           No synthetic data.
         </p>
         <div className="mt-4 text-xs text-kagan-muted">
@@ -559,8 +559,8 @@ export default function IncomeRealityPage() {
             </div>
             <div className="flex items-center gap-2">
               <Server className="h-3.5 w-3.5 text-kagan-gold" />
-              <span className="text-kagan-muted">Paddle:</span>
-              <span className="text-kagan-white font-mono">{data.sources.paddle ? "live" : "off"}</span>
+              <span className="text-kagan-muted">Gumroad:</span>
+              <span className="text-kagan-white font-mono">{data.sources.gumroad ? "live" : "off"}</span>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="h-3.5 w-3.5 text-kagan-gold" />

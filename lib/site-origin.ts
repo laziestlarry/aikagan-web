@@ -1,5 +1,4 @@
 const DEFAULT_SITE_ORIGIN = "https://aikagan.com";
-export const PADDLE_CHECKOUT_ORIGIN = "https://app.aikagan.com";
 
 export const FIRST_PARTY_HOSTS = new Set([
   "aikagan.com",
@@ -26,13 +25,6 @@ export function safeOrigin(value?: string | null, fallback = DEFAULT_SITE_ORIGIN
 
 export function canonicalSiteOrigin(requestOrigin?: string | null): string {
   return safeOrigin(process.env.NEXT_PUBLIC_SITE_URL, safeOrigin(requestOrigin, DEFAULT_SITE_ORIGIN));
-}
-
-export function paddleCheckoutOrigin(): string {
-  // Keep the browser payment surface on the already verified application
-  // domain. A legacy NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL value must not
-  // redirect buyers to an unverified or stale auxiliary hostname.
-  return PADDLE_CHECKOUT_ORIGIN;
 }
 
 export function isFirstPartyCommerceHost(hostname: string): boolean {

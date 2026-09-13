@@ -1,19 +1,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // CHECKOUT ALTERNATIVES — Payment rail model
 //
-// When Paddle/LemonSqueezy onboarding is pending, these alternatives keep the
+// When a regional provider is unavailable, these alternatives keep the
 // funnel alive. Each alternative:
 //   • Has a purchase URL / instruction for the buyer
 //   • Wires back into the same delivery flow (fulfillment + CAPI + income ledger)
 //
 // Rail priority for full-active status:
-//   1. Paddle (Merchant of Record — best global + Turkey)
-//   2. LemonSqueezy (MoR fallback)
-//   3. Gumroad (MoR — PayPal + cards + Apple Pay + Google Pay)
-//   4. Squarespace Commerce (parallel storefront link)
-//   5. Shopier (Turkish gateway — iyzico-backed, lira)
-//   6. Binance Pay (crypto)
-//   7. Manual checkout (works every time)
+//   1. Gumroad (commissioned hosted checkout)
+//   2. Shopier (regional fallback)
+//   3. LemonSqueezy (only after explicit merchant approval)
+//   4. Manual checkout (scope-led service fallback)
 //
 // Each rail can be "online" (API-based, creates a checkout URL) or "redirect"
 // (links to an external store / payment page).
@@ -47,18 +44,6 @@ export interface PaymentRail {
 }
 
 export const paymentRails: PaymentRail[] = [
-  {
-    id: "paddle",
-    name: "Paddle",
-    description: "Merchant of Record — global coverage, tax/VAT compliance, Payoneer payout",
-    status: "active",
-    isMoR: true,
-    methods: ["Visa", "Mastercard", "Amex", "PayPal", "Apple Pay", "Google Pay"],
-    payoutTo: "Payoneer",
-    checkoutLink: null, // API-based, handled by /api/paddle-checkout
-    setupLink: "https://vendor.paddle.com",
-    notes: "Approved for app.aikagan.com and propulse-autonomax.web.app; aikagan.com is pending. Use NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL to route checkout through an approved domain.",
-  },
   {
     id: "lemonsqueezy",
     name: "LemonSqueezy",
@@ -129,7 +114,7 @@ export const paymentRails: PaymentRail[] = [
     payoutTo: "Payoneer wallet (already held)",
     checkoutLink: null,
     setupLink: "https://www.payoneer.com/checkout/",
-    notes: "Account exists (Paddle payout destination). Payoneer Checkout product requires separate application.",
+    notes: "Payoneer Checkout requires a separate merchant application.",
   },
   {
     id: "manual",

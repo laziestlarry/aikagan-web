@@ -8,7 +8,7 @@
 
 ## TL;DR
 
-The site is **live and serving** at `aikagan.com`. The **front-end funnel plumbing is wired** (lead capture, pixel/CAPI hooks, Paddle & LemonSqueezy webhooks, Paddle JS checkout, affiliate click/signup, cron-ready endpoints, full dashboard pages). However, the **evidence-of-income dashboards are mostly fed by a single non-AutonomaX Fly.io backend returning deterministic synthetic data** — not from real Paddle receipts, real GA4 traffic, or real Meta events. Paddle/LemonSqueezy CAPI **is broken in production** (no `META_PIXEL_ID` / `META_CAPI_ACCESS_TOKEN` set, per `/api/health`). Net result: the dashboards *look* real, but only one figure is materially backed by truth — the published 3 free PDFs and 3 paid checkout flows.
+The site is **live and serving** at `aikagan.com`. The **front-end funnel plumbing is wired** (lead capture, pixel/CAPI hooks, Retired provider & LemonSqueezy webhooks, Retired provider JS checkout, affiliate click/signup, cron-ready endpoints, full dashboard pages). However, the **evidence-of-income dashboards are mostly fed by a single non-AutonomaX Fly.io backend returning deterministic synthetic data** — not from real Retired provider receipts, real GA4 traffic, or real Meta events. Retired provider/LemonSqueezy CAPI **is broken in production** (no `META_PIXEL_ID` / `META_CAPI_ACCESS_TOKEN` set, per `/api/health`). Net result: the dashboards *look* real, but only one figure is materially backed by truth — the published 3 free PDFs and 3 paid checkout flows.
 
 > **Honest read of the funnel:** the funnel is **provisioned**, not yet **populated**. We have the pipes; we have not yet measured water flowing through them.
 
@@ -66,7 +66,7 @@ The funnel design (per `app/mission-control/page.tsx` JOURNEY array):
 | **Discover (visit)** | `app/page.tsx` (home), `app/marketing/` | GTM-NZW2CP6H injected, Vercel Analytics, `AttributionInit` (UTM capture) | None directly | ✅ (page returns 200, UTM script present in HTML) |
 | **Try free** | `app/free/[slug]/` → `POST /api/lead` | Pixel `Lead` fired in `app/free/*` form; CAPI Lead from `/api/lead` | `fireCapiEvent("Lead")` **skipped in prod** (CAPI not configured) | ✅ end-to-end (lead → PDF returns valid path) |
 | **Buy intent** | `components/CheckoutButton.tsx` | Pixel `InitiateCheckout` + GTM `begin_checkout` + `trackCheckoutIntent` | n/a (client-side) | ⚠ Component exists, fires pixel events, but CAPI not configured to receive |
-| **Buy completion** | Paddle overlay or LemonSqueezy overlay | n/a (provider-controlled) | `transaction.completed` → `/api/webhooks/paddle` (HMAC verify, token issue, `fireCapiEvent("Purchase")`); `order_created` → `/api/webhooks/lemonsqueezy` | ⚠ Webhook handlers are written & HMAC-verified; **CAPI Purchase is currently a no-op** (token missing). Receipts not seen on this audit. |
+| **Buy completion** | Retired provider overlay or LemonSqueezy overlay | n/a (provider-controlled) | `transaction.completed` → `/api/webhooks/retired_provider` (HMAC verify, token issue, `fireCapiEvent("Purchase")`); `order_created` → `/api/webhooks/lemonsqueezy` | ⚠ Webhook handlers are written & HMAC-verified; **CAPI Purchase is currently a no-op** (token missing). Receipts not seen on this audit. |
 | **Execute** | `START_HERE` inside ZIP (digital) | None | None | n/a |
 | **Support** | `app/contact/` → `/api/lead` + Formspree + mailto fallback | Pixel `Lead` from `/contact` (CAPI skipped) | None | ✅ form path works (per CLOSURE.md) |
 | **Affiliate click** | `?ref=CODE` → `POST /api/affiliate/click` | Records to in-memory + Vercel KV | None | ✅ (we just verified) |
@@ -88,8 +88,8 @@ The funnel design (per `app/mission-control/page.tsx` JOURNEY array):
   - `AutonomaX_Masterclass_Starter_Pack_v2.zip` (10 KB)
   - `AutonomaX_Masterclass_Pro_Pack_v2.zip` (7.8 KB)
   - `AutonomaX_Masterclass_Commander_Pack_v2.zip` (8.9 KB)
-  - Priced $29 / $79 / $149 per `lib/products.ts`; Paddle.js is loaded and configured.
-- **Paddle webhook handler is HMAC-verified** (`app/api/webhooks/paddle/route.ts`, uses `@paddle/paddle-node-sdk` `WebhooksValidator`); same for LemonSqueezy (HMAC-SHA256). Idempotency dedup is implemented (in-memory + KV with 7-day TTL). Download tokens are HMAC-signed with 48h TTL.
+  - Priced $29 / $79 / $149 per `lib/products.ts`; Retired provider.js is loaded and configured.
+- **Retired provider webhook handler is HMAC-verified** (`app/api/webhooks/retired_provider/route.ts`, uses `@retired_provider/retired_provider-node-sdk` `WebhooksValidator`); same for LemonSqueezy (HMAC-SHA256). Idempotency dedup is implemented (in-memory + KV with 7-day TTL). Download tokens are HMAC-signed with 48h TTL.
 - **Affiliate system is wired** (8-char codes, KV + in-memory, rate-limited signup/click/payout). 0 affiliates exist on the live system (`/api/affiliate/stats/anything` → 404).
 - **Live affiliate list endpoint** (`/api/services/affiliates`) returns 3 hardcoded demo affiliates — i.e. **the displayed affiliate data is mock**.
 
@@ -106,13 +106,13 @@ The funnel design (per `app/mission-control/page.tsx` JOURNEY array):
 - 8 profit streams: Affiliate Micro-Sites, Digital Masterclass Sales, Shopify Storefront, AI Engine Services, Content Monetization, Fiverr Gig Automation, POD Merch, Affiliate Partner Network — totalling ~$14.2k–$16.8k gross MRR
 - 3 demo affiliates (John D., Sarah M., Alex R.) with hardcoded earnings
 
-> The same 6-page dashboard suite reports different stream/receipt counts depending on which proxy endpoint you call, all within seconds. None of these figures can be cross-checked against Paddle's payout ledger, Meta's Events Manager, or GA4 — because **CAPI is unconfigured in production** and there is no GA4 measurement ID set in `.env.local`.
+> The same 6-page dashboard suite reports different stream/receipt counts depending on which proxy endpoint you call, all within seconds. None of these figures can be cross-checked against Retired provider's payout ledger, Meta's Events Manager, or GA4 — because **CAPI is unconfigured in production** and there is no GA4 measurement ID set in `.env.local`.
 
 ### What would make these claims evidence-backed
-1. Paddle dashboard → real payouts (must reconcile to "income" in dashboard).
+1. Retired provider dashboard → real payouts (must reconcile to "income" in dashboard).
 2. Meta Events Manager → Live events for `Lead`, `InitiateCheckout`, `Purchase` (currently 0 events will arrive because `META_CAPI_ACCESS_TOKEN` is unset).
 3. GA4 DebugView → real `page_view`, `scroll`, `begin_checkout`, `purchase` (requires `NEXT_PUBLIC_GA_ID` to be set; `.env.local` lists the var but value redacted in our copy).
-4. Vercel KV contents → `affiliate:*` and `paddle:txn:*` keys (currently the KV env vars are set but no real keys have been written by an end-to-end purchase).
+4. Vercel KV contents → `affiliate:*` and `retired_provider:txn:*` keys (currently the KV env vars are set but no real keys have been written by an end-to-end purchase).
 
 ---
 
@@ -141,7 +141,7 @@ For full honesty, the following funnel signals ARE reliably captured today:
 2. **Lead form submissions** — `POST /api/lead` returns `{"ok":true}` and writes to stdout + revenue-ops backend. **We just verified a live submission returned a valid asset path.**
 3. **UTM capture** — `AttributionInit` reads `utm_source/medium/campaign/term/content` and persists in sessionStorage. Exposed as `window.__attrs__` for downstream components.
 4. **Affiliate click recording** — `POST /api/affiliate/click` works. Each click is written to in-memory + KV.
-5. **Paddle/LemonSqueezy webhook receipt** — both handlers accept events, verify signatures, deduplicate, and would log CAPI Purchase events **if CAPI were configured**. Right now they log a JSON line per event but cannot reach Meta.
+5. **Retired provider/LemonSqueezy webhook receipt** — both handlers accept events, verify signatures, deduplicate, and would log CAPI Purchase events **if CAPI were configured**. Right now they log a JSON line per event but cannot reach Meta.
 
 Until items 1–3 from §4 are fixed, **none of the dashboard revenue numbers are evidence-backed by real provider data**.
 
@@ -151,7 +151,7 @@ Until items 1–3 from §4 are fixed, **none of the dashboard revenue numbers ar
 
 1. **Set `META_PIXEL_ID` + `META_CAPI_ACCESS_TOKEN` in Vercel prod.** Without this, no `Purchase` will land in Meta Events Manager. Re-deploy and watch Events Manager Test Events for one real checkout.
 2. **Set `NEXT_PUBLIC_GA_ID`** and verify GA4 DebugView shows `page_view` from a real visit.
-3. **Reconcile Paddle dashboard payouts → dashboard's "Income" card.** Until those match to the dollar, the income dashboard is illustrative.
+3. **Reconcile Retired provider dashboard payouts → dashboard's "Income" card.** Until those match to the dollar, the income dashboard is illustrative.
 4. **Add `vercel.json` crons** for `/api/cron/affiliate-payouts` and `/api/cron/weekly-intelligence`. They are written but dormant.
 5. **Fix `/api/health` 404 on the FastAPI/AutonomaX backend.** Add the route or update `NEXT_PUBLIC_AUTONOMAX_API_URL`.
 

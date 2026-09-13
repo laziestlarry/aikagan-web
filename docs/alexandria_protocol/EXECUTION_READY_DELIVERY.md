@@ -7,7 +7,7 @@ This document outlines the deployment, execution, and validation procedures to t
 - **Access Control**: RLS (Row-Level Security) and column masking policies must be enabled before connecting live CRM/ERP feeds.
 
 ## 2. Deployment Rituals
-- **Checks and Gates**: Operations status checkers (Paddle/LS/Shopier webhook connectivity, KV stores, and email queues) must pass with zero blockers.
+- **Checks and Gates**: Operations status checkers (Retired provider/LS/Shopier webhook connectivity, KV stores, and email queues) must pass with zero blockers.
 - **Weekly Scorecard**: Review pipeline velocity, on-time delivery rates, and automation coverage every Friday.
 
 ## 3. Incident & Recovery Runbooks

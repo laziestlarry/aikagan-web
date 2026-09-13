@@ -1,7 +1,7 @@
 # ONE-FILE APPLICATION BLUEPRINT
 ## aikagan-web — Complete System Map
 
-> **Single-file reference** covering every route, component, library, data flow, and deployment artifact. Updated for Paddle (Merchant of Record) as primary payment provider.
+> **Single-file reference** covering every route, component, library, data flow, and deployment artifact. Updated for Retired provider (Merchant of Record) as primary payment provider.
 
 ---
 
@@ -19,14 +19,14 @@
 │         ▼                ▼                                           │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │              SHARED LIBRARIES (lib/)                          │   │
-│  │  paddle-client.ts  │  products.ts  │  download-token.ts      │   │
+│  │  retired_provider-client.ts  │  products.ts  │  download-token.ts      │   │
 │  │  token-store.ts    │  capi.ts      │  api-client.ts          │   │
 │  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
          │                              │
          ▼                              ▼
 ┌──────────────────┐        ┌──────────────────────────┐
-│   PADDLE BILLING │        │   SHOPIER (Turkey)        │
+│   RETIRED_PROVIDER BILLING │        │   SHOPIER (Turkey)        │
 │   (MoR Primary)  │        │   (autonomax.shopier.com) │
 │   5% + $0.50     │        │   2.9% fee, 19 products   │
 │   Payoneer payout│        │   TRY pricing             │
@@ -77,15 +77,15 @@ app/layout.tsx                          ← Root layout (metadata, fonts, GA, Me
 
 ## 3. API ROUTE DETAILS
 
-### POST /api/paddle-checkout
+### POST /api/retired_provider-checkout
 ```
 Request:  { slug: "masterclass-starter" }
-Action:   Creates Paddle transaction with inline price + custom_data: { product_slug }
-Returns:  { url: "https://checkout.paddle.com/transaction/txn_...", transactionId: "txn_..." }
+Action:   Creates Retired provider transaction with inline price + custom_data: { product_slug }
+Returns:  { url: "https://checkout.retired_provider.com/transaction/txn_...", transactionId: "txn_..." }
 Errors:   400 (invalid slug), 404 (unknown product), 500 (API key missing / auth failure)
 ```
 
-### POST /api/webhooks/paddle
+### POST /api/webhooks/retired_provider
 ```
 Headers:  p-pl: <signature>
 Body:     Raw JSON event payload
@@ -97,7 +97,7 @@ Returns:  { ok: true } / 401 (bad signature)
 ### GET /api/session-token
 ```
 Query:    ?transaction_id=txn_...
-Action:   Checks in-memory Map first, then falls back to Paddle API get(transactionId)
+Action:   Checks in-memory Map first, then falls back to Retired provider API get(transactionId)
 Returns:  200 { token, slug, email } | 202 { status: "processing" } | 400/404 errors
 ```
 
@@ -123,7 +123,7 @@ interface Product {
   price: number;          // USD (0 for free)
   originalPrice?: number; // Strike-through price
   priceModel: "free" | "one_time" | "monthly";
-  checkoutUrl: string | null;  // "paddle" for paid | null for free
+  checkoutUrl: string | null;  // "retired_provider" for paid | null for free
   zipFilename: string | null;  // Filename in private/downloads/
   nextSlug: string | null;     // Upsell path
   leadMagnetPath?: string;     // Free asset path
@@ -159,12 +159,12 @@ verifyDownloadToken(token):
 | File | Lines | Complexity | Why It Matters |
 |------|-------|-----------|----------------|
 | `lib/products.ts` | 217 | Medium | The product catalog — ALL pricing, descriptions, tier logic lives here |
-| `lib/paddle-client.ts` | 17 | Low | Singleton Paddle SDK — returns null gracefully when unconfigured |
+| `lib/retired_provider-client.ts` | 17 | Low | Singleton Retired provider SDK — returns null gracefully when unconfigured |
 | `lib/download-token.ts` | 30 | Low | HMAC token logic — payment-provider-agnostic, no changes needed |
 | `lib/token-store.ts` | 21 | Low | In-memory Map — swap to Vercel KV for multi-instance |
-| `app/api/paddle-checkout/route.ts` | 89 | High | Core revenue route — creates Paddle transaction, handles all errors |
-| `app/api/webhooks/paddle/route.ts` | 108 | High | Fulfillment trigger — validates signature, issues tokens |
-| `app/api/session-token/route.ts` | 94 | Medium | Success page polling — Paddle API fallback |
+| `app/api/retired_provider-checkout/route.ts` | 89 | High | Core revenue route — creates Retired provider transaction, handles all errors |
+| `app/api/webhooks/retired_provider/route.ts` | 108 | High | Fulfillment trigger — validates signature, issues tokens |
+| `app/api/session-token/route.ts` | 94 | Medium | Success page polling — Retired provider API fallback |
 | `app/api/download/[token]/route.ts` | ~80 | Medium | File delivery — verifies token, streams ZIP |
 | `app/checkout-success/page.tsx` | 373 | High | User-facing post-purchase experience |
 | `src/components/ui/CheckoutLink.tsx` | 133 | High | Primary checkout trigger component |
@@ -178,9 +178,9 @@ verifyDownloadToken(token):
 # First deployment:
 npm run build                          # Verify compilation (0 errors)
 vercel --prod                          # Deploy to aikagan.com
-vercel env add PADDLE_API_KEY          # Set server-side env var
-vercel env add NEXT_PUBLIC_PADDLE_CLIENT_TOKEN  # Set client-side
-vercel env add PADDLE_WEBHOOK_SECRET   # Set webhook secret
+vercel env add RETIRED_PROVIDER_API_KEY          # Set server-side env var
+vercel env add NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN  # Set client-side
+vercel env add RETIRED_PROVIDER_WEBHOOK_SECRET   # Set webhook secret
 vercel env rm STRIPE_SECRET_KEY        # Clean up legacy
 vercel env rm NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  # Clean up legacy
 vercel --prod                          # Re-deploy with new env vars
@@ -198,18 +198,18 @@ rg "❌" app/                           # Find application errors
 # Type checking:
 npm run build                          # Full compile + type check
 
-# Manual E2E (once Paddle keys configured):
+# Manual E2E (once Retired provider keys configured):
 # 1. Visit https://aikagan.com
 # 2. Click "Buy Now" on Starter ($29)
-# 3. Verify redirect to checkout.paddle.com
-# 4. Pay with test card (Paddle Sandbox)
+# 3. Verify redirect to checkout.retired_provider.com
+# 4. Pay with test card (Retired provider Sandbox)
 # 5. Verify redirect back to /checkout-success?transaction_id=...
 # 6. Wait for token (polls every 2s)
 # 7. Click download → ZIP streams
 
 # Edge cases:
 # - Invalid product slug → 400
-# - Missing PADDLE_API_KEY → 500
+# - Missing RETIRED_PROVIDER_API_KEY → 500
 # - Expired token → 401 download
 # - Concurrent purchases → each gets unique token
 ```

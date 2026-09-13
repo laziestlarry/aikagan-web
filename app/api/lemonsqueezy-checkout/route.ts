@@ -2,7 +2,7 @@
 // POST /api/lemonsqueezy-checkout
 //
 // Creates a LemonSqueezy checkout URL for a product. LemonSqueezy is the
-// fallback provider when Paddle is unavailable.
+// fallback provider when Gumroad is unavailable.
 //
 // Required env (set when ready to enable):
 //   LEMONSQUEEZY_API_KEY         — ls_… API token from Settings > API

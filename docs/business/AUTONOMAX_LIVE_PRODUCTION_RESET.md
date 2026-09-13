@@ -11,7 +11,7 @@ AutonomaX commerce should be operated as a multi-property system, not as one ove
 | `propulse-autonomax.web.app` | Primary launch funnel | Convert cold/warm traffic into free gifts, Blueprint purchases, and pack sales. |
 | `autonomax-revenue-lenljbhrqq-uc.a.run.app` | Revenue operations backend | Serve dashboard data, health checks, evidence exports, operating model, workflow packages, and alerts. |
 | `aikagan.com` | Authority and community hub | Brand trust, public articles, product library, proof, legal pages, and channel routing. |
-| `app.aikagan.com` | Customer onboarding and dashboard | Paddle-approved checkout surface, personalized dashboard, buyer intake, delivery, and post-purchase support. |
+| `app.aikagan.com` | Customer onboarding and dashboard | Retired provider-approved checkout surface, personalized dashboard, buyer intake, delivery, and post-purchase support. |
 
 ## Offer Priority
 
@@ -41,7 +41,7 @@ AutonomaX commerce should be operated as a multi-property system, not as one ove
 
 | Provider | Status | Use |
 | --- | --- | --- |
-| Paddle | Primary | Approved for `app.aikagan.com` and `propulse-autonomax.web.app`; `aikagan.com` pending. Use `NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL` to route buyers through an approved domain. |
+| Retired provider | Primary | Approved for `app.aikagan.com` and `propulse-autonomax.web.app`; `aikagan.com` pending. Use `NEXT_PUBLIC_RETIRED_PROVIDER_CHECKOUT_BASE_URL` to route buyers through an approved domain. |
 | Shopier | Active fallback | Keep for Turkey/local buyers and direct product links. Configure PAT or per-product URLs. |
 | Gumroad | Active fallback | Keep mapped product permalinks for marketplace reach and domain fallback. |
 | Lemon Squeezy | Legacy only | `aikagan.com` rejected; keep existing working links only where unavoidable, but do not make Lemon the primary rail. |
@@ -53,10 +53,10 @@ Required web-app variables:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=
-NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL=
-PADDLE_API_KEY=
-NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=
-PADDLE_WEBHOOK_SECRET=
+NEXT_PUBLIC_RETIRED_PROVIDER_CHECKOUT_BASE_URL=
+RETIRED_PROVIDER_API_KEY=
+NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN=
+RETIRED_PROVIDER_WEBHOOK_SECRET=
 NEXT_PUBLIC_AUTONOMAX_API_URL=
 AUTONOMAX_API_KEY=
 KV_REST_API_URL=
@@ -64,17 +64,17 @@ KV_REST_API_TOKEN=
 DOWNLOAD_TOKEN_SECRET=
 ```
 
-Recommended value while `aikagan.com` is pending in Paddle:
+Recommended value while `aikagan.com` is pending in Retired provider:
 
 ```bash
-NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL=https://app.aikagan.com
+NEXT_PUBLIC_RETIRED_PROVIDER_CHECKOUT_BASE_URL=https://app.aikagan.com
 ```
 
 For the Propulse funnel deployment:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://propulse-autonomax.web.app
-NEXT_PUBLIC_PADDLE_CHECKOUT_BASE_URL=https://propulse-autonomax.web.app
+NEXT_PUBLIC_RETIRED_PROVIDER_CHECKOUT_BASE_URL=https://propulse-autonomax.web.app
 NEXT_PUBLIC_AUTONOMAX_API_URL=https://autonomax-revenue-lenljbhrqq-uc.a.run.app
 ```
 
@@ -119,7 +119,7 @@ Explicit approval is required before:
 
 | Day Range | Target | Execution |
 | --- | --- | --- |
-| Days 1-3 | Cash path clarity | Deploy Paddle-first Blueprint and pack pages; verify checkout and webhook health; point CTAs to approved Paddle domain. |
+| Days 1-3 | Cash path clarity | Deploy Retired provider-first Blueprint and pack pages; verify checkout and webhook health; point CTAs to approved Retired provider domain. |
 | Days 4-7 | Lead capture and proof | Promote free gifts, collect emails, route buyers to Blueprint; publish public proof and delivery expectations. |
 | Days 8-14 | Fulfillment loop | Process first Blueprint orders; store evidence; refine intake questions; add support macros. |
 | Days 15-21 | Channel expansion | Add Gumroad/Shopier links where useful; start affiliate outreach; package social posts from existing Make.com scenarios. |
@@ -127,7 +127,7 @@ Explicit approval is required before:
 
 ## Immediate Backlog
 
-1. Create Paddle catalog price for `ai-venture-launch-blueprint` and add its price ID to both checkout routes.
+1. Create Retired provider catalog price for `ai-venture-launch-blueprint` and add its price ID to both checkout routes.
 2. Add post-purchase intake form for Blueprint buyers.
 3. Add dashboard card for checkout provider health and pending consent checkpoints.
 4. Deploy the same storefront code to `propulse-autonomax.web.app` or replace that thin Firebase page with this funnel.
