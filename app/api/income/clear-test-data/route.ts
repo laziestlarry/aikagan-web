@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   let deleted = 0;
   // Try each provider prefix; tx is stored as tx:<provider>:<orderId>
   for (const id of orderIds) {
-    for (const provider of ["paddle", "lemonsqueezy", "gumroad", "manual"] as const) {
+    for (const provider of ["gumroad", "shopier", "lemonsqueezy", "manual"] as const) {
       try {
         await deleteTransaction(provider, id);
         deleted++;

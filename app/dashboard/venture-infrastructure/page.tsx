@@ -92,7 +92,7 @@ function BizOpTab() {
   const [tasks, setTasks] = useState([
     { id: 1, text: 'Analyze market segments & target personas in Alexandria', done: true, points: 15 },
     { id: 2, text: 'Select primary and fallback payment gateway architectures', done: true, points: 20 },
-    { id: 3, text: 'Configure and test live webhook endpoints (Paddle/LS)', done: true, points: 25 },
+    { id: 3, text: 'Configure and test live webhook endpoints (Gumroad/LS)', done: true, points: 25 },
     { id: 4, text: 'Register automated omnichannel outreach content wave', done: true, points: 15 },
     { id: 5, text: 'Setup and launch Meta CAPI server-side telemetry events', done: true, points: 25 },
     { id: 6, text: 'Verify post-purchase delivery flow (make.com blueprints)', done: true, points: 20 },
@@ -242,7 +242,7 @@ Aggregated pain point analysis: Overloaded operators and solo builders seeking i
 
 ## 2. Positioning & Competitor scope
 - Price Tier Placement: Tripwire ($29) -> Core Masterclass ($149) -> Enterprise Platform ($249+/mo).
-- Core Advantage: Native Payoneer / Paddle integration with server-side CAPI deduping.
+- Core Advantage: Native Payoneer / Gumroad integration with server-side CAPI deduping.
 
 ## 3. Recommended Automated Workflows
 - Lead Magnet delivery automation via Make.com.
@@ -765,7 +765,7 @@ function JimShortestPathTab() {
                   </Link>
                 )}
                 <p className="text-[10px] font-mono text-kagan-muted text-center">
-                  checkout: {step.checkoutUrl ? 'paddle rail' : 'free delivery'}
+                  checkout: {step.checkoutUrl ? 'gumroad rail' : 'free delivery'}
                 </p>
               </div>
             </div>
@@ -839,7 +839,7 @@ interface ParallelSprintSummary {
     errorRatePct: number;
     totalOps: number;
     storageType: string;
-    integrations: { paddle: boolean; shopier: boolean; gumroad: boolean; metaCapi: boolean };
+    integrations: { shopier: boolean; gumroad: boolean; metaCapi: boolean };
     logs: string[];
   } | null;
   mdAvailable: boolean;
@@ -1063,7 +1063,6 @@ interface CapacityTestResult {
     kvBatchDeleteLatencyMs: number;
   };
   integrations: {
-    paddle: boolean;
     shopier: boolean;
     gumroad: boolean;
     metaCapi: boolean;
@@ -1246,19 +1245,13 @@ function CapacityTab() {
             <h4 className="text-xs font-bold text-kagan-gold uppercase tracking-wider">Active Integrations Check</h4>
             <div className="space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-kagan-light">Paddle Billing:</span>
-                <span className={testResult?.integrations.paddle ? 'text-green-400 font-bold' : 'text-kagan-muted'}>
-                  {testResult?.integrations.paddle ? 'Connected' : 'Unconfigured'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
                 <span className="text-kagan-light">Shopier Fallback:</span>
                 <span className={testResult?.integrations.shopier ? 'text-green-400 font-bold' : 'text-kagan-muted'}>
                   {testResult?.integrations.shopier ? 'Connected' : 'Unconfigured'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-kagan-light">Gumroad Fallback:</span>
+                <span className="text-kagan-light">Gumroad Checkout:</span>
                 <span className={testResult?.integrations.gumroad ? 'text-green-400 font-bold' : 'text-kagan-muted'}>
                   {testResult?.integrations.gumroad ? 'Connected' : 'Unconfigured'}
                 </span>
@@ -1337,4 +1330,3 @@ function CapacityTab() {
     </div>
   );
 }
-

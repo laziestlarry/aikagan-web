@@ -20,7 +20,7 @@ interface ProductCardProps {
 export default function ProductCard({ name, slug, category, price, originalPrice, description, includes, badge, checkoutUrl, featured = false }: ProductCardProps) {
   const badgeVariant = featured ? 'gold' : badge.includes('Popular') ? 'amber' : 'blue';
   const productHref = `/products/${slug}`;
-  const isPaddle = checkoutUrl === 'paddle';
+  const isGumroad = checkoutUrl === 'gumroad';
   const numericPrice = parseInt(price.replace(/[^0-9]/g, '')) || 0;
 
   return (
@@ -35,8 +35,8 @@ export default function ProductCard({ name, slug, category, price, originalPrice
         <strong>Use it today:</strong> start with the included launch blueprint/checklist, choose one offer, and adapt the supplied scripts and templates instead of starting from a blank page.
       </div>
       <div className="flex flex-col gap-2">
-        {isPaddle ? (
-          <CheckoutLink href="paddle" productSlug={slug} productName={name} price={numericPrice} className={`w-full inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold transition cursor-pointer ${featured ? 'bg-kagan-gold text-black hover:bg-kagan-gold/90' : 'border border-kagan-gold/40 text-kagan-gold hover:bg-kagan-gold/10'}`}>
+        {isGumroad ? (
+          <CheckoutLink href="gumroad" productSlug={slug} productName={name} price={numericPrice} className={`w-full inline-flex justify-center items-center rounded-lg px-4 py-3 text-sm font-semibold transition cursor-pointer ${featured ? 'bg-kagan-gold text-black hover:bg-kagan-gold/90' : 'border border-kagan-gold/40 text-kagan-gold hover:bg-kagan-gold/10'}`}>
             {featured ? `Get Pro — ${price}` : `Get ${name} — ${price}`}
           </CheckoutLink>
         ) : checkoutUrl ? (

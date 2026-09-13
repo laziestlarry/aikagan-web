@@ -2,10 +2,7 @@ import fs from "node:fs";
 
 const files = process.argv.slice(2);
 const keys = [
-  "PADDLE_API_KEY",
-  "NEXT_PUBLIC_PADDLE_CLIENT_TOKEN",
-  "PADDLE_WEBHOOK_SECRET",
-  "PADDLE_CHECKOUT_DISABLED",
+  "GUMROAD_ACCESS_TOKEN",
   "LEMONSQUEEZY_API_KEY",
   "LEMONSQUEEZY_STORE_ID",
   "LEMONSQUEEZY_WEBHOOK_SECRET",

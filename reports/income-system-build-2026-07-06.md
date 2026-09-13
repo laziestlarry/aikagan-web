@@ -8,7 +8,7 @@
 
 ## What was built
 
-The funnel and income generation system on `aikagan.com` was rebuilt to be **zero-gap**: every number on the new income dashboard is sourced from durable evidence (Vercel KV) or a live provider (Paddle API, Meta CAPI, GA4). There is **no synthetic data** in the system. When a number reads zero, it is zero.
+The funnel and income generation system on `aikagan.com` was rebuilt to be **zero-gap**: every number on the new income dashboard is sourced from durable evidence (Vercel KV) or a live provider (Retired provider API, Meta CAPI, GA4). There is **no synthetic data** in the system. When a number reads zero, it is zero.
 
 ### 1. The spine: durable income evidence ledger
 
@@ -29,23 +29,23 @@ Two new files form the spine of the system:
 - Every call records an audit row in the income ledger (`attempted`, `ok`, `status`, `error`, `source`).
 - When CAPI is unconfigured, the call is explicitly **no-op + audit-logged as "dropped"**. The dashboard can show this honestly.
 - When CAPI is configured, the call is awaited and the result is returned to the caller — so the webhook handler knows whether CAPI fired.
-- The Paddle and LemonSqueezy webhook handlers now `await` CAPI and store `capiFired: true|false` on the transaction record.
+- The Retired provider and LemonSqueezy webhook handlers now `await` CAPI and store `capiFired: true|false` on the transaction record.
 
 ### 3. Self-healing checkout that never dead-ends
 
 **`app/api/income/checkout/route.ts`** is a new endpoint that:
 1. Validates the slug and product.
 2. **Records the checkout-intent in the income ledger** (durable, before any provider call).
-3. Tries **Paddle first** (Merchant of Record).
-4. Falls back to **LemonSqueezy** if Paddle is unavailable.
+3. Tries **Retired provider first** (Merchant of Record).
+4. Falls back to **LemonSqueezy** if Retired provider is unavailable.
 5. If both fail, returns a working **manual checkout URL** (`/checkout/manual?slug=...&intent=...`).
 6. Always returns a URL the buyer can click. The funnel never dead-ends.
 
 **`app/checkout/manual/page.tsx`** is the safety-net page: it captures the buyer's email, name, and intent ID, and submits through `/api/lead` so the lead is recorded in the income ledger and a human can reconcile the order offline.
 
-### 4. Paddle + LemonSqueezy webhooks now write to the ledger
+### 4. Retired provider + LemonSqueezy webhooks now write to the ledger
 
-**`app/api/webhooks/paddle/route.ts`** and **`app/api/webhooks/lemonsqueezy/route.ts`** were updated to:
+**`app/api/webhooks/retired_provider/route.ts`** and **`app/api/webhooks/lemonsqueezy/route.ts`** were updated to:
 - `await` CAPI Purchase (was non-blocking / fire-and-forget) and capture `capiFired`.
 - Write the full transaction record to the income ledger.
 - Pre-compute and record affiliate commission in the same record (one source of truth).
@@ -58,7 +58,7 @@ Two new files form the spine of the system:
 | `GET /api/income/funnel` | Funnel + conversion rates | KV |
 | `GET /api/income/transactions` | Recent transactions list | KV |
 | `POST /api/income/track` | Pageview / intent / vital ingestion | KV |
-| `POST /api/income/checkout` | Self-healing checkout | KV + Paddle/LS API |
+| `POST /api/income/checkout` | Self-healing checkout | KV + Retired provider/LS API |
 
 ### 6. New pages
 
@@ -95,7 +95,7 @@ Two new files form the spine of the system:
 ### 11. Health endpoint now honest + comprehensive
 
 **`app/api/health/route.ts`** now reports on:
-- `paddle_config`, `paddle_webhook_config`, `download_token_config` (still required for `ok: true`)
+- `retired_provider_config`, `retired_provider_webhook_config`, `download_token_config` (still required for `ok: true`)
 - `meta_capi_config` (now `degraded` if missing, not error)
 - **`vercel_kv`** (new — checks KV_REST_API_URL/TOKEN)
 - `ga4_config` (new — checks NEXT_PUBLIC_GA_ID)
@@ -104,7 +104,7 @@ Two new files form the spine of the system:
 - **`revenue_ops_backend`** now hits `/api/dashboard` instead of the missing `/api/health` (which previously caused the false-positive 404)
 - **`fastapi_backend`** now hits `/api/intelligence/weekly` (the real endpoint), which returns 200 → **now reports `ok`** instead of false 404
 
-Response also includes `income_sources` (kv / paddle / capi / ga4 booleans) and `audit_endpoints` map.
+Response also includes `income_sources` (kv / retired_provider / capi / ga4 booleans) and `audit_endpoints` map.
 
 ---
 
@@ -163,8 +163,8 @@ The build is complete and works. The remaining configuration is **Vercel env var
 | `NEXT_PUBLIC_GA_ID` | GA4 measurement ID | Google Analytics 4 |
 | `ADMIN_SECRET` | Required for `/admin/income` and `/api/admin/affiliates` | `openssl rand -hex 32` |
 | `CRON_SECRET` | Required for Vercel Cron auth | `openssl rand -hex 32` |
-| `PADDLE_API_KEY` | Paddle live API key | Paddle dashboard |
-| `PADDLE_WEBHOOK_SECRET` | Webhook signing secret | Paddle dashboard |
+| `RETIRED_PROVIDER_API_KEY` | Retired provider live API key | Retired provider dashboard |
+| `RETIRED_PROVIDER_WEBHOOK_SECRET` | Webhook signing secret | Retired provider dashboard |
 | `LEMONSQUEEZY_API_KEY` (optional) | LS fallback | LS dashboard |
 | `LEMONSQUEEZY_STORE_ID` (optional) | LS fallback | LS dashboard |
 | `LEMONSQUEEZY_VARIANT_MASTERCLASS_*` (optional) | Per-product variant ids | LS dashboard |
@@ -178,8 +178,8 @@ Once those are set in Vercel, the next pageview/lead/intent/purchase will popula
 - ✅ Every pageview is recorded to KV (durable across serverless instances).
 - ✅ Every lead form submission is recorded to KV and a CAPI Lead event is attempted (and recorded in the audit log either way).
 - ✅ Every checkout button click records a checkout-intent in KV.
-- ✅ Every Paddle/LemonSqueezy webhook records a full transaction in KV with CAPI status.
-- ✅ If Paddle fails, LemonSqueezy is tried. If both fail, the buyer lands on `/checkout/manual` and the lead is captured.
+- ✅ Every Retired provider/LemonSqueezy webhook records a full transaction in KV with CAPI status.
+- ✅ If Retired provider fails, LemonSqueezy is tried. If both fail, the buyer lands on `/checkout/manual` and the lead is captured.
 - ✅ The income dashboard's headline numbers come exclusively from KV; nothing synthetic.
 - ✅ The CAPI audit log records every attempt — configured and unconfigured — so the dashboard can honestly say "dropped" when CAPI is missing.
 - ✅ Admin debug page exposes the full health snapshot.
@@ -192,4 +192,4 @@ Once those are set in Vercel, the next pageview/lead/intent/purchase will popula
 2. Hit `/admin/income` (with ADMIN_SECRET) — confirm every check is green.
 3. Visit `/income` — confirm it renders and shows the cold-start banner ("Cold start — funnel live, no traffic yet").
 4. Open Meta Events Manager → Test Events — confirm a real `Lead` event arrives when you submit a free gift form.
-5. Make a $1 Paddle test purchase — confirm `/api/income/transactions` shows it, and Meta Events Manager shows a `Purchase` event.
+5. Make a $1 Retired provider test purchase — confirm `/api/income/transactions` shows it, and Meta Events Manager shows a `Purchase` event.

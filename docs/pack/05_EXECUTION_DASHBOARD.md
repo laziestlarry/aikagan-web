@@ -11,7 +11,7 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     PIPELINE STATUS — PHASE 1                       │
 ├─────────────────────────────────────────────────────────────────────┤
-│ 🟡 Paddle Checkout     — Configured; finalize dashboard defaults     │
+│ 🟡 Retired provider Checkout     — Configured; finalize dashboard defaults     │
 │ 🟢 LemonSqueezy        — LIVE (all 3 product pages return HTTP 200) │
 │ 🟢 Gumroad Checkout    — LIVE (all 3 checkout URLs return HTTP 200) │
 │ 🟢 Shopier Store       — LIVE (19 products, autonomax.shopier.com)  │
@@ -40,7 +40,7 @@
 ### Financial Targets by Phase
 
 ```
-Phase 1a (Paddle live):   $  50 - $  800 /week   (organic only)
+Phase 1a (Retired provider live):   $  50 - $  800 /week   (organic only)
 Phase 1b (Week 2-4):      $ 850 - $ 3,600 /week  (organic + Shopier)
 Phase 1c (Month 2):       $ 3,400 - $14,400 /month
 Phase 2 (Entity ready):   $ 8,000 - $35,000 /month
@@ -56,7 +56,7 @@ Phase 3 (Stripe + subs): $30,000 - $250,000 /month
 | **Unique visitors/day** | — | 200+ | ⚪ No traffic source | Post content daily |
 | **Traffic channels active** | 0/4 | 2 | 🔲 | Post on Reddit + LI today |
 | **Page to checkout %** | — | >5% | ⚪ | Improve CTAs |
-| **Checkout completion %** | — | >60% | ⚪ | Test Paddle flow |
+| **Checkout completion %** | — | >60% | ⚪ | Test Retired provider flow |
 | **Email opt-in rate** | — | >5% | 🔲 | Add Formspree |
 
 ### Traffic Channel Pipeline
@@ -86,7 +86,7 @@ Phase 3 (Stripe + subs): $30,000 - $250,000 /month
 
 | Metric | Status | Target | Alert |
 |--------|--------|--------|-------|
-| **Paddle API** | 🟡 Not configured | 100% uptime | Payment gateway down |
+| **Retired provider API** | 🟡 Not configured | 100% uptime | Payment gateway down |
 | **Vercel uptime** | 🟢 Live | 99.99% | Deployment failed |
 | **Download token system** | 🟢 Working | 100% success | Token generation fails |
 | **Shopier store** | 🟢 Live | 100% uptime | Store returns error |
@@ -101,7 +101,7 @@ Phase 3 (Stripe + subs): $30,000 - $250,000 /month
 ```
 BACKLOG                           IN PROGRESS              DONE
 ┌──────────────┐                 ┌──────────────┐         ┌──────────────┐
-│ Shopier API   │                 │ Paddle account│         │ Paddle code  │
+│ Shopier API   │                 │ Retired provider account│         │ Retired provider code  │
 │ bridge        │                 │ creation     │         │ migration    │
 ├──────────────┤                 ├──────────────┤         ├──────────────┤
 │ Email sequence│                 │ Vercel env   │         │ Build passes │
@@ -120,7 +120,7 @@ BACKLOG                           IN PROGRESS              DONE
 
 ```
 LEAD CAPTURE        →   CHECKOUT INITIATED   →   PAYMENT RECEIVED   →   DELIVERED
-🔲 Formspree        →   🟢 Paddle checkout   →   🟡 Paddle webhook  →   🟢 Token → ZIP
+🔲 Formspree        →   🟢 Retired provider checkout   →   🟡 Retired provider webhook  →   🟢 Token → ZIP
 🔲 Lead magnet flow      (code ready,               (needs keys)          (HMAC, no DB)
     needs Form ID)         needs keys)
 ```
@@ -132,12 +132,12 @@ LEAD CAPTURE        →   CHECKOUT INITIATED   →   PAYMENT RECEIVED   →   DE
 ```
 TODAY'S DATE: _______________
 
-□ Check Paddle dashboard/status
+□ Check Retired provider dashboard/status
 □ Check Shopier dashboard (new orders?)
 □ aikagan.com health check (visit homepage, verify no errors)
 □ Post 1 piece of content (Reddit / LinkedIn / Twitter)
 □ Respond to all comments and messages
-□ Track revenue: Paddle $___ + Shopier $___ = $___
+□ Track revenue: Retired provider $___ + Shopier $___ = $___
 □ Pipeline check: anything blocked? ________________________________
 □ PM update if needed: status note in docs/pack/05_EXECUTION_DASHBOARD.md
 ```
@@ -150,7 +150,7 @@ TODAY'S DATE: _______________
 WEEK ENDING: _______________
 
 REVENUE:
-  Paddle: $_____ (___ orders)
+  Retired provider: $_____ (___ orders)
   Shopier: $_____ (___ orders)
   Total: $_____
 

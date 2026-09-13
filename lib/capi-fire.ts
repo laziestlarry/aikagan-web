@@ -3,7 +3,7 @@
  *
  * Single source of truth for sending events to Meta. Used by:
  *   - /api/lead
- *   - /api/webhooks/paddle  (Purchase)
+ *   - /api/webhooks/gumroad  (Purchase)
  *   - /api/webhooks/lemonsqueezy (Purchase)
  *   - /api/income/checkout (InitiateCheckout)
  *   - any other server-side funnel event

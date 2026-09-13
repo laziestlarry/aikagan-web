@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
 
       const tx = {
         orderId: txId,
-        provider: "paddle" as const,
+        provider: "gumroad" as const,
         slug,
         email,
         value: price,
@@ -175,15 +175,15 @@ export async function POST(req: NextRequest) {
         capiFired: false,
       };
 
-      ops.push(["SET", `tx:paddle:${txId}`, JSON.stringify(tx), "EX", TX_TTL_S]);
+      ops.push(["SET", `tx:gumroad:${txId}`, JSON.stringify(tx), "EX", TX_TTL_S]);
       ops.push(["ZADD", "tx:index:recent", ts, txId]);
       ops.push(["EXPIRE", "tx:index:recent", RECENT_TTL_S]);
       ops.push(["INCRBY", `p:${day}:count`, 1]);
       ops.push(["EXPIRE", `p:${day}:count`, DAY_TTL_S]);
       ops.push(["INCRBY", `p:${day}:revenue_cents`, cents]);
       ops.push(["EXPIRE", `p:${day}:revenue_cents`, DAY_TTL_S]);
-      ops.push(["INCRBY", `p:${day}:count:paddle`, 1]);
-      ops.push(["EXPIRE", `p:${day}:count:paddle`, DAY_TTL_S]);
+      ops.push(["INCRBY", `p:${day}:count:gumroad`, 1]);
+      ops.push(["EXPIRE", `p:${day}:count:gumroad`, DAY_TTL_S]);
       ops.push(["LPUSH", "tx:index:selftest", txId]);
       ops.push(["EXPIRE", "tx:index:selftest", 7 * 24 * 60 * 60]);
       recentOrders.push({ orderId: txId, ts });

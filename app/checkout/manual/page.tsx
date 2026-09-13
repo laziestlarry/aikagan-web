@@ -30,16 +30,6 @@ interface ProviderInfo {
 
 const LIVE_PROVIDERS: ProviderInfo[] = [
   {
-    id: "paddle",
-    name: "Paddle",
-    description: "Card, PayPal, Apple Pay, Google Pay — global MoR",
-    status: "active",
-    isMoR: true,
-    methods: ["Visa", "MC", "Amex", "PayPal", "Apple Pay"],
-    checkoutUrl: null, // set dynamically
-    accentColor: "text-amber-300",
-  },
-  {
     id: "lemonsqueezy",
     name: "LemonSqueezy",
     description: "Card + PayPal — global MoR",
@@ -93,16 +83,11 @@ function ManualCheckoutInner() {
   // Fetch checkout URLs for each provider
   useEffect(() => {
     if (!slug) return;
-    const providers = ["paddle", "lemonsqueezy", "gumroad"];
+    const providers = ["gumroad"];
     Promise.all(
       providers.map(async (provider) => {
         try {
-          const endpoint =
-            provider === "paddle"
-              ? "/api/paddle-checkout"
-              : provider === "lemonsqueezy"
-                ? "/api/lemonsqueezy-checkout"
-                : "/api/gumroad-checkout";
+          const endpoint = "/api/gumroad-checkout";
           const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -171,7 +156,7 @@ function ManualCheckoutInner() {
           </p>
           <p className="mt-4 text-sm text-amber-300/80">
             This is <strong>not</strong> an order confirmation. No payment has been
-            processed. The standard checkout via Paddle was unavailable when you
+            processed. The hosted Gumroad checkout was unavailable when you
             tried to buy.
           </p>
           {urlCoupon && (
@@ -200,7 +185,7 @@ function ManualCheckoutInner() {
         {/* ── Fallback banner ──────────────────────────────────── */}
         <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/[0.04] px-5 py-3 text-sm text-amber-200">
           <strong className="font-semibold">Fallback checkout.</strong> The standard
-          Paddle payment flow is unavailable. Leave your details and we&apos;ll send a
+          Gumroad payment flow is unavailable. Leave your details and we&apos;ll send a
           secure payment link within 24 hours.{" "}
           <Link href={`/products/${slug}`} className="underline hover:text-amber-100">
             Try the standard checkout →
@@ -294,9 +279,7 @@ function ManualCheckoutInner() {
                             <a
                               href={url}
                               className={`mt-3 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all ${
-                                provider.id === "paddle"
-                                  ? "bg-amber-300 text-black hover:bg-amber-200"
-                                  : provider.id === "lemonsqueezy"
+                                provider.id === "lemonsqueezy"
                                     ? "bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30"
                                     : "bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30"
                               }`}

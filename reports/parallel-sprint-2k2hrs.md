@@ -33,7 +33,7 @@
 [SPRINT] Initialized Performance Sprint: 2k2hrs Parallel Performance Sprint
 [SPRINT] Simulated duration calibrated to: 2200 hours.
 [STORAGE] Identified storage backend: upstash
-[CONFIG] Paddle configured: false
+[CONFIG] Retired provider configured: false
 [CONFIG] Shopier configured: true
 [CONFIG] Gumroad configured: true
 [CONFIG] Meta CAPI configured: true

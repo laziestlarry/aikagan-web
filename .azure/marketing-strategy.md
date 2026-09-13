@@ -330,7 +330,7 @@ Best,
 - CRM: HubSpot, Salesforce, Pipedrive
 - Email: Mailchimp, ConvertKit, SendGrid
 - Analytics: Google Analytics, Mixpanel, Amplitude
-- Payment: Stripe, Paddle, LemonSqueezy (already integrated)
+- Payment: Stripe, Retired provider, LemonSqueezy (already integrated)
 - Automation: Zapier, Make, n8n
 
 **Partnership Outreach**:

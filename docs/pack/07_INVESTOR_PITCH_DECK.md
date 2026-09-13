@@ -1,7 +1,7 @@
 # INVESTOR PITCH DECK
 ## AutonomaX — AI-Powered Business Operations Engine
 
-> **One-liner:** AutonomaX turns any product into a must-buy with AI-powered ops agents, Paddle-native checkout, and multi-channel fulfillment — on day one, zero monthly fees.
+> **One-liner:** AutonomaX turns any product into a must-buy with AI-powered ops agents, Retired provider-native checkout, and multi-channel fulfillment — on day one, zero monthly fees.
 
 ---
 
@@ -28,7 +28,7 @@
 ```
 Traditional Setup (Month 1):          AutonomaX (Day 1):
 ┌─────────────────────────┐           ┌─────────────────────────┐
-│ ClickFunnels:    $147   │           │ Paddle Checkout:   ✅  │
+│ ClickFunnels:    $147   │           │ Retired provider Checkout:   ✅  │
 │ Email Service:   $59    │           │ AI Ops Agents:    ✅  │
 │ AI Content:      $49    │           │ Digital Delivery:  ✅  │
 │ Analytics:       $29    │           │ Multi-Channel:    ✅  │
@@ -37,7 +37,7 @@ Traditional Setup (Month 1):          AutonomaX (Day 1):
 └─────────────────────────┘           └─────────────────────────┘
 ```
 
-**Key Innovation:** Paddle as Merchant of Record works from any country (including Turkey) and handles all tax/VAT compliance. No entity needed.
+**Key Innovation:** Retired provider as Merchant of Record works from any country (including Turkey) and handles all tax/VAT compliance. No entity needed.
 
 ---
 
@@ -93,11 +93,11 @@ Market Growth Indicators:
 | **System.io** | $49/mo | ❌ | ✅ | ❌ | ❌ | ❌ |
 | **Kajabi** | $149/mo | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **ChatGPT** | $20/mo | ❌ | ❌ | ❌ | N/A | ✅ |
-| **AutonomaX** | **$29** | **✅ 8 agents** | **✅ 4 channels** | **✅ at $149** | **✅ Yes** | **✅ Paddle** |
+| **AutonomaX** | **$29** | **✅ 8 agents** | **✅ 4 channels** | **✅ at $149** | **✅ Yes** | **✅ Retired provider** |
 
 **Our Moat:**
-1. **Works from any country** — Paddle MoR bypasses Stripe's jurisdiction restrictions
-2. **Multi-channel by default** — Paddle + Shopier in one system
+1. **Works from any country** — Retired provider MoR bypasses Stripe's jurisdiction restrictions
+2. **Multi-channel by default** — Retired provider + Shopier in one system
 3. **AI-native ops** — Groq→DeepSeek→Gemini→OpenAI auto-fallback, never down
 4. **Zero marginal cost** — Digital delivery means infinite inventory
 5. **White-label at entry tier** — $149 buys full resell rights (viral growth vector)
@@ -111,14 +111,14 @@ Market Growth Indicators:
 
   [✓] aikagan.com — deployed, live, build passes
   [✓] 30 static pages + 7 API routes — all compiling
-  [✓] Paddle checkout integration — code complete
+  [✓] Retired provider checkout integration — code complete
   [✓] Download token system — HMAC-SHA256, 48h TTL
   [✓] 6 product ZIPs — Starter, Pro, Commander + 3 bonuses
   [✓] 7 strategic business documents
   [✓] Shopier store — 19 products LIVE, autonomax.shopier.com
   [✓] AI provider chain — keys held for 4 providers
 
-  ⏳ Paddle account — credentials needed to go live
+  ⏳ Retired provider account — credentials needed to go live
 ```
 
 **Total capital invested to date:** ~$100 (domain + Vercel trial)
@@ -127,9 +127,9 @@ Market Growth Indicators:
 
 ## SLIDE 7: BUSINESS MODEL
 
-### Unit Economics (Paddle — Live Day 1)
+### Unit Economics (Retired provider — Live Day 1)
 
-| Product | Price | Paddle Fee | Net Revenue | Hosting | Gross Profit | Margin |
+| Product | Price | Retired provider Fee | Net Revenue | Hosting | Gross Profit | Margin |
 |---------|-------|-----------|-------------|---------|-------------|-------|
 | Starter | $29.00 | $1.95 | $27.05 | $0.25 | $26.80 | 92.4% |
 | Pro | $79.00 | $4.45 | $74.55 | $0.50 | $74.05 | 93.7% |
@@ -185,9 +185,9 @@ Year 1:   $280,720  → 4,840 sales cumulative
 
 | Exit Path | Timeline | Valuation Trigger | Buyer Profile |
 |-----------|----------|-----------------|---------------|
-| **Strategic Acquisition** | Year 3-5 | $1M+ ARR | Digital product platforms (Gumroad, LemonSqueezy, Paddle), AI tool companies |
+| **Strategic Acquisition** | Year 3-5 | $1M+ ARR | Digital product platforms (Gumroad, LemonSqueezy, Retired provider), AI tool companies |
 | **Roll-up** | Year 2-4 | Successful product + audience | Indie digital product aggregators |
 | **Bootstrapped Dividend** | Year 1+ | Profitability | Lifestyle business — distribute profits |
 | **Agency Model Pivot** | Year 2-3 | White-label network | Convert to agency, sell client books |
 
-**Most likely exit:** Strategic acquisition by Paddle, LemonSqueezy, or an AI tools platform looking for a proven digital product playbook + Turkey market access.
+**Most likely exit:** Strategic acquisition by Retired provider, LemonSqueezy, or an AI tools platform looking for a proven digital product playbook + Turkey market access.

@@ -8,7 +8,7 @@
 #   1. Generates fresh secrets (CRON_SECRET, ADMIN_SECRET, DOWNLOAD_TOKEN_SECRET)
 #   2. Adds them to Vercel production env via `vercel env add`
 #   3. Prints the exact commands to set the remaining env vars that
-#      require human-provided values (META_CAPI_ACCESS_TOKEN, KV, GA, Paddle, etc.)
+#      require human-provided values (META_CAPI_ACCESS_TOKEN, KV, GA, Gumroad, etc.)
 #   4. Triggers a production deploy
 #   5. After deploy, prints the URLs to verify
 #
@@ -83,10 +83,9 @@ echo ""
 bold "── Now you need to set these env vars in Vercel ─────────"
 echo ""
 cat <<'EOF'
-# 1. Paddle (live keys from https://vendors.paddle.com → Developer Tools)
-vercel env add PADDLE_API_KEY production
-vercel env add PADDLE_WEBHOOK_SECRET production
-vercel env add NEXT_PUBLIC_PADDLE_CLIENT_TOKEN production
+# 1. Gumroad (Settings → Advanced → Applications)
+vercel env add GUMROAD_ACCESS_TOKEN production
+vercel env add GUMROAD_WEBHOOK_TOKEN production
 
 # 2. Vercel KV (Pro) OR Upstash Redis REST (free Hobby tier)
 #    Upstash: https://upstash.com → Create Redis DB → REST → copy credentials

@@ -9,16 +9,16 @@
 
 ### Critical Path Checklist
 ```
-[ ] Create Paddle account (paddle.com/sign-up) → Developer Tools
+[ ] Create Retired provider account (retired_provider.com/sign-up) → Developer Tools
 [ ] Set Vercel env vars:
-    - PADDLE_API_KEY=pdl_...
-    - NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=pct_...
-    - PADDLE_WEBHOOK_SECRET=psk_...
+    - RETIRED_PROVIDER_API_KEY=pdl_...
+    - NEXT_PUBLIC_RETIRED_PROVIDER_CLIENT_TOKEN=pct_...
+    - RETIRED_PROVIDER_WEBHOOK_SECRET=psk_...
     - DOWNLOAD_TOKEN_SECRET=***REDACTED***
     - NEXT_PUBLIC_SITE_URL=https://aikagan.com
 
-[ ] Create Paddle webhook endpoint:
-    - URL: https://aikagan.com/api/webhooks/paddle
+[ ] Create Retired provider webhook endpoint:
+    - URL: https://aikagan.com/api/webhooks/retired_provider
     - Events: transaction.completed
 
 [ ] Verify: npm run build (should pass)
@@ -30,7 +30,7 @@
 
 ## PHASE 1: IMMEDIATE REVENUE (Days 1-7)
 
-**Goal:** $500-$3,600 first week revenue. Deploy existing assets, get first Paddle sale.
+**Goal:** $500-$3,600 first week revenue. Deploy existing assets, get first Retired provider sale.
 
 ### Day 1: Deploy + First Sale
 ```
@@ -38,7 +38,7 @@ AM:
   □ Set all Vercel env vars (from Phase 0)
   □ Deploy: vercel --prod
   □ Test full checkout flow:
-     - Visit aikagan.com → Click "Buy Starter" → Paddle Checkout → complete payment
+     - Visit aikagan.com → Click "Buy Starter" → Retired provider Checkout → complete payment
      → Redirect to /checkout-success → Download token → ZIP delivered
   □ Fix any deployment issues (max 2h)
 
@@ -47,7 +47,7 @@ PM:
      - r/Entrepreneur: "I built a business ops engine that costs $29 once instead of $147/mo"
      - r/SideProject: "Sharing my 7-day sale system — free download inside"
      - r/digital_marketing: "Golden Delivery Starter Kit — free for r/digital_marketing"
-  □ Set Make.com WhatsApp alert for new Paddle payments
+  □ Set Make.com WhatsApp alert for new Retired provider payments
   □ Monitor: No sales yet? Fine. Setup day.
 ```
 
@@ -69,7 +69,7 @@ PM:
   □ If LinkedIn performed: Comment on 10 relevant posts with link
   □ If Twitter performed: 5 more threads
 
-  □ Check Paddle Dashboard: Any abandoned checkouts?
+  □ Check Retired provider Dashboard: Any abandoned checkouts?
   □ Install live chat or prompt for feedback: "What stopped you from buying?"
 ```
 
@@ -102,7 +102,7 @@ PM:
      - Top channel: ___
   □ Double spend on top channel (more posts, more engagement)
   □ Fix any checkout friction:
-     - Time from click to Paddle page
+     - Time from click to Retired provider page
      - Mobile responsiveness
      - Loading speed
 ```
@@ -147,7 +147,7 @@ Day 11-14:
   □ Deploy app.aikagan.com to Fly.io:
      - npm run build (ops engine)
      - fly deploy (or railway CLI)
-     - Verify: Paddle checkout works on app.aikagan.com
+     - Verify: Retired provider checkout works on app.aikagan.com
   □ Activate AI Business Commander:
      - Set API keys in Fly.io env vars
      - Run: python ai_business_commander.py (background)
@@ -161,7 +161,7 @@ WEEK 2 SCORECARD:
 ```
   □ Wire Make.com to unified_ai_income:
      - Revenue dashboard webhook → daily revenue report
-     - WhatsApp alert → every new Paddle sale
+     - WhatsApp alert → every new Retired provider sale
      - Failed payment → automated retry email
   □ Set up daily content pipeline:
      - AI agent writes 2 posts/day
@@ -226,7 +226,7 @@ Weeks 7-8 (Days 45-60):
      - Consider: "AutonomaX for [niche]" verticalized products
      - Niche candidates: eCommerce, Coaching, SaaS
   □ Begin global expansion:
-     - Paddle multi-currency for EU/UK/Asia
+     - Retired provider multi-currency for EU/UK/Asia
      - Translate lead magnet to Turkish, Spanish, German
 ```
 
@@ -273,7 +273,7 @@ MONTH 3 REVIEW:
 
 | Milestone | Target Day | Actual | Notes |
 |-----------|-----------|--------|-------|
-| First Paddle sale | Day 1 | ___ | |
+| First Retired provider sale | Day 1 | ___ | |
 | $1,000 total revenue | Day 14 | ___ | |
 | $10,000/month | Day 45 | ___ | |
 | 100 total customers | Day 60 | ___ | |
@@ -286,7 +286,7 @@ MONTH 3 REVIEW:
 
 ```
 Morning (30 min):
-  □ Check Paddle Dashboard: new sales?
+  □ Check Retired provider Dashboard: new sales?
   □ Check email: customer questions?
   □ Respond to social media comments
   □ Check analytics: traffic sources
@@ -318,10 +318,10 @@ Weekly (2 hours Sunday):
 3. DM 20 people who downloaded free lead magnet with personal offer
 4. Post to 5 more subreddits with direct link
 
-### If Paddle Issues:
-1. Check Paddle Dashboard for declined payments
+### If Retired provider Issues:
+1. Check Retired provider Dashboard for declined payments
 2. Enable more payment methods (Link, Apple Pay)
-3. Contact Paddle support (they respond fast)
+3. Contact Retired provider support (they respond fast)
 
 ### If Low Traffic:
 1. Increase Google Ads to $20/day

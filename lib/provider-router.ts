@@ -2,9 +2,9 @@
 // Provider Router — picks the right payment provider per request.
 //
 // Priority:
-//   1. Paddle  (primary — Merchant of Record, best global coverage)
-//   2. LemonSqueezy (fallback — also MoR, similar Turkey support)
-//   3. Gumroad (last-resort — simple MoR, fewer features)
+//   1. Gumroad (commissioned hosted checkout and verified sale API)
+//   2. Shopier (regional fallback for explicitly mapped offers)
+//   3. LemonSqueezy (disabled unless merchant approval is recorded)
 //
 // All three pipe the same HMAC download token through /api/download/[token].
 // Custom data carries:
@@ -15,7 +15,7 @@
 
 import { getProduct } from "./products";
 
-export type Provider = "paddle" | "lemonsqueezy" | "gumroad" | "shopier" | "manual";
+export type Provider = "lemonsqueezy" | "gumroad" | "shopier" | "manual";
 
 export interface CheckoutRequest {
   slug: string;
@@ -40,11 +40,6 @@ export interface ProviderStatus {
 /** Which providers are configured and ready. */
 export function getProviderStatus(): Record<Provider, ProviderStatus> {
   return {
-    paddle: {
-      provider: "paddle",
-      available: Boolean(process.env.PADDLE_API_KEY),
-      reason: process.env.PADDLE_API_KEY ? undefined : "PADDLE_API_KEY not set",
-    },
     lemonsqueezy: {
       provider: "lemonsqueezy",
       available: Boolean(
@@ -84,10 +79,9 @@ export function getProviderStatus(): Record<Provider, ProviderStatus> {
 /** Pick the first available provider, in priority order. */
 export function selectProvider(): Provider | null {
   const status = getProviderStatus();
-  if (status.paddle.available) return "paddle";
-  if (status.lemonsqueezy.available) return "lemonsqueezy";
   if (status.gumroad.available) return "gumroad";
   if (status.shopier.available) return "shopier";
+  if (status.lemonsqueezy.available) return "lemonsqueezy";
   return null;
 }
 

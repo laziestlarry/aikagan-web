@@ -114,11 +114,8 @@ export async function GET(req: NextRequest) {
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/admin/gumroad-status?action=sync-descriptions
 //
-// Fixes a live mismatch: the published, revenue-generating listings
-// (autonomax-{starter,pro,commander}-{price}) were created with placeholder
-// "SaaS automation platform" copy, while a second, correctly-worded
-// "AutonomaX Masterclass" description sits on unpublished duplicate listings.
-// This copies the correct name + description onto the live listings.
+// Legacy synchronization helper. The names below match the current
+// outcome-led public catalog and must not restore obsolete Masterclass copy.
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   if (!isAdminRequest(req)) return adminUnauthorizedResponse();
@@ -138,9 +135,9 @@ export async function POST(req: NextRequest) {
   // Maps the live (published, linked) product ID -> the correctly-worded
   // draft twin's permalink to source the fix copy from.
   const FIX_PAIRS: Record<string, { correctPermalink: string; correctName: string }> = {
-    "J59rJByCCyKKEfDouQjTDw==": { correctPermalink: "autonomax-starter", correctName: "AutonomaX Masterclass — Starter" },
-    "1BzBT7MJ_yBSJ1d9W9OrjA==": { correctPermalink: "autonomax-pro", correctName: "AutonomaX Masterclass — Pro" },
-    "H7uOVVl-CaUQJRp8e_73WQ==": { correctPermalink: "autonomax-commander", correctName: "AutonomaX Masterclass — Commander" },
+    "J59rJByCCyKKEfDouQjTDw==": { correctPermalink: "autonomax-starter", correctName: "AutonomaX BizOp Navigator — Starter" },
+    "1BzBT7MJ_yBSJ1d9W9OrjA==": { correctPermalink: "autonomax-pro", correctName: "AutonomaX Revenue System — Pro" },
+    "H7uOVVl-CaUQJRp8e_73WQ==": { correctPermalink: "autonomax-commander", correctName: "AutonomaX Operating System — Commander" },
   };
 
   const results: Record<string, any> = { actions: [] };

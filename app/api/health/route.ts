@@ -50,7 +50,6 @@ export async function GET(request: Request) {
   const providers = {
     gumroad: isGumroadApiConfigured() || hostedGumroadProducts.length > 0,
     shopier: configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") && configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") && configuredAny("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
-    paddle: process.env.PADDLE_CHECKOUT_DISABLED !== "true" && configured("PADDLE_API_KEY") && configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") && configured("PADDLE_WEBHOOK_SECRET"),
     lemonsqueezy: process.env.LEMONSQUEEZY_CHECKOUT_ENABLED === "true" && configured("LEMONSQUEEZY_API_KEY") && configured("LEMONSQUEEZY_STORE_ID") && configured("LEMONSQUEEZY_WEBHOOK_SECRET") && hasLemonVariant,
   };
 
@@ -91,7 +90,7 @@ export async function GET(request: Request) {
   const criticalDegraded = criticalNames.filter((name) => checks[name]?.status !== "ok");
   const degraded = Object.entries(checks).filter(([, result]) => result.status !== "ok").map(([name]) => name);
   const ok = criticalDegraded.length === 0;
-  const primaryCheckoutProvider = hostedGumroadProducts.length > 0 ? "gumroad" : providers.shopier ? "shopier" : providers.paddle ? "paddle" : providers.lemonsqueezy ? "lemonsqueezy" : null;
+  const primaryCheckoutProvider = hostedGumroadProducts.length > 0 ? "gumroad" : providers.shopier ? "shopier" : providers.lemonsqueezy ? "lemonsqueezy" : null;
 
   const payload = {
     ok,

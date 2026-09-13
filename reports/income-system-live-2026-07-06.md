@@ -32,16 +32,16 @@
 version: 8e3e87af
 ok: False            (only because Vercel KV not set — single critical)
 critical_degraded: ['vercel_kv']
-income_sources: {kv: false, paddle: true, capi: false, ga4: true}
+income_sources: {kv: false, retired_provider: true, capi: false, ga4: true}
 
 checks:
-  paddle_config:           ok
+  retired_provider_config:           ok
   download_token_config:   ok
   meta_capi_config:        degraded (CAPI token not set)
   vercel_kv:               degraded (KV env not set)
   revenue_ops_backend:     ok (HTTP 200 in 281ms)
   fastapi_backend:         ok (HTTP 200 in 122ms)
-  paddle_webhook_config:   ok
+  retired_provider_webhook_config:   ok
   ga4_config:              ok
   admin_secret:            ok
   cron_secret:             ok
@@ -76,7 +76,7 @@ To clear the test data once real traffic arrives: `POST /api/income/clear-test-d
 ## What was built this session
 
 ### Operator-facing
-- `scripts/deploy-live.sh` — one-command go-live. Generates ADMIN_SECRET, CRON_SECRET, DOWNLOAD_TOKEN_SECRET, adds them to Vercel production, prints the exact `vercel env add` commands for the human-provided values (Paddle, KV, CAPI, GA4), triggers a deploy, prints verification URLs.
+- `scripts/deploy-live.sh` — one-command go-live. Generates ADMIN_SECRET, CRON_SECRET, DOWNLOAD_TOKEN_SECRET, adds them to Vercel production, prints the exact `vercel env add` commands for the human-provided values (Retired provider, KV, CAPI, GA4), triggers a deploy, prints verification URLs.
 - `/api/income/setup` — JSON endpoint that lists every env var the operator needs, with `where`, `how`, `notes`, `generate`, and current `status`. Single source of truth for the go-live checklist.
 - `/admin/go-live` — visual console for the same checklist, with one-click seed/clear buttons. The single page the operator needs to launch.
 - `/api/income/seed` — ADMIN_SECRET-gated. Writes a realistic 7- or 30-day self-test dataset (pageviews, intents, leads, transactions) to the income ledger. Every record tagged `source=self_test` in UTM.

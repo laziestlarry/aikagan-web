@@ -26,7 +26,7 @@
 - **Growth Rate**: 18% CAGR
 - **Competition**: Medium (few dominant players)
 - **Ease of Entry**: High (English-speaking, similar business culture)
-- **Payment**: Excellent (Stripe, Paddle, local methods)
+- **Payment**: Excellent (Stripe, Retired provider, local methods)
 
 **Market 2: Asia-Pacific (Score: 78/100)**
 - **Countries**: Singapore, Australia, Japan, South Korea, India
@@ -106,8 +106,8 @@
 - Apple Pay / Google Pay (all countries)
 
 **Implementation**:
-- Use Paddle (already integrated) for European payments
-- Enable local payment methods in Paddle dashboard
+- Use Retired provider (already integrated) for European payments
+- Enable local payment methods in Retired provider dashboard
 - Display prices in EUR (auto-convert based on IP)
 - Add VAT handling (EU VAT rules)
 
@@ -157,7 +157,7 @@
 
 **Week 1-2: Setup**
 - [ ] Translate website to English (already done)
-- [ ] Set up European payment methods (Paddle)
+- [ ] Set up European payment methods (Retired provider)
 - [ ] Create European landing pages (UK, Netherlands)
 - [ ] Set up Google Ads campaigns (UK, Netherlands)
 - [ ] Set up LinkedIn Ads campaigns (UK, Netherlands)
@@ -311,7 +311,7 @@
 - Apple Pay / Google Pay (all countries)
 
 **Implementation**:
-- Use Paddle for Singapore, Australia, Japan, South Korea
+- Use Retired provider for Singapore, Australia, Japan, South Korea
 - Use Razorpay for India (local payment gateway)
 - Display prices in local currencies (auto-convert based on IP)
 - Add local tax handling (GST, VAT, consumption tax)
@@ -361,7 +361,7 @@
 #### Month 4: Foundation (Singapore + Australia)
 
 **Week 13-14: Setup**
-- [ ] Set up Asia-Pacific payment methods (Paddle, Razorpay)
+- [ ] Set up Asia-Pacific payment methods (Retired provider, Razorpay)
 - [ ] Create Singapore and Australia landing pages
 - [ ] Set up Google Ads campaigns (Singapore, Australia)
 - [ ] Set up LinkedIn Ads campaigns (Singapore, Australia)
@@ -696,7 +696,7 @@
 
 **Tools**:
 - Translation tools (DeepL, Google Translate)
-- Local payment gateways (Paddle, Razorpay, dLocal)
+- Local payment gateways (Retired provider, Razorpay, dLocal)
 - Marketing automation (HubSpot, Mailchimp)
 - Analytics (Google Analytics, Mixpanel)
 - Project management (Asana, Trello)
@@ -747,7 +747,7 @@
 ### Immediate Actions (This Week):
 1. Finalize market selection (Europe, Asia-Pacific, Latin America)
 2. Hire Global Marketing Manager (full-time)
-3. Set up payment gateways (Paddle, Razorpay, dLocal)
+3. Set up payment gateways (Retired provider, Razorpay, dLocal)
 4. Create localization plan (languages, content, pricing)
 5. Set up analytics tracking (by region, country, language)
 

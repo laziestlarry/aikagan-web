@@ -102,7 +102,7 @@ export function getAutonomaXReadiness(): CapabilityGate[] {
     'GOOGLE_GENERATIVE_AI_API_KEY',
   );
   const commerceProvider = configured(
-    'PADDLE_API_KEY',
+    'GUMROAD_ACCESS_TOKEN',
     'LEMONSQUEEZY_API_KEY',
     'GUMROAD_ACCESS_TOKEN',
     'SHOPIER_API_KEY',

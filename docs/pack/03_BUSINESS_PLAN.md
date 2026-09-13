@@ -1,15 +1,15 @@
 # BUSINESS PLAN — AUTONOMAX
 ## One-Page Strategic Brief
 
-> **Mission:** Deliver AI-powered business operations toolkits as affordable one-time digital products, using Paddle (Merchant of Record) for global payment processing and Shopier for the Turkey market.
+> **Mission:** Deliver AI-powered business operations toolkits as affordable one-time digital products, using Retired provider (Merchant of Record) for global payment processing and Shopier for the Turkey market.
 
 ---
 
 ## EXECUTIVE SUMMARY
 
-AutonomaX is a multi-channel digital product business selling AI-powered business operations toolkits. The product line includes three Masterclass tiers ($29/$79/$149) delivered as instant digital downloads. Payment processing uses **Paddle as Merchant of Record** (works from Turkey, handles global tax compliance, pays out to Payoneer). The Turkey market is covered by an existing Shopier store with 19 live products.
+AutonomaX is a multi-channel digital product business selling AI-powered business operations toolkits. The product line includes three Masterclass tiers ($29/$79/$149) delivered as instant digital downloads. Payment processing uses **Retired provider as Merchant of Record** (works from Turkey, handles global tax compliance, pays out to Payoneer). The Turkey market is covered by an existing Shopier store with 19 live products.
 
-The codebase is complete, deployed to Vercel at aikagan.com, and ready to process payments. The **sole blocker** is Paddle account setup for API credentials.
+The codebase is complete, deployed to Vercel at aikagan.com, and ready to process payments. The **sole blocker** is Retired provider account setup for API credentials.
 
 ---
 
@@ -32,10 +32,10 @@ The codebase is complete, deployed to Vercel at aikagan.com, and ready to proces
 
 ## REVENUE MODEL
 
-- **Primary:** Paddle checkout on aikagan.com (5% + $0.50 fee)
+- **Primary:** Retired provider checkout on aikagan.com (5% + $0.50 fee)
 - **Secondary:** Shopier for Turkey (2.9% fee)
 - **Future:** Stripe after UK/US entity (2.9% fee)
-- **Gross margin:** 92-94% (Paddle) / 95-96% (future Stripe)
+- **Gross margin:** 92-94% (Retired provider) / 95-96% (future Stripe)
 
 ## FINANCIAL PROJECTIONS
 
@@ -57,7 +57,7 @@ Currently bootstrapped. No external capital. Monthly burn: ~$21/mo.
 
 | Phase | Timeline | Focus | Revenue Target |
 |-------|----------|-------|---------------|
-| **Phase 1 — Launch** | Now | Paddle live + organic social | $500-$3,600/week |
+| **Phase 1 — Launch** | Now | Retired provider live + organic social | $500-$3,600/week |
 | **Phase 1b — Scale** | Week 2-4 | Shopier promotion + email capture | $3,400-$14,400/mo |
 | **Phase 2 — Entity** | Month 2-3 | UK LTD or US LLC formation | $8,000-$35,000/mo |
 | **Phase 3 — Stripe** | Month 4+ | Stripe re-integration + subscriptions | $30,000-$250,000/mo |

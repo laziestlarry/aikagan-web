@@ -36,11 +36,10 @@ function decorate(raw: string, slug: string): string {
  * Checkout CTA.
  *
  * Resolution order at click time:
- *   1. If `href` is a real URL (Paddle hosted checkout / LemonSqueezy overlay
- *      URL etc.), decorate it with success_url + product_slug and follow it.
- *   2. Otherwise (the typical case — `href` is the "paddle" sentinel),
+ *   1. If `href` is a real hosted checkout URL, follow it.
+ *   2. Otherwise (the typical case — `href` is the "gumroad" sentinel),
  *      call /api/income/checkout synchronously. The endpoint always returns
- *      a working URL (Paddle first, then LS, then /checkout/manual).
+ *      the commissioned Gumroad URL.
  *   3. Fires Pixel InitiateCheckout + GTM dataLayer push + records the
  *      intent in the income ledger (server-side).
  */
@@ -71,13 +70,11 @@ export default function CheckoutButton({ href, slug, price, children, className 
     }
     trackCheckoutIntent(slug);
 
-    // If href is a hosted URL, let the browser navigate (LemonSqueezy overlay
-    // is opened by the `lemonsqueezy-button` class; Paddle hosted checkout is
-    // a normal navigation).
+    // If href is already a hosted URL, let the browser navigate normally.
     if (isRealHref) return;
 
     // Otherwise — call our self-healing checkout endpoint and navigate to the
-    // returned URL (Paddle hosted page or LS overlay). If the server reports
+    // returned hosted URL. If the server reports
     // `checkout_unavailable`, we surface a real error instead of routing to
     // /checkout/manual — manual checkout is reserved for environments where
     // no payment provider is configured.

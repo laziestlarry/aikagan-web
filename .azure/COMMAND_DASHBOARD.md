@@ -454,7 +454,7 @@ Provide real-time visibility into all business operations, enabling data-driven 
 ### Primary Data Sources:
 1. **Google Analytics 4**: Traffic, user behavior, conversions
 2. **Mixpanel**: Product analytics, user events, funnels
-3. **Stripe/Paddle**: Revenue, subscriptions, refunds
+3. **Stripe/Retired provider**: Revenue, subscriptions, refunds
 4. **ConvertKit/Mailchimp**: Email marketing metrics
 5. **Intercom/Crisp**: Customer support, chat, feedback
 6. **PostgreSQL**: Application data, transactions

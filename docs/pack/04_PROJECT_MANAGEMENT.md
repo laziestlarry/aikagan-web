@@ -19,7 +19,7 @@ Tactical Layer (Daily Execution)
 └── Support response (support@aikagan.com)
 
 Operational Layer (Automated)
-├── Paddle webhook → token delivery
+├── Retired provider webhook → token delivery
 ├── Shopier order → notification (future)
 ├── AI agent pipeline (future)
 └── Make.com automation (future)
@@ -33,7 +33,7 @@ Operational Layer (Automated)
 
 | Key Result | Owner | Baseline | Target | Week 1 | Month 1 | Month 2 | Month 3 |
 |-----------|-------|---------|--------|--------|---------|---------|---------|
-| KR1: Paddle payments live | Kagan | Blocked | ✅ Live | ✅ | ✅ | ✅ | ✅ |
+| KR1: Retired provider payments live | Kagan | Blocked | ✅ Live | ✅ | ✅ | ✅ | ✅ |
 | KR2: Revenue ($/week) | Kagan | $0 | $3,600/wk | $500 | $3,400 | $8,000 | $15,000 |
 | KR3: Products sold (cumulative) | Kagan | 0 | 500 | 10 | 60 | 200 | 500 |
 | KR4: Email list size | Kagan | 0 | 1,000 | 50 | 200 | 500 | 1,000 |
@@ -59,7 +59,7 @@ Operational Layer (Automated)
 |------|----------|----------|
 | AM | Post 1 piece of content on primary channel | 15 min |
 | AM | Respond to all comments, DMs, emails | 20 min |
-| PM | Check revenue dashboard (Paddle + Shopier) | 5 min |
+| PM | Check revenue dashboard (Retired provider + Shopier) | 5 min |
 | PM | Verify download token flow still works | 5 min |
 
 ### Friday — Revenue
@@ -100,7 +100,7 @@ When evaluating an opportunity:
 
 ### Vector 1: Revenue Density (Now)
 Maximize revenue from existing assets before building new ones.
-- Drive traffic to aikagan.com (Paddle checkout)
+- Drive traffic to aikagan.com (Retired provider checkout)
 - Drive traffic to Shopier store
 - No new features until $1,000/week sustained
 
@@ -130,9 +130,9 @@ Transition from manual to automated operations.
 
 | Risk | Probability | Impact | Mitigation | Trigger |
 |------|-----------|--------|-----------|---------|
-| Paddle account rejection | Low | Critical | Prepare alternative: other MoR providers | Account review > 48h |
+| Retired provider account rejection | Low | Critical | Prepare alternative: other MoR providers | Account review > 48h |
 | Low organic traffic | Medium | High | Start Google Ads at $10/day | < 50 visitors/day after 2 weeks |
-| Shopier account freeze | Low | Medium | Paddle is primary — Shopier secondary | Failed login / payment hold |
-| Paddle webhook failure | Low | High | session-token endpoint has Paddle API fallback | Token not issued > 30s |
+| Shopier account freeze | Low | Medium | Retired provider is primary — Shopier secondary | Failed login / payment hold |
+| Retired provider webhook failure | Low | High | session-token endpoint has Retired provider API fallback | Token not issued > 30s |
 | Code deployment breaks | Low | Medium | npm run build before every deploy | Build error on deploy |
 | Turkey Lira volatility | Medium | Low | Price in TRY pegged to USD rates | > 10% FX swing |

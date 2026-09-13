@@ -9,7 +9,7 @@
 |--------|-------|
 | Capital raised | **$0** (100% bootstrapped) |
 | Monthly burn | **$21/mo** (Vercel $20 + domain ~$1) |
-| Revenue | **$0** (blocked on Paddle credentials) |
+| Revenue | **$0** (blocked on Retired provider credentials) |
 | Runway | **Indefinite** (personal funds support all costs) |
 | Team size | 1 founder (full-stack) |
 | Revenue readiness | **30 minutes from credentials** |
@@ -23,7 +23,7 @@
 | Parameter | Detail |
 |-----------|--------|
 | Capital needed | **$0** |
-| Revenue trigger | Paddle account creation (30 min task) |
+| Revenue trigger | Retired provider account creation (30 min task) |
 | Breakeven timeline | Day 1 (1 sale = breakeven) |
 | Growth engine | Organic content only (Reddit, LinkedIn, Twitter) |
 | Risk | Lowest — no debt, no dilution, no pressure |
@@ -78,7 +78,7 @@
 
 | Parameter | Detail |
 |-----------|--------|
-| Target | Paddle, LemonSqueezy, Shopify, or complementary AI tools platform |
+| Target | Retired provider, LemonSqueezy, Shopify, or complementary AI tools platform |
 | Amount | $100K-$500K |
 | Strategic value | Distribution, technology integration, revenue share |
 | Form | Strategic partnership + convertible note or SAFE |
@@ -109,7 +109,7 @@
 
 | Method | Valuation | Rationale |
 |--------|-----------|-----------|
-| Cost-to-Duplicate | $50K-$100K | Codebase (Next.js + Paddle integration + 7 business docs + 6 products) |
+| Cost-to-Duplicate | $50K-$100K | Codebase (Next.js + Retired provider integration + 7 business docs + 6 products) |
 | Market Multiple | $250K-$500K | Comparable digital product businesses at 3-5x annual revenue potential |
 | IP Valuation | $100K-$200K | Proprietary AI ops methodology, download token system, multi-channel architecture |
 | **Blended** | **$250K-$500K** | Conservative pre-money for bootstrap-level operation |
@@ -131,7 +131,7 @@
 
 | Detail | Profile |
 |--------|---------|
-| **Target universe** | Paddle, LemonSqueezy, Gumroad, Podia, Kajabi, ClickFunnels |
+| **Target universe** | Retired provider, LemonSqueezy, Gumroad, Podia, Kajabi, ClickFunnels |
 | **Why they buy** | Proven digital product playbook, Turkey market access, AI integration, white-label model |
 | **Valuation at exit** | 3-5x ARR (typical for digital product SaaS tools) |
 | **Timeline** | Year 3-5 |
@@ -180,7 +180,7 @@ To be acquisition-ready:
 
 ```
 [ ] Proper business entity formed (not sole proprietor)
-[ ] Clean financial records (Paddle + Shopier exports)
+[ ] Clean financial records (Retired provider + Shopier exports)
 [ ] All IP owned by entity (codebase, ZIPs, brand, domain)
 [ ] Contracts with any contractors/partners
 [ ] Recurring revenue component (subscriptions)
@@ -197,13 +197,13 @@ When approaching investors, lead with:
 
 1. **$21/mo burn** — capital efficiency
 2. **95% gross margins** — software business fundamentals
-3. **Multi-channel moat** — Paddle + Shopier + future Stripe
+3. **Multi-channel moat** — Retired provider + Shopier + future Stripe
 4. **Deployed infrastructure** — not a concept, real code on a real domain
 5. **Turkey market access** — unique differentiator, $4.2B market
 6. **AI-native operations** — Groq→DeepSeek→Gemini→OpenAI chain
 
 **Key questions to prepare for:**
-- "Why Paddle and not Stripe?" → Jurisdiction block, solved by MoR model
+- "Why Retired provider and not Stripe?" → Jurisdiction block, solved by MoR model
 - "What's your CAC?" → $0-5 organically, will know after first ad test
 - "How big is the market?" → $100B TAM, growing 17.5% CAGR
 - "Why you?" → Built entire stack solo, deployed, ready for revenue

@@ -36,7 +36,7 @@ export default function CheckoutLink({
 }: CheckoutLinkProps) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const isManagedCheckout = href === "paddle";
+  const isManagedCheckout = href === "gumroad";
 
   const handleClick = useCallback(async (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

@@ -3,7 +3,7 @@
  *
  * Backward-compatible alias for /api/income/checkout.
  * Existing clients that still call /api/checkout are forwarded to the live
- * income checkout router so Paddle remains the primary provider in production.
+ * income checkout router so every legacy client reaches the canonical Gumroad rail.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         ok: false,
-        providers: { paddle: false, lemonsqueezy: false },
+        providers: { gumroad: false },
       },
       { status: 503 },
     );

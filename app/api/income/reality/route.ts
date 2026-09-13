@@ -2,7 +2,7 @@
  * GET /api/income/reality
  *
  * Single endpoint that returns the zero-gap income evidence feed.
- * Sourced from Vercel KV (durable) + the live Paddle API (when configured)
+ * Sourced from Vercel KV (durable) + the live Gumroad API (when configured)
  * + the CAPI audit log (always present, even if just "dropped" entries).
  *
  * This is the ground truth that powers the income dashboard.

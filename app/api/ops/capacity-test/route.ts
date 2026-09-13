@@ -26,7 +26,6 @@ interface CapacityTestResult {
     kvBatchDeleteLatencyMs: number;
   };
   integrations: {
-    paddle: boolean;
     shopier: boolean;
     gumroad: boolean;
     metaCapi: boolean;
@@ -140,11 +139,6 @@ export async function POST(req: NextRequest) {
   const paidProducts = getPaidProducts();
 
   const integrations = {
-    paddle:
-      process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
-      configured("PADDLE_API_KEY") &&
-      configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
-      configured("PADDLE_WEBHOOK_SECRET"),
     shopier:
       configuredAny("SHOPIER_PAT", "AUTONOMAX_SHOPIER_PAT") &&
       configuredAny("SHOPIER_OSB_USERNAME", "AUTONOMAX_SHOPIER_OSB_USERNAME") &&
@@ -155,7 +149,6 @@ export async function POST(req: NextRequest) {
       configuredAny("NEXT_PUBLIC_META_PIXEL_ID", "META_PIXEL_ID"),
   };
 
-  logs.push(`[CONFIG] Paddle configured: ${integrations.paddle}`);
   logs.push(`[CONFIG] Shopier configured: ${integrations.shopier}`);
   logs.push(`[CONFIG] Gumroad configured: ${integrations.gumroad}`);
   logs.push(`[CONFIG] Meta CAPI configured: ${integrations.metaCapi}`);
@@ -193,12 +186,12 @@ export async function POST(req: NextRequest) {
     logs.push(`[TEST] Initiating batch pipeline write of ${testTxCount} mock transactions.`);
     const batchOps: any[] = [];
     testIds.forEach((id) => {
-      const txKey = `tx:paddle:${id}`;
+      const txKey = `tx:gumroad:${id}`;
       keysToClean.push(txKey);
       
       const record = {
         orderId: id,
-        provider: "paddle",
+        provider: "gumroad",
         slug: "masterclass-starter",
         email: "capacity-test@autonomax.io",
         value: 29.0,
@@ -224,7 +217,7 @@ export async function POST(req: NextRequest) {
     // 4. Batch Read Verification
     logs.push(`[TEST] Verifying batch transaction retrieval.`);
     const readStartBatch = performance.now();
-    const readPromises = testIds.map(id => kvGet(`tx:paddle:${id}`));
+    const readPromises = testIds.map(id => kvGet(`tx:gumroad:${id}`));
     const results = await Promise.all(readPromises);
     const readBatchLatency = Math.round(performance.now() - readStartBatch);
     opsSuccess += testTxCount;
@@ -273,7 +266,6 @@ export async function POST(req: NextRequest) {
   else if (errorRatePct < 2) score += 10;
 
   // Config integration component (max 20 pts)
-  if (integrations.paddle) score += 5;
   if (integrations.shopier) score += 5;
   if (integrations.gumroad) score += 5;
   if (integrations.metaCapi) score += 5;

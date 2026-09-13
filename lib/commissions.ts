@@ -1,7 +1,7 @@
 /**
  * Webhook → Affiliate Commission Bridge
  *
- * Called by Paddle and LemonSqueezy webhooks after a successful payment.
+ * Called by verified commerce webhooks after a successful payment.
  * Extracts ref_code from the event custom_data, computes commission, and
  * records it on the affiliate profile.
  *
@@ -21,7 +21,7 @@ export interface CommissionInput {
   /** Order total in major units (dollars). */
   amount: number;
   /** Provider name for logging. */
-  provider: "paddle" | "lemonsqueezy";
+  provider: "gumroad" | "lemonsqueezy" | "shopier";
 }
 
 /** Record a commission from a webhook event. Non-blocking. */

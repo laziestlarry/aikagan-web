@@ -63,7 +63,7 @@ open -n -a "Google Chrome" --args --user-data-dir="/Users/pq/Library/Application
 | **Larry** | Reddit | `r/SaaSMarketing` query: `"first customer"` | Find builders struggling with acquisition. |
 | **Larry** | IndieHackers | Category: `Milestones` or tag: `SaaS` | Congratulate on launch, suggest checking out white-label/templates. |
 | **Kagan** | LinkedIn | Titles: `"agency founder"` OR `"business coach"` | Pitch white-label system to upsell to their clients. |
-| **Kagan** | Twitter/X | Query: `"looking for SaaS"`, `"stripe checkout"` | Suggest AutonomaX as a Paddle-ready alternative. |
+| **Kagan** | Twitter/X | Query: `"looking for SaaS"`, `"stripe checkout"` | Suggest AutonomaX as a Retired provider-ready alternative. |
 | **Recruiter**| Twitter/X | Query: `"marketing tips"` or followers of Indie solopreneurs | Pitch affiliate program to micro-content creators. |
 
 ---
@@ -75,7 +75,7 @@ open -n -a "Google Chrome" --args --user-data-dir="/Users/pq/Library/Application
 >
 > Hey [username], saw your post about [product name] in [r/SideProject]. The UI looks super clean!
 >
-> I was wondering what you're planning to use for your checkout and digital fulfillment? I used to get hit with high monthly SaaS fees just to deliver files and handle Stripe, so I ended up switching to AutonomaX. It's a one-time $29 layout and supports Paddle + auto-delivery.
+> I was wondering what you're planning to use for your checkout and digital fulfillment? I used to get hit with high monthly SaaS fees just to deliver files and handle Stripe, so I ended up switching to AutonomaX. It's a one-time $29 layout and supports Retired provider + auto-delivery.
 >
 > If you're interested, you can check it out here: `https://aikagan.com/products/masterclass-starter/?utm_source=reddit_larry&utm_medium=dm_outreach`
 >
@@ -88,7 +88,7 @@ open -n -a "Google Chrome" --args --user-data-dir="/Users/pq/Library/Application
 >
 > We just launched the AutonomaX Reseller Program. Agency owners buy our Commander package once ($149) and white-label the complete business ops engine to resell to their own clients at $497-$997, keeping 100% of the resale margin.
 >
-> It solves client onboarding, Paddle checkout, and automated fulfillment in one package under your own brand.
+> It solves client onboarding, Retired provider checkout, and automated fulfillment in one package under your own brand.
 >
 > Are you open to a quick look to see if this fits your current agency portfolio?
 >

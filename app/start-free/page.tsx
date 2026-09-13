@@ -58,8 +58,8 @@ export default function StartFreePage() {
           <p className="mt-4 max-w-3xl text-neutral-400">Digital kits check out on Gumroad. Implementation and blueprints still require written scope. No fake open-store claims.</p>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {[
-              ["First-Sale Starter", "$29", "Offer + first-sale sequence", "/products/masterclass-starter"],
-              ["Revenue Conversion Pro", "$79", "Funnel + 30-day operating cadence", "/products/masterclass-pro"],
+              ["BizOp Navigator — Starter", "$29", "Reviewed decision brief + seven-day plan", "/products/masterclass-starter"],
+              ["Revenue System — Pro", "$79", "Funnel + 30-day operating cadence", "/products/masterclass-pro"],
               ["Scale Commander", "$149", "Repeatability, partners, licensing", "/products/masterclass-commander"],
             ].map(([name, price, body, href]) => (
               <Link key={name} href={href} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 hover:border-amber-300/40">

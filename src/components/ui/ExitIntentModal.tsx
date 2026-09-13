@@ -47,8 +47,8 @@ export default function ExitIntentModal({
 
   if (!isOpen) return null;
 
-  const isPaddle = checkoutUrl === "paddle";
-  const canCheckout = Boolean(isPaddle && productSlug && typeof price === "number");
+  const isGumroad = checkoutUrl === "gumroad";
+  const canCheckout = Boolean(isGumroad && productSlug && typeof price === "number");
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
@@ -100,7 +100,7 @@ export default function ExitIntentModal({
 
           {canCheckout ? (
             <CheckoutLink
-              href="paddle"
+              href="gumroad"
               productSlug={productSlug!}
               productName={productName}
               price={price!}

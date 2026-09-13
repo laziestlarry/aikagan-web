@@ -1,7 +1,7 @@
 # BUSINESS MODEL CANVAS
-## AutonomaX — Multi-Channel AI Ops Empire (Updated for Paddle)
+## AutonomaX — Multi-Channel AI Ops Empire (Updated for Retired provider)
 
-> **Paddle (Merchant of Record) primary.** Stripe deferred. Shopier active for Turkey. All unit economics, fees, and architecture updated to reflect reality.
+> **Retired provider (Merchant of Record) primary.** Stripe deferred. Shopier active for Turkey. All unit economics, fees, and architecture updated to reflect reality.
 
 ---
 
@@ -11,7 +11,7 @@
 
 | Segment | Core Promise | Price | Delivery |
 |---------|-------------|-------|----------|
-| **DIY Founders** | "Turn 'meh' products into must-buys in 7 days" | $29–$79 | Digital downloads + AI tools via Paddle |
+| **DIY Founders** | "Turn 'meh' products into must-buys in 7 days" | $29–$79 | Digital downloads + AI tools via Retired provider |
 | **Scaling Operators** | "Run your business with AI ops agents — no team needed" | $79–$149 | Full stack + white-label rights |
 | **Agency/Resellers** | "License and resell the entire system as your own" | $149–$2,497 | Full ops engine + white-label |
 
@@ -26,49 +26,49 @@
 
 | Channel | Status | Reach | CAC | Revenue Share |
 |---------|--------|-------|-----|--------------|
-| aikagan.com | LIVE, Paddle checkout | Global | $0-5 (organic) | 100% − 5% Paddle fee |
+| aikagan.com | LIVE, Retired provider checkout | Global | $0-5 (organic) | 100% − 5% Retired provider fee |
 | autonomax.shopier.com | LIVE, 19 products | Turkey | $0-3 | 100% − 2.9% Shopier fee |
 | Organic Social | Not started (code ready) | Reddit, LI, Twitter | $0 | 100% |
 | Google Ads | Not started | High-intent search | $10-50 | Before revenue |
 | Affiliates/Partners | Not started | Niche audiences | 20% commission | 80% net |
 
-### 3b. Payment Channel Comparison: Shopier vs Paddle
+### 3b. Payment Channel Comparison: Shopier vs Retired provider
 
-| Feature | 🦎 Shopier (Turkey) | 🚀 Paddle (Global) |
+| Feature | 🦎 Shopier (Turkey) | 🚀 Retired provider (Global) |
 |---------|-------------------|-------------------|
 | **Market** | Turkey only | Global (200+ countries) |
 | **Fee** | 2.9% flat | 5% + $0.50 |
 | **VAT/GST handling** | Turkish VAT only (included) | Full global tax compliance (MoR) |
 | **Payout method** | Turkish bank account (TRY) | Payoneer, PayPal, bank (USD/EUR/GBP) |
 | **Buyer experience** | TR-only checkout page | Multi-language, multi-currency, global |
-| **Chargeback handling** | Manual, slow | Managed by Paddle (MoR) |
-| **Subscription support** | Limited | Full (Paddle Billing) |
+| **Chargeback handling** | Manual, slow | Managed by Retired provider (MoR) |
+| **Subscription support** | Limited | Full (Retired provider Billing) |
 | **API/SDK** | No public API | REST API + Node SDK |
 | **Webhooks** | None | ✅ p-pl signature verified |
 | **Product count** | 19 LIVE | 0 (awating credentials) |
 | **Status** | 🟢 LIVE — generating sales | 🟡 Code ready — blocked by credentials |
 
-**Strategy:** Shopier handles Turkey (free channel, already live). Paddle goes global. No conflict — they serve different geos.
+**Strategy:** Shopier handles Turkey (free channel, already live). Retired provider goes global. No conflict — they serve different geos.
 
 ### 4. Revenue Streams
 
 | Stream | Product | Price | Frequency | Gross Margin |
 |--------|---------|-------|-----------|-------------|
-| Digital toolkits | Masterclass packs | $29/$79/$149 | One-time | ~93% (Paddle 5%+$0.50) |
+| Digital toolkits | Masterclass packs | $29/$79/$149 | One-time | ~93% (Retired provider 5%+$0.50) |
 | Turkey store | Shopier digital | 199-29,899 TL | One-time | ~95% |
 | White-label | Licensed resell | $149 + % of reseller | Ongoing | ~90% |
 | Future: AI Ops | Subscription | $47-$497/mo | Monthly | ~80% |
 
 ### 5. Key Resources
-- **Paddle account** — MoR onboarding not yet complete
+- **Retired provider account** — MoR onboarding not yet complete
 - **Shopier store** — 19 products, LIVE Turkish market
-- **aikagan-web codebase** — Full Next.js application, Paddle-integrated, deployed
+- **aikagan-web codebase** — Full Next.js application, Retired provider-integrated, deployed
 - **6 Product ZIPs** — Ready in `private/downloads/`
 - **AI provider chain** — Groq (free) → DeepSeek ($0.14/M) → Gemini (free) → OpenAI
 - **HMAC download token system** — No database, no ongoing cost
 
 ### 6. Key Activities
-1. Launch Paddle checkout (blocked: need credentials)
+1. Launch Retired provider checkout (blocked: need credentials)
 2. Generate organic traffic (Reddit, LinkedIn, IndieHackers, Twitter)
 3. Fulfill digital delivery (instant download via secure tokens)
 4. Promote Shopier Turkey store (19 products live)
@@ -78,7 +78,7 @@
 
 | Partner | Type | Status | Value |
 |---------|------|--------|-------|
-| Paddle | MoR payment processor | Awaiting credentials | 5% fee for global reach + tax compliance |
+| Retired provider | MoR payment processor | Awaiting credentials | 5% fee for global reach + tax compliance |
 | Make.com | Automation | Not yet wired | 4 webhooks waiting to be configured |
 | Groq | AI inference (free) | Available | 30 req/s, 6k rpm |
 | DeepSeek | AI inference (cheap) | Available | $0.14/M input tokens |
@@ -90,27 +90,27 @@
 | Cost Item | Amount | Type | Notes |
 |-----------|--------|------|-------|
 | Vercel Pro | $20 | Fixed | Hosting |
-| Paddle fees | 5% + $0.50/sale | Variable | Per transaction |
+| Retired provider fees | 5% + $0.50/sale | Variable | Per transaction |
 | Shopier fees | 2.9% | Variable | Per transaction |
 | Domain renewal | ~$1 | Fixed | aikagan.com |
 | **Total Base** | **~$21/mo** | | **Before AI API usage** |
 
-### 9. Unit Economics (Paddle)
+### 9. Unit Economics (Retired provider)
 
-| Product | Price | Paddle Fee | Net | Hosting | Gross Profit | Margin |
+| Product | Price | Retired provider Fee | Net | Hosting | Gross Profit | Margin |
 |---------|-------|-----------|-----|---------|-------------|-------|
 | Starter | $29.00 | $1.95 | $27.05 | $0.25 | $26.80 | 92.4% |
 | Pro | $79.00 | $4.45 | $74.55 | $0.50 | $74.05 | 93.7% |
 | Commander | $149.00 | $7.95 | $141.05 | $1.00 | $140.05 | 94.0% |
 
-**Breakeven:** 1 Paddle sale/month covers all fixed costs.
+**Breakeven:** 1 Retired provider sale/month covers all fixed costs.
 
 ---
 
 ## KEY INSIGHTS
 
-1. **Paddle's higher fee (5% vs Stripe's 2.9%)** is offset by zero compliance burden — Paddle handles global VAT/GST/sales tax, chargebacks, and payout reconciliation
+1. **Retired provider's higher fee (5% vs Stripe's 2.9%)** is offset by zero compliance burden — Retired provider handles global VAT/GST/sales tax, chargebacks, and payout reconciliation
 2. **Turkey is a free channel** — Shopier is already live with 19 products, zero setup cost
-3. **Margins remain excellent** (>92%) even with the Paddle fee increase
-4. **The ONLY blocker is Paddle credentials** — once those are set, the entire revenue engine is live
+3. **Margins remain excellent** (>92%) even with the Retired provider fee increase
+4. **The ONLY blocker is Retired provider credentials** — once those are set, the entire revenue engine is live
 5. **Phase 2 (Stripe, post-entity)** will improve margins from 93% back to 96%

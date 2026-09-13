@@ -18,9 +18,9 @@
 
 | Dimension | Before this pack | After this pack (now) | Delta |
 |---|---|---|---|
-| Payment providers | 1 (Paddle, broken — domain rejected) | 3 (Paddle primary, LS fallback, Gumroad stub) | +2 |
-| Checkout routes | 1 (`/api/paddle-checkout`) | 3 + 1 router (`/api/checkout` → LS/Paddle/Gumroad) | +3 |
-| Webhook handlers | 1 (Paddle) | 2 (Paddle + LemonSqueezy) with shared idempotency | +1 |
+| Payment providers | 1 (Retired provider, broken — domain rejected) | 3 (Retired provider primary, LS fallback, Gumroad stub) | +2 |
+| Checkout routes | 1 (`/api/retired_provider-checkout`) | 3 + 1 router (`/api/checkout` → LS/Retired provider/Gumroad) | +3 |
+| Webhook handlers | 1 (Retired provider) | 2 (Retired provider + LemonSqueezy) with shared idempotency | +1 |
 | Affiliate system | None (UI only, mock data) | Full (codes, clicks, conversions, payouts, cron digest) | NEW |
 | Income evidence | None (numbers fabricated by upstream) | 6 durable API routes, KV-backed, audit-logged | NEW |
 | Admin ops | 1 endpoint | 4 endpoints + 1 console (`/admin/go-live`) | +4 |
@@ -39,7 +39,7 @@
 "provisioned but unpopulated." Every pageview, lead, checkout intent, and
 purchase that flows through the site is now durably captured and the
 operator can verify it from one console. Three payment providers are
-wired, so a single provider failure (the previous Paddle domain
+wired, so a single provider failure (the previous Retired provider domain
 rejection) no longer blocks revenue. The affiliate system is real, the
 capi attribution is real, and the income dashboard is real — not
 synthetic, not aspirational.
@@ -72,7 +72,7 @@ aikagan-web/
 │
 ├─ [INFRASTRUCTURE — PROVIDER ROUTER]
 │  + lib/provider-router.ts                 [119]  ─ getProviderStatus / selectProvider
-│                                                    Paddle → LS → Gumroad priority
+│                                                    Retired provider → LS → Gumroad priority
 │                                                    buildCustomData carries ref + UTM
 │
 ├─ [INFRASTRUCTURE — REFERRAL / AFFILIATE]
@@ -83,7 +83,7 @@ aikagan-web/
 │
 ├─ [INFRASTRUCTURE — COMMISSION BRIDGE]
 │  + lib/commissions.ts                     [79]   ─ recordWebhookCommission()
-│                                                    Called by Paddle + LS webhooks
+│                                                    Called by Retired provider + LS webhooks
 │                                                    Non-blocking, never fails the webhook
 │
 ├─ [INFRASTRUCTURE — WEBHOOK IDEMPOTENCY]
@@ -101,20 +101,20 @@ aikagan-web/
 ├─ [INFRASTRUCTURE — TOKEN STORE (provider-agnostic)]
 │  + lib/token-store.types.ts               [6]    ─ Shared types
 │  ~ lib/token-store.ts                     [106]  ─ In-memory Map (works across providers)
-│                                                    Reused by paddle + LS checkout
+│                                                    Reused by retired_provider + LS checkout
 │
 ├─ [INFRASTRUCTURE — HEALTH (rich)]
 │  ~ app/api/health/route.ts                [182]  ─ 10 checks with status/latency/detail
-│                                                    paddle / download_token / meta_capi / vercel_kv
+│                                                    retired_provider / download_token / meta_capi / vercel_kv
 │                                                    revenue_ops_backend / fastapi_backend
-│                                                    paddle_webhook / ga4 / admin / cron
+│                                                    retired_provider_webhook / ga4 / admin / cron
 │
 ├─ [CHECKOUT — PUBLIC ROUTER]
 │  ~ app/api/checkout/route.ts              [132]  ─ POST: validates → selectProvider() → routes
 │                                                    GET: diagnostic `{ active, timestamp }`
 │
-├─ [CHECKOUT — PADDLE PRIMARY]
-│  ~ app/api/paddle-checkout/route.ts       [95]   ─ Inline price + custom_data (ref_code, UTM)
+├─ [CHECKOUT — RETIRED_PROVIDER PRIMARY]
+│  ~ app/api/retired_provider-checkout/route.ts       [95]   ─ Inline price + custom_data (ref_code, UTM)
 │                                                    Pre-registers in token-store
 │
 ├─ [CHECKOUT — LEMONSQUEEZY FALLBACK]
@@ -122,8 +122,8 @@ aikagan-web/
 │                                                    Reads LEMONSQUEEZY_VARIANT_<SLUG> env
 │                                                    Custom data carries ref_code + UTM
 │
-├─ [WEBHOOKS — PADDLE]
-│  ~ app/api/webhooks/paddle/route.ts       [235]  ─ HMAC verify (p-pl signature)
+├─ [WEBHOOKS — RETIRED_PROVIDER]
+│  ~ app/api/webhooks/retired_provider/route.ts       [235]  ─ HMAC verify (p-pl signature)
 │                                                    transaction.completed → issue token
 │                                                    recordTransaction() to ledger
 │                                                    recordCapiAttempt("Purchase", true)
@@ -208,7 +208,7 @@ aikagan-web/
 │  + scripts/agent/                                         ─ Agent helpers
 │
 ├─ [DOCS / REPORTS]
-│  ~ docs/business/01-07_*.md                               ─ All updated for Paddle + Shopier
+│  ~ docs/business/01-07_*.md                               ─ All updated for Retired provider + Shopier
 │  + docs/pack/00-08_*.md                                   ─ 9-doc execution pack
 │  + docs/UPGRADE_PACK_PROVIDER_AND_MARKETING.md            ─ Original upgrade spec
 │  + docs/INFORMATION_MEMORANDUM.md                         ─ Investor memo
@@ -220,7 +220,7 @@ aikagan-web/
 ├─ [CONFIG]
 │  ~ vercel.json                                    ─ Added crons + security headers
 │  ~ next.config.js                                 ─ Trust proxy headers for IP extraction
-│  ~ package.json                                   ─ Paddle SDK, removed Stripe
+│  ~ package.json                                   ─ Retired provider SDK, removed Stripe
 │  ~ tailwind.config.ts
 │
 └─ [PRIVATE — PRODUCTS]
@@ -241,12 +241,12 @@ aikagan-web/
 |---|---|---|---|---|
 | 1 | **Typed KV** with in-memory fallback | `lib/kv.ts` | All stores ↓ | ✅ Live |
 | 2 | **Income ledger** (ground truth) | `lib/income-ledger.ts` | KV · Webhooks · CAPI · /income dashboard | ✅ Live |
-| 3 | **Provider router** | `lib/provider-router.ts` → `app/api/checkout/route.ts` | Paddle · LS · Gumroad env vars | ✅ Live (Paddle active) |
-| 4 | **Multi-provider checkout** | `app/api/paddle-checkout/` · `app/api/lemonsqueezy-checkout/` | provider-router · token-store · /checkout-success | ✅ Live |
+| 3 | **Provider router** | `lib/provider-router.ts` → `app/api/checkout/route.ts` | Retired provider · LS · Gumroad env vars | ✅ Live (Retired provider active) |
+| 4 | **Multi-provider checkout** | `app/api/retired_provider-checkout/` · `app/api/lemonsqueezy-checkout/` | provider-router · token-store · /checkout-success | ✅ Live |
 | 5 | **Self-healing checkout** | `app/api/income/checkout/` | provider-router · income-ledger · manual fallback | ✅ Live |
-| 6 | **Shared webhook idempotency** | `lib/webhook-idempotency.ts` | Paddle + LS webhooks | ✅ Live |
-| 7 | **Unified CAPI helper** | `lib/capi.ts` · `lib/capi-fire.ts` | Paddle + LS webhooks · /api/lead · /api/capi | ✅ Live (token set, audit on) |
-| 8 | **HMAC download tokens** (provider-agnostic) | `lib/download-token.ts` · `lib/token-store.ts` | Paddle + LS webhooks · /api/session-token · /api/download/[token] | ✅ Live |
+| 6 | **Shared webhook idempotency** | `lib/webhook-idempotency.ts` | Retired provider + LS webhooks | ✅ Live |
+| 7 | **Unified CAPI helper** | `lib/capi.ts` · `lib/capi-fire.ts` | Retired provider + LS webhooks · /api/lead · /api/capi | ✅ Live (token set, audit on) |
+| 8 | **HMAC download tokens** (provider-agnostic) | `lib/download-token.ts` · `lib/token-store.ts` | Retired provider + LS webhooks · /api/session-token · /api/download/[token] | ✅ Live |
 | 9 | **Referral / affiliate** | `lib/referral.ts` · `lib/commissions.ts` · 5 affiliate routes | ?ref=CODE capture · webhooks · payouts · cron | ✅ Live |
 | 10 | **Cron jobs** (Vercel-scheduled) | `app/api/cron/affiliate-payouts/` · `app/api/cron/weekly-intelligence/` · `vercel.json` | requireCronAuth · income-ledger · referral | ✅ Wired (Vercel will trigger) |
 | 11 | **Rate limiting** | `lib/rate-limit.ts` | 8 write routes | ✅ Live |
@@ -261,8 +261,8 @@ aikagan-web/
 | 20 | **CRM + Live Chat** | `components/shared/CRMPipeline.tsx` · `LiveChat.tsx` | /api/lead · /api/income/reality | ✅ Live (CRM is admin-only) |
 | 21 | **Pageview beacon** | `components/shared/PageviewBeacon.tsx` | /api/income/track | ✅ Live |
 | 22 | **Vitals** | `components/shared/WebVitalsReporter.tsx` · `/api/vitals` | web-vitals lib | ✅ Live (no FastAPI to forward to yet) |
-| 23 | **Paddle domain re-positioning** | `app/page.tsx` · `app/services/page.tsx` · constants · Navbar · Footer · mission-control · contact | Public surface (Paddle review) | ✅ Deployed; awaiting Paddle re-review |
-| 24 | **`/api/checkout` health diagnostic** | `app/api/checkout/route.ts` GET | `selectProvider()` | ✅ Live (returns `{active:"paddle"}`) |
+| 23 | **Retired provider domain re-positioning** | `app/page.tsx` · `app/services/page.tsx` · constants · Navbar · Footer · mission-control · contact | Public surface (Retired provider review) | ✅ Deployed; awaiting Retired provider re-review |
+| 24 | **`/api/checkout` health diagnostic** | `app/api/checkout/route.ts` GET | `selectProvider()` | ✅ Live (returns `{active:"retired_provider"}`) |
 
 ---
 
@@ -276,7 +276,7 @@ aikagan-web/
 | `GET /api/income/setup` | 200, `ready: true` | 15/15 env vars, 6/6 required |
 | `GET /api/income/reality?days=7` | 200, valid shape | KV-backed; currently 0 traffic (expected, no buyers yet) |
 | `GET /api/income/funnel` | 200 | KV-backed |
-| `GET /api/checkout` | 200, `{active:"paddle"}` | selectProvider diagnostic |
+| `GET /api/checkout` | 200, `{active:"retired_provider"}` | selectProvider diagnostic |
 | `POST /api/affiliate/click` | 200, `{ok:true}` | Records click to KV |
 | `POST /api/income/seed` (no auth) | 401 | x-admin-secret gate works |
 | `GET /api/cron/affiliate-payouts` (no auth) | 401 | Bearer auth works |
@@ -289,16 +289,16 @@ aikagan-web/
 | `GET /income` | 200 | Income reality dashboard |
 | `GET /dashboard/financials` | 200 | MRR/expenses chart |
 | `GET /dashboard/profit-intelligence` | 200 | 8 streams breakdown |
-| `GET /services` (now redirect) | 307 → `/products/` | Paddle-friendly navigation |
+| `GET /services` (now redirect) | 307 → `/products/` | Retired provider-friendly navigation |
 
 ### ⚠️ Wired, not yet exercised (waiting on operator action)
 
 | Check | Needs | Status |
 |---|---|---|
-| **Live Paddle checkout** | Paddle domain re-approval (3 working days from email) | Awaiting support email response |
+| **Live Retired provider checkout** | Retired provider domain re-approval (3 working days from email) | Awaiting support email response |
 | **CAPI Purchase events** | META_PIXEL_ID + META_CAPI_ACCESS_TOKEN | Token set, awaiting real purchase to fire |
 | **CAPI Lead events** | Same | Token set, `/api/lead` ready |
-| **Webhook end-to-end** | Real Paddle or LS test purchase | Paddle block until domain re-approval |
+| **Webhook end-to-end** | Real Retired provider or LS test purchase | Retired provider block until domain re-approval |
 | **Vercel KV (durable)** | KV_REST_API_URL + KV_REST_API_TOKEN | ✅ Now live per `/api/health` ("ok via upstash REST") |
 | **Cron trigger** | Vercel Cron needs to fire (Mon 8am / 9am) | Will fire on schedule |
 | **LS / Gumroad fallbacks** | LS_API_KEY + LS_STORE_ID + variant IDs | Code complete, env vars pending |
@@ -333,7 +333,7 @@ aikagan-web/
 | **5 — Entity-bound** | UK LTD or US LLC, Stripe re-onboard, subscriptions | Months 4+ |
 
 **What unblocks tier 2 (populated):**
-- ✅ Paddle domain re-approval (single email + 1 dashboard click)
+- ✅ Retired provider domain re-approval (single email + 1 dashboard click)
 - ⏳ First organic post to Twitter/LinkedIn/IndieHackers (operator action)
 - ⏳ First 5 affiliates onboarded (page is live, no one signed up yet)
 
@@ -346,12 +346,12 @@ work. The plumbing is fully in place.
 
 | Capability | Status | First customer touchpoint |
 |---|---|---|
-| 3-provider checkout (zero single-point-of-failure) | ✅ | Buy button → auto-routes to Paddle or LS |
+| 3-provider checkout (zero single-point-of-failure) | ✅ | Buy button → auto-routes to Retired provider or LS |
 | Real affiliate program with 8-char codes | ✅ | `?ref=CODE` → click tracked → commission recorded |
 | Daily durable income evidence (KV-backed) | ✅ | /income dashboard, audit-grade |
 | Cron-scheduled weekly rollup | ✅ | Mon 8am, 9am — local + remote |
 | Env-var single source of truth | ✅ | /api/income/setup, /admin/go-live |
-| Self-healing checkout (never dead-ends) | ✅ | Manual fallback if Paddle + LS both fail |
+| Self-healing checkout (never dead-ends) | ✅ | Manual fallback if Retired provider + LS both fail |
 | Webhook idempotency (7-day dedup) | ✅ | Prevents double-emails, double-commission |
 | CAPI audit trail (every attempt, even dropped) | ✅ | /api/health → capi_config status |
 | 30 ready-to-post social swipes + 5 emails | ✅ | /marketing — manual distribution |
@@ -426,28 +426,28 @@ open https://aikagan.com/marketing
 # Suggested: #1 (pain), #3 (curiosity), #7 (case-study style), #14 (build-in-public), #22 (urgency)
 ```
 
-### Step 3 — Verify the live Paddle re-approval (5 min)
+### Step 3 — Verify the live Retired provider re-approval (5 min)
 
 ```bash
-open https://login.paddle.com/
-# Check email (lazylarries@gmail.com) for the Paddle domain response
+open https://login.retired_provider.com/
+# Check email (lazylarries@gmail.com) for the Retired provider domain response
 # If approved: navigate to Developers → Checkout settings → enable default payment link
 # If still pending: wait
 ```
 
-### Step 4 — Verify end-to-end payment (15 min, only after Paddle approval)
+### Step 4 — Verify end-to-end payment (15 min, only after Retired provider approval)
 
 ```bash
 # 1. Open site
 open https://aikagan.com/products/
 
-# 2. Click "Buy Starter $29" → Paddle overlay opens
+# 2. Click "Buy Starter $29" → Retired provider overlay opens
 
-# 3. Use Paddle test card 4242 4242 4242 4242 (or real card for $1)
+# 3. Use Retired provider test card 4242 4242 4242 4242 (or real card for $1)
 
 # 4. After success, you land on /checkout-success?transaction_id=...
 
-# 5. Webhook fires (Paddle → /api/webhooks/paddle)
+# 5. Webhook fires (Retired provider → /api/webhooks/retired_provider)
 
 # 6. CAPI Purchase event fires (Meta Events Manager → Test Events)
 
@@ -462,21 +462,21 @@ open https://aikagan.com/products/
 
 | # | Before | After | Why |
 |---|---|---|---|
-| 1 | One payment provider (Paddle) | Three (Paddle, LS, Gumroad stub) | Single provider failure = zero revenue |
+| 1 | One payment provider (Retired provider) | Three (Retired provider, LS, Gumroad stub) | Single provider failure = zero revenue |
 | 2 | Fabricated revenue dashboard | KV-backed audit-grade income ledger | Operators need truth, not hope |
 | 3 | No affiliate program | Full (codes, clicks, conversions, payouts, cron) | Distribution is the bottleneck |
 | 4 | CAPI token missing → silently dropped events | CAPI token set + every attempt audit-logged | Attribution is the marketing ROI moat |
-| 5 | Stripe rejected (Turkey) | Paddle primary + LS fallback | Stripe physically can't serve TR merchants |
-| 6 | `/services` (consulting) on site | `/services` redirects to `/products` | Paddle requires digital-product positioning |
-| 7 | "AI Engine" / "Launch Engine" copy | "Open Platform" / "App" copy | Paddle's domain classifier rejected services language |
+| 5 | Stripe rejected (Turkey) | Retired provider primary + LS fallback | Stripe physically can't serve TR merchants |
+| 6 | `/services` (consulting) on site | `/services` redirects to `/products` | Retired provider requires digital-product positioning |
+| 7 | "AI Engine" / "Launch Engine" copy | "Open Platform" / "App" copy | Retired provider's domain classifier rejected services language |
 | 8 | Single KV (Vercel-only) | Upstash REST + Vercel KV + in-memory | Works on Hobby plan + survives cold start |
 | 9 | No rate limiting | Sliding window per route | Protects against bot abuse on free-PDF lead |
 | 10 | No env-var audit | 15 audited, 6 required, all set | Onboarding a new env doesn't break anything |
 | 11 | Manual cron configuration | `vercel.json` crons + Bearer auth | Vercel Cron will actually fire |
 | 12 | Webhook double-fire risk | 7-day idempotency window | Prevents duplicate commission + emails |
 | 13 | No self-test data | 30-day realistic seed | Operator can preview dashboard before first sale |
-| 14 | Hardcoded `/api/paddle-checkout` everywhere | Single `/api/checkout` router | Adding a provider = 1 file, not 30 grep-and-replace |
-| 15 | Token store scattered | Single `lib/token-store.ts` shared | Works for Paddle + LS without fork |
+| 14 | Hardcoded `/api/retired_provider-checkout` everywhere | Single `/api/checkout` router | Adding a provider = 1 file, not 30 grep-and-replace |
+| 15 | Token store scattered | Single `lib/token-store.ts` shared | Works for Retired provider + LS without fork |
 
 ---
 
@@ -484,9 +484,9 @@ open https://aikagan.com/products/
 
 | Risk | Likelihood | Mitigation in pack | Status |
 |---|---|---|---|
-| Paddle rejects aikagan.com again | Low (copy already repositioned) | LS fallback wired, env-driven | Mitigated |
-| Paddle domain re-review takes >7 days | Medium | Same LS fallback | Mitigated |
-| Paddle checkout fails for one buyer | Low | Provider-router falls through to LS | Mitigated |
+| Retired provider rejects aikagan.com again | Low (copy already repositioned) | LS fallback wired, env-driven | Mitigated |
+| Retired provider domain re-review takes >7 days | Medium | Same LS fallback | Mitigated |
+| Retired provider checkout fails for one buyer | Low | Provider-router falls through to LS | Mitigated |
 | LS also rejects domain | Low | Gumroad stub ready, manual checkout safety-net | Mitigated |
 | Vercel KV quota exceeded on Hobby | Low | In-memory fallback works, just resets on cold-start | Mitigated |
 | CAPI token leaked | Low (env-only) | Audit log shows every event, easy revoke | Mitigated |
@@ -508,14 +508,14 @@ open https://aikagan.com/products/
 - [x] `/api/income/setup` returns `ready: true` (achieved: 6/6 required env vars set)
 - [x] All admin routes return 401 without `x-admin-secret` (achieved)
 - [x] All cron routes return 401 without Bearer (achieved)
-- [x] `/api/checkout` GET returns `{active: "paddle"}` (achieved)
+- [x] `/api/checkout` GET returns `{active: "retired_provider"}` (achieved)
 - [x] `?ref=CODE` click records to KV (achieved, returns 200)
 - [x] All public pages return 200 (achieved)
 - [x] Free PDF leads still work end-to-end (achieved, returns asset path)
 - [x] `/services` redirects to `/products/` (achieved, 307)
 - [x] No "Services", "AI Engine", "Launch Engine" in public surface (achieved)
 - [ ] `/api/affiliate/stats/aggregate` returns 200 (BLOCKED — needs rename)
-- [ ] First paid sale → real CAPI Purchase event lands in Meta (BLOCKED — needs Paddle re-approval + first buyer)
+- [ ] First paid sale → real CAPI Purchase event lands in Meta (BLOCKED — needs Retired provider re-approval + first buyer)
 - [ ] First affiliate signup → 8-char code generated (BLOCKED — needs operator to share `/affiliates` link)
 - [ ] First cron fire → weekly rollup email/log (BLOCKED — needs Mon 8am to pass)
 - [ ] `META_CAPI_ACCESS_TOKEN` flips to `ok` in `/api/health` (BLOCKED — needs health check investigation)
@@ -532,12 +532,12 @@ open https://aikagan.com/products/
 1. `lib/kv.ts` (typed KV with fallback) — everything else uses it
 2. `lib/cron-auth.ts` + `lib/rate-limit.ts` (security primitives)
 3. `lib/token-store.ts` + `lib/download-token.ts` (HMAC tokens, provider-agnostic)
-4. `lib/paddle-client.ts` (Paddle SDK singleton)
+4. `lib/retired_provider-client.ts` (Retired provider SDK singleton)
 5. `lib/products.ts` (catalog)
 6. `lib/provider-router.ts` (pick provider)
-7. `app/api/paddle-checkout/` + `app/api/lemonsqueezy-checkout/` (provider endpoints)
+7. `app/api/retired_provider-checkout/` + `app/api/lemonsqueezy-checkout/` (provider endpoints)
 8. `app/api/checkout/route.ts` (public router)
-9. `app/api/webhooks/paddle/` + `app/api/webhooks/lemonsqueezy/` (webhooks, depend on `kv.ts`, `capi-fire.ts`, `commissions.ts`, `webhook-idempotency.ts`)
+9. `app/api/webhooks/retired_provider/` + `app/api/webhooks/lemonsqueezy/` (webhooks, depend on `kv.ts`, `capi-fire.ts`, `commissions.ts`, `webhook-idempotency.ts`)
 10. `lib/capi-fire.ts` (audit-logged CAPI)
 11. `lib/referral.ts` + `lib/commissions.ts` (affiliate logic)
 12. `app/api/affiliate/*` (5 routes)
@@ -574,7 +574,7 @@ open https://aikagan.com/products/
 > evidence-less, services-positioned site to a three-provider,
 > KV-backed, affiliate-enabled, CAPI-attributed, cron-scheduled,
 > rate-limited, admin-gated, audit-graded income system that is
-> currently `ok: true` on `/api/health` and waiting on **Paddle
+> currently `ok: true` on `/api/health` and waiting on **Retired provider
 > domain re-approval + first 5 affiliates + first 5 social posts** to
 > transition from "provisioned" to "populated" (the next business-tier
 > milestone).

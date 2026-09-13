@@ -11,7 +11,7 @@ interface HealthPayload {
   environment: string;
   uptime_seconds: number;
   checks: Record<string, { status: string; latency_ms: number; detail?: string }>;
-  income_sources: { kv: boolean; paddle: boolean; capi: boolean; ga4: boolean };
+  income_sources: { kv: boolean; gumroad: boolean; capi: boolean; ga4: boolean };
   audit_endpoints: Record<string, string>;
 }
 

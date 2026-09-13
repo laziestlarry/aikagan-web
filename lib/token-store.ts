@@ -1,15 +1,14 @@
 /**
- * Shared token store for Paddle transactions.
+ * Shared token store for verified commerce transactions.
  *
- * Populated by:  POST /api/webhooks/paddle   (on transaction.completed)
- *                  or  GET /api/session-token  (direct Paddle API fallback)
+ * Populated by verified provider webhooks and reconciliation jobs.
  * Consumed by:   GET  /api/session-token       (success page polling)
  *
  * Storage layers (tried in order):
  *   1. Vercel KV  — persists across serverless instances (best for production)
  *   2. In-memory  — single-instance fallback (local dev / hobby plan)
  *
- * Keys are namespaced as "paddle:txn:<transactionId>".
+ * Keys are namespaced as "commerce:txn:<transactionId>".
  * TTL: 48 hours (matches download token expiry).
  */
 
@@ -17,7 +16,7 @@ import type { TokenRecord } from "./token-store.types";
 
 export type { TokenRecord };
 
-const KV_PREFIX = "paddle:txn:";
+const KV_PREFIX = "commerce:txn:";
 const TTL_S = 48 * 60 * 60; // 48 hours
 
 let _kv: { get: Function; set: Function; del: Function } | null = null;

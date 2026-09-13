@@ -48,19 +48,6 @@ export async function GET(req: NextRequest) {
         any("SHOPIER_OSB_PASSWORD", "AUTONOMAX_SHOPIER_OSB_KEY", "AUTONOMAX_SHOPIER_OSB_PASSWORD"),
       note: "PAT plus callback credentials are required for product-specific checkout and verified fulfillment.",
     },
-    paddle: {
-      ready:
-        process.env.PADDLE_CHECKOUT_DISABLED !== "true" &&
-        configured("PADDLE_API_KEY") &&
-        configured("NEXT_PUBLIC_PADDLE_CLIENT_TOKEN") &&
-        configured("PADDLE_WEBHOOK_SECRET"),
-      approvedSurfaces: [
-        "app.aikagan.com",
-        "propulse-autonomax.web.app",
-        "autonomax-revenue-lenljbhrqq-uc.a.run.app",
-      ],
-      note: "Paddle may be used only on an approved surface. aikagan.com and checkout.aikagan.com are not treated as approved Paddle surfaces.",
-    },
     lemonsqueezy: {
       ready:
         lemonMerchantApproved &&
@@ -101,8 +88,8 @@ export async function GET(req: NextRequest) {
       key: "At least one complete checkout provider",
       required: true,
       status: Object.values(providers).some((provider) => provider.ready) ? "set" : "missing",
-      where: "Gumroad, Shopier, Paddle, or a future approved processor plus Vercel variables",
-      how: "Use API-verified Gumroad or Shopier on the root storefront. Use Paddle only on an approved Paddle surface with the complete credential set.",
+      where: "Gumroad or an explicitly commissioned regional backup plus Vercel variables",
+      how: "Use the API-verified Gumroad products mapped to the public catalog.",
     },
     {
       key: "NEXT_PUBLIC_GA_ID / NEXT_PUBLIC_GA_MEASUREMENT_ID",

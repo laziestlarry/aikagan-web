@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
     assumptions: [
       `One buyer converting through the full ladder yields $${totalPerBuyer} in gross revenue.`,
       `To reach $${REVENUE_TARGET_USD}, the path must close ${buyersNeeded} buyer${buyersNeeded === 1 ? "" : "s"} or scale ladder depth across channels.`,
-      "Each step uses the active checkout rail (Paddle primary, Shopier/Gumroad fallback) so it is wire-ready today.",
+      "Each step uses the active checkout rail (Gumroad primary, Shopier/Gumroad fallback) so it is wire-ready today.",
       "Service offers (Blueprint $99, Revenue Audit $29) deliver within 3 business days — keep promise tight.",
     ],
     notes: [

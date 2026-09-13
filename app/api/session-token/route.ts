@@ -7,9 +7,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getPaddleClient } from "@/lib/paddle-client";
-import { generateDownloadToken } from "@/lib/download-token";
-import { getProduct } from "@/lib/products";
 import { tokenStore, type TokenRecord } from "@/lib/token-store";
 import { CUSTOMER_SESSION_COOKIE, CUSTOMER_SESSION_TTL_MS, customerIdForEmail, signCustomerSession } from "@/lib/customer-session";
 import { customerStore } from "@/lib/customer-store";
@@ -50,39 +47,7 @@ export async function GET(req: NextRequest) {
     return verifiedResponse(transactionId, cached, cached.token ? {} : { service: true });
   }
 
-  if (!transactionId.startsWith("txn_")) {
-    return NextResponse.json({ status: "processing" }, { status: 202 });
-  }
-
-  const paddle = getPaddleClient();
-  if (!paddle) return NextResponse.json({ status: "processing" }, { status: 202 });
-
-  try {
-    const transaction = await paddle.transactions.get(transactionId);
-    if (transaction.status !== "completed" && transaction.status !== "paid") {
-      return NextResponse.json({ status: "processing" }, { status: 202 });
-    }
-
-    const slug: string | undefined = (transaction.customData as any)?.product_slug;
-    if (!slug) return NextResponse.json({ error: "Transaction missing product_slug" }, { status: 404 });
-    const product = getProduct(slug);
-    if (!product) return NextResponse.json({ error: `Unknown product: ${slug}` }, { status: 404 });
-
-    const email: string = transaction.customer?.email ?? "unknown@checkout";
-    if (email === "unknown@checkout") return NextResponse.json({ status: "processing" }, { status: 202 });
-
-    if (product.deliveryMode === "service" || !product.zipFilename) {
-      const record: TokenRecord = { token: null, slug, email, exp: Date.now() + 48 * 60 * 60 * 1000 };
-      await tokenStore.set(transactionId, record);
-      return verifiedResponse(transactionId, record, { service: true });
-    }
-
-    const token = generateDownloadToken(slug, transactionId, email);
-    const record: TokenRecord = { token, slug, email, exp: Date.now() + 48 * 60 * 60 * 1000 };
-    await tokenStore.set(transactionId, record);
-    return verifiedResponse(transactionId, record);
-  } catch (err: any) {
-    console.error("❌ Session-token lookup error:", err.message);
-    return NextResponse.json({ status: "processing" }, { status: 202 });
-  }
+  // Hosted sales are verified and written by the Gumroad webhook or the
+  // reconciliation job. Until that evidence exists, remain in processing.
+  return NextResponse.json({ status: "processing" }, { status: 202 });
 }

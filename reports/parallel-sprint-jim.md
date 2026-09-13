@@ -34,7 +34,7 @@
 [SPRINT] Seeding parallel revenue sprint of $2000 for Jim.
 [SUCCESS] Recorded revenue sprint transaction sprint_jim_1784396735945_a83e of $2000 in the ledger.
 [STORAGE] Identified storage backend: upstash
-[CONFIG] Paddle configured: false
+[CONFIG] Retired provider configured: false
 [CONFIG] Shopier configured: true
 [CONFIG] Gumroad configured: true
 [CONFIG] Meta CAPI configured: true
