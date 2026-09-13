@@ -5,7 +5,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 export type ProductTier = "lead_magnet" | "tripwire" | "core" | "premium" | "masterclass" | "recurring";
 export interface Product { slug:string; name:string; tier:string; ladderTier:ProductTier; price:number; originalPrice?:number; priceModel:"free"|"one_time"|"monthly"; description:string; bullets:string[]; checkoutUrl:string|null; zipFilename:string|null; nextSlug:string|null; badge?:string; guarantee?:string; image?:string; accentColor?:string; leadMagnetPath?:string; deliveryMode?:"download"|"service"|"hybrid"; deliverySteps?:string[]; positioning?:string; fulfillmentWindow?:string; }
-export const CHECKOUT_SENTINEL = "paddle";
+// Paid digital packs use the canonical income checkout controller, explicitly
+// pinned to Gumroad. This keeps the public catalog free of legacy Paddle routes.
+export const CHECKOUT_SENTINEL = "gumroad";
 export const products: Product[] = [
 {slug:"weekly-operating-map",name:"Weekly Operating Map",tier:"Free Download",ladderTier:"lead_magnet",price:0,priceModel:"free",description:"One-page weekly routine that replaces tool clutter with a single Sunday + Wednesday cadence.",bullets:["Sunday planning block (20 min)","Wednesday reset check-in (10 min)","Single-page printable PDF","Works offline, no tools required"],checkoutUrl:null,zipFilename:null,nextSlug:"masterclass-starter",leadMagnetPath:"/free-assets/weekly-operating-map.pdf",badge:"Free",accentColor:"#34d399"},
 {slug:"builder-starter-checklist",name:"Builder Starter Checklist",tier:"Free Download",ladderTier:"lead_magnet",price:0,priceModel:"free",description:"10-step checklist for first-time builders: from idea to first sale, no overwhelm.",bullets:["10 sequential steps from idea to first paid validation","No paid ads required to use the checklist","Removes 'where do I even start' paralysis","Instant digital delivery"],checkoutUrl:null,zipFilename:null,nextSlug:"masterclass-starter",leadMagnetPath:"/free-assets/builder-starter-checklist.pdf",badge:"Free",accentColor:"#34d399"},
