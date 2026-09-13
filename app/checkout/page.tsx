@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
 import { GUMROAD_PRODUCTS } from "@/lib/gumroad-products";
 import { getProduct } from "@/lib/products";
@@ -31,13 +30,13 @@ export default function CheckoutPage() {
                 <h2 className="mt-3 text-2xl font-black">{product.name}</h2>
                 <p className="mt-3 flex-1 text-sm leading-6 text-neutral-400">{product.description}</p>
                 <p className="mt-7 text-4xl font-black">{`$${product.price}`}</p>
-                <Link
+                <a
                   href={`/api/income/checkout?slug=${slug}&provider=gumroad`}
                   className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 font-black text-black"
                   data-hosted-checkout={hosted.permalink}
                 >
                   Continue securely <ArrowRight className="h-4 w-4" />
-                </Link>
+                </a>
               </article>
             );
           })}
