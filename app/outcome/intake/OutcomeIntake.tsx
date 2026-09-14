@@ -48,6 +48,7 @@ export default function OutcomeIntake() {
       if (!registration.ok) throw new Error('registration');
       const mission = await fetch('/api/customer/mission',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:draft.title,segment:draft.stage==='operating'?'sme':'founder',objective})});
       if (!mission.ok) throw new Error('mission');
+      fetch('/api/outcome/intake',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({clientEmail:draft.email,clientName:draft.owner,bottleneckStatement:objective,path:draft.priority==='revenue'?'opportunity':draft.priority==='growth'?'manage':'build',tierInterest:'starter'})}).catch(()=>{});
       window.location.assign('https://app.aikagan.com/dashboard');
     } catch {
       setError('The mission could not be saved. Your draft remains on this page. Retry or contact kagan@aikagan.com.');

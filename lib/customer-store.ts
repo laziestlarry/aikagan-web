@@ -17,6 +17,11 @@ export type Mission = {
   nextAction: string;
   createdAt: string;
   updatedAt: string;
+  stage?: "understand" | "investigate" | "decide" | "scope" | "build" | "verify" | "operate";
+  evidenceLevel?: "E0_claim" | "E1_made" | "E2_tested" | "E3_integrated" | "E4_live" | "E5_accepted";
+  escalateToHuman?: boolean;
+  acceptanceCheckSigned?: boolean;
+  outcomeMissionId?: string;
 };
 
 export type Deliverable = {
@@ -131,6 +136,10 @@ export const customerStore = {
       nextAction: input.nextAction,
       createdAt: now,
       updatedAt: now,
+      stage: "understand",
+      evidenceLevel: "E0_claim",
+      escalateToHuman: false,
+      acceptanceCheckSigned: false,
     };
     record.missions.unshift(mission);
     await persist(record);
