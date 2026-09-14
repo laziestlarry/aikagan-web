@@ -37,4 +37,6 @@ jobs:
       - name: Verify live commerce gates
         env:
           PRODUCTION_URL: ${{ steps.target.outputs.url }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          PRODUCTION_ADMIN_SECRET: ${{ secrets.PRODUCTION_ADMIN_SECRET }}
         run: node scripts/verify-production-readiness.mjs
