@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Gauge, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Clipboard, Gauge, ShieldCheck } from 'lucide-react';
 
 type Answers = Record<string, number>;
 const questions = [
@@ -19,10 +19,12 @@ const labels = ['No / unknown','Partly','Yes, reliably'];
 
 export default function RevenueLeakScan() {
   const [answers,setAnswers] = useState<Answers>({});
+  const [shareStatus,setShareStatus] = useState('');
   const complete = Object.keys(answers).length === questions.length;
   const score = useMemo(() => Math.round(Object.values(answers).reduce((a,b)=>a+b,0) / (questions.length*2) * 100), [answers]);
   const weakest = useMemo(() => questions.filter(([key]) => (answers[key] ?? 3) < 2).map(([key,q])=>({key,q,score:answers[key] ?? 0})).sort((a,b)=>a.score-b.score).slice(0,3), [answers]);
   const band = score >= 80 ? 'Conversion-ready' : score >= 55 ? 'Recoverable friction' : 'Revenue leakage likely';
+  async function share(){const shareUrl=`https://aikagan.com/tools/revenue-leak-scan?utm_source=leak_report&utm_medium=share&utm_campaign=zero_ad&score=${score}`;const text=`AIKAGAN Revenue Leak result: ${score}/100 — ${band}. ${shareUrl}`;try{if(navigator.share){await navigator.share({title:'AIKAGAN Revenue Leak result',text,url:shareUrl});setShareStatus('Share ready.');return;}await navigator.clipboard.writeText(text);setShareStatus('Result copied.');}catch{setShareStatus('Sharing cancelled.');}}
 
   return <div className="space-y-6">
     <div className="grid gap-4">
@@ -38,6 +40,8 @@ export default function RevenueLeakScan() {
       <h3 className="mt-7 font-semibold text-white">Highest-value fixes</h3>
       <div className="mt-3 space-y-3">{weakest.length ? weakest.map((item,i)=><div key={item.key} className="flex gap-3 rounded-xl bg-black/20 p-4"><CheckCircle2 className="mt-0.5 h-5 w-5 flex-none text-amber-300"/><div><div className="font-medium text-white">Priority {i+1}: {item.key}</div><p className="mt-1 text-sm text-neutral-400">Fix this before adding more traffic. A weak {item.key} layer compounds acquisition cost and hides demand.</p></div></div>) : <div className="rounded-xl bg-black/20 p-4 text-neutral-300">Your basic conversion chain is strong. The next experiment should focus on qualified traffic, offer economics, and retention.</div>}</div>
       <div className="mt-7 grid gap-3 sm:grid-cols-2"><Link href="https://app.aikagan.com/autonomax" className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 font-bold text-black">Explore AutonomaX <ArrowRight className="h-4 w-4"/></Link><Link href="/products" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-5 py-3 font-semibold text-white">See implementation options</Link></div>
+      <button type="button" onClick={share} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm text-neutral-300 hover:border-white/25 hover:text-white"><Clipboard className="h-4 w-4"/>Share / copy result</button>
+      {shareStatus && <p className="mt-2 text-xs text-emerald-300">{shareStatus}</p>}
       <p className="mt-4 flex items-center gap-2 text-xs text-neutral-500"><ShieldCheck className="h-4 w-4"/>No email required. No invented ROI. This score is based only on your answers.</p>
     </section>}
   </div>;

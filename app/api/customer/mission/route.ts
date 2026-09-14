@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CUSTOMER_SESSION_COOKIE, verifyCustomerSession } from "@/lib/customer-session";
 import { customerStore } from "@/lib/customer-store";
+import { createMission as createOutcomeMission } from "@/lib/outcomeos/store";
+import { newJob, runIntakeAgent, runProposalAgent } from "@/lib/outcomeos/agents";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,6 +37,18 @@ export async function POST(req: NextRequest) {
     objective,
     nextAction: NEXT_ACTION[segment] || NEXT_ACTION.founder,
   });
+  try {
+    const outcome = await createOutcomeMission({
+      bottleneckStatement: objective,
+      clientEmail: session.email,
+      tierInterest: "starter",
+    });
+    runIntakeAgent(newJob("intake", outcome.missionId, { bottleneckStatement: objective }));
+    runProposalAgent(newJob("proposal", outcome.missionId, { intake: outcome.intake }));
+    mission.outcomeMissionId = outcome.missionId;
+    mission.stage = outcome.stage;
+    mission.evidenceLevel = outcome.currentLevel;
+  } catch {}
   return NextResponse.json({ mission }, { status: 201 });
 }
 

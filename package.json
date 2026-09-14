@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "verify:seo": "node scripts/verify-seo.mjs"
+    "verify:seo": "node scripts/verify-seo.mjs",
+    "verify:outcomeos": "node scripts/verify-outcomeos.mjs"
   },
   "dependencies": {
     "@nopeion/shopier": "^2.0.0",
