@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aikagan | The Autonomous AI Agency Pipeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; color: #f5f5f5; }
+        .gradient-text {
+            background: linear-gradient(45deg, #fff 30%, #a1a1a1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
+        <div class="text-2xl font-bold tracking-tighter">AIKAGAN</div>
+        <div class="text-sm text-gray-400 uppercase tracking-widest">Founding Partner Program</div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 pt-20 pb-32 text-center">
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight gradient-text">
+            Stop Using AI as a Chatbot.<br>Start Using it as Infrastructure.
+        </h1>
+        <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            We build zero-gap autonomous AI agency pipelines that move high-performance operators from manual friction to total dominance.
+        </p>
+
+        <div class="glass-card p-8 rounded-3xl max-w-2xl mx-auto mb-20">
+            <h2 class="text-2xl font-bold mb-4">Get The Strategic Operator's AI Toolkit</h2>
+            <p class="text-gray-400 mb-8">Audit your value chain. Find your leaks. Bridge the gap to autonomy.</p>
+            
+            <form id="captureForm" class="flex flex-col md:flex-row gap-4">
+                <input type="email" id="email" placeholder="Enter your professional email" required 
+                       class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/20 text-white">
+                <button type="submit" id="submitBtn" class="bg-white text-black font-bold px-8 py-3 rounded-xl hover:bg-gray-200 transition-all">
+                    Send Me The Toolkit
+                </button>
+            </form>
+            <div id="responseMsg" class="hidden mt-4 text-sm font-medium"></div>
+            <p class="text-xs text-gray-500 mt-4 italic">Zero hype. Pure utility. Immediate access.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 text-left">
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="text-white font-bold mb-2">01. Attraction</div>
+                <p class="text-sm text-gray-400">Turn cold outreach into inbound authority with "The Magnet".</p>
+            </div>
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="text-white font-bold mb-2">02. Qualification</div>
+                <p class="text-sm text-gray-400">Automate intent verification. No more wasted discovery calls.</p>
+            </div>
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="text-white font-bold mb-2">03. Fulfillment</div>
+                <p class="text-sm text-gray-400">Zero-gap delivery pipelines that certify financial returns.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/5 py-12 text-center">
+        <p class="text-sm text-gray-600">&copy; 2026 Aikagan. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('captureForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('responseMsg');
+
+            btn.disabled = true;
+            btn.innerText = 'Sending...';
+
+            try {
+                const response = await fetch('http://localhost:3000/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    msg.innerText = data.message;
+                    msg.className = 'mt-4 text-sm font-medium text-green-400';
+                    document.getElementById('captureForm').classList.add('hidden');
+                } else {
+                    throw new Error(data.error || 'Something went wrong');
+                }
+            } catch (err) {
+                msg.innerText = err.message;
+                msg.className = 'mt-4 text-sm font-medium text-red-400';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Send Me The Toolkit';
+                msg.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
