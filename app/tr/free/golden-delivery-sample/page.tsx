@@ -55,7 +55,7 @@ export default function TurkishDeliverySample() {
             </p>
             <div className="mt-7 space-y-3">
               <Link href="/tr/tools/revenue-leak-scan" className="flex items-center justify-between rounded-xl bg-amber-300 px-5 py-3 font-black text-black">
-                Ücretsiz Gelir Kaçağı Testi <ArrowRight className="h-4 w-4" />
+                Ücretsiz Gelir Kaybı Testi <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/tr/products" className="flex items-center justify-between rounded-xl border border-white/15 px-5 py-3 font-bold text-white">
                 Hazır çözümleri gör <ArrowRight className="h-4 w-4" />

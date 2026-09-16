@@ -50,7 +50,7 @@ function setPreferenceAndRedirect(request: NextRequest, locale: 'en' | 'tr') {
   url.searchParams.delete('lang');
   url.pathname = locale === 'tr' ? '/tr' : '/';
   const response = NextResponse.redirect(url, 307);
-  response.cookies.set(LOCALE_COOKIE, locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax', secure: true });
+  response.cookies.set(LOCALE_COOKIE, locale, { domain: '.aikagan.com', path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax', secure: true });
   return response;
 }
 
@@ -114,7 +114,9 @@ export function middleware(request: NextRequest) {
   }
 
   if (host === APEX_HOST && (cleanPath === '/tr' || cleanPath.startsWith('/tr/'))) {
-    return NextResponse.next({ request: { headers: localeHeaders(request, 'tr') } });
+    const response = NextResponse.next({ request: { headers: localeHeaders(request, 'tr') } });
+    response.cookies.set(LOCALE_COOKIE, 'tr', { domain: '.aikagan.com', path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax', secure: true });
+    return response;
   }
 
   if (host === APP_HOST) {
@@ -123,6 +125,9 @@ export function middleware(request: NextRequest) {
     if (startsWithAny(cleanPath, LEGACY_INTERNAL_DASHBOARDS)) return redirectTo(APP_HOST, '/dashboard');
     if (startsWithAny(cleanPath, WEB_PREFIXES)) return redirectTo(APEX_HOST, cleanPath, search);
     if (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/')) return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
+    if (cleanPath === '/checkout-success' && request.cookies.get(LOCALE_COOKIE)?.value === 'tr') {
+      return NextResponse.next({ request: { headers: localeHeaders(request, 'tr') } });
+    }
   }
 
   if (host === APEX_HOST && startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);

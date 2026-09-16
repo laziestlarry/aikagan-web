@@ -16,7 +16,7 @@ export default function LiveChat({ locale = "en" }: { locale?: Locale }) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="font-semibold text-kagan-white">{isTurkish ? "Seçmekte zorlanıyor musunuz?" : "Need help choosing?"}</p>
-              <p className="mt-1 text-sm leading-6 text-kagan-light">{isTurkish ? "Ücretsiz Gelir Kaçağı Testi ile başlayın veya uygulama desteği için bize yazın." : "Start with the free Revenue Leak Scan, or contact AIKAGAN for implementation support."}</p>
+              <p className="mt-1 text-sm leading-6 text-kagan-light">{isTurkish ? "Ücretsiz Gelir Kaybı Testi ile başlayın veya uygulama desteği için bize yazın." : "Start with the free Revenue Leak Scan, or contact AIKAGAN for implementation support."}</p>
             </div>
             <button aria-label={isTurkish ? "Yardımı kapat" : "Close chat"} onClick={() => setOpen(false)} className="text-kagan-muted hover:text-kagan-white"><X className="h-4 w-4" /></button>
           </div>

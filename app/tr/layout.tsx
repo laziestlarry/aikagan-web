@@ -21,5 +21,35 @@ export const metadata: Metadata = {
 };
 
 export default function TurkishLayout({ children }: { children: React.ReactNode }) {
-  return <div lang="tr">{children}</div>;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://aikagan.com/#organization',
+        name: 'AIKAGAN',
+        url: 'https://aikagan.com/tr',
+        email: 'kagan@aikagan.com',
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://aikagan.com/tr#website',
+        name: 'AIKAGAN Türkiye',
+        url: 'https://aikagan.com/tr',
+        inLanguage: 'tr-TR',
+        publisher: { '@id': 'https://aikagan.com/#organization' },
+      },
+      {
+        '@type': 'ItemList',
+        name: 'Ücretsiz AIKAGAN İş Araçları',
+        inLanguage: 'tr-TR',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Gelir Kaybı Testi', url: 'https://aikagan.com/tr/tools/revenue-leak-scan' },
+          { '@type': 'ListItem', position: 2, name: 'Hazır Teslimat Örneği', url: 'https://aikagan.com/tr/free/golden-delivery-sample' },
+          { '@type': 'ListItem', position: 3, name: 'Ücretsiz İş Hedefi Taslağı', url: 'https://aikagan.com/tr/outcome/intake' },
+        ],
+      },
+    ],
+  };
+  return <div lang="tr"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />{children}</div>;
 }

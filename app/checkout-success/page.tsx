@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, useRef } from "react";
 import { CheckCircle, Download, FileText, Mail, Sparkles, Zap, Shield } from "lucide-react";
 import { getProduct, products } from "@/lib/products";
+import { localizeProduct } from "@/lib/product-i18n";
 
 declare global {
   interface Window {
@@ -67,13 +68,13 @@ function useSessionToken(): { token: string | null; slug: string | null; service
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         } else if (attempts >= maxAttempts) {
-          setError("Token generation is taking longer than expected. Please check your email for the download link, or contact hello@aikagan.com.");
+          setError("Token generation is taking longer than expected. Please check your email for the download link, or contact kagan@aikagan.com.");
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         }
       } catch {
         if (attempts >= maxAttempts) {
-          setError("Could not retrieve your download token. Please email hello@aikagan.com with your order number.");
+          setError("Could not retrieve your download token. Please email kagan@aikagan.com with your order number.");
           setLoading(false);
           if (pollRef.current) clearInterval(pollRef.current);
         }
@@ -129,6 +130,7 @@ function CheckoutSuccessContent() {
   const { token, slug, service, loading, error } = useSessionToken();
   const [activeStep, setActiveStep] = useState(0);
   const [hasTransaction, setHasTransaction] = useState(false);
+  const [isTurkish, setIsTurkish] = useState(false);
 
   // Detect whether the user actually arrived with a transaction_id.
   // If not, the page must not pretend an order was confirmed.
@@ -136,6 +138,7 @@ function CheckoutSuccessContent() {
     if (typeof window === "undefined") return;
     const sp = new URLSearchParams(window.location.search);
     setHasTransaction(Boolean(sp.get("transaction_id") || sp.get("sale_id")));
+    setIsTurkish(sp.get("lang") === "tr" || document.cookie.split(";").some((part) => part.trim() === "aikagan_locale=tr"));
   }, []);
 
   // Resolve which product to show
@@ -174,6 +177,15 @@ function CheckoutSuccessContent() {
   // Dev fallback (`/api/download/demo-...`) is removed — it allowed the
   // page to look "confirmed" without an actual payment.
   const downloadHref = token ? `/api/download/${token}` : null;
+
+  if (isTurkish) {
+    const trProduct = product ? localizeProduct(product, "tr") : undefined;
+    return <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white"><section className="mx-auto max-w-3xl">
+      <p className="text-sm font-black uppercase tracking-[.25em] text-amber-300">{confirmed?'ÖDEME DOĞRULANDI':loading?'ÖDEME KONTROL EDİLİYOR':error?'DOĞRULAMA TAMAMLANAMADI':'TESLİMAT'}</p>
+      {!hasTransaction&&!loading&&!error?<div className="mt-8 rounded-3xl border border-white/10 bg-[#111827] p-8"><h1 className="text-4xl font-black">İndirme bağlantınızı mı arıyorsunuz?</h1><p className="mt-4 leading-7 text-neutral-300">Bu sayfa doğrulanmış Gumroad ödemesinden sonra açılır. Satın alma yaptıysanız güvenli indirme bağlantısı için sipariş e-postanızı kontrol edin.</p><div className="mt-6 flex gap-3"><Link href="/tr/products" className="rounded-xl bg-amber-300 px-5 py-3 font-black text-black">Ürünleri gör</Link><Link href="/tr" className="rounded-xl border border-white/15 px-5 py-3 font-bold">Ana sayfa</Link></div></div>:null}
+      {hasTransaction?<><h1 className="mt-4 text-4xl font-black md:text-6xl">{loading?'Siparişiniz hazırlanıyor…':error?'Sipariş doğrulanamadı':`${trProduct?.name??'Paketiniz'} hazır.`}</h1><p className="mt-4 text-lg leading-8 text-neutral-400">{loading?'Ödeme sağlayıcısının kaydı kontrol ediliyor ve güvenli teslimat hazırlanıyor.':error?'İndirme erişimi henüz doğrulanamadı. Sipariş numaranızla kagan@aikagan.com adresine yazın.':'Aşağıdaki bağlantıyı kullanarak dosyanızı alın ve başlangıç belgesini açın.'}</p>{loading?<div className="mt-10 rounded-3xl border border-amber-300/20 bg-[#111827] p-8 text-center"><div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-amber-300 border-t-transparent"/><p className="text-sm text-amber-200">Bu işlem genellikle birkaç saniye sürer. Lütfen sayfayı kapatmayın.</p></div>:<div className="mt-10 rounded-3xl border border-amber-300/20 bg-[#111827] p-8"><h2 className="text-2xl font-black">{trProduct?.name??'Dijital teslimat'}</h2><p className="mt-3 leading-7 text-neutral-300">{trProduct?.description}</p>{downloadHref?<a href={downloadHref} download className="mt-6 inline-flex items-center gap-3 rounded-xl bg-amber-300 px-6 py-4 font-black text-black"><Download className="h-5 w-5"/>ZIP paketini indir</a>:<div className="mt-6 rounded-xl border border-amber-300/25 bg-amber-300/10 p-5 text-sm leading-6 text-neutral-300"><strong className="text-amber-200">Bağlantınız e-postayla gönderiliyor.</strong><p className="mt-2">Yaklaşık 60 saniye içinde sipariş e-postanıza güvenli indirme bağlantısı gelir. Gelmezse spam klasörünü kontrol edin veya sipariş numaranızla kagan@aikagan.com adresine yazın.</p></div>}<div className="mt-7 border-t border-white/10 pt-6 text-sm text-neutral-400"><p>1. ZIP dosyasını indirin ve açın.</p><p className="mt-2">2. Önce START_HERE veya BAŞLANGIÇ dosyasını okuyun.</p><p className="mt-2">3. Sorun yaşarsanız sipariş numaranızla destek isteyin.</p></div></div>}<Link href="/tr/products" className="mt-8 inline-flex text-sm font-bold text-amber-300">Türkçe ürünlere dön →</Link></>:null}
+    </section></main>;
+  }
 
   return (
     <main className="min-h-screen bg-[#08080a] px-6 py-20 text-white relative overflow-hidden">
@@ -371,8 +383,8 @@ function CheckoutSuccessContent() {
                       Within ~60 seconds you&apos;ll receive a confirmation email with your secure
                       download link (valid 48 hours). If it doesn&apos;t arrive, check your spam
                       folder, or email{" "}
-                      <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">
-                        hello@aikagan.com
+                      <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">
+                        kagan@aikagan.com
                       </a>{" "}
                       with your order number and we&apos;ll re-send it manually within an hour.
                     </p>
@@ -418,7 +430,7 @@ function CheckoutSuccessContent() {
                       { icon: FileText, text: <><strong>Open START_HERE.pdf</strong> first — it maps the exact execution sequence.</> },
                       { icon: CheckCircle, text: 'Complete the 24-Hour Quick Win Checklist.' },
                     ]),
-                { icon: Mail, text: <>Questions? Email <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a></> },
+                { icon: Mail, text: <>Questions? Email <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a></> },
               ].map(({ icon: ItemIcon, text }, i) => (
                 <li key={i} className="flex gap-3 items-start">
                   <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-300/10 border border-amber-300/20 flex-shrink-0 mt-0.5">
