@@ -5,7 +5,7 @@ function isAikaganHost(hostname: string): boolean {
   return host === "aikagan.com" || host.endsWith(".aikagan.com");
 }
 
-export default {
+const edgeHandler = {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
 
@@ -30,3 +30,5 @@ export default {
     );
   },
 };
+
+export default edgeHandler;

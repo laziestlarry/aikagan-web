@@ -123,7 +123,7 @@ export const BlueprintGenerator: React.FC<BlueprintGeneratorProps> = ({ onBluepr
     const element = document.createElement("a");
     const file = new Blob([blueprint.rawMarkdown], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
-    element.download = \`AIKAGAN_Blueprint_\${niche.replace(/\\s+/g, '_')}.md\`;
+    element.download = `AIKAGAN_Blueprint_\${niche.replace(/\\s+/g, '_')}.md`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -180,7 +180,7 @@ export const BlueprintGenerator: React.FC<BlueprintGeneratorProps> = ({ onBluepr
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button" onClick={() => setTier("basic")}
-                className={\`p-3 rounded-sm border text-left transition-all cursor-pointer \${tier === "basic" ? "bg-white/[0.04] border-cyan-500" : "bg-transparent border-white/10 hover:border-white/20"}\`}
+                className={`p-3 rounded-sm border text-left transition-all cursor-pointer \${tier === "basic" ? "bg-white/[0.04] border-cyan-500" : "bg-transparent border-white/10 hover:border-white/20"}`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-white/95">Basic Plan</span>
@@ -190,7 +190,7 @@ export const BlueprintGenerator: React.FC<BlueprintGeneratorProps> = ({ onBluepr
               </button>
               <button
                 type="button" onClick={() => setTier("premium")}
-                className={\`p-3 rounded-sm border text-left transition-all cursor-pointer \${tier === "premium" ? "bg-white/[0.04] border-cyan-500" : "bg-transparent border-white/10 hover:border-white/20"}\`}
+                className={`p-3 rounded-sm border text-left transition-all cursor-pointer \${tier === "premium" ? "bg-white/[0.04] border-cyan-500" : "bg-transparent border-white/10 hover:border-white/20"}`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-white/95">Premium OS</span>
@@ -227,13 +227,13 @@ export const BlueprintGenerator: React.FC<BlueprintGeneratorProps> = ({ onBluepr
               <div className="flex gap-2">
                 <button
                   onClick={() => setActiveTab('document')}
-                  className={\`px-3 py-1.5 text-xs font-mono uppercase tracking-wider rounded-sm border transition-all cursor-pointer \${activeTab === 'document' ? 'bg-white/[0.04] text-cyan-400 border-cyan-500/30' : 'text-white/40 border-transparent hover:text-white'}\`}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider rounded-sm border transition-all cursor-pointer \${activeTab === 'document' ? 'bg-white/[0.04] text-cyan-400 border-cyan-500/30' : 'text-white/40 border-transparent hover:text-white'}`}
                 >
                   Blueprint Document
                 </button>
                 <button
                   onClick={() => setActiveTab('monetization')}
-                  className={\`px-3 py-1.5 text-xs font-mono uppercase tracking-wider rounded-sm border transition-all cursor-pointer \${activeTab === 'monetization' ? 'bg-white/[0.04] text-cyan-400 border-cyan-500/30' : 'text-white/40 border-transparent hover:text-white'}\`}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider rounded-sm border transition-all cursor-pointer \${activeTab === 'monetization' ? 'bg-white/[0.04] text-cyan-400 border-cyan-500/30' : 'text-white/40 border-transparent hover:text-white'}`}
                 >
                   Revenue Impact Model
                 </button>

@@ -262,9 +262,9 @@ export default function CommanderPage() {
               <button
                 key={r}
                 onClick={() => handleChangeRole(r)}
-                className={\`px-1.5 py-0.5 text-[9px] rounded-sm uppercase tracking-wider font-bold transition-all cursor-pointer \${
+                className={`px-1.5 py-0.5 text-[9px] rounded-sm uppercase tracking-wider font-bold transition-all cursor-pointer ${
                   tenant.role === r ? "bg-cyan-500 text-black" : "text-white/40 hover:text-white"
-                }\`}
+                }`}
               >
                 {r}
               </button>
@@ -276,9 +276,9 @@ export default function CommanderPage() {
               <button
                 key={c}
                 onClick={() => handleChangeCurrency(c)}
-                className={\`w-5 h-5 flex items-center justify-center text-[10px] rounded-sm font-bold transition-all cursor-pointer \${
+                className={`w-5 h-5 flex items-center justify-center text-[10px] rounded-sm font-bold transition-all cursor-pointer ${
                   tenant.currency === c ? "bg-white/20 text-cyan-400" : "text-white/40 hover:text-white"
-                }\`}
+                }`}
               >
                 {c}
               </button>
@@ -302,54 +302,54 @@ export default function CommanderPage() {
         <div className="max-w-7xl mx-auto flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('command')}
-            className={\`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm \${
+            className={`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm ${
               activeTab === 'command' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
-            }\`}
+            }`}
           >
             // AI Command Center
           </button>
 
           <button
             onClick={() => setActiveTab('blueprinter')}
-            className={\`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm \${
+            className={`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm ${
               activeTab === 'blueprinter' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
-            }\`}
+            }`}
           >
             // Venture Blueprinter
           </button>
 
           <button
             onClick={() => setActiveTab('workflows')}
-            className={\`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm \${
+            className={`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm ${
               activeTab === 'workflows' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
-            }\`}
+            }`}
           >
             // Make.com Workflows
           </button>
 
           <button
             onClick={() => setActiveTab('metrics')}
-            className={\`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm \${
+            className={`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm ${
               activeTab === 'metrics' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
-            }\`}
+            }`}
           >
             // Outcome Cockpit
           </button>
 
           <button
             onClick={() => setActiveTab('fulfillment')}
-            className={\`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm \${
+            className={`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm ${
               activeTab === 'fulfillment' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
-            }\`}
+            }`}
           >
             // Fulfillment Hub
           </button>
 
           <button
             onClick={() => setActiveTab('intelligence')}
-            className={\`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm \${
+            className={`px-4 py-2 text-xs font-mono tracking-wide uppercase transition-all cursor-pointer border rounded-sm ${
               activeTab === 'intelligence' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
-            }\`}
+            }`}
           >
             // Venture Dominance
           </button>
@@ -419,7 +419,7 @@ export default function CommanderPage() {
             © 2026 AIKAGAN VENTURE ECOSYSTEM // SECURE SHELL SESSION v4.11.0
           </div>
         </div>
-      </footer>
+      </footer}
     </div>
   );
 }

@@ -60,8 +60,6 @@ export function middleware(request: NextRequest) {
   const cleanPath = normalizePath(pathname);
   const requestedLanguage = request.nextUrl.searchParams.get('lang');
 
-  // aikagan.com/tr is the only Turkish canonical. Keep the country domain as
-  // a defensive entry point, never as a second indexable website.
   if (TURKEY_HOSTS.has(host)) {
     return redirectTo(APEX_HOST, canonicalTurkishPath(cleanPath), search);
   }
@@ -71,16 +69,10 @@ export function middleware(request: NextRequest) {
     return redirectTo(targetHost, cleanPath, search);
   }
 
-  // Checkout is a named entry point, not an independent storefront. Keep all
-  // commerce navigation on the app host until a separately verified checkout
-  // surface is intentionally introduced.
   if (host === CHECKOUT_HOST) {
     return redirectTo(APP_HOST, cleanPath === '/' ? '/checkout' : cleanPath, search);
   }
 
-  // OutcomeOS is a focused public intake surface on the same application.
-  // Rewrites keep the memorable subdomain URL while sharing the versioned
-  // API, customer session, and mission store with app.aikagan.com.
   if (host === OUTCOME_HOST) {
     if (cleanPath === '/outcome' || cleanPath.startsWith('/outcome/')) {
       return redirectTo(OUTCOME_HOST, cleanPath.replace(/^\/outcome/, '') || '/', search);
@@ -97,6 +89,8 @@ export function middleware(request: NextRequest) {
     const outcomeUrl = request.nextUrl.clone();
     outcomeUrl.pathname = cleanPath === '/' ? '/outcome' : `/outcome${cleanPath}`;
     const response = NextResponse.rewrite(outcomeUrl, { request: { headers: localeHeaders(request, 'en') } });
+    
+    // FIX: Only noindexOutcome if it's not the main intake landing page
     response.headers.set('X-Robots-Tag', cleanPath === '/' ? 'index, follow' : 'noindex, follow');
     return response;
   }
@@ -133,7 +127,13 @@ export function middleware(request: NextRequest) {
   if (host === APEX_HOST && startsWithAny(cleanPath, APP_PREFIXES)) return redirectTo(APP_HOST, cleanPath, search);
 
   const response = NextResponse.next({ request: { headers: localeHeaders(request, 'en') } });
-  if (host === APP_HOST || startsWithAny(cleanPath, ['/admin','/income','/intake','/thank-you'])) response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  
+  // FIX: Only noindex if it's explicitly an internal APP route or admin/income/intake/thank-you
+  // Public pages on APEX_HOST should be indexable.
+  if (host === APP_HOST || startsWithAny(cleanPath, ['/admin','/income','/intake','/thank-you'])) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+  
   return response;
 }
 

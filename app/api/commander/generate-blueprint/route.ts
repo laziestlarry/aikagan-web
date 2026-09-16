@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   const { idea, niche, tier } = await req.json();
   if (!idea || !niche) return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 
-  const fallbackMarkdown = \`# AI Venture Launch Blueprint: \${idea.toUpperCase()}
+  const fallbackMarkdown = `# AI Venture Launch Blueprint: \${idea.toUpperCase()}
   
 ## Executive Summary
 Deployment strategy for an autonomous AI venture in the **\${niche}** niche. Leveraging **AIKAGAN's Premium Operating Systems**, we translate the concept of "\${idea}" into a scalable commercial asset.
@@ -33,7 +33,7 @@ Deployment strategy for an autonomous AI venture in the **\${niche}** niche. Lev
 - Month 1: \${tier === 'premium' ? '2,450' : '1,200'} USD
 - Month 2: \${tier === 'premium' ? '5,800' : '3,400'} USD
 - Month 3: \${tier === 'premium' ? '12,400' : '7,800'} USD
-\`;
+`;
 
   const ai = await getAI();
   if (!ai) {
@@ -51,9 +51,9 @@ Deployment strategy for an autonomous AI venture in the **\${niche}** niche. Lev
   }
 
   try {
-    const prompt = \`You are the AIKAGAN AI Venture Director.
+    const prompt = `You are the AIKAGAN AI Venture Director.
 Generate a professional "AI Venture Launch Blueprint" for concept: "\${idea}" in niche: "\${niche}".
-Respond strictly in JSON: { "rawMarkdown": "...", "month1": number, "month2": number, "month3": number, "conversionRate": number }\`;
+Respond strictly in JSON: { "rawMarkdown": "...", "month1": number, "month2": number, "month3": number, "conversionRate": number }`;
 
     const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent({
