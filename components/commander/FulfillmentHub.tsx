@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { MakeScenario, ActivityLog, BlueprintResponse, TenantWorkspace } from "@/types/commander";
 import { safeDispatchTaskCompleted, safeDispatchWorkflowRun, globalCircuitBreaker, executeWithRetry, generateSHA256Certificate } from "@/lib/commander-resilience";
-import { MICRO_SAAS_BLUEPRINTS } from "../data/blueprints";
+import { MICRO_SAAS_BLUEPRINTS } from "@/lib/commander-blueprints";
 
 interface FulfillmentHubProps {
   onWorkflowRun: (scenarioId: string, runOutput: any) => void;
