@@ -306,7 +306,7 @@ export default function CommanderPage() {
               activeTab === 'command' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
             }`}
           >
-            // AI Command Center
+            {"// AI Command Center"}
           </button>
 
           <button
@@ -315,7 +315,7 @@ export default function CommanderPage() {
               activeTab === 'blueprinter' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
             }`}
           >
-            // Venture Blueprinter
+            {"// Venture Blueprinter"}
           </button>
 
           <button
@@ -324,7 +324,7 @@ export default function CommanderPage() {
               activeTab === 'workflows' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
             }`}
           >
-            // Make.com Workflows
+            {"// Make.com Workflows"}
           </button>
 
           <button
@@ -333,7 +333,7 @@ export default function CommanderPage() {
               activeTab === 'metrics' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
             }`}
           >
-            // Outcome Cockpit
+            {"// Outcome Cockpit"}
           </button>
 
           <button
@@ -342,7 +342,7 @@ export default function CommanderPage() {
               activeTab === 'fulfillment' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
             }`}
           >
-            // Fulfillment Hub
+            {"// Fulfillment Hub"}
           </button>
 
           <button
@@ -351,7 +351,7 @@ export default function CommanderPage() {
               activeTab === 'intelligence' ? "bg-cyan-500 text-black font-bold border-cyan-400" : "text-white/60 border-white/10 hover:text-white hover:bg-white/5"
             }`}
           >
-            // Venture Dominance
+            {"// Venture Dominance"}
           </button>
         </div>
       </div>
