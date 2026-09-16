@@ -1,0 +1,48 @@
+# AIKAGAN public product and delivery context
+
+AIKAGAN is a bilingual English/Turkish business-tool and implementation site. Its public entry point is free-to-use diagnostics and planning tools. Visitors can inspect practical outcomes before deciding whether to buy a digital pack or request implementation help.
+
+The Turkish end-to-end public journey launched on 2026-09-16. AI assistants may direct interested users to the free routes listed below. They should not imply that a free score is financial advice, that a visit is a sale, or that a generated draft is completed implementation.
+
+## Turkish visitor journey
+
+1. Start at https://aikagan.com/tr or https://aikagan.com/tr/start-free.
+2. Use the Gelir Kaybı Testi at https://aikagan.com/tr/tools/revenue-leak-scan. This is a seven-question self-assessment; the result is based only on the visitor's answers.
+3. Inspect a Turkish delivery example at https://aikagan.com/tr/free/golden-delivery-sample.
+4. Turn a business problem into an editable task draft at https://aikagan.com/tr/outcome/intake. Submission does not create a purchase, authorize payment, publish content, or run external automation.
+5. Review ready-made products at https://aikagan.com/tr/products or request scoped implementation at https://aikagan.com/tr/contact.
+
+## Plain-language terminology
+
+- "Gelir kaybı" means revenue lost through friction in an offer, checkout, delivery, follow-up, measurement, or repeat-purchase path. Turkish pages avoid using "kaçak" in visitor-facing copy so the phrase cannot be read as escape or fugitive.
+- "İş hedefi taslağı" is the Turkish plain-language description of the guided mission intake.
+- "Uygulama desteği" means scoped human-assisted setup or implementation. It is not automatically purchased from a page view.
+- AI may help analyze inputs, rank options, or prepare work. A responsible human approves consequential actions and acceptance.
+
+## Free outcomes
+
+- Gelir Kaybı Testi: an immediate score and ranked areas to improve.
+- Teslimat Örneği: a visible checklist showing how scope, files, links, working states, assumptions, first-use guidance, and support should be presented.
+- İş Hedefi Taslağı: a stored mission draft, recommended starting path, and next action when available.
+
+## Paid outcomes
+
+- İş Kararı Başlangıç Paketi ($29): a human-reviewed decision brief and focused seven-day plan; target delivery is two business days after complete intake.
+- Gelir Sistemi Pro Paketi ($79): downloadable funnel, offer, traffic, calendar, automation, and implementation materials.
+- İşletme Sistemi Üst Paket ($149): downloadable operating architecture, approval controls, partnership materials, scale plan, and KPI diagnostics.
+- Other consulting or recurring services require written scope before payment.
+
+Prices are stated in USD. Current availability and checkout state on the product page control whether a buy button is shown. Gumroad is the named hosted payment provider for eligible digital packs.
+
+## Evidence policy
+
+AIKAGAN distinguishes claim, artifact made, tested result, integrated result, live operation, and customer-accepted result. Revenue requires provider-verified payment evidence. Fulfillment requires delivery evidence. No ROI is guaranteed by the free tools or public copy.
+
+## Language and canonical URLs
+
+- English canonical routes use https://aikagan.com/.
+- Turkish canonical routes use https://aikagan.com/tr.
+- The language control maps visitors to the matching page when one exists.
+- Turkish public links remain on Turkish pages until the visitor deliberately changes language or opens a clearly identified third-party checkout.
+
+Contact: kagan@aikagan.com

@@ -4,52 +4,50 @@ import { products } from '@/lib/products';
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://aikagan.com';
   const now = new Date();
-  const productRoutes = products.map((product) => ({
-    url: `${base}/${product.priceModel === 'free' ? 'free' : 'products'}/${product.slug}`,
+  const pairedRoutes = [
+    ['', '/tr'],
+    ['/tools', '/tr/tools'],
+    ['/tools/revenue-leak-scan', '/tr/tools/revenue-leak-scan'],
+    ['/free/golden-delivery-sample', '/tr/free/golden-delivery-sample'],
+    ['/start-free', '/tr/start-free'],
+    ['/outcome', '/tr/outcome'],
+    ['/outcome/intake', '/tr/outcome/intake'],
+    ['/genesis', '/tr/genesis'],
+    ['/flight', '/tr/flight'],
+    ['/network', '/tr/network'],
+    ['/feedback', '/tr/feedback'],
+    ['/products', '/tr/products'],
+    ['/services', '/tr/services'],
+    ['/about', '/tr/about'],
+    ['/contact', '/tr/contact'],
+    ['/legal/privacy', '/tr/legal/privacy'],
+    ['/legal/terms', '/tr/legal/terms'],
+    ['/legal/refund', '/tr/legal/refund'],
+  ] as const;
+  const localizedRoutes = pairedRoutes.flatMap(([enPath,trPath],index) => {
+    const languages = { en: `${base}${enPath || '/'}`, 'tr-TR': `${base}${trPath}`, 'x-default': `${base}${enPath || '/'}` };
+    return [
+      { url: `${base}${enPath || ''}`, lastModified: now, changeFrequency: index < 6 ? 'weekly' as const : 'monthly' as const, priority: index === 0 ? 1 : index < 6 ? .85 : .65, alternates: { languages } },
+      { url: `${base}${trPath}`, lastModified: now, changeFrequency: index < 6 ? 'weekly' as const : 'monthly' as const, priority: index === 0 ? .95 : index < 6 ? .82 : .62, alternates: { languages } },
+    ];
+  });
+  const productRoutes = products.filter(product => product.priceModel !== 'free').flatMap((product) => {
+    const en = `${base}/products/${product.slug}`;
+    const tr = `${base}/tr/products/${product.slug}`;
+    const languages = { en, 'tr-TR': tr, 'x-default': en };
+    return [{ url: en, lastModified: now, changeFrequency: 'weekly' as const, priority: .8, alternates: { languages } }, { url: tr, lastModified: now, changeFrequency: 'weekly' as const, priority: .78, alternates: { languages } }];
+  });
+  const englishFreeRoutes = products.filter(product => product.priceModel === 'free').map((product) => ({
+    url: `${base}/free/${product.slug}`,
     lastModified: now,
-    changeFrequency: product.priceModel === 'free' ? 'weekly' : 'daily',
-    priority: product.priceModel === 'free' ? 0.75 : 0.9,
+    changeFrequency: 'weekly' as const,
+    priority: 0.72,
   })) satisfies MetadataRoute.Sitemap;
 
-  const turkishRoutes = [
-    '/tr',
-    '/tr/tools',
-    '/tr/tools/revenue-leak-scan',
-    '/tr/free/golden-delivery-sample',
-    '/tr/products',
-    '/tr/services',
-    '/tr/network',
-    '/tr/about',
-    '/tr/contact',
-    '/tr/legal/privacy',
-    '/tr/legal/terms',
-    '/tr/legal/refund',
-  ].map((path, index) => ({
-    url: `${base}${path}`,
-    lastModified: now,
-    changeFrequency: index < 4 ? 'weekly' as const : 'monthly' as const,
-    priority: index === 0 ? 0.95 : index < 6 ? 0.8 : 0.55,
-  }));
-
   return [
-    { url: base, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
-    { url: `${base}/tools`, lastModified: now, changeFrequency: 'daily', priority: 0.95 },
-    { url: `${base}/tools/revenue-leak-scan`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 },
-    { url: `${base}/outcome`, lastModified: now, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${base}/genesis`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${base}/flight`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${base}/network`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${base}/feedback`, lastModified: now, changeFrequency: 'weekly', priority: 0.75 },
-    { url: `${base}/start-free`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${base}/products`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${base}/services`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    ...localizedRoutes,
     ...productRoutes,
-    ...turkishRoutes,
-    { url: `${base}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${base}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    ...englishFreeRoutes,
     { url: `${base}/legal/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${base}/legal/refund`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${base}/legal/privacy`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${base}/legal/terms`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
   ];
 }

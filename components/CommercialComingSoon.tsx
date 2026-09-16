@@ -13,7 +13,7 @@ const copy = {
     primary: "Run the free Revenue Leak Scan",
     secondary: "See all free tools",
     note: "The next paid release will open only after a complete purchase-to-delivery test passes.",
-    support: "Support: hello@aikagan.com",
+    support: "Support: kagan@aikagan.com",
   },
   tr: {
     eyebrow: "AIKAGAN · DOĞRULANMIŞ TESLİMAT",
@@ -21,10 +21,10 @@ const copy = {
     body: "Yayınlanan içerik, lisans, ödeme ve teslim edilen dosyaların birebir uyuşması için tüm ücretli teklifleri yeniden hazırlıyoruz. Bu doğrulama tamamlanana kadar ödeme geçici olarak durduruldu.",
     status: "Bu sayfada ödeme alınmıyor",
     free: "Ücretsiz araçlar kullanıma açık",
-    primary: "Ücretsiz Gelir Kaçağı Testini Başlat",
+    primary: "Ücretsiz Gelir Kaybı Testini Başlat",
     secondary: "Tüm ücretsiz araçları gör",
     note: "Ücretli teklifler, satın almadan teslimata kadar tüm testler başarıyla tamamlandıktan sonra açılacak.",
-    support: "Destek: hello@aikagan.com",
+    support: "Destek: kagan@aikagan.com",
   },
 } as const;
 

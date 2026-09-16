@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "verify:seo": "node scripts/verify-seo.mjs",
+    "verify:tr": "node scripts/verify-turkish-journey.mjs",
     "verify:outcomeos": "node scripts/verify-outcomeos.mjs"
   },
   "dependencies": {

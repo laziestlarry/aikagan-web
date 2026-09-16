@@ -23,7 +23,7 @@ export default function TermsPage() {
               Upon successful checkout via Gumroad, you will receive an email confirmation
               and download link. Delivery is instant and automated. If you do not receive your
               download within 30 minutes of purchase, contact{" "}
-              <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>.
+              <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a>.
             </p>
           </div>
 
@@ -101,7 +101,7 @@ are determined by your country of residence. You are responsible for any additio
             <h2 className="text-lg font-semibold text-white mb-3">6. Support</h2>
             <p>
               Customer support is available at{" "}
-              <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>.
+              <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a>.
               We aim to respond within 2 business days. Support covers delivery issues, file access,
               and general product guidance. It does not include personal business coaching or custom
               implementation work (see Services for that).
@@ -129,7 +129,7 @@ are determined by your country of residence. You are responsible for any additio
           <div>
             <h2 className="text-lg font-semibold text-white mb-3">Contact</h2>
             <p>
-              <a href="mailto:hello@aikagan.com" className="text-amber-300 underline">hello@aikagan.com</a>
+              <a href="mailto:kagan@aikagan.com" className="text-amber-300 underline">kagan@aikagan.com</a>
             </p>
           </div>
 
