@@ -123,7 +123,6 @@ export const BlueprintGenerator: React.FC<BlueprintGeneratorProps> = ({ onBluepr
     const element = document.createElement("a");
     const file = new Blob([blueprint.rawMarkdown], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
-    // Fixed: Removed the backslash-backtick sequence that caused the parsing error
     element.download = `AIKAGAN_Blueprint_${niche.replace(/\s+/g, '_')}.md`;
     document.body.appendChild(element);
     element.click();
