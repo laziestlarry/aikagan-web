@@ -419,7 +419,7 @@ export default function CommanderPage() {
             © 2026 AIKAGAN VENTURE ECOSYSTEM // SECURE SHELL SESSION v4.11.0
           </div>
         </div>
-      </footer}
+      </footer>
     </div>
   );
 }
