@@ -9,7 +9,6 @@ const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
 const TURKEY_HOSTS = new Set(['aikagan.com.tr', 'www.aikagan.com.tr']);
 const LOCALE_COOKIE = 'aikagan_locale';
-const BOT_UA = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|whatsapp/i;
 
 
 const APP_PREFIXES = ['/dashboard','/autonomax','/checkout','/checkout-success','/projects','/workbench','/outputs','/credits','/downloads','/integrations','/billing','/account','/admin','/creator-hub'];
@@ -51,7 +50,9 @@ function canonicalTurkishPath(pathname: string) {
 function setPreferenceAndRedirect(request: NextRequest, locale: 'en' | 'tr') {
   const url = request.nextUrl.clone();
   url.searchParams.delete('lang');
-  url.pathname = locale === 'tr' ? '/tr' : '/';
+  const path = normalizePath(url.pathname);
+  const englishPath = path === '/tr' ? '/' : path.replace(/^\/tr\//, '/');
+  url.pathname = locale === 'tr' ? (englishPath === '/' ? '/tr' : `/tr${englishPath}`) : englishPath;
   const response = NextResponse.redirect(url, 307);
   response.cookies.set(LOCALE_COOKIE, locale, { domain: '.aikagan.com', path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax', secure: true });
   return response;
@@ -119,18 +120,9 @@ export function middleware(request: NextRequest) {
   if (host === APEX_HOST && requestedLanguage === 'tr') return setPreferenceAndRedirect(request, 'tr');
   if (host === APEX_HOST && requestedLanguage === 'en') return setPreferenceAndRedirect(request, 'en');
 
-  if (host === APEX_HOST && cleanPath === '/') {
-    const country = request.headers.get('x-vercel-ip-country')?.toUpperCase() ?? '';
-    const acceptLanguage = request.headers.get('accept-language')?.toLowerCase() ?? '';
-    const userAgent = request.headers.get('user-agent') ?? '';
-    const preference = request.cookies.get(LOCALE_COOKIE)?.value;
-    const turkeyFirstVisit = (country === 'TR' || (!country && acceptLanguage.startsWith('tr'))) && preference !== 'en' && !BOT_UA.test(userAgent);
-    if (turkeyFirstVisit) return redirectTo(APEX_HOST, '/tr', search, 307);
-  }
-
+  // English is the global default. Geography and browser language never select a locale.
   if (host === APEX_HOST && (cleanPath === '/tr' || cleanPath.startsWith('/tr/'))) {
     const response = NextResponse.next({ request: { headers: localeHeaders(request, 'tr') } });
-    response.cookies.set(LOCALE_COOKIE, 'tr', { domain: '.aikagan.com', path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax', secure: true });
     return response;
   }
 

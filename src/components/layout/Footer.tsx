@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Zap, ExternalLink, Users } from 'lucide-react';
 import { SITE, SOCIAL } from '@/lib/constants';
@@ -18,7 +21,9 @@ const PUBLIC_LINKS = [
 const TR = `${SITE.url}/tr`;
 
 export default function Footer({ locale = 'en' }: { locale?: Locale }) {
-  if (locale === 'tr') return <footer className="border-t border-kagan-border/60 bg-kagan-black"><div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+  const pathname = usePathname();
+  const isTurkish = pathname === '/tr' || pathname.startsWith('/tr/') || (pathname.startsWith('/checkout') && locale === 'tr');
+  if (isTurkish) return <footer className="border-t border-kagan-border/60 bg-kagan-black"><div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
     <div className="mb-10 grid gap-5 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-6 md:grid-cols-[1fr_auto] md:items-center"><div className="flex gap-4"><Users className="mt-1 h-5 w-5 flex-none text-emerald-300"/><div><h3 className="text-lg font-bold text-kagan-white">Faydalı yapay zekâ araçlarını birlikte büyütelim.</h3><p className="mt-1 text-sm leading-6 text-kagan-light">Ücretsiz araçları deneyin, geliştirmeleri şekillendirin ve faydalanabilecek bir kişiyle paylaşın.</p></div></div><Link href={`${TR}/network`} className="inline-flex items-center justify-center rounded-lg bg-emerald-300 px-5 py-3 text-sm font-bold text-black">Katıl ve paylaş →</Link></div>
     <div className="grid gap-8 md:grid-cols-4"><div><Link href={TR} className="flex items-center gap-2"><Zap className="h-5 w-5 text-kagan-gold"/><span className="text-lg font-bold text-kagan-white">Autonoma<span className="text-kagan-gold">X</span></span></Link><p className="mt-3 text-sm leading-relaxed text-kagan-muted">Önce faydalı araçlar. Gerçek ihtiyaç varsa uygulama desteği.</p></div>
     <div><h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-kagan-muted">Keşfet</h4><ul className="space-y-2">{[['Ana Sayfa',TR],['Ücretsiz Araçlar',`${TR}/tools`],['Topluluğa Katıl',`${TR}/network`],['Hizmetler',`${TR}/services`],['Ürünler',`${TR}/products`],['Hakkımızda',`${TR}/about`],['İletişim',`${TR}/contact`]].map(([label,href])=><li key={href}><Link href={href} className="text-sm text-kagan-light hover:text-kagan-gold">{label}</Link></li>)}</ul></div>
