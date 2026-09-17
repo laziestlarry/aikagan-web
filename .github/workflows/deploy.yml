@@ -28,12 +28,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Sync and Install Dependencies
         run: |
-          # Update lockfile to match package.json to prevent npm ci EUSAGE errors
-          npm install --package-lock-only --ignore-scripts
+          # This repo does not currently include a committed lockfile.
+          # Keep the install step lockfile-agnostic so CI can run without failing on cache lookup.
           npm install --ignore-scripts
 
       - name: Lint
