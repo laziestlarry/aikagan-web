@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, FileCheck2, ShieldCheck } from 'lucide-react'
 
 export const metadata = {
   title: 'Ücretsiz Teslimat Örneği',
-  description: 'AIKAGAN teslimat standardının küçük bir Türkçe örneğini e-posta vermeden inceleyin.',
+  description: 'Bir AIKAGAN paketinde neler bulabileceğinizi Türkçe bir örnekle görün. Örneğe bakmak için e-posta adresinizi vermeniz gerekmez.',
   alternates: {
     canonical: 'https://aikagan.com/tr/free/golden-delivery-sample',
     languages: {
@@ -14,12 +14,12 @@ export const metadata = {
 };
 
 const checks = [
-  'İstenen sonuç ve kapsam tek cümlede netleştirilir.',
-  'Teslim edilecek dosyalar ve kullanılacak bağlantılar açıkça listelenir.',
-  'Çalışan bölüm, varsayım ve doğrulanmamış bölüm birbirinden ayrılır.',
-  'Müşterinin ilk kullanımı için kısa bir başlangıç adımı verilir.',
-  'Teslimat öncesi bağlantı, içerik ve erişim kontrolü yapılır.',
-  'Sorun olduğunda destek ve düzeltme yolu görünür bırakılır.',
+  'Ne yapılacağını birlikte belirleriz.',
+  'Size verilecek dosyaları ve bağlantıları listeleriz.',
+  'Neyin hazır olduğunu, neyin henüz denenmediğini açıkça söyleriz.',
+  'Nereden başlayacağınızı anlatırız.',
+  'Göndermeden önce dosyaları ve bağlantıları kontrol ederiz.',
+  'Sorun olursa bize nasıl ulaşacağınızı yazarız.',
 ];
 
 export default function TurkishDeliverySample() {
@@ -28,10 +28,10 @@ export default function TurkishDeliverySample() {
       <section className="mx-auto max-w-5xl">
         <p className="text-sm font-semibold text-emerald-300">ÜCRETSİZ · E-POSTA GEREKMEZ</p>
         <h1 className="mt-4 max-w-4xl text-5xl font-black leading-tight md:text-7xl">
-          Hazır bir teslimatın nasıl görünmesi gerektiğini önce inceleyin.
+          Satın almadan önce bir örneğe bakın.
         </h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-neutral-300">
-          Bu küçük örnek, bir AIKAGAN teslimatında neyi netleştirmeye çalıştığımızı gösterir. Amaç büyük sözler vermek değil; müşterinin aldığı şeyi anlayıp kullanabilmesini sağlamaktır.
+          Bu örnek, bir pakette neler bulabileceğinizi gösterir. Size ne verileceğini ve nasıl kullanacağınızı kolayca anlamanızı istiyoruz.
         </p>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -49,9 +49,9 @@ export default function TurkishDeliverySample() {
 
           <div className="rounded-3xl border border-amber-300/20 bg-amber-300/[0.04] p-7">
             <ShieldCheck className="h-7 w-7 text-amber-300" />
-            <h2 className="mt-5 text-2xl font-black">Bu örnek neyi kanıtlar?</h2>
+            <h2 className="mt-5 text-2xl font-black">Bu örnek ne işe yarar?</h2>
             <p className="mt-4 text-sm leading-7 text-neutral-300">
-              Yalnızca teslimat yaklaşımını görmenizi sağlar. Satın alma, kazanç veya belirli bir iş sonucu garantisi değildir. Ücretli bir teklifte kapsam, fiyat ve teslim süresi ayrıca belirtilir.
+              Paketlerimiz hakkında fikir verir. Kazanç garantisi vermez. Satın almak isterseniz paketin içeriğine, fiyatına ve teslim süresine ayrıca bakın.
             </p>
             <div className="mt-7 space-y-3">
               <Link href="/tr/tools/revenue-leak-scan" className="flex items-center justify-between rounded-xl bg-amber-300 px-5 py-3 font-black text-black">

@@ -14,65 +14,65 @@ import {
 export const metadata = {
   title: 'Nasıl Çalışır — İncele, Uygula, Kontrol Et',
   description:
-    'Bir iş sorununu inceleme, önceliklendirme, uygulama ve sonuç kontrolü adımlarıyla çalışan bir çözüme dönüştürme yaklaşımını görün.',
+    'Bir sorunu nasıl bulduğumuzu, çözüm için ne yaptığımızı ve sonucu nasıl kontrol ettiğimizi adım adım öğrenin.',
   alternates: { canonical: 'https://aikagan.com/tr/flight', languages: { 'tr-TR': 'https://aikagan.com/tr/flight', en: 'https://aikagan.com/flight' } },
 };
 
 const flow = [
   {
     step: '01',
-    title: 'Teşhis et',
-    body: 'Gerçek bir iş sıkıntısından başla: gelir kaybı, düşük dönüşüm, teslimat yükü, dağınık operasyon veya doğrulanması gereken yeni bir fırsat.',
+    title: 'Sorunu bul',
+    body: 'Nerede zorlanıyorsunuz? Satışlar mı azaldı, işler mi birikti? Önce bunu konuşalım.',
     icon: Radar,
   },
   {
     step: '02',
-    title: 'Önceliklendir',
-    body: 'Beklenen değer, aciliyet, kanıt, efor, risk ve otomasyon potansiyeline göre gürültüyü tek bir öncelikli göreve indir.',
+    title: 'İlk adımı seç',
+    body: 'Hangi iş daha acil? Hangisi daha çok yardımcı olur? Önce yapacağımız işi birlikte seçelim.',
     icon: Compass,
   },
   {
     step: '03',
     title: 'Uygula',
-    body: 'Seçilen görevi net adımlara, sorumlulara, araçlara, onaylara, teslim kriterlerine ve ölçülebilir çıktılara dönüştür.',
+    body: 'Yapılacak işleri sıraya koyalım. Kimin ilgileneceğini ve işin ne zaman biteceğini belirleyelim.',
     icon: Workflow,
   },
   {
     step: '04',
-    title: 'Doğrula',
-    body: 'Üretilen işi tamamlanmış işten ayır. Ödeme, yayın, teslimat ve sonuç iddiaları ancak destekleyen kanıt varsa geçerli kabul edilir.',
+    title: 'Kontrol et',
+    body: 'Hazırladığımız iş çalışıyor mu? Dosyalar açılıyor mu? Size vermeden önce kontrol edelim.',
     icon: FileCheck2,
   },
 ] as const;
 
 const modules = [
-  ['İnceleme', 'Pazar, gelir, trend, müşteri ve fırsat sinyalleri tek karar yüzeyinde buluşur.'],
-  ['Uygulama Planı', 'Seçilen sorun; hedef, kısıt, teslimat, bağımlılık ve kabul kriterleriyle sınırlandırılır.'],
-  ['İş Koordinasyonu', 'Otomasyon ve insan işi; açık araçlar, onaylar, devirler ve kurtarma yollarıyla koordine edilir.'],
-  ['Kontrol', 'Kanıt kapıları, simüle edilmiş hazırlığın veya eski varsayımların üretim gerçeği gibi sunulmasını engeller.'],
+  ['İnceleme', 'Müşterilerinize, satışlarınıza ve benzer işlere bakarız. Nerede sorun olduğunu anlamaya çalışırız.'],
+  ['Uygulama Planı', 'Ne yapacağımızı, neye ihtiyacımız olduğunu ve size ne vereceğimizi yazarız.'],
+  ['İş bölümü', 'Hangi işi kimin yapacağını, hangi araçları kullanacağını ve kimden onay alacağını belirleriz.'],
+  ['Kontrol', 'İşi gerçekten deneyerek kontrol ederiz. Hazır olanları ve eksik kalanları size söyleriz.'],
 ] as const;
 
 const lanes = [
   {
-    eyebrow: 'GELİR ONARIMI',
-    title: 'Ticari darboğazı bul',
-    body: 'Ücretsiz Gelir Kaybı Taramasını çalıştır; teklif, ödeme, teslimat, takip ve elde tutma yolundaki sürtünmeleri sırala.',
+    eyebrow: 'SATIŞLARINIZI KONTROL EDİN',
+    title: 'Satışı neyin zorlaştırdığını bulun',
+    body: 'Ücretsiz testi yapın. Müşterilerinizin hangi adımda vazgeçtiğini anlamak için soruları yanıtlayın.',
     href: '/tr/tools/revenue-leak-scan',
-    cta: 'Ücretsiz taramayı başlat',
+    cta: 'Ücretsiz testi başlat',
     icon: Gauge,
   },
   {
-    eyebrow: 'GİRİŞİM / TEKLİF',
-    title: 'Fikri uygulanabilir göreve çevir',
-    body: 'Fikrini, atıl varlığını, teklifini veya operasyon sorununu getir. Herhangi bir uygulama taahhüdünden önce en değerli sonraki görevi birlikte kapsamlandıralım.',
+    eyebrow: 'BİR FİKRİNİZ Mİ VAR?',
+    title: 'Fikrinizi anlatın, birlikte planlayalım',
+    body: 'Aklınızdaki fikri veya işinizdeki sorunu bize anlatın. Başlamadan önce ne yapabileceğimizi birlikte konuşalım.',
     href: '/tr/contact',
-    cta: 'Görev kapsamı iste',
+    cta: 'Yapmak istediğim işi anlat',
     icon: Sparkles,
   },
   {
     eyebrow: 'OTOMASYON / OPERASYON',
-    title: 'İş hedefini uygulanabilir hâle getir',
-    body: 'Hedefinizi sonraki adımı, sorumlusu ve tamamlanma ölçüsü belli bir görev taslağına dönüştürün.',
+    title: 'Nereden başlayacağınızı bulun',
+    body: 'Ne yapmak istediğinizi yazın. İlk adımı, işle kimin ilgileneceğini ve beklediğiniz sonucu belirleyin.',
     href: '/tr/outcome/intake',
     cta: 'Ücretsiz taslak hazırla',
     icon: Workflow,
@@ -101,18 +101,18 @@ export default function TurkishFlightPage() {
               Sorunu bul. <span className="text-amber-300">Çözümü uygula.</span> Sonucu kontrol et.
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-neutral-300">
-              Hazırlanmış bir dosya, çalışan ve teslim edilmiş bir sonuçla aynı değildir. Bu nedenle her işte inceleme, öncelik, uygulama ve kontrol adımlarını görünür tutarız.
+              Önce sorunu anlarız. Sonra çözümü hazırlar ve deneriz. Size ne yaptığımızı, neyin çalıştığını ve neyin kaldığını söyleriz.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link href="/tr/tools/revenue-leak-scan" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black transition hover:bg-amber-200">
                 Ücretsiz testle başla <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/tr/contact" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold text-white hover:border-white/30">
-                Bir görev getir
+                İhtiyacını anlat
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-neutral-400">
-              {['Uydurma kazanç vaadi yok', 'Test ile canlı sonuç ayrılır', 'İddiadan önce kanıt'].map((item) => (
+              {['Uydurma kazanç vaadi yok', 'Neyin hazır olduğunu görün', 'Denenmiş sonuçlar'].map((item) => (
                 <span key={item} className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-300" /> {item}</span>
               ))}
             </div>
@@ -120,7 +120,7 @@ export default function TurkishFlightPage() {
 
           <div className="rounded-[32px] border border-white/10 bg-black/35 p-7 sm:p-9">
             <div className="flex items-center justify-between gap-4">
-              <div><p className="text-xs font-black uppercase tracking-[0.25em] text-neutral-500">Yayın kapısı</p><h2 className="mt-2 text-2xl font-black">Gerçekte ne açık?</h2></div>
+              <div><p className="text-xs font-black uppercase tracking-[0.25em] text-neutral-500">Şu anda neler var?</p><h2 className="mt-2 text-2xl font-black">Neleri kullanabilirsiniz?</h2></div>
               <ShieldCheck className="h-8 w-8 text-emerald-300" />
             </div>
             <div className="mt-6 space-y-3">
@@ -131,13 +131,13 @@ export default function TurkishFlightPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-5 text-sm leading-6 text-neutral-400">Ücretli bir ürün açıldığında ürün sayfası fiyatı, ödeme sağlayıcısını, teslimat biçimini ve destek yolunu gösterir. Sayfayı görmek veya düğmeye basmak, ödeme kanıtı sayılmaz.</p>
+            <p className="mt-5 text-sm leading-6 text-neutral-400">Ürün sayfasında fiyatı, nasıl ödeme yapacağınızı, dosyaları nasıl alacağınızı ve nereden yardım isteyebileceğinizi görebilirsiniz.</p>
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="max-w-3xl"><p className="text-sm font-semibold text-emerald-300">ÇALIŞMA AKIŞI</p><h2 className="mt-3 text-4xl font-black sm:text-5xl">Sorundan kullanılabilir sonuca dört adım.</h2><p className="mt-5 text-lg leading-8 text-neutral-400">Her adımın sahibi, beklenen çıktısı ve tamamlanma kontrolü açıkça yazılır.</p></div>
+        <div className="max-w-3xl"><p className="text-sm font-semibold text-emerald-300">ÇALIŞMA AKIŞI</p><h2 className="mt-3 text-4xl font-black sm:text-5xl">Sorundan kullanılabilir sonuca dört adım.</h2><p className="mt-5 text-lg leading-8 text-neutral-400">Kimin ne yapacağını ve işin bittiğini nasıl anlayacağımızı baştan yazarız.</p></div>
         <div className="mt-12 grid gap-5 lg:grid-cols-4">
           {flow.map(({ step, title, body, icon: Icon }) => (
             <article key={step} className="rounded-3xl border border-white/10 bg-white/[0.03] p-6"><div className="flex items-center justify-between"><span className="text-xs font-black tracking-[0.2em] text-neutral-500">{step}</span><Icon className="h-6 w-6 text-amber-300" /></div><h3 className="mt-7 text-2xl font-black">{title}</h3><p className="mt-3 text-sm leading-7 text-neutral-400">{body}</p></article>
@@ -147,13 +147,13 @@ export default function TurkishFlightPage() {
 
       <section className="border-y border-white/5 bg-[#0b0b0e]">
         <div className="mx-auto max-w-7xl px-6 py-24"><div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-          <div><p className="text-sm font-semibold text-amber-300">HER İŞTE AYNI TEMEL</p><h2 className="mt-3 text-4xl font-black">Faydalı olanı birleştir, gereksizi çıkar.</h2><p className="mt-5 leading-8 text-neutral-400">Pazar bilgisi, görev planı, insan onayı ve sonuç kontrolü tek çalışma kaydında buluşur. Eski bilgiler, tekrar eden dosyalar ve doğrulanamayan iddialar yeni teslimata taşınmaz.</p></div>
+          <div><p className="text-sm font-semibold text-amber-300">HER İŞTE AYNI TEMEL</p><h2 className="mt-3 text-4xl font-black">İşleri tek bir planda toplayın.</h2><p className="mt-5 leading-8 text-neutral-400">Bilgileri, yapılacak işleri ve gereken onayları bir arada tutarız. Eski ve gereksiz dosyaları ayırırız. Böylece sıradaki adımı kolayca görebilirsiniz.</p></div>
           <div className="grid gap-4 sm:grid-cols-2">{modules.map(([title, body]) => <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><h3 className="text-xl font-black text-white">{title}</h3><p className="mt-2 text-sm leading-6 text-neutral-400">{body}</p></div>)}</div>
         </div></div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="max-w-3xl"><p className="text-sm font-semibold text-emerald-300">NEREDEN BAŞLAMALI?</p><h2 className="mt-3 text-4xl font-black sm:text-5xl">Teknolojiden değil, istediğiniz sonuçtan başlayın.</h2></div>
+        <div className="max-w-3xl"><p className="text-sm font-semibold text-emerald-300">NEREDEN BAŞLAMALI?</p><h2 className="mt-3 text-4xl font-black sm:text-5xl">Önce ne yapmak istediğinizi söyleyin.</h2></div>
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {lanes.map(({ eyebrow, title, body, href, cta, icon: Icon }) => (
             <Link key={title} href={href} className="group flex flex-col rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition hover:-translate-y-1 hover:border-amber-300/40"><Icon className="h-7 w-7 text-amber-300" /><p className="mt-6 text-xs font-black tracking-[0.22em] text-neutral-500">{eyebrow}</p><h3 className="mt-3 text-2xl font-black">{title}</h3><p className="mt-3 flex-1 text-sm leading-7 text-neutral-400">{body}</p><span className="mt-7 inline-flex items-center gap-2 text-sm font-black text-amber-300">{cta} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span></Link>
@@ -162,7 +162,7 @@ export default function TurkishFlightPage() {
       </section>
 
       <section className="px-6 pb-24">
-        <div className="mx-auto max-w-5xl rounded-[32px] border border-amber-300/20 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.11),transparent_55%),#0d0d10] px-7 py-14 text-center sm:px-12"><FileCheck2 className="mx-auto h-8 w-8 text-amber-300" /><p className="mt-5 text-sm font-semibold text-amber-300">BAŞLANGIÇ</p><h2 className="mt-4 text-4xl font-black">Tek bir gerçek sorunla başlayın.</h2><p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-400">Platform satın almanız veya sistem yapısını anlamanız gerekmez. Sorunu bulun, uygun yolu seçin ve yalnızca sonuç size uygunsa ilerleyin.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/tr/tools/revenue-leak-scan" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black hover:bg-amber-200">Ücretsiz testi başlat <ArrowRight className="h-4 w-4" /></Link><Link href="/tr/contact" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold text-white hover:border-white/30">Uygulama desteği iste</Link></div></div>
+        <div className="mx-auto max-w-5xl rounded-[32px] border border-amber-300/20 bg-[radial-gradient(circle_at_50%_0%,rgba(212,175,55,0.11),transparent_55%),#0d0d10] px-7 py-14 text-center sm:px-12"><FileCheck2 className="mx-auto h-8 w-8 text-amber-300" /><p className="mt-5 text-sm font-semibold text-amber-300">BAŞLANGIÇ</p><h2 className="mt-4 text-4xl font-black">Tek bir gerçek sorunla başlayın.</h2><p className="mx-auto mt-5 max-w-2xl leading-7 text-neutral-400">Başlamak için bir şey satın almanız gerekmez. Ücretsiz aracı deneyin. Sonra nasıl devam edeceğinize karar verin.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/tr/tools/revenue-leak-scan" className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-6 py-3.5 text-sm font-black text-black hover:bg-amber-200">Ücretsiz testi başlat <ArrowRight className="h-4 w-4" /></Link><Link href="/tr/contact" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3.5 text-sm font-bold text-white hover:border-white/30">Uygulama desteği iste</Link></div></div>
       </section>
     </main>
   );
