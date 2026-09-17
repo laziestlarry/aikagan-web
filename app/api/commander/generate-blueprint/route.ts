@@ -58,8 +58,9 @@ Deployment strategy for an autonomous AI venture in the **${niche}** niche. Leve
 Generate a professional "AI Venture Launch Blueprint" for concept: "${idea}" in niche: "${niche}".
 Respond strictly in JSON: { "rawMarkdown": "...", "month1": number, "month2": number, "month3": number, "conversionRate": number }`;
 
+    // @google/genai v2 SDK: ai.models.generateContent replaces legacy getGenerativeModel
     const result = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: { responseMimeType: 'application/json' },
     });

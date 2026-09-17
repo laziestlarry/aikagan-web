@@ -3,13 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 const APP_HOST = 'app.aikagan.com';
 const OUTCOME_HOST = 'outcome.aikagan.com';
 const CHECKOUT_HOST = 'checkout.aikagan.com';
+const BOARD_HOST = 'board.aikagan.com';
+const KB_HOST = 'kb.aikagan.com';
 const APEX_HOST = 'aikagan.com';
 const WWW_HOST = 'www.aikagan.com';
 const TURKEY_HOSTS = new Set(['aikagan.com.tr', 'www.aikagan.com.tr']);
 const LOCALE_COOKIE = 'aikagan_locale';
 const BOT_UA = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|linkedinbot|twitterbot|whatsapp/i;
 
-const APP_PREFIXES = ['/dashboard','/autonomax','/checkout','/checkout-success','/projects','/workbench','/outputs','/credits','/downloads','/integrations','/billing','/account','/admin'];
+
+const APP_PREFIXES = ['/dashboard','/autonomax','/checkout','/checkout-success','/projects','/workbench','/outputs','/credits','/downloads','/integrations','/billing','/account','/admin','/creator-hub'];
 const WEB_PREFIXES = ['/products','/services','/about','/contact','/free','/tools','/network','/feedback','/start-free','/work-with-kagan','/cash-resilience','/legal','/marketing','/affiliates','/mission-control','/privacy','/terms','/refund','/tr'];
 const LEGACY_INTERNAL_DASHBOARDS = ['/dashboard/financials','/dashboard/investment-policy','/dashboard/passive-income','/dashboard/profit-intelligence','/dashboard/success','/dashboard/venture-infrastructure','/dashboard/weekly-intelligence'];
 const LEGACY_TURKISH_PATHS: Record<string, string> = {
@@ -71,6 +74,24 @@ export function middleware(request: NextRequest) {
 
   if (host === CHECKOUT_HOST) {
     return redirectTo(APP_HOST, cleanPath === '/' ? '/checkout' : cleanPath, search);
+  }
+
+  if (host === BOARD_HOST) {
+    if (cleanPath === '/robots.txt' || cleanPath === '/sitemap.xml') return redirectTo(APEX_HOST, cleanPath);
+    const boardUrl = request.nextUrl.clone();
+    boardUrl.pathname = cleanPath === '/' || cleanPath === '/creator-hub' ? '/creator-hub' : `/creator-hub${cleanPath}`;
+    const response = NextResponse.rewrite(boardUrl, { request: { headers: localeHeaders(request, 'en') } });
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
+  }
+
+  if (host === KB_HOST) {
+    if (cleanPath === '/robots.txt' || cleanPath === '/sitemap.xml') return redirectTo(APEX_HOST, cleanPath);
+    const kbUrl = request.nextUrl.clone();
+    kbUrl.pathname = cleanPath === '/' || cleanPath === '/knowledge' ? '/knowledge' : `/knowledge${cleanPath}`;
+    const response = NextResponse.rewrite(kbUrl, { request: { headers: localeHeaders(request, 'en') } });
+    response.headers.set('X-Robots-Tag', cleanPath === '/' ? 'index, follow' : 'noindex, follow');
+    return response;
   }
 
   if (host === OUTCOME_HOST) {

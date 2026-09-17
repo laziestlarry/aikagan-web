@@ -52,7 +52,7 @@ function translatedPath(pathname: string, to: Locale) {
 }
 
 function isApplicationPath(pathname: string): boolean {
-  return pathname.startsWith('/dashboard') || pathname.startsWith('/autonomax') || pathname.startsWith('/checkout') || pathname.startsWith('/projects') || pathname.startsWith('/workbench') || pathname.startsWith('/outputs') || pathname.startsWith('/credits') || pathname.startsWith('/downloads') || pathname.startsWith('/integrations') || pathname.startsWith('/billing') || pathname.startsWith('/account');
+  return pathname.startsWith('/dashboard') || pathname.startsWith('/autonomax') || pathname.startsWith('/checkout') || pathname.startsWith('/projects') || pathname.startsWith('/workbench') || pathname.startsWith('/outputs') || pathname.startsWith('/credits') || pathname.startsWith('/downloads') || pathname.startsWith('/integrations') || pathname.startsWith('/billing') || pathname.startsWith('/account') || pathname.startsWith('/creator-hub');
 }
 function cleanPath(pathname: string) { return pathname === '/' ? '/' : pathname.replace(/\/+$/, ''); }
 

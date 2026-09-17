@@ -48,6 +48,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...localizedRoutes,
     ...productRoutes,
     ...englishFreeRoutes,
+    { url: `${base}/knowledge`, lastModified: now, changeFrequency: 'weekly', priority: 0.65 },
+    { url: `${base}/llms.txt`, lastModified: now, changeFrequency: 'weekly', priority: 0.3 },
+    { url: `${base}/llms-full.txt`, lastModified: now, changeFrequency: 'weekly', priority: 0.3 },
     { url: `${base}/legal/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
   ];
 }
