@@ -27,9 +27,9 @@ async function waitUntilReady() {
   throw new Error(`local server did not become ready\n${logs}`);
 }
 
-function request(path) {
+function request(path, headers = {}) {
   return new Promise((resolve, reject) => {
-    const req = http.request({ hostname: '127.0.0.1', port, path, method: 'GET', headers: { Host: 'aikagan.com', 'Accept-Language': 'tr-TR,tr;q=0.9' } }, res => {
+    const req = http.request({ hostname: '127.0.0.1', port, path, method: 'GET', headers: { Host: 'aikagan.com', 'Accept-Language': 'tr-TR,tr;q=0.9', ...headers } }, res => {
       const chunks = [];
       res.on('data', chunk => chunks.push(chunk));
       res.on('end', () => resolve({ status: res.statusCode ?? 0, body: Buffer.concat(chunks).toString('utf8'), headers: res.headers }));
@@ -43,6 +43,19 @@ function value(html, re) { return html.match(re)?.[1]?.replaceAll('&amp;', '&') 
 
 try {
   await waitUntilReady();
+  for (const headers of [{}, {'x-vercel-ip-country':'TR'}, {Cookie:'aikagan_locale=tr'}]) {
+    const res = await request('/', headers);
+    if(res.status !== 200 || !res.body.includes('<html lang="en"')) failures.push('English default changed by geography, browser language, or stale cookie');
+  }
+  for (const [path, expected, locale] of [
+    ['/tr/products/masterclass-starter?lang=en&utm_source=test','/products/masterclass-starter?utm_source=test','en'],
+    ['/products/masterclass-starter?lang=tr','/tr/products/masterclass-starter','tr'],
+    ['/tr/outcome/intake?lang=tr','/tr/outcome/intake','tr'],
+  ]) {
+    const res=await request(path);
+    if(res.status!==307 || !res.headers.location?.endsWith(expected)) failures.push('Language switch loses page: '+path);
+    if(!res.headers['set-cookie']?.some(cookie=>cookie.includes('aikagan_locale='+locale))) failures.push('Explicit preference not persisted: '+path);
+  }
   for (const route of routes) {
     const res = await request(route);
     const html = res.body;
