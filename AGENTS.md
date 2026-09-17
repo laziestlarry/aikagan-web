@@ -36,3 +36,15 @@ videos, and gig descriptions.
 - Define cron-like schedules and self-checks (health, retries, alerts).
 Every time you design a plan, explicitly state which Profit OS modules you
 invoke.
+
+
+## Turkish customer copy
+Use short, everyday Turkish, as the user explicitly requested on 2026-09-17.
+Write so a child could understand, while addressing adult visitors respectfully with “siz”.
+Do not make the copy formal, bureaucratic, or “elite”.
+Prefer “Sitenin ana dili İngilizcedir.” and “Türkçe devam etmek için Türkçe düğmesine basın.”
+Avoid literal business jargon such as “küresel varsayılan”, “karar yüzeyi”,
+“kanıt kapısı”, “teslimat yaklaşımı” and “kapsamlandırma”.
+Say what visitors can do and what they will receive in concrete terms.
+Preserve product contents, prices, delivery times, consent and legal meaning.
+Apply this rule to page text, menus, placeholders, errors, metadata and downloadable copy.

@@ -16,14 +16,14 @@ const copy = {
     support: "Support: kagan@aikagan.com",
   },
   tr: {
-    eyebrow: "AIKAGAN · DOĞRULANMIŞ TESLİMAT",
-    title: "Ücretli teslimatlar yalnızca tamamen hazır olduğunda geri açılacak.",
-    body: "Yayınlanan içerik, lisans, ödeme ve teslim edilen dosyaların birebir uyuşması için tüm ücretli teklifleri yeniden hazırlıyoruz. Bu doğrulama tamamlanana kadar ödeme geçici olarak durduruldu.",
+    eyebrow: "AIKAGAN · HAZIR PAKETLER",
+    title: "Paketler hazır olunca yeniden satışa açılacak.",
+    body: "Paketlerin içeriğini, kullanım koşullarını ve indirme bağlantılarını kontrol ediyoruz. Bu çalışma bitene kadar ödeme almıyoruz.",
     status: "Bu sayfada ödeme alınmıyor",
     free: "Ücretsiz araçlar kullanıma açık",
     primary: "Ücretsiz Gelir Kaybı Testini Başlat",
     secondary: "Tüm ücretsiz araçları gör",
-    note: "Ücretli teklifler, satın almadan teslimata kadar tüm testler başarıyla tamamlandıktan sonra açılacak.",
+    note: "Ödeme ve dosya indirme adımlarının çalıştığından emin olunca paketleri satışa açacağız.",
     support: "Destek: kagan@aikagan.com",
   },
 } as const;
