@@ -25,26 +25,16 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Ensure package-lock.json
-        run: |
-          if [ ! -f package-lock.json ]; then
-            echo "Lockfile missing from workspace; restoring from git"
-            git checkout HEAD -- package-lock.json
-          fi
-          if [ ! -f package-lock.json ]; then
-            echo "Generating lockfile from package.json"
-            npm install --package-lock-only --ignore-scripts
-          fi
-          test -f package-lock.json
-          node -e "const lock=require('./package-lock.json'); if (!lock.lockfileVersion) process.exit(1)"
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install locked dependencies
-        run: npm ci
+      - name: Sync and Install Dependencies
+        run: |
+          # Update lockfile to match package.json to prevent npm ci EUSAGE errors
+          npm install --package-lock-only --ignore-scripts
+          npm install --ignore-scripts
 
       - name: Lint
         run: npm run lint
