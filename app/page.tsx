@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Gauge, Gift, ShieldCheck, Sparkles, Wrench, Workflow } from 'lucide-react';
 import SocialProof from '@/components/home/SocialProof';
+import { getProduct } from '@/lib/products';
 
 export const metadata = {
   title: 'Free AI Business Tools',
@@ -46,6 +47,12 @@ const freeExperiences = [
     icon: Workflow,
   },
 ];
+
+const paidOutcomes = [
+  ['masterclass-starter','Start with one decision','Turn one bottleneck into a focused, human-reviewed decision brief.'],
+  ['masterclass-pro','Build the revenue system','Connect offer, traffic, checkout and handoffs into a practical 30-day operating system.'],
+  ['masterclass-commander','Make it repeatable','Add operating controls, partnerships, KPI diagnostics and scale architecture.'],
+] as const;
 
 export default function HomePage() {
   return <main className="min-h-screen bg-[#08080a] text-white">
@@ -118,6 +125,18 @@ export default function HomePage() {
           ].map(([t,b])=><div key={t} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><Sparkles className="h-5 w-5 text-amber-300"/><h3 className="mt-4 text-xl font-bold">{t}</h3><p className="mt-2 text-sm leading-6 text-neutral-400">{b}</p></div>)}
         </div>
       </div>
+    </section>
+
+    <section className="mx-auto max-w-7xl px-6 py-24">
+      <div className="max-w-3xl">
+        <p className="text-sm font-semibold text-amber-300">Ready-made paid outcomes</p>
+        <h2 className="mt-3 text-4xl font-black sm:text-5xl">Three Gumroad offers. Start as small as the problem allows.</h2>
+        <p className="mt-5 text-lg leading-8 text-neutral-400">You can inspect every deliverable before payment. Starter is the $29 entry point; Pro and Commander add progressively broader operating systems.</p>
+      </div>
+      <div className="mt-12 grid gap-5 lg:grid-cols-3">
+        {paidOutcomes.map(([slug,title,body])=>{const product=getProduct(slug)!;return <article key={slug} className="flex flex-col rounded-3xl border border-white/10 bg-white/[0.03] p-6"><p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">{product.badge}</p><h3 className="mt-4 text-2xl font-black">{title}</h3><p className="mt-3 flex-1 text-sm leading-7 text-neutral-400">{body}</p><p className="mt-6 text-4xl font-black">${product.price}<span className="text-sm font-medium text-neutral-500"> USD</span></p><div className="mt-6 flex flex-wrap gap-3"><Link href={`/products/${slug}`} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-bold text-white">See everything included</Link><Link href={`/api/income/checkout?slug=${slug}&provider=gumroad`} className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-black text-black">Buy on Gumroad <ArrowRight className="h-4 w-4"/></Link></div></article>})}
+      </div>
+      <p className="mt-6 text-sm leading-6 text-neutral-500">Hosted checkout is handled by Gumroad. AIKAGAN does not collect card details.</p>
     </section>
 
     <SocialProof />
